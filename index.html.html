@@ -1,0 +1,797 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mike Giardina - Clinical AI Architect</title>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Crimson+Pro:wght@400;600&family=Work+Sans:wght@300;500;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-bg: #0a0e14;
+            --secondary-bg: #151922;
+            --accent-cyan: #00d9ff;
+            --accent-green: #00ff9f;
+            --accent-red: #ff006e;
+            --text-primary: #e6edf3;
+            --text-muted: #8b949e;
+            --grid-color: rgba(0, 217, 255, 0.1);
+        }
+
+        body {
+            background: var(--primary-bg);
+            color: var(--text-primary);
+            font-family: 'Work Sans', sans-serif;
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        /* Animated grid background */
+        .grid-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(var(--grid-color) 1px, transparent 1px),
+                linear-gradient(90deg, var(--grid-color) 1px, transparent 1px);
+            background-size: 50px 50px;
+            animation: gridPulse 4s ease-in-out infinite;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        @keyframes gridPulse {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 0.6; }
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Header/Hero */
+        header {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            position: relative;
+            padding: 4rem 0;
+        }
+
+        .status-bar {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            color: var(--accent-green);
+            margin-bottom: 2rem;
+            display: flex;
+            gap: 2rem;
+            flex-wrap: wrap;
+            animation: fadeInDown 0.8s ease-out;
+        }
+
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--accent-green);
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        h1 {
+            font-family: 'Crimson Pro', serif;
+            font-size: clamp(3rem, 8vw, 6rem);
+            font-weight: 600;
+            line-height: 1.1;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, var(--text-primary) 0%, var(--accent-cyan) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: fadeInUp 1s ease-out 0.2s backwards;
+        }
+
+        .subtitle {
+            font-size: clamp(1.2rem, 3vw, 1.8rem);
+            color: var(--text-muted);
+            margin-bottom: 2rem;
+            font-weight: 300;
+            animation: fadeInUp 1s ease-out 0.4s backwards;
+        }
+
+        .hero-stats {
+            display: flex;
+            gap: 3rem;
+            margin-top: 3rem;
+            font-family: 'JetBrains Mono', monospace;
+            flex-wrap: wrap;
+            animation: fadeInUp 1s ease-out 0.6s backwards;
+        }
+
+        .stat {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--accent-cyan);
+            line-height: 1;
+        }
+
+        .stat-label {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-top: 0.5rem;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Section Headers */
+        .section {
+            padding: 6rem 0;
+            position: relative;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 3rem;
+        }
+
+        .section-number {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1rem;
+            color: var(--accent-cyan);
+            opacity: 0.6;
+        }
+
+        .section-title {
+            font-family: 'Crimson Pro', serif;
+            font-size: clamp(2rem, 5vw, 3rem);
+            font-weight: 600;
+        }
+
+        .section-divider {
+            flex: 1;
+            height: 1px;
+            background: linear-gradient(90deg, var(--accent-cyan) 0%, transparent 100%);
+            margin-left: 2rem;
+        }
+
+        /* Apps Grid */
+        .apps-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .app-card {
+            background: var(--secondary-bg);
+            border: 1px solid rgba(0, 217, 255, 0.2);
+            padding: 2rem;
+            position: relative;
+            transition: all 0.3s ease;
+            overflow: hidden;
+        }
+
+        .app-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, var(--accent-cyan), var(--accent-green));
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.3s ease;
+        }
+
+        .app-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .app-card:hover {
+            border-color: var(--accent-cyan);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 40px rgba(0, 217, 255, 0.2);
+        }
+
+        .app-number {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            color: var(--accent-green);
+            margin-bottom: 0.5rem;
+        }
+
+        .app-title {
+            font-family: 'Crimson Pro', serif;
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+        }
+
+        .app-description {
+            color: var(--text-muted);
+            line-height: 1.6;
+            font-size: 0.95rem;
+        }
+
+        .app-features {
+            list-style: none;
+            margin-top: 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .app-features li {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            padding-left: 1.5rem;
+            position: relative;
+        }
+
+        .app-features li::before {
+            content: '▸';
+            position: absolute;
+            left: 0;
+            color: var(--accent-cyan);
+        }
+
+        /* Timeline Section */
+        .timeline {
+            position: relative;
+            padding-left: 3rem;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: linear-gradient(180deg, var(--accent-cyan), var(--accent-green));
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 3rem;
+            padding-left: 2rem;
+        }
+
+        .timeline-dot {
+            position: absolute;
+            left: -3.5rem;
+            top: 0.5rem;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--accent-cyan);
+            border: 3px solid var(--primary-bg);
+            box-shadow: 0 0 0 4px var(--secondary-bg);
+        }
+
+        .timeline-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            color: var(--accent-green);
+            margin-bottom: 0.5rem;
+        }
+
+        .timeline-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .timeline-description {
+            color: var(--text-muted);
+            line-height: 1.6;
+        }
+
+        /* Contact Section */
+        .contact-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .contact-card {
+            background: var(--secondary-bg);
+            padding: 2rem;
+            border-left: 3px solid var(--accent-cyan);
+            transition: all 0.3s ease;
+        }
+
+        .contact-card:hover {
+            background: rgba(0, 217, 255, 0.05);
+            transform: translateX(5px);
+        }
+
+        .contact-title {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            color: var(--accent-green);
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        .contact-value {
+            font-size: 1.1rem;
+            color: var(--text-primary);
+            word-break: break-all;
+        }
+
+        .contact-value a {
+            color: var(--accent-cyan);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .contact-value a:hover {
+            color: var(--accent-green);
+        }
+
+        /* Footer */
+        footer {
+            padding: 3rem 0;
+            text-align: center;
+            border-top: 1px solid rgba(0, 217, 255, 0.2);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        /* Scroll indicator */
+        .scroll-indicator {
+            position: fixed;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            animation: bounce 2s ease-in-out infinite;
+            z-index: 10;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateX(-50%) translateY(0); }
+            50% { transform: translateX(-50%) translateY(-10px); }
+        }
+
+        .scroll-arrow {
+            width: 20px;
+            height: 20px;
+            border-bottom: 2px solid var(--accent-cyan);
+            border-right: 2px solid var(--accent-cyan);
+            transform: rotate(45deg);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 1.5rem;
+            }
+
+            .apps-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .hero-stats {
+                gap: 2rem;
+            }
+
+            .timeline {
+                padding-left: 2rem;
+            }
+
+            .timeline-item {
+                padding-left: 1.5rem;
+            }
+
+            .timeline-dot {
+                left: -2.5rem;
+            }
+        }
+
+        /* Highlight effect for special terms */
+        .highlight {
+            color: var(--accent-green);
+            font-weight: 500;
+        }
+
+        .tech-badge {
+            display: inline-block;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            padding: 0.25rem 0.75rem;
+            background: rgba(0, 217, 255, 0.1);
+            border: 1px solid var(--accent-cyan);
+            color: var(--accent-cyan);
+            margin-right: 0.5rem;
+            margin-top: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="grid-bg"></div>
+    
+    <div class="container">
+        <header>
+            <div class="status-bar">
+                <div class="status-item">
+                    <span class="status-dot"></span>
+                    <span>AVAILABLE FOR HEALTH TECH ROLES</span>
+                </div>
+                <div class="status-item">
+                    <span class="status-dot"></span>
+                    <span>JOHNSTOWN, PA | OPEN TO REMOTE</span>
+                </div>
+            </div>
+
+            <h1>Mike Giardina</h1>
+            <p class="subtitle">Clinical AI Architect • ED Supervisor → Health Tech Engineer</p>
+            
+            <div class="hero-stats">
+                <div class="stat">
+                    <div class="stat-value">7</div>
+                    <div class="stat-label">AI Applications</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value">35</div>
+                    <div class="stat-label">Days to Build</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value">Less than $100</div>
+                    <div class="stat-label">Total API Costs</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value">18</div>
+                    <div class="stat-label">Years Clinical Experience</div>
+                </div>
+            </div>
+
+            <div class="scroll-indicator">
+                <span>SCROLL</span>
+                <div class="scroll-arrow"></div>
+            </div>
+        </header>
+
+        <section class="section">
+            <div class="section-header">
+                <span class="section-number">01</span>
+                <h2 class="section-title">Applications</h2>
+                <div class="section-divider"></div>
+            </div>
+
+            <div class="apps-grid">
+                <!-- App 1 -->
+                <div class="app-card">
+                    <div class="app-number">APP_01</div>
+                    <h3 class="app-title">Media Manager</h3>
+                    <p class="app-description">
+                        Operating and cataloguing system for RAG datasets as a native application.
+                        Operates as a background process in the system tray.
+                        Keeps dataset catalog in memory and updates it periodically.
+                        Future utilization for data transfer to cloud infrastructure.
+                    </p>
+                    <div style="margin-top: 1rem;">
+                        <span class="tech-badge">RAG</span>
+                        <span class="tech-badge">Data Management</span>
+                        <span class="tech-badge">Cloud-Ready</span>
+                    </div>
+                </div>
+
+                <!-- App 2 -->
+                <div class="app-card">
+                    <div class="app-number">APP_05</div>
+                    <h3 class="app-title">Nurse_Orchestrator</h3>
+                    <p class="app-description">
+                        Advanced clinical decision-support platform with ~15 specialized nursing personas. Features state-specific scope of practice, facility policy integration, and ambient/generative AI documentation.
+                    </p>
+                    <ul class="app-features">
+                        <li>Physician ↔ Nurse translator</li>
+                        <li>SBAR/ISBAR handoff generation</li>
+                        <li>RAG-enabled policy guardrails</li>
+                        <li>Voice-to-progress-note</li>
+                        <li>Context-aware persona switching</li>
+                        <li>Dev mode with entropy and prompt integrity lab</li>    
+                    </ul>
+                </div>
+
+                <!-- App 3 -->
+                <div class="app-card">
+                    <div class="app-number">APP_03</div>
+                    <h3 class="app-title">Clinical Simulator</h3>
+                    <p class="app-description">
+                        Fully independent clinical training application with real-time vital signs (VSS/ECG/POX/ETCO2/GCS), context-aware mannequin simulation, and emergency vs. full patient ecounter modes. API-driven clinical course with comprehensive guardrails.
+                    </p>
+                    <ul class="app-features">
+                        <li>Dynamic patient scenarios</li>
+                        <li>Free text interventions</li>
+                        <li>Quick action protocols</li>
+                        <li>Clinical safety guardrails</li>
+                    </ul>
+                </div>
+
+                <!-- App 4 -->
+                <div class="app-card">
+                    <div class="app-number">APP_04</div>
+                    <h3 class="app-title">2D-to-STL Converter</h3>
+                    <p class="app-description">
+                        Geometric conversion tool for transforming 2D shapes into 3D-printable STL format files.
+                    </p>
+                    <div style="margin-top: 1rem;">
+                        <span class="tech-badge">3D Printing</span>
+                        <span class="tech-badge">CAD</span>
+                    </div>
+                </div>
+
+                <!-- App 5 -->
+                <div class="app-card">
+                    <div class="app-number">APP_02</div>
+                    <h3 class="app-title">Scheduler</h3>
+                    <p class="app-description">
+                        Advanced scheduling interface with employee management, shift personalization, exempt/non-exempt definitions, and LOA handling. Features schedule upload with trend evaluation.
+                    </p>
+                    <ul class="app-features">
+                        <li>Archivable employee records</li>
+                        <li>Shift/employee personalization</li>
+                        <li>Schedule trend evaluation</li>
+                        <li>LOA handling</li>   
+                   </ul>
+                </div>
+
+                <!-- App 6 -->
+                <div class="app-card">
+                    <div class="app-number">APP_06</div>
+                    <h3 class="app-title">NEXUS // Personal Intelligence Core</h3>
+                    <p class="app-description">
+                        Local-first, privacy-centric Gemini API interface with direct disk access and persistent knowledge management. "No Amnesia" mode with file system integration.
+                    </p>
+                    <ul class="app-features">
+                        <li>Core Memory Bank system</li>
+                        <li>Multimodal capabilities (vision, models)</li>
+                        <li>Local JSON persistence</li>
+                        <li>Adaptive safety filters</li>
+                    </ul>
+                </div>
+
+                <!-- App 7 -->
+                <div class="app-card">
+                    <div class="app-number">APP_07</div>
+                    <h3 class="app-title">That ER Guy - Creative Studio</h3>
+                    <p class="app-description">
+                        Multi-persona AI ecosystem with Gemini 3.0 Neural Engine. "Board of Directors" experience for clinical leaders and health-tech strategists.
+                    </p>
+                    <ul class="app-features">
+                        <li>ET Stack (Vital Visualizer)</li>
+                        <li>Neural Persona Editor</li>
+                        <li>AI dictation (hands-free)</li>
+                        <li>Creative commands (/image)</li>
+                        <li>Drift mitigation & patches</li>
+                        <li>Professional Markdown export</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section class="section">
+            <div class="section-header">
+                <span class="section-number">02</span>
+                <h2 class="section-title">Journey</h2>
+                <div class="section-divider"></div>
+            </div>
+
+            <div class="timeline">
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-label">2006 - 2024</div>
+                    <h3 class="timeline-title">Clinical Foundation</h3>
+                    <p class="timeline-description">
+                        18 years of ER/ICU experience at Duke Lifepoint – Conemaugh Health System. 
+                        Advanced to ED Supervisor and Clinical Educator roles. Epic Super User status since 2016, 
+                        developing deep understanding of clinical workflows and healthcare IT systems.
+                    </p>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-label">2024</div>
+                    <h3 class="timeline-title">Rapid Transition to AI Development</h3>
+                    <p class="timeline-description">
+                        Transitioned from <span class="highlight">zero coding background</span> to building 
+                        <span class="highlight">seven functional healthcare AI applications in 35 days</span>. 
+                        Total development cost:  approximately $75 in API usage. Developing tools to support the clinician at the bedside in the most accurate and efficient way possible.
+                    </p>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-label">PRESENT</div>
+                    <h3 class="timeline-title">Health Tech Engineering</h3>
+                    <p class="timeline-description">
+                        Actively developing distributed AI workflows and clinical decision-support platforms. 
+                        Seeking opportunities in health tech companies focused on clinical AI and preventive care. 
+                        Unique combination of clinical expertise and rapid AI prototyping capabilities.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <section class="section">
+            <div class="section-header">
+                <span class="section-number">03</span>
+                <h2 class="section-title">Technical Profile</h2>
+                <div class="section-divider"></div>
+            </div>
+
+            <div class="contact-grid">
+                <div class="contact-card">
+                    <div class="contact-title">Cognitive Style</div>
+                    <p class="contact-value">Systems thinking, parallel processing, molecular-level clinical reasoning</p>
+                </div>
+
+                <div class="contact-card">
+                    <div class="contact-title">Development Approach</div>
+                    <p class="contact-value">Rapid prototyping, "vibe coding", distributed AI orchestration</p>
+                </div>
+
+                <div class="contact-card">
+                    <div class="contact-title">AI Platforms</div>
+                    <p class="contact-value">Google AI Studio, Vertex AI, Gemini 3.0, Claude, RAG systems</p>
+                </div>
+
+                <div class="contact-card">
+                    <div class="contact-title">Clinical Specialties</div>
+                    <p class="contact-value">Emergency Medicine, ICU, Clinical Education, Epic Systems</p>
+                </div>
+
+                <div class="contact-card">
+                    <div class="contact-title">Innovation Focus</div>
+                    <p class="contact-value">Clinical AI, decision-support, clinical workflow automation, cognitive load reduction</p>
+                </div>
+
+                <div class="contact-card">
+                    <div class="contact-title">Target Roles</div>
+                    <p class="contact-value">Clinical AI Engineer, Health Tech Product Development, AI Clinical Consultant</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="section">
+            <div class="section-header">
+                <span class="section-number">04</span>
+                <h2 class="section-title">Connect</h2>
+                <div class="section-divider"></div>
+            </div>
+
+            <div class="contact-grid">
+                <div class="contact-card">
+                    <div class="contact-title">Location</div>
+                    <p class="contact-value">Johnstown, Pennsylvania<br>Open to Remote Opportunities</p>
+                </div>
+
+                <div class="contact-card">
+                    <div class="contact-title">LinkedIn</div>
+                    <p class="contact-value"><a href="https://www.linkedin.com/in/michael-giardina">linkedin.com/in/michael-giardina</a></p>
+                </div>
+
+                <div class="contact-card">
+                    <div class="contact-title">Email</div>
+                    <p class="contact-value"><a href="mailto:mike.giardina@gmail.com">mike.giardina@gmail.com</a></p>
+                </div>
+
+                <div class="contact-card">
+                    <div class="contact-title">GitHub</div>
+                    <p class="contact-value"><a href="https://github.com/michaelgiardina">github.com/michaelgiardina</a></p>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <footer>
+        <p>© 2026 Michael Giardina, BSN, RN, CEN • Building the future of Clinical AI</p>
+        <p style="margin-top: 0.5rem; opacity: 0.6;">From bedside to codebase</p>
+    </footer>
+
+    <script>
+        // Smooth scroll behavior
+        document.addEventListener('DOMContentLoaded', () => {
+            // Hide scroll indicator after scrolling
+            const scrollIndicator = document.querySelector('.scroll-indicator');
+            let scrolled = false;
+            
+            window.addEventListener('scroll', () => {
+                if (!scrolled && window.scrollY > 100) {
+                    scrollIndicator.style.opacity = '0';
+                    scrollIndicator.style.transition = 'opacity 0.5s ease';
+                    scrolled = true;
+                }
+            });
+
+            // Add intersection observer for fade-in animations
+            const observerOptions = {
+                threshold: 0.1,
+                rootMargin: '0px 0px -100px 0px'
+            };
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0)';
+                    }
+                });
+            }, observerOptions);
+
+            // Observe all app cards and timeline items
+            document.querySelectorAll('.app-card, .timeline-item').forEach(el => {
+                el.style.opacity = '0';
+                el.style.transform = 'translateY(30px)';
+                el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+                observer.observe(el);
+            });
+        });
+    </script>
+</body>
+</html>
