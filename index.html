@@ -31,7 +31,6 @@
             line-height: 1.6;
         }
 
-        /* Animated grid background */
         .grid-bg {
             position: fixed;
             top: 0;
@@ -60,7 +59,6 @@
             z-index: 1;
         }
 
-        /* Header/Hero */
         header {
             min-height: 100vh;
             display: flex;
@@ -172,7 +170,6 @@
             }
         }
 
-        /* Section Headers */
         .section {
             padding: 6rem 0;
             position: relative;
@@ -205,7 +202,6 @@
             margin-left: 2rem;
         }
 
-        /* Apps Grid */
         .apps-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
@@ -256,8 +252,16 @@
             font-family: 'Crimson Pro', serif;
             font-size: 1.5rem;
             font-weight: 600;
-            margin-bottom: 1rem;
+            margin-bottom: 0.5rem;
             color: var(--text-primary);
+        }
+
+        .app-subtitle {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            color: var(--accent-cyan);
+            margin-bottom: 1rem;
+            font-style: italic;
         }
 
         .app-description {
@@ -289,7 +293,6 @@
             color: var(--accent-cyan);
         }
 
-        /* Timeline Section */
         .timeline {
             position: relative;
             padding-left: 3rem;
@@ -341,7 +344,6 @@
             line-height: 1.6;
         }
 
-        /* Contact Section */
         .contact-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -386,7 +388,6 @@
             color: var(--accent-green);
         }
 
-        /* Footer */
         footer {
             padding: 3rem 0;
             text-align: center;
@@ -396,7 +397,6 @@
             color: var(--text-muted);
         }
 
-        /* Scroll indicator */
         .scroll-indicator {
             position: fixed;
             bottom: 2rem;
@@ -426,7 +426,6 @@
             transform: rotate(45deg);
         }
 
-        /* Responsive */
         @media (max-width: 768px) {
             .container {
                 padding: 0 1.5rem;
@@ -453,7 +452,6 @@
             }
         }
 
-        /* Highlight effect for special terms */
         .highlight {
             color: var(--accent-green);
             font-weight: 500;
@@ -501,7 +499,7 @@
                     <div class="stat-label">Days to Build</div>
                 </div>
                 <div class="stat">
-                    <div class="stat-value">Less than $100</div>
+                    <div class="stat-value">&lt;$100</div>
                     <div class="stat-label">Total API Costs</div>
                 </div>
                 <div class="stat">
@@ -519,118 +517,164 @@
         <section class="section">
             <div class="section-header">
                 <span class="section-number">01</span>
-                <h2 class="section-title">Applications</h2>
+                <h2 class="section-title">The Trimergent Ecosystem</h2>
                 <div class="section-divider"></div>
             </div>
 
             <div class="apps-grid">
-                <!-- App 1 -->
+                <!-- UnitScheduler Pro -->
                 <div class="app-card">
                     <div class="app-number">APP_01</div>
-                    <h3 class="app-title">Media Manager</h3>
+                    <h3 class="app-title">UnitScheduler Pro v2.5</h3>
+                    <p class="app-subtitle">The Operational Command Console</p>
                     <p class="app-description">
-                        Operating and cataloguing system for RAG datasets as a native application.
-                        Operates as a background process in the system tray.
-                        Keeps dataset catalog in memory and updates it periodically.
-                        Future utilization for data transfer to cloud infrastructure.
+                        Advanced unit management system transforming sterile spreadsheets into an operational command interface with AI-powered pattern synthesis and heuristic analysis.
                     </p>
+                    <ul class="app-features">
+                        <li>OCR analysis of historical schedule PDFs</li>
+                        <li>Gemini AI-powered staffing predictions</li>
+                        <li>Real-time operational directives</li>
+                        <li>Hardcoded logic for specific staff rules</li>
+                        <li>Intelligent coverage math excluding non-clinical roles</li>
+                    </ul>
                     <div style="margin-top: 1rem;">
-                        <span class="tech-badge">RAG</span>
-                        <span class="tech-badge">Data Management</span>
-                        <span class="tech-badge">Cloud-Ready</span>
+                        <span class="tech-badge">React</span>
+                        <span class="tech-badge">Gemini AI</span>
+                        <span class="tech-badge">Tailwind</span>
                     </div>
                 </div>
 
-                <!-- App 2 -->
+                <!-- Clinical Sim -->
                 <div class="app-card">
                     <div class="app-number">APP_02</div>
-                    <h3 class="app-title">Nurse_Orchestrator</h3>
+                    <h3 class="app-title">Clinical Sim v2.0</h3>
+                    <p class="app-subtitle">The Educational Kernel</p>
                     <p class="app-description">
-                        Advanced clinical decision-support platform with ~15 specialized nursing personas. Features state-specific scope of practice, facility policy integration, and ambient/generative AI documentation.
+                        High-fidelity standalone physiological simulation engine for medical training and software testing with real-time modeling and waveform generation.
                     </p>
                     <ul class="app-features">
-                        <li>Physician ↔ Nurse translator</li>
-                        <li>SBAR/ISBAR handoff generation</li>
-                        <li>RAG-enabled policy guardrails</li>
-                        <li>Voice-to-progress-note</li>
-                        <li>Context-aware persona switching</li>
-                        <li>Dev mode with entropy and prompt integrity lab</li>    
+                        <li>Dynamic HR, BP, SpO2, respiratory mechanics</li>
+                        <li>Canvas-based ECG waveforms with QRS morphology</li>
+                        <li>Arrhythmia simulation capabilities</li>
+                        <li>AI-driven evolving clinical narratives</li>
+                        <li>WebGL rendering for performance</li>
                     </ul>
-                </div>
-
-                <!-- App 3 -->
-                <div class="app-card">
-                    <div class="app-number">APP_03</div>
-                    <h3 class="app-title">Clinical Simulator</h3>
-                    <p class="app-description">
-                        Fully independent clinical training application with real-time trending vital signs, context-aware patient, family, and clinician status. Traditional, full patient ecounter(office visit), or full nurse experience(6-8 patient assignment) modes. API-driven clinical course with comprehensive guardrails.
-                    </p>
-                    <ul class="app-features">
-                        <li>Dynamic patient scenarios</li>
-                        <li>Free text interventions</li>
-                        <li>Quick action protocols</li>
-                        <li>Clinical safety guardrails</li>
-                    </ul>
-                </div>
-
-                <!-- App 4 -->
-                <div class="app-card">
-                    <div class="app-number">APP_04</div>
-                    <h3 class="app-title">2D-to-STL Converter</h3>
-                    <p class="app-description">
-                        Geometric conversion tool for transforming 2D shapes into 3D-printable STL format files.
-                    </p>
                     <div style="margin-top: 1rem;">
-                        <span class="tech-badge">3D Printing</span>
-                        <span class="tech-badge">CAD</span>
+                        <span class="tech-badge">React 19</span>
+                        <span class="tech-badge">Canvas/WebGL</span>
+                        <span class="tech-badge">Gemini 1.5</span>
                     </div>
                 </div>
 
-                <!-- App 5 -->
+                <!-- Nurse Orchestrator -->
                 <div class="app-card">
-                    <div class="app-number">APP_05</div>
-                    <h3 class="app-title">Scheduler</h3>
+                    <div class="app-number">APP_03</div>
+                    <h3 class="app-title">Nurse Orchestrator v1.4</h3>
+                    <p class="app-subtitle">The Clinical Copilot</p>
                     <p class="app-description">
-                        Advanced scheduling interface with employee management, shift personalization, exempt/non-exempt definitions, and LOA handling. Features schedule upload with trend evaluation.
+                        Contextual Clinical Decision Support platform augmenting frontline providers with adaptive personas and semantic intent routing.
                     </p>
                     <ul class="app-features">
-                        <li>Archivable employee records</li>
-                        <li>Shift/employee personalization</li>
-                        <li>Schedule trend evaluation</li>
-                        <li>LOA handling</li>   
-                   </ul>
+                        <li>Adaptive personas based on clinical acuity</li>
+                        <li>Antigravity Router for semantic classification</li>
+                        <li>Sigma Thresholds (>0.997) for high-risk interventions</li>
+                        <li>~15 specialized nursing personas</li>
+                        <li>State-specific scope of practice integration</li>
+                        <li>RAG-enabled policy guardrails</li>
+                    </ul>
+                    <div style="margin-top: 1rem;">
+                        <span class="tech-badge">React 19</span>
+                        <span class="tech-badge">TypeScript</span>
+                        <span class="tech-badge">Zustand</span>
+                        <span class="tech-badge">Vertex AI</span>
+                    </div>
                 </div>
 
-                <!-- App 6 -->
+                <!-- Media Manager -->
+                <div class="app-card">
+                    <div class="app-number">APP_04</div>
+                    <h3 class="app-title">Emergent Media Manager v2.0</h3>
+                    <p class="app-subtitle">The "Glass-OS" for Medical Data</p>
+                    <p class="app-description">
+                        File system interface transforming unstructured medical data into structured knowledge bases with intelligent multi-modal ingestion.
+                    </p>
+                    <ul class="app-features">
+                        <li>Multi-modal analysis (EKG, MRI, medical imagery)</li>
+                        <li>Auto-coding with ICD-10/CPT</li>
+                        <li>Distributed Schema Synchronization (92% bandwidth reduction)</li>
+                        <li>Local PHI detection and de-identification</li>
+                        <li>Browser FS Access for local-first storage</li>
+                    </ul>
+                    <div style="margin-top: 1rem;">
+                        <span class="tech-badge">React</span>
+                        <span class="tech-badge">Vite</span>
+                        <span class="tech-badge">Gemini 2.0</span>
+                        <span class="tech-badge">HIPAA-Ready</span>
+                    </div>
+                </div>
+
+                <!-- Clinical Information Workflow Engine -->
+                <div class="app-card">
+                    <div class="app-number">APP_05</div>
+                    <h3 class="app-title">Clinical Information Workflow Engine v1.0</h3>
+                    <p class="app-subtitle">The Academic Accelerator</p>
+                    <p class="app-description">
+                        Automation engine for Nurse Educators generating evidence-based content with multi-disciplinary validation layers.
+                    </p>
+                    <ul class="app-features">
+                        <li>ANCC-accredited style article generation</li>
+                        <li>Simulation scenario drafting</li>
+                        <li>Simulated peer review using Zod validation</li>
+                        <li>Evidence-based content compilation</li>
+                    </ul>
+                    <div style="margin-top: 1rem;">
+                        <span class="tech-badge">React 18</span>
+                        <span class="tech-badge">TypeScript</span>
+                        <span class="tech-badge">Gemini 2.0</span>
+                    </div>
+                </div>
+
+                <!-- Logo2STL -->
                 <div class="app-card">
                     <div class="app-number">APP_06</div>
-                    <h3 class="app-title">Personal Intelligence Core</h3>
+                    <h3 class="app-title">Logo2STL</h3>
+                    <p class="app-subtitle">The Creative Tool</p>
                     <p class="app-description">
-                        Local-first, privacy-centric Gemini API interface with direct disk access and persistent knowledge management. "No Amnesia" mode with file system integration.
+                        AI-powered tool converting 2D logos into 3D-printable STL files with intelligent shape detection and optimization.
+                    </p>
+                    <ul class="app-features">
+                        <li>AI subject identification and optimization</li>
+                        <li>Automatic extrusion and smoothing</li>
+                        <li>Client-side 3D geometry generation</li>
+                        <li>Three.js CSG for complex operations</li>
+                    </ul>
+                    <div style="margin-top: 1rem;">
+                        <span class="tech-badge">Node.js</span>
+                        <span class="tech-badge">Gemini AI</span>
+                        <span class="tech-badge">Three.js</span>
+                    </div>
+                </div>
+
+                <!-- Personal Intelligence Core -->
+                <div class="app-card">
+                    <div class="app-number">APP_07</div>
+                    <h3 class="app-title">Personal Intelligence Core</h3>
+                    <p class="app-subtitle">Local-First AI Interface</p>
+                    <p class="app-description">
+                        Privacy-centric Gemini API interface with direct disk access and persistent knowledge management. "No Amnesia" mode with comprehensive memory systems.
                     </p>
                     <ul class="app-features">
                         <li>Core Memory Bank system</li>
                         <li>Multimodal capabilities (vision, models)</li>
                         <li>Local JSON persistence</li>
                         <li>Adaptive safety filters</li>
+                        <li>File system integration</li>
                     </ul>
-                </div>
-
-                <!-- App 7 -->
-                <div class="app-card">
-                    <div class="app-number">APP_07</div>
-                    <h3 class="app-title">Creative Studio</h3>
-                    <p class="app-description">
-                        Multi-persona AI ecosystem with Gemini 3.0 Neural Engine. "Board of Directors" experience for clinical leaders and health-tech strategists.
-                    </p>
-                    <ul class="app-features">
-                        <li>ET Stack (Vital Visualizer)</li>
-                        <li>Neural Persona Editor</li>
-                        <li>AI dictation (hands-free)</li>
-                        <li>Creative commands (/image)</li>
-                        <li>Drift mitigation & patches</li>
-                        <li>Professional Markdown export</li>
-                    </ul>
+                    <div style="margin-top: 1rem;">
+                        <span class="tech-badge">Local-First</span>
+                        <span class="tech-badge">Gemini API</span>
+                        <span class="tech-badge">Privacy-Centric</span>
+                    </div>
                 </div>
             </div>
         </section>
@@ -661,16 +705,16 @@
                     <p class="timeline-description">
                         Transitioned from <span class="highlight">zero coding background</span> to building 
                         <span class="highlight">seven functional healthcare AI applications in 35 days</span>. 
-                        Total development cost:  approximately $75 in API usage. Developing tools to support the clinician at the bedside in the most accurate and efficient way possible.
+                        Total development cost: approximately $75 in API usage. Unified ecosystem under "Clinical Cyberpunk" design language with shared AI backend and local-first architecture.
                     </p>
                 </div>
 
                 <div class="timeline-item">
                     <div class="timeline-dot"></div>
-                    <div class="timeline-label">PRESENT</div>
+                    <div class="timeline-label">PRESENT - FEB 2026</div>
                     <h3 class="timeline-title">Health Tech Engineering</h3>
                     <p class="timeline-description">
-                        Actively developing distributed AI workflows and clinical decision-support platforms. 
+                        Actively developing the <span class="highlight">Trimergent Ecosystem</span> with distributed AI workflows and clinical decision-support platforms. 
                         Seeking opportunities in health tech companies focused on clinical AI and preventive care. 
                         Unique combination of clinical expertise and rapid AI prototyping capabilities.
                     </p>
@@ -687,33 +731,33 @@
 
             <div class="contact-grid">
                 <div class="contact-card">
-                    <div class="contact-title">Cognitive Style</div>
-                    <p class="contact-value">Systems thinking, parallel processing, molecular-level clinical reasoning</p>
+                    <div class="contact-title">Architecture</div>
+                    <p class="contact-value">Frontend-First, AI-Native, Privacy-Centric, Local-First Data Handling</p>
                 </div>
 
                 <div class="contact-card">
-                    <div class="contact-title">Development Approach</div>
-                    <p class="contact-value">Rapid prototyping, "vibe coding", distributed AI orchestration</p>
+                    <div class="contact-title">Design Language</div>
+                    <p class="contact-value">Clinical Cyberpunk: Glassmorphism, Dark Mode, High-Contrast Data Visualization</p>
                 </div>
 
                 <div class="contact-card">
                     <div class="contact-title">AI Platforms</div>
-                    <p class="contact-value">Google AI Studio, Vertex AI, Gemini 3.0, Claude, RAG systems</p>
+                    <p class="contact-value">Google Gemini 1.5/2.0, Vertex AI, RAG Architecture, Multi-Model Orchestration</p>
                 </div>
 
                 <div class="contact-card">
                     <div class="contact-title">Clinical Specialties</div>
-                    <p class="contact-value">Emergency Medicine, ICU, Clinical Education, Epic Systems</p>
+                    <p class="contact-value">Emergency Medicine, Critical Care, Clinical Education, Epic Systems Integration</p>
                 </div>
 
                 <div class="contact-card">
                     <div class="contact-title">Innovation Focus</div>
-                    <p class="contact-value">Clinical AI, decision-support, clinical workflow automation, cognitive load reduction</p>
+                    <p class="contact-value">Clinical Decision Support, Workflow Automation, Cognitive Load Reduction, Compliance-First Design</p>
                 </div>
 
                 <div class="contact-card">
                     <div class="contact-title">Target Roles</div>
-                    <p class="contact-value">Clinical AI Engineer, Health Tech Product Development, AI Clinical Consultant</p>
+                    <p class="contact-value">Clinical AI Product Manager, Health Tech Engineer, Conversational Designer for Healthcare AI</p>
                 </div>
             </div>
         </section>
@@ -740,21 +784,17 @@
                     <div class="contact-title">Email</div>
                     <p class="contact-value"><a href="mailto:mike.giardina@gmail.com">mike.giardina@gmail.com</a></p>
                 </div>
-
-            
             </div>
         </section>
     </div>
 
     <footer>
         <p>© 2026 Michael Giardina, BSN, RN, CEN • Building the future of Clinical AI</p>
-        <p style="margin-top: 0.5rem; opacity: 0.6;">From bedside to codebase</p>
+        <p style="margin-top: 0.5rem; opacity: 0.6;">From bedside to codebase | The Trimergent Ecosystem</p>
     </footer>
 
     <script>
-        // Smooth scroll behavior
         document.addEventListener('DOMContentLoaded', () => {
-            // Hide scroll indicator after scrolling
             const scrollIndicator = document.querySelector('.scroll-indicator');
             let scrolled = false;
             
@@ -762,33 +802,4 @@
                 if (!scrolled && window.scrollY > 100) {
                     scrollIndicator.style.opacity = '0';
                     scrollIndicator.style.transition = 'opacity 0.5s ease';
-                    scrolled = true;
-                }
-            });
-
-            // Add intersection observer for fade-in animations
-            const observerOptions = {
-                threshold: 0.1,
-                rootMargin: '0px 0px -100px 0px'
-            };
-
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        entry.target.style.opacity = '1';
-                        entry.target.style.transform = 'translateY(0)';
-                    }
-                });
-            }, observerOptions);
-
-            // Observe all app cards and timeline items
-            document.querySelectorAll('.app-card, .timeline-item').forEach(el => {
-                el.style.opacity = '0';
-                el.style.transform = 'translateY(30px)';
-                el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
-                observer.observe(el);
-            });
-        });
-    </script>
-</body>
-</html>
+                    scrolled =
