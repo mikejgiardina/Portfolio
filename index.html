@@ -6,12 +6,7 @@
     <title>Mike Giardina - Clinical AI Developer & Builder</title>
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Crimson+Pro:wght@400;600&family=Work+Sans:wght@300;500;700&display=swap" rel="stylesheet">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         :root {
             --primary-bg: #0a0e14;
             --secondary-bg: #151922;
@@ -22,7 +17,6 @@
             --text-muted: #8b949e;
             --grid-color: rgba(0, 217, 255, 0.1);
         }
-
         body {
             background: var(--primary-bg);
             color: var(--text-primary);
@@ -30,443 +24,178 @@
             overflow-x: hidden;
             line-height: 1.6;
         }
-
         .grid-bg {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-image: 
-                linear-gradient(var(--grid-color) 1px, transparent 1px),
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-image: linear-gradient(var(--grid-color) 1px, transparent 1px),
                 linear-gradient(90deg, var(--grid-color) 1px, transparent 1px);
             background-size: 50px 50px;
             animation: gridPulse 4s ease-in-out infinite;
-            pointer-events: none;
-            z-index: 0;
+            pointer-events: none; z-index: 0;
         }
-
-        @keyframes gridPulse {
-            0%, 100% { opacity: 0.3; }
-            50% { opacity: 0.6; }
-        }
-
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 0 2rem;
-            position: relative;
-            z-index: 1;
-        }
-
+        @keyframes gridPulse { 0%, 100% { opacity: 0.3; } 50% { opacity: 0.6; } }
+        .container { max-width: 1400px; margin: 0 auto; padding: 0 2rem; position: relative; z-index: 1; }
         header {
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            position: relative;
-            padding: 4rem 0;
+            min-height: 100vh; display: flex; flex-direction: column;
+            justify-content: center; position: relative; padding: 4rem 0;
         }
-
         .status-bar {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.75rem;
-            color: var(--accent-green);
-            margin-bottom: 2rem;
-            display: flex;
-            gap: 2rem;
-            flex-wrap: wrap;
+            font-family: 'JetBrains Mono', monospace; font-size: 0.75rem;
+            color: var(--accent-green); margin-bottom: 2rem;
+            display: flex; gap: 2rem; flex-wrap: wrap;
             animation: fadeInDown 0.8s ease-out;
         }
-
-        .status-item {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
+        .status-item { display: flex; align-items: center; gap: 0.5rem; }
         .status-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: var(--accent-green);
-            animation: pulse 2s ease-in-out infinite;
+            width: 8px; height: 8px; border-radius: 50%;
+            background: var(--accent-green); animation: pulse 2s ease-in-out infinite;
         }
-
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.3; }
-        }
-
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
         h1 {
-            font-family: 'Crimson Pro', serif;
-            font-size: clamp(3rem, 8vw, 6rem);
-            font-weight: 600;
-            line-height: 1.1;
-            margin-bottom: 1rem;
+            font-family: 'Crimson Pro', serif; font-size: clamp(3rem, 8vw, 6rem);
+            font-weight: 600; line-height: 1.1; margin-bottom: 1rem;
             background: linear-gradient(135deg, var(--text-primary) 0%, var(--accent-cyan) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            animation: fadeInUp 1s ease-out 0.2s backwards;
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            background-clip: text; animation: fadeInUp 1s ease-out 0.2s backwards;
         }
-
         .subtitle {
-            font-size: clamp(1.2rem, 3vw, 1.8rem);
-            color: var(--text-muted);
-            margin-bottom: 2rem;
-            font-weight: 300;
+            font-size: clamp(1.2rem, 3vw, 1.8rem); color: var(--text-muted);
+            margin-bottom: 2rem; font-weight: 300;
             animation: fadeInUp 1s ease-out 0.4s backwards;
         }
-
         .hero-stats {
-            display: flex;
-            gap: 3rem;
-            margin-top: 3rem;
-            font-family: 'JetBrains Mono', monospace;
-            flex-wrap: wrap;
+            display: flex; gap: 3rem; margin-top: 3rem;
+            font-family: 'JetBrains Mono', monospace; flex-wrap: wrap;
             animation: fadeInUp 1s ease-out 0.6s backwards;
         }
-
-        .stat {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .stat-value {
-            font-size: 2.5rem;
-            font-weight: 700;
-            color: var(--accent-cyan);
-            line-height: 1;
-        }
-
+        .stat { display: flex; flex-direction: column; }
+        .stat-value { font-size: 2.5rem; font-weight: 700; color: var(--accent-cyan); line-height: 1; }
         .stat-label {
-            font-size: 0.85rem;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-            margin-top: 0.5rem;
+            font-size: 0.85rem; color: var(--text-muted);
+            text-transform: uppercase; letter-spacing: 0.1em; margin-top: 0.5rem;
         }
-
         @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
         }
-
         @keyframes fadeInDown {
-            from {
-                opacity: 0;
-                transform: translateY(-30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            from { opacity: 0; transform: translateY(-30px); }
+            to { opacity: 1; transform: translateY(0); }
         }
-
-        .section {
-            padding: 6rem 0;
-            position: relative;
-        }
-
-        .section-header {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            margin-bottom: 3rem;
-        }
-
-        .section-number {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 1rem;
-            color: var(--accent-cyan);
-            opacity: 0.6;
-        }
-
-        .section-title {
-            font-family: 'Crimson Pro', serif;
-            font-size: clamp(2rem, 5vw, 3rem);
-            font-weight: 600;
-        }
-
-        .section-divider {
-            flex: 1;
-            height: 1px;
-            background: linear-gradient(90deg, var(--accent-cyan) 0%, transparent 100%);
-            margin-left: 2rem;
-        }
-
+        .section { padding: 6rem 0; position: relative; }
+        .section-header { display: flex; align-items: center; gap: 1rem; margin-bottom: 3rem; }
+        .section-number { font-family: 'JetBrains Mono', monospace; font-size: 1rem; color: var(--accent-cyan); opacity: 0.6; }
+        .section-title { font-family: 'Crimson Pro', serif; font-size: clamp(2rem, 5vw, 3rem); font-weight: 600; }
+        .section-divider { flex: 1; height: 1px; background: linear-gradient(90deg, var(--accent-cyan) 0%, transparent 100%); margin-left: 2rem; }
         .apps-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 2rem;
-            margin-top: 3rem;
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem; margin-top: 3rem;
         }
-
         .app-card {
-            background: var(--secondary-bg);
-            border: 1px solid rgba(0, 217, 255, 0.2);
-            padding: 2rem;
-            position: relative;
-            transition: all 0.3s ease;
-            overflow: hidden;
+            background: var(--secondary-bg); border: 1px solid rgba(0, 217, 255, 0.2);
+            padding: 2rem; position: relative; transition: all 0.3s ease; overflow: hidden;
+            display: flex; flex-direction: column;
         }
-
         .app-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 2px;
+            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 2px;
             background: linear-gradient(90deg, var(--accent-cyan), var(--accent-green));
-            transform: scaleX(0);
-            transform-origin: left;
-            transition: transform 0.3s ease;
+            transform: scaleX(0); transform-origin: left; transition: transform 0.3s ease;
         }
-
-        .app-card:hover::before {
-            transform: scaleX(1);
-        }
-
+        .app-card:hover::before { transform: scaleX(1); }
         .app-card:hover {
-            border-color: var(--accent-cyan);
-            transform: translateY(-5px);
+            border-color: var(--accent-cyan); transform: translateY(-5px);
             box-shadow: 0 10px 40px rgba(0, 217, 255, 0.2);
         }
-
-        .app-number {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.75rem;
-            color: var(--accent-green);
-            margin-bottom: 0.5rem;
-        }
-
-        .app-title {
-            font-family: 'Crimson Pro', serif;
-            font-size: 1.5rem;
-            font-weight: 600;
-            margin-bottom: 0.5rem;
-            color: var(--text-primary);
-        }
-
-        .app-subtitle {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.8rem;
-            color: var(--accent-cyan);
-            margin-bottom: 1rem;
-            font-style: italic;
-        }
-
-        .app-description {
-            color: var(--text-muted);
-            line-height: 1.6;
-            font-size: 0.95rem;
-        }
-
-        .app-features {
-            list-style: none;
-            margin-top: 1rem;
-            display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
-        }
-
+        .app-number { font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: var(--accent-green); margin-bottom: 0.5rem; }
+        .app-title { font-family: 'Crimson Pro', serif; font-size: 1.5rem; font-weight: 600; margin-bottom: 0.5rem; color: var(--text-primary); }
+        .app-subtitle { font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; color: var(--accent-cyan); margin-bottom: 1rem; font-style: italic; }
+        .app-description { color: var(--text-muted); line-height: 1.6; font-size: 0.95rem; }
+        .app-features { list-style: none; margin-top: 1rem; display: flex; flex-direction: column; gap: 0.5rem; }
         .app-features li {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.8rem;
-            color: var(--text-muted);
-            padding-left: 1.5rem;
-            position: relative;
+            font-family: 'JetBrains Mono', monospace; font-size: 0.8rem;
+            color: var(--text-muted); padding-left: 1.5rem; position: relative;
         }
-
-        .app-features li::before {
-            content: '▸';
-            position: absolute;
-            left: 0;
-            color: var(--accent-cyan);
+        .app-features li::before { content: '▸'; position: absolute; left: 0; color: var(--accent-cyan); }
+        .app-card-footer { margin-top: auto; padding-top: 1rem; }
+        .launch-btn {
+            display: inline-flex; align-items: center; gap: 0.5rem;
+            font-family: 'JetBrains Mono', monospace; font-size: 0.8rem;
+            padding: 0.6rem 1.2rem; margin-top: 1rem;
+            background: rgba(0, 217, 255, 0.1); border: 1px solid var(--accent-cyan);
+            color: var(--accent-cyan); text-decoration: none;
+            transition: all 0.3s ease; cursor: pointer;
         }
-
-        .timeline {
-            position: relative;
-            padding-left: 3rem;
+        .launch-btn:hover {
+            background: rgba(0, 217, 255, 0.25); color: #fff;
+            box-shadow: 0 0 20px rgba(0, 217, 255, 0.3);
+            transform: translateY(-2px);
         }
-
+        .launch-btn .arrow { transition: transform 0.3s ease; }
+        .launch-btn:hover .arrow { transform: translateX(4px); }
+        .timeline { position: relative; padding-left: 3rem; }
         .timeline::before {
-            content: '';
-            position: absolute;
-            left: 0;
-            top: 0;
-            bottom: 0;
-            width: 2px;
+            content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 2px;
             background: linear-gradient(180deg, var(--accent-cyan), var(--accent-green));
         }
-
-        .timeline-item {
-            position: relative;
-            margin-bottom: 3rem;
-            padding-left: 2rem;
-        }
-
+        .timeline-item { position: relative; margin-bottom: 3rem; padding-left: 2rem; }
         .timeline-dot {
-            position: absolute;
-            left: -3.5rem;
-            top: 0.5rem;
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            background: var(--accent-cyan);
-            border: 3px solid var(--primary-bg);
-            box-shadow: 0 0 0 4px var(--secondary-bg);
+            position: absolute; left: -3.5rem; top: 0.5rem; width: 12px; height: 12px;
+            border-radius: 50%; background: var(--accent-cyan);
+            border: 3px solid var(--primary-bg); box-shadow: 0 0 0 4px var(--secondary-bg);
         }
-
-        .timeline-label {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.85rem;
-            color: var(--accent-green);
-            margin-bottom: 0.5rem;
-        }
-
-        .timeline-title {
-            font-size: 1.3rem;
-            font-weight: 600;
-            margin-bottom: 0.5rem;
-        }
-
-        .timeline-description {
-            color: var(--text-muted);
-            line-height: 1.6;
-        }
-
+        .timeline-label { font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; color: var(--accent-green); margin-bottom: 0.5rem; }
+        .timeline-title { font-size: 1.3rem; font-weight: 600; margin-bottom: 0.5rem; }
+        .timeline-description { color: var(--text-muted); line-height: 1.6; }
         .contact-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 2rem;
-            margin-top: 3rem;
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem; margin-top: 3rem;
         }
-
         .contact-card {
-            background: var(--secondary-bg);
-            padding: 2rem;
-            border-left: 3px solid var(--accent-cyan);
-            transition: all 0.3s ease;
+            background: var(--secondary-bg); padding: 2rem;
+            border-left: 3px solid var(--accent-cyan); transition: all 0.3s ease;
         }
-
-        .contact-card:hover {
-            background: rgba(0, 217, 255, 0.05);
-            transform: translateX(5px);
-        }
-
+        .contact-card:hover { background: rgba(0, 217, 255, 0.05); transform: translateX(5px); }
         .contact-title {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.85rem;
-            color: var(--accent-green);
-            margin-bottom: 0.5rem;
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
+            font-family: 'JetBrains Mono', monospace; font-size: 0.85rem;
+            color: var(--accent-green); margin-bottom: 0.5rem;
+            text-transform: uppercase; letter-spacing: 0.1em;
         }
-
-        .contact-value {
-            font-size: 1.1rem;
-            color: var(--text-primary);
-            word-break: break-all;
-        }
-
-        .contact-value a {
-            color: var(--accent-cyan);
-            text-decoration: none;
-            transition: color 0.3s ease;
-        }
-
-        .contact-value a:hover {
-            color: var(--accent-green);
-        }
-
+        .contact-value { font-size: 1.1rem; color: var(--text-primary); word-break: break-all; }
+        .contact-value a { color: var(--accent-cyan); text-decoration: none; transition: color 0.3s ease; }
+        .contact-value a:hover { color: var(--accent-green); }
         footer {
-            padding: 3rem 0;
-            text-align: center;
+            padding: 3rem 0; text-align: center;
             border-top: 1px solid rgba(0, 217, 255, 0.2);
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.85rem;
-            color: var(--text-muted);
+            font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; color: var(--text-muted);
         }
-
         .scroll-indicator {
-            position: fixed;
-            bottom: 2rem;
-            left: 50%;
-            transform: translateX(-50%);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 0.5rem;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.75rem;
-            color: var(--text-muted);
-            animation: bounce 2s ease-in-out infinite;
-            z-index: 10;
+            position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%);
+            display: flex; flex-direction: column; align-items: center; gap: 0.5rem;
+            font-family: 'JetBrains Mono', monospace; font-size: 0.75rem;
+            color: var(--text-muted); animation: bounce 2s ease-in-out infinite; z-index: 10;
         }
-
         @keyframes bounce {
             0%, 100% { transform: translateX(-50%) translateY(0); }
             50% { transform: translateX(-50%) translateY(-10px); }
         }
-
         .scroll-arrow {
-            width: 20px;
-            height: 20px;
-            border-bottom: 2px solid var(--accent-cyan);
-            border-right: 2px solid var(--accent-cyan);
+            width: 20px; height: 20px;
+            border-bottom: 2px solid var(--accent-cyan); border-right: 2px solid var(--accent-cyan);
             transform: rotate(45deg);
         }
-
-        @media (max-width: 768px) {
-            .container {
-                padding: 0 1.5rem;
-            }
-
-            .apps-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .hero-stats {
-                gap: 2rem;
-            }
-
-            .timeline {
-                padding-left: 2rem;
-            }
-
-            .timeline-item {
-                padding-left: 1.5rem;
-            }
-
-            .timeline-dot {
-                left: -2.5rem;
-            }
-        }
-
-        .highlight {
-            color: var(--accent-green);
-            font-weight: 500;
-        }
-
+        .highlight { color: var(--accent-green); font-weight: 500; }
         .tech-badge {
-            display: inline-block;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.75rem;
-            padding: 0.25rem 0.75rem;
-            background: rgba(0, 217, 255, 0.1);
-            border: 1px solid var(--accent-cyan);
-            color: var(--accent-cyan);
-            margin-right: 0.5rem;
-            margin-top: 0.5rem;
+            display: inline-block; font-family: 'JetBrains Mono', monospace; font-size: 0.75rem;
+            padding: 0.25rem 0.75rem; background: rgba(0, 217, 255, 0.1);
+            border: 1px solid var(--accent-cyan); color: var(--accent-cyan);
+            margin-right: 0.5rem; margin-top: 0.5rem;
+        }
+        @media (max-width: 768px) {
+            .container { padding: 0 1.5rem; }
+            .apps-grid { grid-template-columns: 1fr; }
+            .hero-stats { gap: 2rem; }
+            .timeline { padding-left: 2rem; }
+            .timeline-item { padding-left: 1.5rem; }
+            .timeline-dot { left: -2.5rem; }
         }
     </style>
 </head>
@@ -541,10 +270,15 @@
                         <li>Hardcoded logic for specific staff rules</li>
                         <li>Intelligent coverage math excluding non-clinical roles</li>
                     </ul>
-                    <div style="margin-top: 1rem;">
-                        <span class="tech-badge">React</span>
-                        <span class="tech-badge">Gemini AI</span>
-                        <span class="tech-badge">Tailwind</span>
+                    <div class="app-card-footer">
+                        <div>
+                            <span class="tech-badge">React</span>
+                            <span class="tech-badge">Gemini AI</span>
+                            <span class="tech-badge">Tailwind</span>
+                        </div>
+                        <a href="https://unitschedpro.netlify.app/" target="_blank" rel="noopener noreferrer" class="launch-btn">
+                            LAUNCH DEMO <span class="arrow">→</span>
+                        </a>
                     </div>
                 </div>
 
@@ -563,10 +297,15 @@
                         <li>AI-driven evolving clinical narratives</li>
                         <li>WebGL rendering for performance</li>
                     </ul>
-                    <div style="margin-top: 1rem;">
-                        <span class="tech-badge">React 19</span>
-                        <span class="tech-badge">Canvas/WebGL</span>
-                        <span class="tech-badge">Gemini 1.5</span>
+                    <div class="app-card-footer">
+                        <div>
+                            <span class="tech-badge">React 19</span>
+                            <span class="tech-badge">Canvas/WebGL</span>
+                            <span class="tech-badge">Gemini 1.5</span>
+                        </div>
+                        <a href="https://patientsim.netlify.app/" target="_blank" rel="noopener noreferrer" class="launch-btn">
+                            LAUNCH DEMO <span class="arrow">→</span>
+                        </a>
                     </div>
                 </div>
 
@@ -586,11 +325,16 @@
                         <li>State-specific scope of practice integration</li>
                         <li>RAG-enabled policy guardrails</li>
                     </ul>
-                    <div style="margin-top: 1rem;">
-                        <span class="tech-badge">React 19</span>
-                        <span class="tech-badge">TypeScript</span>
-                        <span class="tech-badge">Zustand</span>
-                        <span class="tech-badge">Vertex AI</span>
+                    <div class="app-card-footer">
+                        <div>
+                            <span class="tech-badge">React 19</span>
+                            <span class="tech-badge">TypeScript</span>
+                            <span class="tech-badge">Zustand</span>
+                            <span class="tech-badge">Vertex AI</span>
+                        </div>
+                        <a href="https://nurseorchestrator.netlify.app/" target="_blank" rel="noopener noreferrer" class="launch-btn">
+                            LAUNCH DEMO <span class="arrow">→</span>
+                        </a>
                     </div>
                 </div>
 
@@ -609,11 +353,16 @@
                         <li>Local PHI detection and de-identification</li>
                         <li>Browser FS Access for local-first storage</li>
                     </ul>
-                    <div style="margin-top: 1rem;">
-                        <span class="tech-badge">React</span>
-                        <span class="tech-badge">Vite</span>
-                        <span class="tech-badge">Gemini 2.0</span>
-                        <span class="tech-badge">HIPAA-Ready</span>
+                    <div class="app-card-footer">
+                        <div>
+                            <span class="tech-badge">React</span>
+                            <span class="tech-badge">Vite</span>
+                            <span class="tech-badge">Gemini 2.0</span>
+                            <span class="tech-badge">HIPAA-Ready</span>
+                        </div>
+                        <a href="https://emergentmediamanager.netlify.app/" target="_blank" rel="noopener noreferrer" class="launch-btn">
+                            LAUNCH DEMO <span class="arrow">→</span>
+                        </a>
                     </div>
                 </div>
 
@@ -631,10 +380,15 @@
                         <li>Simulated peer review using Zod validation</li>
                         <li>Evidence-based content compilation</li>
                     </ul>
-                    <div style="margin-top: 1rem;">
-                        <span class="tech-badge">React 18</span>
-                        <span class="tech-badge">TypeScript</span>
-                        <span class="tech-badge">Gemini 2.0</span>
+                    <div class="app-card-footer">
+                        <div>
+                            <span class="tech-badge">React 18</span>
+                            <span class="tech-badge">TypeScript</span>
+                            <span class="tech-badge">Gemini 2.0</span>
+                        </div>
+                        <a href="https://informationworkflow.netlify.app/" target="_blank" rel="noopener noreferrer" class="launch-btn">
+                            LAUNCH DEMO <span class="arrow">→</span>
+                        </a>
                     </div>
                 </div>
 
@@ -652,10 +406,12 @@
                         <li>Client-side 3D geometry generation</li>
                         <li>Three.js CSG for complex operations</li>
                     </ul>
-                    <div style="margin-top: 1rem;">
-                        <span class="tech-badge">Node.js</span>
-                        <span class="tech-badge">Gemini AI</span>
-                        <span class="tech-badge">Three.js</span>
+                    <div class="app-card-footer">
+                        <div>
+                            <span class="tech-badge">Node.js</span>
+                            <span class="tech-badge">Gemini AI</span>
+                            <span class="tech-badge">Three.js</span>
+                        </div>
                     </div>
                 </div>
 
@@ -674,10 +430,36 @@
                         <li>Adaptive safety filters</li>
                         <li>File system integration</li>
                     </ul>
-                    <div style="margin-top: 1rem;">
-                        <span class="tech-badge">Local-First</span>
-                        <span class="tech-badge">Gemini API</span>
-                        <span class="tech-badge">Privacy-Centric</span>
+                    <div class="app-card-footer">
+                        <div>
+                            <span class="tech-badge">Local-First</span>
+                            <span class="tech-badge">Gemini API</span>
+                            <span class="tech-badge">Privacy-Centric</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Ecosystem Navigator -->
+                <div class="app-card">
+                    <div class="app-number">APP_08</div>
+                    <h3 class="app-title">Ecosystem Navigator</h3>
+                    <p class="app-subtitle">The System Map</p>
+                    <p class="app-description">
+                        Interactive visualization of the Trimergent Ecosystem architecture, showing cross-app dependencies and data flows across the platform.
+                    </p>
+                    <ul class="app-features">
+                        <li>Interactive ecosystem topology</li>
+                        <li>Cross-app dependency mapping</li>
+                        <li>Architecture overview</li>
+                    </ul>
+                    <div class="app-card-footer">
+                        <div>
+                            <span class="tech-badge">React</span>
+                            <span class="tech-badge">Interactive</span>
+                        </div>
+                        <a href="https://ecosystemnavigator.netlify.app/" target="_blank" rel="noopener noreferrer" class="launch-btn">
+                            LAUNCH DEMO <span class="arrow">→</span>
+                        </a>
                     </div>
                 </div>
             </div>
@@ -696,7 +478,7 @@
                     <div class="timeline-label">2007 - 2026</div>
                     <h3 class="timeline-title">Clinical Foundation</h3>
                     <p class="timeline-description">
-                        18 years of ER/ICU experience at Duke Lifepoint – CHS. 
+                        18 years of ER/ICU experience at Duke Lifepoint — CHS. 
                         ED Supervisor and Clinical Educator. Epic Super User and Clinician Advocate status since 2016, 
                         Developing deep understanding of clinical workflows and healthcare IT systems.
                     </p>
@@ -709,7 +491,7 @@
                     <p class="timeline-description">
                         Transitioned from <span class="highlight">zero coding background</span> to building 
                         <span class="highlight">seven functional healthcare AI applications in under 2 months</span>. 
-                        Total development cost: Basic consumer level API usage. Unified ecosystem with cross-app dependencies. Focusing on shared AI backend and local-first architecture.  Ground floor security and privacy minded.
+                        Total development cost: Basic consumer level API usage. Unified ecosystem with cross-app dependencies. Focusing on shared AI backend and local-first architecture. Ground floor security and privacy minded.
                     </p>
                 </div>
 
@@ -738,27 +520,22 @@
                     <div class="contact-title">Architecture</div>
                     <p class="contact-value">Frontend-First, AI-Native, Privacy-Centric, Local-First Data Handling</p>
                 </div>
-
                 <div class="contact-card">
                     <div class="contact-title">Design Language</div>
                     <p class="contact-value">Clinical Cyberpunk: Glassmorphism, Dark Mode, High-Contrast Data Visualization</p>
                 </div>
-
                 <div class="contact-card">
                     <div class="contact-title">AI Platforms</div>
                     <p class="contact-value">Google Gemini 1.5/2.0/3.5, Claude, Antigravity Vertex AI, RAG Architecture, Multi-Model Orchestration</p>
                 </div>
-
                 <div class="contact-card">
                     <div class="contact-title">Clinical Specialties</div>
                     <p class="contact-value">Emergency Medicine, Critical Care, Clinical Education, Epic Systems Integration</p>
                 </div>
-
                 <div class="contact-card">
                     <div class="contact-title">Innovation Focus</div>
                     <p class="contact-value">Clinical Decision Support, Workflow Automation, Cognitive Load Reduction, Compliance-First Design</p>
                 </div>
-
                 <div class="contact-card">
                     <div class="contact-title">Target Roles</div>
                     <p class="contact-value">Clinical AI Product Manager, Health Tech Engineer, Conversational Designer for Healthcare AI</p>
@@ -778,12 +555,10 @@
                     <div class="contact-title">Location</div>
                     <p class="contact-value">Pennsylvania<br>Open to Remote Opportunities</p>
                 </div>
-
                 <div class="contact-card">
                     <div class="contact-title">LinkedIn</div>
                     <p class="contact-value"><a href="https://www.linkedin.com/in/michael-giardina">linkedin.com/in/michael-giardina</a></p>
                 </div>
-
                 <div class="contact-card">
                     <div class="contact-title">Email</div>
                     <p class="contact-value"><a href="mailto:mike.giardina@gmail.com">mike.giardina@gmail.com</a></p>
@@ -793,7 +568,7 @@
     </div>
 
     <footer>
-        <p>© 2026 Michael Giardina, BSN, RN, CEN • Building the future of Clinical AI.   For Clinicians.  By Clinicians.</p>
+        <p>© 2026 Michael Giardina, BSN, RN, CEN • Building the future of Clinical AI. For Clinicians. By Clinicians.</p>
         <p style="margin-top: 0.5rem; opacity: 0.6;">From bedside to codebase | The Trimergent Ecosystem</p>
     </footer>
 
@@ -801,9 +576,30 @@
         document.addEventListener('DOMContentLoaded', () => {
             const scrollIndicator = document.querySelector('.scroll-indicator');
             let scrolled = false;
-            
             window.addEventListener('scroll', () => {
                 if (!scrolled && window.scrollY > 100) {
                     scrollIndicator.style.opacity = '0';
                     scrollIndicator.style.transition = 'opacity 0.5s ease';
-                    scrolled =
+                    scrolled = true;
+                }
+            });
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0)';
+                    }
+                });
+            }, { threshold: 0.1 });
+
+            document.querySelectorAll('.app-card, .timeline-item, .contact-card').forEach(el => {
+                el.style.opacity = '0';
+                el.style.transform = 'translateY(20px)';
+                el.style.transition = 'all 0.6s ease';
+                observer.observe(el);
+            });
+        });
+    </script>
+</body>
+</html>
