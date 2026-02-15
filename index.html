@@ -122,15 +122,8 @@
             padding: 0.6rem 1.2rem; margin-top: 1rem;
             background: rgba(0, 217, 255, 0.1); border: 1px solid var(--accent-cyan);
             color: var(--accent-cyan); text-decoration: none;
-            transition: all 0.3s ease; cursor: pointer;
+            cursor: default;
         }
-        .launch-btn:hover {
-            background: rgba(0, 217, 255, 0.25); color: #fff;
-            box-shadow: 0 0 20px rgba(0, 217, 255, 0.3);
-            transform: translateY(-2px);
-        }
-        .launch-btn .arrow { transition: transform 0.3s ease; }
-        .launch-btn:hover .arrow { transform: translateX(4px); }
         .timeline { position: relative; padding-left: 3rem; }
         .timeline::before {
             content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 2px;
@@ -276,9 +269,7 @@
                             <span class="tech-badge">Gemini AI</span>
                             <span class="tech-badge">Tailwind</span>
                         </div>
-                        <a href="https://unitschedpro.netlify.app/" target="_blank" rel="noopener noreferrer" class="launch-btn">
-                            LAUNCH DEMO <span class="arrow">→</span>
-                        </a>
+                        <span class="launch-btn">DEMO AVAILABLE</span>
                     </div>
                 </div>
 
@@ -303,9 +294,7 @@
                             <span class="tech-badge">Canvas/WebGL</span>
                             <span class="tech-badge">Gemini 1.5</span>
                         </div>
-                        <a href="https://patientsim.netlify.app/" target="_blank" rel="noopener noreferrer" class="launch-btn">
-                            LAUNCH DEMO <span class="arrow">→</span>
-                        </a>
+                        <span class="launch-btn">DEMO AVAILABLE</span>
                     </div>
                 </div>
 
@@ -332,9 +321,7 @@
                             <span class="tech-badge">Zustand</span>
                             <span class="tech-badge">Vertex AI</span>
                         </div>
-                        <a href="https://nurseorchestrator.netlify.app/" target="_blank" rel="noopener noreferrer" class="launch-btn">
-                            LAUNCH DEMO <span class="arrow">→</span>
-                        </a>
+                        <span class="launch-btn">DEMO AVAILABLE</span>
                     </div>
                 </div>
 
@@ -360,9 +347,7 @@
                             <span class="tech-badge">Gemini 2.0</span>
                             <span class="tech-badge">HIPAA-Ready</span>
                         </div>
-                        <a href="https://emergentmediamanager.netlify.app/" target="_blank" rel="noopener noreferrer" class="launch-btn">
-                            LAUNCH DEMO <span class="arrow">→</span>
-                        </a>
+                        <span class="launch-btn">DEMO AVAILABLE</span>
                     </div>
                 </div>
 
@@ -386,9 +371,7 @@
                             <span class="tech-badge">TypeScript</span>
                             <span class="tech-badge">Gemini 2.0</span>
                         </div>
-                        <a href="https://informationworkflow.netlify.app/" target="_blank" rel="noopener noreferrer" class="launch-btn">
-                            LAUNCH DEMO <span class="arrow">→</span>
-                        </a>
+                        <span class="launch-btn">DEMO AVAILABLE</span>
                     </div>
                 </div>
 
@@ -412,6 +395,7 @@
                             <span class="tech-badge">Gemini AI</span>
                             <span class="tech-badge">Three.js</span>
                         </div>
+                        <span class="launch-btn">DEMO AVAILABLE</span>
                     </div>
                 </div>
 
@@ -457,9 +441,7 @@
                             <span class="tech-badge">React</span>
                             <span class="tech-badge">Interactive</span>
                         </div>
-                        <a href="https://ecosystemnavigator.netlify.app/" target="_blank" rel="noopener noreferrer" class="launch-btn">
-                            LAUNCH DEMO <span class="arrow">→</span>
-                        </a>
+                        <span class="launch-btn">DEMO AVAILABLE</span>
                     </div>
                 </div>
             </div>
@@ -557,49 +539,15 @@
                 </div>
                 <div class="contact-card">
                     <div class="contact-title">LinkedIn</div>
-                    <p class="contact-value"><a href="https://www.linkedin.com/in/michael-giardina">linkedin.com/in/michael-giardina</a></p>
+                    <p class="contact-value">linkedin.com/in/michael-giardina</p>
                 </div>
                 <div class="contact-card">
                     <div class="contact-title">Email</div>
-                    <p class="contact-value"><a href="mailto:mike.giardina@gmail.com">mike.giardina@gmail.com</a></p>
+                    <p class="contact-value">mike.giardina@gmail.com</p>
                 </div>
             </div>
         </section>
     </div>
 
     <footer>
-        <p>© 2026 Michael Giardina, BSN, RN, CEN • Building the future of Clinical AI. For Clinicians. By Clinicians.</p>
-        <p style="margin-top: 0.5rem; opacity: 0.6;">From bedside to codebase | The Trimergent Ecosystem</p>
-    </footer>
-
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const scrollIndicator = document.querySelector('.scroll-indicator');
-            let scrolled = false;
-            window.addEventListener('scroll', () => {
-                if (!scrolled && window.scrollY > 100) {
-                    scrollIndicator.style.opacity = '0';
-                    scrollIndicator.style.transition = 'opacity 0.5s ease';
-                    scrolled = true;
-                }
-            });
-
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        entry.target.style.opacity = '1';
-                        entry.target.style.transform = 'translateY(0)';
-                    }
-                });
-            }, { threshold: 0.1 });
-
-            document.querySelectorAll('.app-card, .timeline-item, .contact-card').forEach(el => {
-                el.style.opacity = '0';
-                el.style.transform = 'translateY(20px)';
-                el.style.transition = 'all 0.6s ease';
-                observer.observe(el);
-            });
-        });
-    </script>
-</body>
-</html>
+        <p>© 2026 Michael Giardina, BSN, RN
