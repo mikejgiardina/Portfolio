@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mike Giardina - Clinical AI Developer & Builder</title>
+    <title>Mike Giardina — Clinical AI Designer & Builder</title>
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Crimson+Pro:wght@400;600&family=Work+Sans:wght@300;500;700&display=swap" rel="stylesheet">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -59,11 +59,21 @@
         }
         .subtitle {
             font-size: clamp(1.2rem, 3vw, 1.8rem); color: var(--text-muted);
-            margin-bottom: 2rem; font-weight: 300;
+            margin-bottom: 1.5rem; font-weight: 300;
             animation: fadeInUp 1s ease-out 0.4s backwards;
         }
+        .hero-statement {
+            max-width: 720px;
+            font-size: clamp(1rem, 2vw, 1.15rem);
+            color: var(--text-primary);
+            line-height: 1.8;
+            margin-bottom: 3rem;
+            opacity: 0.85;
+            animation: fadeInUp 1s ease-out 0.5s backwards;
+        }
+        .hero-statement .highlight { color: var(--accent-cyan); font-weight: 500; }
         .hero-stats {
-            display: flex; gap: 3rem; margin-top: 3rem;
+            display: flex; gap: 3rem; margin-top: 1rem;
             font-family: 'JetBrains Mono', monospace; flex-wrap: wrap;
             animation: fadeInUp 1s ease-out 0.6s backwards;
         }
@@ -82,13 +92,20 @@
             to { opacity: 1; transform: translateY(0); }
         }
         .section { padding: 6rem 0; position: relative; }
-        .section-header { display: flex; align-items: center; gap: 1rem; margin-bottom: 3rem; }
+        .section-header { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem; }
         .section-number { font-family: 'JetBrains Mono', monospace; font-size: 1rem; color: var(--accent-cyan); opacity: 0.6; }
         .section-title { font-family: 'Crimson Pro', serif; font-size: clamp(2rem, 5vw, 3rem); font-weight: 600; }
         .section-divider { flex: 1; height: 1px; background: linear-gradient(90deg, var(--accent-cyan) 0%, transparent 100%); margin-left: 2rem; }
+        .section-intro {
+            max-width: 760px;
+            color: var(--text-muted);
+            font-size: 1.05rem;
+            line-height: 1.8;
+            margin-bottom: 3rem;
+        }
         .apps-grid {
             display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 2rem; margin-top: 3rem;
+            gap: 2rem; margin-top: 1rem;
         }
         .app-card {
             background: var(--secondary-bg); border: 1px solid rgba(0, 217, 255, 0.2);
@@ -106,8 +123,30 @@
             box-shadow: 0 10px 40px rgba(0, 217, 255, 0.2);
         }
         .app-number { font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: var(--accent-green); margin-bottom: 0.5rem; }
-        .app-title { font-family: 'Crimson Pro', serif; font-size: 1.5rem; font-weight: 600; margin-bottom: 0.5rem; color: var(--text-primary); }
-        .app-subtitle { font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; color: var(--accent-cyan); margin-bottom: 1rem; font-style: italic; }
+        .app-title { font-family: 'Crimson Pro', serif; font-size: 1.5rem; font-weight: 600; margin-bottom: 0.25rem; color: var(--text-primary); }
+        .app-subtitle { font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; color: var(--accent-cyan); margin-bottom: 0.75rem; font-style: italic; }
+
+        /* Clinical Problem banner */
+        .app-problem {
+            background: rgba(255, 0, 110, 0.07);
+            border-left: 3px solid var(--accent-red);
+            padding: 0.6rem 0.9rem;
+            margin-bottom: 1rem;
+            font-size: 0.85rem;
+            color: #ffb3cc;
+            line-height: 1.5;
+            font-family: 'Work Sans', sans-serif;
+        }
+        .app-problem-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.7rem;
+            color: var(--accent-red);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            display: block;
+            margin-bottom: 0.25rem;
+        }
+
         .app-description { color: var(--text-muted); line-height: 1.6; font-size: 0.95rem; }
         .app-features { list-style: none; margin-top: 1rem; display: flex; flex-direction: column; gap: 0.5rem; }
         .app-features li {
@@ -137,7 +176,7 @@
         }
         .timeline-label { font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; color: var(--accent-green); margin-bottom: 0.5rem; }
         .timeline-title { font-size: 1.3rem; font-weight: 600; margin-bottom: 0.5rem; }
-        .timeline-description { color: var(--text-muted); line-height: 1.6; }
+        .timeline-description { color: var(--text-muted); line-height: 1.7; }
         .contact-grid {
             display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
             gap: 2rem; margin-top: 3rem;
@@ -152,7 +191,7 @@
             color: var(--accent-green); margin-bottom: 0.5rem;
             text-transform: uppercase; letter-spacing: 0.1em;
         }
-        .contact-value { font-size: 1.1rem; color: var(--text-primary); word-break: break-all; }
+        .contact-value { font-size: 1.05rem; color: var(--text-primary); word-break: break-all; line-height: 1.6; }
         .contact-value a { color: var(--accent-cyan); text-decoration: none; transition: color 0.3s ease; }
         .contact-value a:hover { color: var(--accent-green); }
         footer {
@@ -176,12 +215,23 @@
             transform: rotate(45deg);
         }
         .highlight { color: var(--accent-green); font-weight: 500; }
+        .highlight-cyan { color: var(--accent-cyan); font-weight: 500; }
         .tech-badge {
             display: inline-block; font-family: 'JetBrains Mono', monospace; font-size: 0.75rem;
             padding: 0.25rem 0.75rem; background: rgba(0, 217, 255, 0.1);
             border: 1px solid var(--accent-cyan); color: var(--accent-cyan);
             margin-right: 0.5rem; margin-top: 0.5rem;
         }
+        .validation-badge {
+            display: inline-flex; align-items: center; gap: 0.4rem;
+            font-family: 'JetBrains Mono', monospace; font-size: 0.75rem;
+            padding: 0.35rem 0.8rem;
+            background: rgba(0, 255, 159, 0.08);
+            border: 1px solid var(--accent-green);
+            color: var(--accent-green);
+            margin-top: 1rem;
+        }
+        .validation-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent-green); animation: pulse 2s ease-in-out infinite; }
         @media (max-width: 768px) {
             .container { padding: 0 1.5rem; }
             .apps-grid { grid-template-columns: 1fr; }
@@ -200,7 +250,7 @@
             <div class="status-bar">
                 <div class="status-item">
                     <span class="status-dot"></span>
-                    <span>AVAILABLE FOR HEALTH TECH ROLES</span>
+                    <span>ACTIVE CLINICAL VALIDATION — LEVEL 1 TRAUMA CENTER</span>
                 </div>
                 <div class="status-item">
                     <span class="status-dot"></span>
@@ -209,28 +259,31 @@
             </div>
 
             <h1>Mike Giardina</h1>
-            <p class="subtitle">Clinical AI Developer & Builder • ED Supervisor → Health Tech Engineer</p>
+            <p class="subtitle">Clinical AI Designer & Builder &nbsp;·&nbsp; ED Supervisor &nbsp;·&nbsp; CEN, ATCN Course Director</p>
+
+            <p class="hero-statement">
+                Eighteen years at the bedside taught me exactly where clinical workflows break down — 
+                the friction points that cost seconds when seconds matter, the cognitive gaps that no EHR was designed to close. 
+                I build <span class="highlight">AI-native tools for frontline clinicians</span>, designed from the inside out: 
+                by someone who has triaged, coded, and educated in the same environment these tools are meant to serve.
+            </p>
             
             <div class="hero-stats">
                 <div class="stat">
-                    <div class="stat-value">7</div>
-                    <div class="stat-label">AI Applications</div>
-                </div>
-                <div class="stat">
-                    <div class="stat-value">35</div>
-                    <div class="stat-label">Days to Prototype</div>
-                </div>
-                <div class="stat">
-                    <div class="stat-value">2</div>
-                    <div class="stat-label">Months to Testing</div>
-                </div>
-                <div class="stat">
-                    <div class="stat-value">Consumer Level</div>
-                    <div class="stat-label">Total API Costs</div>
-                </div>
-                <div class="stat">
                     <div class="stat-value">18</div>
-                    <div class="stat-label">Years Clinical Experience</div>
+                    <div class="stat-label">Years Clinical Practice</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value">7</div>
+                    <div class="stat-label">AI Applications Built</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value">L1</div>
+                    <div class="stat-label">Trauma Center Validation</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value">CEN</div>
+                    <div class="stat-label">Board-Certified ED Nurse</div>
                 </div>
             </div>
 
@@ -240,28 +293,38 @@
             </div>
         </header>
 
+        <!-- APPS -->
         <section class="section">
             <div class="section-header">
                 <span class="section-number">01</span>
                 <h2 class="section-title">The Trimergent Ecosystem</h2>
                 <div class="section-divider"></div>
             </div>
+            <p class="section-intro">
+                Each tool in this ecosystem was designed to solve a specific, observed problem in emergency and critical care environments. 
+                The clinical problem comes first. The architecture follows.
+            </p>
 
             <div class="apps-grid">
+
                 <!-- UnitScheduler Pro -->
                 <div class="app-card">
                     <div class="app-number">APP_01</div>
                     <h3 class="app-title">UnitScheduler Pro</h3>
-                    <p class="app-subtitle">The Operational Command Console</p>
+                    <p class="app-subtitle">Operational Command Console</p>
+                    <div class="app-problem">
+                        <span class="app-problem-label">Clinical Problem</span>
+                        ED charge nurses make real-time staffing decisions using static spreadsheets — no pattern visibility, no predictive support, no operational awareness beyond the current shift.
+                    </div>
                     <p class="app-description">
-                        Advanced unit management system transforming sterile spreadsheets into an operational command interface with AI-powered pattern synthesis and heuristic analysis.
+                        Transforms unit scheduling from a passive grid into an active operational interface. AI-synthesized staffing patterns surface coverage risks before they become incidents.
                     </p>
                     <ul class="app-features">
-                        <li>OCR analysis of historical schedule PDFs</li>
+                        <li>OCR ingestion of historical schedule PDFs</li>
                         <li>Gemini AI-powered staffing predictions</li>
                         <li>Real-time operational directives</li>
-                        <li>Hardcoded logic for specific staff rules</li>
                         <li>Intelligent coverage math excluding non-clinical roles</li>
+                        <li>Hardcoded rule logic for unit-specific constraints</li>
                     </ul>
                     <div class="app-card-footer">
                         <div>
@@ -277,16 +340,20 @@
                 <div class="app-card">
                     <div class="app-number">APP_02</div>
                     <h3 class="app-title">PatientSim</h3>
-                    <p class="app-subtitle">The Educational Kernel</p>
+                    <p class="app-subtitle">High-Fidelity Clinical Simulation Engine</p>
+                    <div class="app-problem">
+                        <span class="app-problem-label">Clinical Problem</span>
+                        Sim-based education is expensive, schedule-dependent, and doesn't scale. Nurses need on-demand, realistic case exposure — especially for low-frequency, high-acuity events.
+                    </div>
                     <p class="app-description">
-                        High-fidelity standalone physiological simulation engine for medical training and software testing with real-time modeling and waveform generation.
+                        Standalone physiological simulation engine with real-time waveform generation and AI-driven evolving clinical narratives. Built for ED education days. Currently in active clinical validation.
                     </p>
                     <ul class="app-features">
                         <li>Dynamic HR, BP, SpO2, respiratory mechanics</li>
-                        <li>Canvas-based ECG waveforms with QRS morphology</li>
-                        <li>Arrhythmia simulation capabilities</li>
-                        <li>AI-driven evolving clinical narratives</li>
-                        <li>WebGL rendering for performance</li>
+                        <li>Canvas-based ECG with QRS morphology and arrhythmia simulation</li>
+                        <li>AI-driven case evolution based on clinical decisions</li>
+                        <li>WebGL rendering for performance at scale</li>
+                        <li>Scenario library expandable by educators</li>
                     </ul>
                     <div class="app-card-footer">
                         <div>
@@ -294,7 +361,10 @@
                             <span class="tech-badge">Canvas/WebGL</span>
                             <span class="tech-badge">Gemini AI</span>
                         </div>
-                        <span class="launch-btn">DEMO AVAILABLE</span>
+                        <div class="validation-badge">
+                            <span class="validation-dot"></span>
+                            ACTIVE VALIDATION — CONEMAUGH HEALTH SYSTEM
+                        </div>
                     </div>
                 </div>
 
@@ -302,14 +372,18 @@
                 <div class="app-card">
                     <div class="app-number">APP_03</div>
                     <h3 class="app-title">Nurse Orchestrator</h3>
-                    <p class="app-subtitle">The Clinical Copilot</p>
+                    <p class="app-subtitle">Contextual Clinical Decision Support</p>
+                    <div class="app-problem">
+                        <span class="app-problem-label">Clinical Problem</span>
+                        Generic AI assistants aren't calibrated for bedside use — wrong scope, wrong acuity thresholds, no concept of state-specific practice boundaries or unit-level policy.
+                    </div>
                     <p class="app-description">
-                        Contextual Clinical Decision Support platform augmenting frontline providers with adaptive personas and semantic intent routing.
+                        A clinical copilot that adapts to acuity context, routes by semantic intent, and enforces guardrails grounded in real scope-of-practice frameworks.
                     </p>
                     <ul class="app-features">
-                        <li>Adaptive personas based on clinical acuity</li>
-                        <li>Antigravity Router for semantic classification</li>
-                        <li>Sigma Thresholds (>0.997) for high-risk interventions</li>
+                        <li>Adaptive personas tuned to clinical acuity level</li>
+                        <li>Antigravity Router for semantic intent classification</li>
+                        <li>High-confidence thresholds (Σ >0.997) for critical interventions</li>
                         <li>~15 specialized nursing personas</li>
                         <li>State-specific scope of practice integration</li>
                         <li>RAG-enabled policy guardrails</li>
@@ -329,16 +403,20 @@
                 <div class="app-card">
                     <div class="app-number">APP_04</div>
                     <h3 class="app-title">Emergent Media Manager</h3>
-                    <p class="app-subtitle">The "Glass-OS" for Medical Data</p>
+                    <p class="app-subtitle">Medical Data Intelligence Layer</p>
+                    <div class="app-problem">
+                        <span class="app-problem-label">Clinical Problem</span>
+                        Unstructured medical data — EKGs, imaging, documents — lives in silos, arrives in inconsistent formats, and requires manual review to extract actionable clinical meaning.
+                    </div>
                     <p class="app-description">
-                        File system interface transforming unstructured medical data into structured knowledge bases with intelligent multi-modal ingestion.
+                        Multi-modal ingestion pipeline that converts raw clinical media into structured, coded, searchable knowledge — with PHI protection built into the local-first architecture.
                     </p>
                     <ul class="app-features">
-                        <li>Multi-modal analysis (EKG, MRI, medical imagery)</li>
-                        <li>Auto-coding with ICD-10/CPT</li>
+                        <li>Multi-modal analysis: EKG, MRI, clinical imagery</li>
+                        <li>Auto-coding with ICD-10/CPT classification</li>
                         <li>Distributed Schema Synchronization (92% bandwidth reduction)</li>
                         <li>Local PHI detection and de-identification</li>
-                        <li>Browser FS Access for local-first storage</li>
+                        <li>Browser FS Access for local-first, HIPAA-conscious storage</li>
                     </ul>
                     <div class="app-card-footer">
                         <div>
@@ -351,19 +429,23 @@
                     </div>
                 </div>
 
-                <!-- Clinical Information Workflow Engine -->
+                <!-- CIWE -->
                 <div class="app-card">
                     <div class="app-number">APP_05</div>
                     <h3 class="app-title">Clinical Information Workflow Engine</h3>
-                    <p class="app-subtitle">The Academic Accelerator</p>
+                    <p class="app-subtitle">Nurse Educator Automation Platform</p>
+                    <div class="app-problem">
+                        <span class="app-problem-label">Clinical Problem</span>
+                        Nurse educators spend hours writing CE content, simulation scenarios, and policy-aligned materials that could be generated in minutes if they had the right clinical context layer.
+                    </div>
                     <p class="app-description">
-                        Automation engine for Nurse Educators generating evidence-based content with multi-disciplinary validation layers.
+                        Automation engine that generates ANCC-aligned CE articles, simulation scenarios, and evidence-based content — with simulated peer review and multi-disciplinary validation.
                     </p>
                     <ul class="app-features">
                         <li>ANCC-accredited style article generation</li>
-                        <li>Simulation scenario drafting</li>
-                        <li>Simulated peer review using Zod validation</li>
-                        <li>Evidence-based content compilation</li>
+                        <li>Simulation scenario drafting from case inputs</li>
+                        <li>Simulated peer review via Zod validation layers</li>
+                        <li>Evidence-based content compilation and citation</li>
                     </ul>
                     <div class="app-card-footer">
                         <div>
@@ -379,15 +461,19 @@
                 <div class="app-card">
                     <div class="app-number">APP_06</div>
                     <h3 class="app-title">Logo2STL</h3>
-                    <p class="app-subtitle">The Creative Tool</p>
+                    <p class="app-subtitle">AI-Powered 3D Asset Converter</p>
+                    <div class="app-problem">
+                        <span class="app-problem-label">Design Problem</span>
+                        Converting 2D assets into print-ready 3D geometry requires expensive software and manual mesh work — a barrier for small teams and independent creators.
+                    </div>
                     <p class="app-description">
-                        AI-powered tool converting 2D logos into 3D-printable STL files with intelligent shape detection and optimization. 
+                        Client-side tool that converts 2D logos into 3D-printable STL files using AI shape detection and automated geometry optimization. No CAD expertise required.
                     </p>
                     <ul class="app-features">
-                        <li>AI subject identification and optimization</li>
-                        <li>Automatic extrusion and smoothing</li>
+                        <li>AI subject identification and silhouette optimization</li>
+                        <li>Automatic extrusion, smoothing, and manifold repair</li>
                         <li>Client-side 3D geometry generation</li>
-                        <li>Three.js CSG for complex operations</li>
+                        <li>Three.js CSG for complex boolean operations</li>
                     </ul>
                     <div class="app-card-footer">
                         <div>
@@ -403,14 +489,19 @@
                 <div class="app-card">
                     <div class="app-number">APP_07</div>
                     <h3 class="app-title">Ecosystem Navigator</h3>
-                    <p class="app-subtitle">The System Map</p>
+                    <p class="app-subtitle">Platform Architecture Map</p>
+                    <div class="app-problem">
+                        <span class="app-problem-label">Design Problem</span>
+                        Cross-app dependency relationships in complex ecosystems are invisible without explicit tooling — making architectural decisions harder to communicate and validate.
+                    </div>
                     <p class="app-description">
-                        Interactive visualization of the Trimergent Ecosystem architecture, showing cross-app dependencies and data flows across the platform.
+                        Interactive visualization of the full Trimergent Ecosystem — showing data flows, shared AI backends, and dependency relationships across all seven applications.
                     </p>
                     <ul class="app-features">
                         <li>Interactive ecosystem topology</li>
                         <li>Cross-app dependency mapping</li>
-                        <li>Architecture overview</li>
+                        <li>Shared AI backend visualization</li>
+                        <li>Architecture overview for stakeholder review</li>
                     </ul>
                     <div class="app-card-footer">
                         <div>
@@ -420,52 +511,70 @@
                         <span class="launch-btn">DEMO AVAILABLE</span>
                     </div>
                 </div>
+
             </div>
         </section>
 
+        <!-- JOURNEY -->
         <section class="section">
             <div class="section-header">
                 <span class="section-number">02</span>
-                <h2 class="section-title">Journey</h2>
+                <h2 class="section-title">Background</h2>
                 <div class="section-divider"></div>
             </div>
 
             <div class="timeline">
                 <div class="timeline-item">
                     <div class="timeline-dot"></div>
-                    <div class="timeline-label">2007 - 2026</div>
-                    <h3 class="timeline-title">Clinical Foundation</h3>
+                    <div class="timeline-label">2007 – PRESENT</div>
+                    <h3 class="timeline-title">18 Years of Clinical Requirements Gathering</h3>
                     <p class="timeline-description">
-                        18 years of ER/ICU experience at Duke Lifepoint — CHS. 
-                        ED Supervisor and Clinical Educator. Epic Super User and Clinician Advocate status since 2016, 
-                        Developing deep understanding of clinical workflows and healthcare IT systems.
+                        Emergency Department Supervisor and Clinical Educator at Duke Lifepoint – Conemaugh Health System, 
+                        a <span class="highlight">Level 1 Trauma Center</span>. 
+                        CEN-certified, ATCN Course Director, FCCS Faculty. 
+                        Epic Super User and ASAP module clinical lead since 2016.
+                        <br><br>
+                        What looks like a clinical career is also 18 years of systematic observation: 
+                        where workflows fail, where cognitive load peaks, where technology creates friction instead of reducing it. 
+                        Every tool I build is a direct response to something I've watched break in real time.
                     </p>
                 </div>
 
                 <div class="timeline-item">
                     <div class="timeline-dot"></div>
                     <div class="timeline-label">2025</div>
-                    <h3 class="timeline-title">Rapid Transition to AI Development</h3>
+                    <h3 class="timeline-title">From Workflow Design to AI Implementation</h3>
                     <p class="timeline-description">
-                        Transitioned from <span class="highlight">zero coding background</span> to building 
-                        <span class="highlight">seven functional healthcare AI applications in under 2 months</span>. 
-                        Total development cost: Basic consumer level API usage. Unified ecosystem with cross-app dependencies. Focusing on shared AI backend and local-first architecture. Ground floor security and privacy minded.
+                        Began translating clinical workflow knowledge into functioning software. 
+                        Built <span class="highlight">seven healthcare AI applications</span> using Google AI Studio, Vertex AI, and Claude — 
+                        with a unified ecosystem architecture, cross-app data flows, and local-first privacy design. 
+                        Total infrastructure cost: consumer-level API usage.
+                        <br><br>
+                        The speed wasn't the point. The design decisions behind the tools — 
+                        the acuity-adaptive interfaces, the scope-of-practice guardrails, the physiological accuracy — 
+                        those came from clinical domain knowledge that can't be searched or prompted into existence.
                     </p>
                 </div>
 
                 <div class="timeline-item">
                     <div class="timeline-dot"></div>
                     <div class="timeline-label">PRESENT</div>
-                    <h3 class="timeline-title">Health Tech Engineering</h3>
+                    <h3 class="timeline-title">Active Validation & Commercial Development</h3>
                     <p class="timeline-description">
-                        Actively developing the <span class="highlight">Trimergent Ecosystem</span> with distributed AI workflows and clinical decision-support platforms. 
-                        Seeking opportunities in health tech companies focused on clinical AI and preventive care. 
-                        Unique combination of clinical expertise and rapid AI prototyping capabilities.
+                        PatientSim is undergoing <span class="highlight">active clinical validation</span> with ED nursing staff during mandated education sessions, 
+                        with feedback concentrated on UI refinement rather than clinical accuracy. 
+                        Pursuing SBIR/STTR funding and Pennsylvania Innovation Program grants. 
+                        Exploring enterprise deployment pathways for the file management and scheduling tools within the health system.
+                        <br><br>
+                        Seeking roles at the intersection of clinical expertise and AI product development — 
+                        companies building tools for clinicians who need someone at the table 
+                        who has actually used, broken, and lived inside the systems they're replacing.
                     </p>
                 </div>
             </div>
         </section>
 
+        <!-- TECHNICAL PROFILE -->
         <section class="section">
             <div class="section-header">
                 <span class="section-number">03</span>
@@ -475,32 +584,33 @@
 
             <div class="contact-grid">
                 <div class="contact-card">
-                    <div class="contact-title">Architecture</div>
-                    <p class="contact-value">Frontend-First, AI-Native, Privacy-Centric, Local-First Data Handling</p>
-                </div>
-                <div class="contact-card">
-                    <div class="contact-title">Design Language</div>
-                    <p class="contact-value">Clinical Cyberpunk: Glassmorphism, Dark Mode, High-Contrast Data Visualization</p>
+                    <div class="contact-title">Design Philosophy</div>
+                    <p class="contact-value">Clinical problem first. Architecture second. Cognitive load reduction as a primary success metric.</p>
                 </div>
                 <div class="contact-card">
                     <div class="contact-title">AI Platforms</div>
-                    <p class="contact-value">Google Gemini, Claude, Vertex AI, RAG Architecture, Multi-Model Orchestration</p>
+                    <p class="contact-value">Google Gemini, Claude, Vertex AI · RAG Architecture · Multi-Model Orchestration · Local-First Privacy Design</p>
                 </div>
                 <div class="contact-card">
-                    <div class="contact-title">Clinical Specialties</div>
-                    <p class="contact-value">Emergency Medicine, Critical Care, Clinical Education, Epic Systems Integration</p>
+                    <div class="contact-title">Clinical Domain</div>
+                    <p class="contact-value">Emergency Medicine · Critical Care · Clinical Education · Epic ASAP · Trauma · Scope-of-Practice Frameworks</p>
                 </div>
                 <div class="contact-card">
-                    <div class="contact-title">Innovation Focus</div>
-                    <p class="contact-value">Clinical Decision Support, Workflow Automation, Cognitive Load Reduction, Compliance-First Design</p>
+                    <div class="contact-title">Frontend Stack</div>
+                    <p class="contact-value">React · TypeScript · Zustand · Tailwind · Vite · Canvas/WebGL · Three.js</p>
+                </div>
+                <div class="contact-card">
+                    <div class="contact-title">Compliance Focus</div>
+                    <p class="contact-value">HIPAA-conscious architecture · PHI detection & de-identification · Policy-aligned guardrails · ANCC continuing education standards</p>
                 </div>
                 <div class="contact-card">
                     <div class="contact-title">Target Roles</div>
-                    <p class="contact-value">Clinical AI Product Manager, Health Tech Engineer, Conversational Designer for Healthcare AI</p>
+                    <p class="contact-value">Clinical AI Product Manager · Health Tech Engineer · Conversational Designer for Healthcare AI · Clinical UX Researcher</p>
                 </div>
             </div>
         </section>
 
+        <!-- CONNECT -->
         <section class="section">
             <div class="section-header">
                 <span class="section-number">04</span>
@@ -511,7 +621,7 @@
             <div class="contact-grid">
                 <div class="contact-card">
                     <div class="contact-title">Location</div>
-                    <p class="contact-value">Pennsylvania<br>Open to Remote Opportunities</p>
+                    <p class="contact-value">Pennsylvania, US<br>Open to Remote Opportunities</p>
                 </div>
                 <div class="contact-card">
                     <div class="contact-title">LinkedIn</div>
@@ -526,8 +636,8 @@
     </div>
 
     <footer>
-        <p>© 2026 Michael Giardina, BSN, RN, CEN • Building the future of Clinical AI. For Clinicians. By Clinicians.</p>
-        <p style="margin-top: 0.5rem; opacity: 0.6;">From bedside to codebase | The Trimergent Ecosystem</p>
+        <p>© 2026 Michael Giardina, BSN, RN, CEN &nbsp;·&nbsp; Clinical AI Designer & Builder</p>
+        <p style="margin-top: 0.5rem; opacity: 0.6;">For Clinicians. By Clinicians. From the Bedside to the Codebase.</p>
     </footer>
 
     <script>
@@ -545,3 +655,19 @@
             const observer = new IntersectionObserver((entries) => {
                 entries.forEach(entry => {
                     if (entry.isIntersecting) {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0)';
+                    }
+                });
+            }, { threshold: 0.1 });
+
+            document.querySelectorAll('.app-card, .timeline-item, .contact-card').forEach(el => {
+                el.style.opacity = '0';
+                el.style.transform = 'translateY(20px)';
+                el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+                observer.observe(el);
+            });
+        });
+    </script>
+</body>
+</html>
