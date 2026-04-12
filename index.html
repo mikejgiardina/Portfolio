@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mike Giardina — Clinical AI Designer & Builder</title>
+    <title>Mike Giardina — Clinical Operations & AI Implementation</title>
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Crimson+Pro:wght@400;600&family=Work+Sans:wght@300;500;700&display=swap" rel="stylesheet">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -122,11 +122,21 @@
             border-color: var(--accent-cyan); transform: translateY(-5px);
             box-shadow: 0 10px 40px rgba(0, 217, 255, 0.2);
         }
+        .app-card.flagship {
+            border-color: rgba(0, 255, 159, 0.3);
+            grid-column: 1 / -1;
+        }
+        .app-card.flagship::before {
+            background: linear-gradient(90deg, var(--accent-green), var(--accent-cyan));
+        }
+        .flagship-inner {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
         .app-number { font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: var(--accent-green); margin-bottom: 0.5rem; }
         .app-title { font-family: 'Crimson Pro', serif; font-size: 1.5rem; font-weight: 600; margin-bottom: 0.25rem; color: var(--text-primary); }
         .app-subtitle { font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; color: var(--accent-cyan); margin-bottom: 0.75rem; font-style: italic; }
-
-        /* Clinical Problem banner */
         .app-problem {
             background: rgba(255, 0, 110, 0.07);
             border-left: 3px solid var(--accent-red);
@@ -146,7 +156,6 @@
             display: block;
             margin-bottom: 0.25rem;
         }
-
         .app-description { color: var(--text-muted); line-height: 1.6; font-size: 0.95rem; }
         .app-features { list-style: none; margin-top: 1rem; display: flex; flex-direction: column; gap: 0.5rem; }
         .app-features li {
@@ -239,18 +248,19 @@
             .timeline { padding-left: 2rem; }
             .timeline-item { padding-left: 1.5rem; }
             .timeline-dot { left: -2.5rem; }
+            .flagship-inner { grid-template-columns: 1fr; }
         }
     </style>
 </head>
 <body>
     <div class="grid-bg"></div>
-    
+
     <div class="container">
         <header>
             <div class="status-bar">
                 <div class="status-item">
                     <span class="status-dot"></span>
-                    <span>ACTIVE CLINICAL VALIDATION — LEVEL 1 TRAUMA CENTER</span>
+                    <span>ACTIVE — LEVEL 1 TRAUMA CENTER</span>
                 </div>
                 <div class="status-item">
                     <span class="status-dot"></span>
@@ -259,56 +269,32 @@
             </div>
 
             <h1>Mike Giardina</h1>
-            <p class="subtitle">Clinical AI Designer & Builder &nbsp;·&nbsp; ED Supervisor &nbsp;·&nbsp; CEN, ATCN Course Director</p>
+            <p class="subtitle">Clinical Operations & AI Implementation &nbsp;·&nbsp; ED Supervisor &nbsp;·&nbsp; RN, BSN, CEN</p>
 
             <p class="hero-statement">
-                Eighteen years at the bedside taught me exactly where clinical workflows break down — 
-                the friction points that cost seconds when seconds matter, the cognitive gaps that no EHR was designed to close. 
-                I build <span class="highlight">AI-native tools for frontline clinicians</span>, designed from the inside out: 
-                by someone who has triaged, coded, and educated in the same environment these tools are meant to serve.
+                18 years in Level 1 Trauma and Critical Care — now building
+                <span class="highlight">AI-powered clinical tools</span> at the intersection of
+                bedside experience and production software. I design and ship applications that solve
+                problems I lived every shift: cognitive overload from EHR systems, training that doesn't
+                match real patients, and communication gaps between departments.
             </p>
-            
+
             <div class="hero-stats">
                 <div class="stat">
                     <div class="stat-value">18</div>
                     <div class="stat-label">Years Clinical Practice</div>
                 </div>
                 <div class="stat">
-                    <div class="stat-value">7</div>
-                    <div class="stat-label">AI Applications Built</div>
-                </div>
-                <div class="stat">
                     <div class="stat-value">L1</div>
-                    <div class="stat-label">Trauma Center Validation</div>
-                                    </div>
-                <div class="stat">
-                    <div class="stat-value">CEN</div>
-                    <div class="stat-label">Board-Certified ED Nurse</div>
-                </div>
-            </div>
-
-
-            <div class="scroll-indicator">
-                <span>SCROLL</span>
-                <div class="scroll-arrow"></div>
-            </div>
-        </header>
-
-
-        <!-- APPS -->
-        <section class="section">
-            <div class="section-header">
-                <span class="section-number">01</span>
-                <h2 class="section-title">The Trimergent Ecosystem</h2>
-                <div class="section-divider"></div>
-            </div>
-            <p class="section-intro">
-                Each tool in this ecosystem was designed to solve a specific, observed problem in emergency and critical care environments. 
-                The clinical problem comes first. The architecture follows.
+                    <div class="stat-label">Trauma Center</div>
                 </div>
                 <div class="stat">
                     <div class="stat-value">CEN</div>
                     <div class="stat-label">Board-Certified ED Nurse</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value">ATCN</div>
+                    <div class="stat-label">Course Director</div>
                 </div>
             </div>
 
@@ -326,72 +312,83 @@
                 <div class="section-divider"></div>
             </div>
             <p class="section-intro">
-                Each tool in this ecosystem was designed to solve a specific, observed problem in emergency and critical care environments. 
+                Each tool was designed to solve a specific problem observed in emergency and critical care.
                 The clinical problem comes first. The architecture follows.
             </p>
 
             <div class="apps-grid">
 
-                <!-- UnitScheduler Pro -->
-                <div class="app-card">
-                    <div class="app-number">APP_01</div>
-                    <h3 class="app-title">UnitScheduler Pro</h3>
-                    <p class="app-subtitle">Operational Command Console</p>
-                    <div class="app-problem">
-                        <span class="app-problem-label">Clinical Problem</span>
-                        ED charge nurses make real-time staffing decisions using static spreadsheets — no pattern visibility, no predictive support, no operational awareness beyond the current shift.
-                    </div>
-                    <p class="app-description">
-                        Transforms unit scheduling from a passive grid into an active operational interface. AI-synthesized staffing patterns surface coverage risks before they become incidents.
-                    </p>
-                    <ul class="app-features">
-                        <li>OCR ingestion of historical schedule PDFs</li>
-                        <li>Gemini AI-powered staffing predictions</li>
-                        <li>Real-time operational directives</li>
-                        <li>Intelligent coverage math excluding non-clinical roles</li>
-                        <li>Hardcoded rule logic for unit-specific constraints</li>
-                    </ul>
-                    <div class="app-card-footer">
+                <!-- Body Simulator — Flagship -->
+                <div class="app-card flagship">
+                    <div class="app-number">FLAGSHIP</div>
+                    <h3 class="app-title">Bio-Digital Twin Simulator</h3>
+                    <p class="app-subtitle">Multi-Agent Physiological Simulation Engine</p>
+                    <div class="flagship-inner">
                         <div>
-                            <span class="tech-badge">React</span>
-                            <span class="tech-badge">Gemini AI</span>
-                            <span class="tech-badge">Tailwind</span>
+                            <div class="app-problem">
+                                <span class="app-problem-label">Clinical Problem</span>
+                                Clinical simulation platforms are either low-fidelity or prohibitively expensive. Nurses and educators need high-fidelity, on-demand patient simulation that produces emergent clinical behavior — not scripted scenarios.
+                            </div>
+                            <p class="app-description">
+                                A full-stack physiological simulation engine where clinical cascades emerge from isolated agent interactions rather than hard-coded scripts.
+                                Built on an async multi-agent architecture with real-time waveform rendering.
+                            </p>
                         </div>
-                        <span class="launch-btn">DEMO AVAILABLE</span>
+                        <div>
+                            <ul class="app-features">
+                                <li>Multi-agent physiological engine (Python, PyTorch, asyncio)</li>
+                                <li>4-channel real-time waveform rendering (ECG, arterial, pleth, capno)</li>
+                                <li>Emergent clinical cascades — not scripted behavior</li>
+                                <li>GPU-accelerated batch computation for population-scale studies</li>
+                                <li>React/TypeScript frontend with WebSocket bridge</li>
+                                <li>Evidence-based pharmacokinetics and clinical scoring</li>
+                            </ul>
+                            <div class="app-card-footer">
+                                <div>
+                                    <span class="tech-badge">Python</span>
+                                    <span class="tech-badge">PyTorch</span>
+                                    <span class="tech-badge">CUDA</span>
+                                    <span class="tech-badge">React</span>
+                                    <span class="tech-badge">WebSocket</span>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
                 <!-- PatientSim -->
                 <div class="app-card">
-                    <div class="app-number">APP_02</div>
+                    <div class="app-number">APP_01</div>
                     <h3 class="app-title">PatientSim</h3>
-                    <p class="app-subtitle">High-Fidelity Clinical Simulation Engine</p>
+                    <p class="app-subtitle">AI-Driven Clinical Training Simulator</p>
                     <div class="app-problem">
                         <span class="app-problem-label">Clinical Problem</span>
                         Sim-based education is expensive, schedule-dependent, and doesn't scale. Nurses need on-demand, realistic case exposure — especially for low-frequency, high-acuity events.
                     </div>
                     <p class="app-description">
-                        Standalone physiological simulation engine with real-time waveform generation and AI-driven evolving clinical narratives. Built for ED education days. Currently in active clinical validation.
+                        Standalone simulation with AI-driven evolving clinical narratives, real-time vitals, and 45+ interactive procedures.
+                        Built for ED education days with Sentry error tracking and keyboard shortcuts for rapid clinical input.
                     </p>
                     <ul class="app-features">
-                        <li>Dynamic HR, BP, SpO2, respiratory mechanics</li>
+                        <li>Dynamic vitals with physiological drift engine</li>
                         <li>Canvas-based ECG with QRS morphology and arrhythmia simulation</li>
                         <li>AI-driven case evolution based on clinical decisions</li>
-                        <li>WebGL rendering for performance at scale</li>
-                        <li>Scenario library expandable by educators</li>
+                        <li>45+ interactive procedures with SBAR generation</li>
+                        <li>Sound alerts and keyboard shortcuts for rapid input</li>
                     </ul>
                     <div class="app-card-footer">
                         <div>
                             <span class="tech-badge">React</span>
-                            <span class="tech-badge">Canvas/WebGL</span>
+                            <span class="tech-badge">Canvas</span>
                             <span class="tech-badge">Gemini AI</span>
                         </div>
-                     </div>
+                        <span class="launch-btn">DEMO AVAILABLE</span>
+                    </div>
                 </div>
 
                 <!-- Nurse Orchestrator -->
                 <div class="app-card">
-                    <div class="app-number">APP_03</div>
+                    <div class="app-number">APP_02</div>
                     <h3 class="app-title">Nurse Orchestrator</h3>
                     <p class="app-subtitle">Contextual Clinical Decision Support</p>
                     <div class="app-problem">
@@ -403,9 +400,8 @@
                     </p>
                     <ul class="app-features">
                         <li>Adaptive personas tuned to clinical acuity level</li>
-                        <li>Antigravity Router for semantic intent classification</li>
-                        <li>High-confidence thresholds (Σ >0.997) for critical interventions</li>
-                        <li>~15 specialized nursing personas</li>
+                        <li>Semantic intent classification and routing</li>
+                        <li>High-confidence thresholds for critical interventions</li>
                         <li>State-specific scope of practice integration</li>
                         <li>RAG-enabled policy guardrails</li>
                     </ul>
@@ -413,8 +409,35 @@
                         <div>
                             <span class="tech-badge">React</span>
                             <span class="tech-badge">TypeScript</span>
-                            <span class="tech-badge">Zustand</span>
-                            <span class="tech-badge">Vertex AI</span>
+                            <span class="tech-badge">Multi-Model AI</span>
+                        </div>
+                        <span class="launch-btn">DEMO AVAILABLE</span>
+                    </div>
+                </div>
+
+                <!-- UnitScheduler Pro -->
+                <div class="app-card">
+                    <div class="app-number">APP_03</div>
+                    <h3 class="app-title">UnitScheduler Pro</h3>
+                    <p class="app-subtitle">Operational Command Console</p>
+                    <div class="app-problem">
+                        <span class="app-problem-label">Clinical Problem</span>
+                        ED charge nurses make real-time staffing decisions using static spreadsheets — no pattern visibility, no predictive support, no operational awareness beyond the current shift.
+                    </div>
+                    <p class="app-description">
+                        Transforms unit scheduling from a passive grid into an active operational interface. AI-synthesized staffing patterns surface coverage risks before they become incidents.
+                    </p>
+                    <ul class="app-features">
+                        <li>OCR ingestion of historical schedule PDFs</li>
+                        <li>AI-powered staffing predictions</li>
+                        <li>Real-time operational directives</li>
+                        <li>Intelligent coverage math excluding non-clinical roles</li>
+                    </ul>
+                    <div class="app-card-footer">
+                        <div>
+                            <span class="tech-badge">React</span>
+                            <span class="tech-badge">Gemini AI</span>
+                            <span class="tech-badge">Tailwind</span>
                         </div>
                         <span class="launch-btn">DEMO AVAILABLE</span>
                     </div>
@@ -424,7 +447,7 @@
                 <div class="app-card">
                     <div class="app-number">APP_04</div>
                     <h3 class="app-title">Emergent Media Manager</h3>
-                    <p class="app-subtitle">Medical Data Intelligence Layer</p>
+                    <p class="app-subtitle">HIPAA-Aware Medical Data Layer</p>
                     <div class="app-problem">
                         <span class="app-problem-label">Clinical Problem</span>
                         Unstructured medical data — EKGs, imaging, documents — lives in silos, arrives in inconsistent formats, and requires manual review to extract actionable clinical meaning.
@@ -435,14 +458,12 @@
                     <ul class="app-features">
                         <li>Multi-modal analysis: EKG, MRI, clinical imagery</li>
                         <li>Auto-coding with ICD-10/CPT classification</li>
-                        <li>Distributed Schema Synchronization (92% bandwidth reduction)</li>
                         <li>Local PHI detection and de-identification</li>
                         <li>Browser FS Access for local-first, HIPAA-conscious storage</li>
                     </ul>
                     <div class="app-card-footer">
                         <div>
                             <span class="tech-badge">React</span>
-                            <span class="tech-badge">Vite</span>
                             <span class="tech-badge">Gemini AI</span>
                             <span class="tech-badge">HIPAA-Ready</span>
                         </div>
@@ -457,7 +478,7 @@
                     <p class="app-subtitle">Nurse Educator Automation Platform</p>
                     <div class="app-problem">
                         <span class="app-problem-label">Clinical Problem</span>
-                        Nurse educators spend hours writing CE content, simulation scenarios, and policy-aligned materials that could be generated in minutes if they had the right clinical context layer.
+                        Nurse educators spend hours writing CE content, simulation scenarios, and policy-aligned materials that could be generated in minutes with the right clinical context layer.
                     </div>
                     <p class="app-description">
                         Automation engine that generates ANCC-aligned CE articles, simulation scenarios, and evidence-based content — with simulated peer review and multi-disciplinary validation.
@@ -465,7 +486,7 @@
                     <ul class="app-features">
                         <li>ANCC-accredited style article generation</li>
                         <li>Simulation scenario drafting from case inputs</li>
-                        <li>Simulated peer review via Zod validation layers</li>
+                        <li>Simulated peer review via validation layers</li>
                         <li>Evidence-based content compilation and citation</li>
                     </ul>
                     <div class="app-card-footer">
@@ -478,29 +499,29 @@
                     </div>
                 </div>
 
-                <!-- Logo2STL -->
+                <!-- Alerter -->
                 <div class="app-card">
                     <div class="app-number">APP_06</div>
-                    <h3 class="app-title">Logo2STL</h3>
-                    <p class="app-subtitle">AI-Powered 3D Asset Converter</p>
+                    <h3 class="app-title">Alerter</h3>
+                    <p class="app-subtitle">Clinical Alerting System</p>
                     <div class="app-problem">
-                        <span class="app-problem-label">Design Problem</span>
-                        Converting 2D assets into print-ready 3D geometry requires expensive software and manual mesh work — a barrier for small teams and independent creators.
+                        <span class="app-problem-label">Clinical Problem</span>
+                        Critical alerts are buried in EHR noise. Alarm fatigue is real — clinicians miss what matters because everything is flagged with equal urgency.
                     </div>
                     <p class="app-description">
-                        Client-side tool that converts 2D logos into 3D-printable STL files using AI shape detection and automated geometry optimization. No CAD expertise required.
+                        Intelligent clinical alerting that prioritizes by acuity context and reduces noise, surfacing only the alerts that require immediate clinical action.
                     </p>
                     <ul class="app-features">
-                        <li>AI subject identification and silhouette optimization</li>
-                        <li>Automatic extrusion, smoothing, and manifold repair</li>
-                        <li>Client-side 3D geometry generation</li>
-                        <li>Three.js CSG for complex boolean operations</li>
+                        <li>Acuity-aware alert prioritization</li>
+                        <li>Configurable escalation pathways</li>
+                        <li>Noise reduction via contextual filtering</li>
+                        <li>Integration-ready alert routing</li>
                     </ul>
                     <div class="app-card-footer">
                         <div>
-                            <span class="tech-badge">Node.js</span>
-                            <span class="tech-badge">Gemini AI</span>
-                            <span class="tech-badge">Three.js</span>
+                            <span class="tech-badge">React</span>
+                            <span class="tech-badge">TypeScript</span>
+                            <span class="tech-badge">Tailwind</span>
                         </div>
                         <span class="launch-btn">DEMO AVAILABLE</span>
                     </div>
@@ -516,7 +537,7 @@
                         Cross-app dependency relationships in complex ecosystems are invisible without explicit tooling — making architectural decisions harder to communicate and validate.
                     </div>
                     <p class="app-description">
-                        Interactive visualization of the full Trimergent Ecosystem — showing data flows, shared AI backends, and dependency relationships across all seven applications.
+                        Interactive visualization of the full Trimergent Ecosystem — showing data flows, shared AI backends, and dependency relationships across all applications.
                     </p>
                     <ul class="app-features">
                         <li>Interactive ecosystem topology</li>
@@ -550,13 +571,12 @@
                     <div class="timeline-label">2007 – PRESENT</div>
                     <h3 class="timeline-title">18 Years of Clinical Requirements Gathering</h3>
                     <p class="timeline-description">
-                        Emergency Department Supervisor and Clinical Educator at Duke Lifepoint – Conemaugh Health System, 
-                        a <span class="highlight">Level 1 Trauma Center</span>. 
-                        CEN-certified, ATCN Course Director, FCCS Faculty. 
-                        Epic Super User and ASAP module clinical lead since 2016.
+                        Emergency Department Supervisor and Clinical Educator at Duke Lifepoint – Conemaugh Health System,
+                        a <span class="highlight">Level 1 Trauma Center</span>.
+                        CEN-certified. Epic Super User and ASAP module clinical lead.
                         <br><br>
-                        What looks like a clinical career is also 18 years of systematic observation: 
-                        where workflows fail, where cognitive load peaks, where technology creates friction instead of reducing it. 
+                        What looks like a clinical career is also 18 years of systematic observation:
+                        where workflows fail, where cognitive load peaks, where technology creates friction instead of reducing it.
                         Every tool I build is a direct response to something I've watched break in real time.
                     </p>
                 </div>
@@ -566,30 +586,30 @@
                     <div class="timeline-label">2025</div>
                     <h3 class="timeline-title">From Workflow Design to AI Implementation</h3>
                     <p class="timeline-description">
-                        Began translating clinical workflow knowledge into functioning software. 
-                        Built <span class="highlight">seven healthcare AI applications</span> using Google AI Studio, Vertex AI, and Claude — 
-                        with a unified ecosystem architecture, cross-app data flows, and local-first privacy design. 
-                        Total infrastructure cost: consumer-level API usage.
+                        Founded <span class="highlight">Trimergent Tech LLC</span> and began translating clinical workflow knowledge into production software.
+                        Built a full ecosystem of healthcare AI applications — clinical decision support, patient simulation,
+                        scheduling, alerting, and education tools — with a unified architecture, cross-app data flows, and local-first privacy design.
                         <br><br>
-                        The speed wasn't the point. The design decisions behind the tools — 
-                        the acuity-adaptive interfaces, the scope-of-practice guardrails, the physiological accuracy — 
-                        those came from clinical domain knowledge that can't be searched or prompted into existence.
+                        The design decisions behind the tools —
+                        the acuity-adaptive interfaces, the scope-of-practice guardrails, the physiological accuracy —
+                        come from clinical domain knowledge that can't be searched or prompted into existence.
                     </p>
                 </div>
 
                 <div class="timeline-item">
                     <div class="timeline-dot"></div>
-                    <div class="timeline-label">PRESENT</div>
-                    <h3 class="timeline-title">Active Validation & Commercial Development</h3>
+                    <div class="timeline-label">2026</div>
+                    <h3 class="timeline-title">Engine Development & Production Hardening</h3>
                     <p class="timeline-description">
-                        PatientSim is undergoing <span class="highlight">active clinical validation</span> with ED nursing staff during mandated education sessions, 
-                        with feedback concentrated on UI refinement rather than clinical accuracy. 
-                        Pursuing SBIR/STTR funding and Pennsylvania Innovation Program grants. 
-                        Exploring enterprise deployment pathways for the file management and scheduling tools within the health system.
+                        Built a <span class="highlight">multi-agent physiological simulation engine</span> —
+                        an async Python/PyTorch system with GPU-accelerated computation and real-time WebSocket-driven waveform rendering.
+                        Provisional patent filed for the underlying architecture.
                         <br><br>
-                        Seeking roles at the intersection of clinical expertise and AI product development — 
-                        companies building tools for clinicians who need someone at the table 
-                        who has actually used, broken, and lived inside the systems they're replacing.
+                        Currently in production hardening: CI/CD pipelines, Docker containerization,
+                        and clinical validation with ED nursing staff.
+                        Seeking roles at the intersection of clinical expertise and AI product development —
+                        companies building tools for clinicians who need someone at the table
+                        who has actually used and lived inside the systems they're replacing.
                     </p>
                 </div>
             </div>
@@ -609,24 +629,24 @@
                     <p class="contact-value">Clinical problem first. Architecture second. Cognitive load reduction as a primary success metric.</p>
                 </div>
                 <div class="contact-card">
-                    <div class="contact-title">AI Platforms</div>
-                    <p class="contact-value">Google Gemini, Claude, Vertex AI · RAG Architecture · Multi-Model Orchestration · Local-First Privacy Design</p>
+                    <div class="contact-title">AI & Safety</div>
+                    <p class="contact-value">Multi-Model AI · Human-in-the-Loop Validation · RAG for Protocol Adherence · Multi-Model Verification</p>
                 </div>
                 <div class="contact-card">
                     <div class="contact-title">Clinical Domain</div>
                     <p class="contact-value">Emergency Medicine · Critical Care · Clinical Education · Epic ASAP · Trauma · Scope-of-Practice Frameworks</p>
                 </div>
                 <div class="contact-card">
+                    <div class="contact-title">Backend Stack</div>
+                    <p class="contact-value">Python · PyTorch · asyncio · CUDA · WebSocket · Docker</p>
+                </div>
+                <div class="contact-card">
                     <div class="contact-title">Frontend Stack</div>
-                    <p class="contact-value">React · TypeScript · Zustand · Tailwind · Vite · Canvas/WebGL · Three.js</p>
+                    <p class="contact-value">React 19 · TypeScript · Vite · Tailwind · XState · Canvas/WebGL</p>
                 </div>
                 <div class="contact-card">
                     <div class="contact-title">Compliance Focus</div>
-                    <p class="contact-value">HIPAA-conscious architecture · PHI detection & de-identification · Policy-aligned guardrails · ANCC continuing education standards</p>
-                </div>
-                <div class="contact-card">
-                    <div class="contact-title">Target Roles</div>
-                    <p class="contact-value">Clinical AI Product Manager · Health Tech Engineer · Conversational Designer for Healthcare AI · Clinical UX Researcher</p>
+                    <p class="contact-value">HIPAA-conscious architecture · PHI detection & de-identification · FHIR/DICOM awareness · ANCC CE standards</p>
                 </div>
             </div>
         </section>
@@ -657,8 +677,8 @@
     </div>
 
     <footer>
-        <p>© 2026 Michael Giardina, BSN, RN, CEN &nbsp;·&nbsp; Clinical AI Designer & Builder</p>
-        <p style="margin-top: 0.5rem; opacity: 0.6;">For Clinicians. By Clinicians. From the Bedside to the Codebase.</p>
+        <p>&copy; 2026 Michael Giardina, BSN, RN, CEN &nbsp;&middot;&nbsp; Trimergent Tech LLC</p>
+        <p style="margin-top: 0.5rem; opacity: 0.6;">By Clinicians. For Clinicians. From the Bedside to the Codebase.</p>
     </footer>
 
     <script>
