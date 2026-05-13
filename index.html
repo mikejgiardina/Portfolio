@@ -304,61 +304,90 @@
             </div>
         </header>
 
-        <!-- APPS -->
+        <!-- KYMORA: ENGINE + SIMS + CONSUMER -->
         <section class="section">
             <div class="section-header">
                 <span class="section-number">01</span>
-                <h2 class="section-title">The Trimergent Ecosystem</h2>
+                <h2 class="section-title">Kymora</h2>
                 <div class="section-divider"></div>
             </div>
             <p class="section-intro">
-                Each tool was designed to solve a specific problem observed in emergency and critical care.
-                The clinical problem comes first. The architecture follows.
+                The Kymora product line: the physiological engine, the simulators built on it, and the iOS application that runs a Core ML surrogate of it on-device.
             </p>
 
             <div class="apps-grid">
 
-                <!-- Body Simulator — Flagship -->
+                <!-- Computational Physiology Engine — Flagship -->
                 <div class="app-card flagship">
-                    <div class="app-number">FLAGSHIP</div>
-                    <h3 class="app-title">Computational Physiology Simulator</h3>
+                    <div class="app-number">ENGINE</div>
+                    <h3 class="app-title">Computational Physiology Engine</h3>
                     <p class="app-subtitle">Multi-Agent Physiological Simulation Engine</p>
                     <div class="flagship-inner">
                         <div>
                             <div class="app-problem">
                                 <span class="app-problem-label">Clinical Problem</span>
-                                Clinical simulation platforms are either low-fidelity or prohibitively expensive. Nurses and educators need high-fidelity, on-demand patient simulation that produces emergent clinical behavior — not scripted scenarios.
+                                Clinical simulation platforms are either low-fidelity or prohibitively expensive. Educators, researchers, and developers need a physiologically grounded engine where clinical behavior follows from underlying mechanisms — not from scripted scenarios.
                             </div>
                             <p class="app-description">
-                                A full-stack physiological simulation engine where clinical physiology computed from underlying mechanisms rather than hard-coded scripts.
-                                Built on an async multi-agent architecture with real-time waveform rendering.
+                                A multi-agent physiology engine where physiology computed from underlying mechanisms across cellular, tissue, regional, and system levels. Async Python/PyTorch architecture with GPU-accelerated batch computation for population-scale studies, and a Core ML surrogate path for on-device inference.
                             </p>
                         </div>
                         <div>
                             <ul class="app-features">
-                                <li>Multi-agent physiological engine (Python, PyTorch, asyncio)</li>
-                                <li>4-channel real-time waveform rendering (ECG, arterial, pleth, capno)</li>
-                                <li>Physiology-driven behavior — not scripted behavior</li>
-                                <li>GPU-accelerated batch computation for population-scale studies</li>
-                                <li>React/TypeScript frontend with WebSocket bridge</li>
-                                <li>Evidence-based pharmacokinetics and clinical scoring</li>
+                                <li>Physiologically grounded architecture</li>
+                                <li>Physiology-driven behavior — not hard-coded scripts</li>
+                                <li>GPU-accelerated batch for population-scale studies</li>
+                                <li>Evidence-based pharmacokinetic library</li>
+                                <li>Clinical scoring: SOFA, qSOFA, NEWS2, GCS</li>
+                                <li>Core ML surrogate export for on-device inference</li>
+                                <li>Provisional patent filed February 2026</li>
                             </ul>
                             <div class="app-card-footer">
                                 <div>
                                     <span class="tech-badge">Python</span>
                                     <span class="tech-badge">PyTorch</span>
                                     <span class="tech-badge">CUDA</span>
-                                    <span class="tech-badge">React</span>
-                                    <span class="tech-badge">WebSocket</span>
+                                    <span class="tech-badge">asyncio</span>
+                                    <span class="tech-badge">Core ML</span>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
+                <!-- Body Simulator -->
+                <div class="app-card">
+                    <div class="app-number">SIMULATOR</div>
+                    <h3 class="app-title">Body Simulator</h3>
+                    <p class="app-subtitle">Clinical Simulator Front-End</p>
+                    <div class="app-problem">
+                        <span class="app-problem-label">Clinical Problem</span>
+                        Bedside-quality patient simulators are typically locked into expensive vendor mannequins. Educators and researchers need a software-only simulator that pairs the physiological engine with a real clinical interface.
+                    </div>
+                    <p class="app-description">
+                        React/TypeScript front-end driven by a live WebSocket bridge to the engine. Real-time vitals, 4-channel waveforms, and pharmacological response — all rendered from engine state, not scripted playback.
+                    </p>
+                    <ul class="app-features">
+                        <li>Live WebSocket bridge to the engine</li>
+                        <li>4-channel waveforms: ECG, arterial, pleth, capno</li>
+                        <li>Real-time vitals and pharmacological response</li>
+                        <li>Code-split bundle for fast load</li>
+                        <li>Graceful fallback when bridge unavailable</li>
+                    </ul>
+                    <div class="app-card-footer">
+                        <div>
+                            <span class="tech-badge">React</span>
+                            <span class="tech-badge">TypeScript</span>
+                            <span class="tech-badge">WebSocket</span>
+                            <span class="tech-badge">Canvas</span>
+                        </div>
+                        <span class="launch-btn">DEMO AVAILABLE</span>
+                    </div>
+                </div>
+
                 <!-- PatientSim -->
                 <div class="app-card">
-                    <div class="app-number">APP_01</div>
+                    <div class="app-number">TRAINING SIM</div>
                     <h3 class="app-title">PatientSim</h3>
                     <p class="app-subtitle">AI-Driven Clinical Training Simulator</p>
                     <div class="app-problem">
@@ -386,9 +415,55 @@
                     </div>
                 </div>
 
+                <!-- Project Atlas / Kymora -->
+                <div class="app-card">
+                    <div class="app-number">CONSUMER iOS</div>
+                    <h3 class="app-title">Project Atlas</h3>
+                    <p class="app-subtitle">Kymora — Consumer iOS Application</p>
+                    <div class="app-problem">
+                        <span class="app-problem-label">Consumer Problem</span>
+                        Patients on complex medication regimens have no consumer-grade tool that pairs personal med tracking with a physiologically grounded model of how those drugs interact with their own biometrics.
+                    </div>
+                    <p class="app-description">
+                        Native iOS application pairing on-device medication tracking with a Core ML surrogate of the physiological engine — so drug-context awareness runs locally, without sending biometric data to a server.
+                    </p>
+                    <ul class="app-features">
+                        <li>Native SwiftUI app targeting iOS 17+</li>
+                        <li>HealthKit integration for biometric context</li>
+                        <li>Core ML surrogate exported from the physiological engine</li>
+                        <li>Local-first: on-device computation, privacy-preserving</li>
+                        <li>Medication scanning, organization, and reminders</li>
+                    </ul>
+                    <div class="app-card-footer">
+                        <div>
+                            <span class="tech-badge">Swift</span>
+                            <span class="tech-badge">SwiftUI</span>
+                            <span class="tech-badge">HealthKit</span>
+                            <span class="tech-badge">Core ML</span>
+                        </div>
+                        <span class="launch-btn">IN DEVELOPMENT</span>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- TRIMERGENT: PROJECTS -->
+        <section class="section">
+            <div class="section-header">
+                <span class="section-number">02</span>
+                <h2 class="section-title">Trimergent Projects</h2>
+                <div class="section-divider"></div>
+            </div>
+            <p class="section-intro">
+                The wider Trimergent Tech project portfolio — tooling built around bedside problems observed across emergency and critical care. Each is a discrete architectural demonstration rather than a fully productized release.
+            </p>
+
+            <div class="apps-grid">
+
                 <!-- Nurse Orchestrator -->
                 <div class="app-card">
-                    <div class="app-number">APP_02</div>
+                    <div class="app-number">PROJECT_01</div>
                     <h3 class="app-title">Nurse Orchestrator</h3>
                     <p class="app-subtitle">Contextual Clinical Decision Support</p>
                     <div class="app-problem">
@@ -417,7 +492,7 @@
 
                 <!-- UnitScheduler Pro -->
                 <div class="app-card">
-                    <div class="app-number">APP_03</div>
+                    <div class="app-number">PROJECT_02</div>
                     <h3 class="app-title">UnitScheduler Pro</h3>
                     <p class="app-subtitle">Operational Command Console</p>
                     <div class="app-problem">
@@ -445,7 +520,7 @@
 
                 <!-- Media Manager -->
                 <div class="app-card">
-                    <div class="app-number">APP_04</div>
+                    <div class="app-number">PROJECT_03</div>
                     <h3 class="app-title">Emergent Media Manager</h3>
                     <p class="app-subtitle">HIPAA-Aware Medical Data Layer</p>
                     <div class="app-problem">
@@ -473,7 +548,7 @@
 
                 <!-- CIWE -->
                 <div class="app-card">
-                    <div class="app-number">APP_05</div>
+                    <div class="app-number">PROJECT_04</div>
                     <h3 class="app-title">Clinical Information Workflow Engine</h3>
                     <p class="app-subtitle">Nurse Educator Automation Platform</p>
                     <div class="app-problem">
@@ -501,7 +576,7 @@
 
                 <!-- Alerter -->
                 <div class="app-card">
-                    <div class="app-number">APP_06</div>
+                    <div class="app-number">PROJECT_05</div>
                     <h3 class="app-title">Alerter</h3>
                     <p class="app-subtitle">Clinical Alerting System</p>
                     <div class="app-problem">
@@ -529,7 +604,7 @@
 
                 <!-- Ecosystem Navigator -->
                 <div class="app-card">
-                    <div class="app-number">APP_07</div>
+                    <div class="app-number">PROJECT_06</div>
                     <h3 class="app-title">Ecosystem Navigator</h3>
                     <p class="app-subtitle">Platform Architecture Map</p>
                     <div class="app-problem">
@@ -554,13 +629,42 @@
                     </div>
                 </div>
 
+                <!-- Clinical Article Library -->
+                <div class="app-card">
+                    <div class="app-number">PROJECT_07</div>
+                    <h3 class="app-title">Clinical Article Library</h3>
+                    <p class="app-subtitle">Open-Source Nursing Education</p>
+                    <div class="app-problem">
+                        <span class="app-problem-label">Education Problem</span>
+                        Bedside-relevant continuing education is often paywalled, generic, or disconnected from the clinical realities nurses face during a shift.
+                    </div>
+                    <p class="app-description">
+                        A growing library of clinical articles written from bedside experience — emergency medicine, critical care, pharmacology, clinical reasoning. ANCC-aligned style, evidence-cited, open access.
+                    </p>
+                    <ul class="app-features">
+                        <li>85+ published clinical articles</li>
+                        <li>Emergency medicine, critical care, pharmacology</li>
+                        <li>Evidence-cited with literature references</li>
+                        <li>ANCC-aligned content style</li>
+                        <li>Static-site build (Astro), source-available</li>
+                    </ul>
+                    <div class="app-card-footer">
+                        <div>
+                            <span class="tech-badge">Astro</span>
+                            <span class="tech-badge">Markdown</span>
+                            <span class="tech-badge">Open Source</span>
+                        </div>
+                        <a href="https://github.com/mikejgiardina/docs/tree/main/education/Ed_Site" class="launch-btn" target="_blank" rel="noopener noreferrer" style="text-decoration: none; cursor: pointer;">VIEW SOURCE →</a>
+                    </div>
+                </div>
+
             </div>
         </section>
 
         <!-- JOURNEY -->
         <section class="section">
             <div class="section-header">
-                <span class="section-number">02</span>
+                <span class="section-number">03</span>
                 <h2 class="section-title">Background</h2>
                 <div class="section-divider"></div>
             </div>
@@ -599,14 +703,14 @@
                 <div class="timeline-item">
                     <div class="timeline-dot"></div>
                     <div class="timeline-label">2026</div>
-                    <h3 class="timeline-title">Engine Development & Production Hardening</h3>
+                    <h3 class="timeline-title">From a Single Engine to a Product Line</h3>
                     <p class="timeline-description">
-                        Built a <span class="highlight">multi-agent physiological simulation engine</span> —
-                        an async Python/PyTorch system with GPU-accelerated computation and real-time WebSocket-driven waveform rendering.
-                        Provisional patent filed for the underlying architecture.
+                        The engine grew into a <span class="highlight">product line</span> in 2026.
+                        A clinical-grade simulator runs on top of it for educators and researchers.
+                        A Core ML surrogate of the engine, compiled for on-device iOS inference, sits at the core of the Kymora consumer app.
                         <br><br>
-                        Currently in production hardening: CI/CD pipelines, Docker containerization,
-                        and clinical validation with ED nursing staff.
+                        Provisional patent filed February 2026.
+                        <br><br>
                         Seeking roles at the intersection of clinical expertise and AI product development —
                         companies building tools for clinicians who need someone at the table
                         who has actually used and lived inside the systems they're replacing.
@@ -618,7 +722,7 @@
         <!-- TECHNICAL PROFILE -->
         <section class="section">
             <div class="section-header">
-                <span class="section-number">03</span>
+                <span class="section-number">04</span>
                 <h2 class="section-title">Technical Profile</h2>
                 <div class="section-divider"></div>
             </div>
@@ -654,7 +758,7 @@
         <!-- CONNECT -->
         <section class="section">
             <div class="section-header">
-                <span class="section-number">04</span>
+                <span class="section-number">05</span>
                 <h2 class="section-title">Connect</h2>
                 <div class="section-divider"></div>
             </div>
@@ -670,7 +774,7 @@
                 </div>
                 <div class="contact-card">
                     <div class="contact-title">Email</div>
-                    <p class="contact-value"><a href="mailto:mike.giardina@gmail.com">mike.giardina@gmail.com</a></p>
+                    <p class="contact-value"><a href="mailto:mikejgiardina@gmail.com">mikejgiardina@gmail.com</a></p>
                 </div>
             </div>
         </section>
