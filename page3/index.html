@@ -1,0 +1,816 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>At the Threshold — Hyperkalemia in Real Time</title>
+<meta name="description" content="Potassium is climbing and the ECG will tell you before the lab does. A Kymora Clinical Story Mode piece — scroll the case and the waveform morphs with the potassium.">
+<meta name="theme-color" content="#0B1014">
+<meta name="author" content="Mike Giardina BSN, RN, CEN">
+<meta property="og:type" content="article">
+<meta property="og:title" content="At the Threshold — Hyperkalemia, Clinical Story Mode">
+<meta property="og:description" content="Watch the ECG morph as the potassium climbs — peaked T, wide QRS, sine wave — then recover. A new way to present clinical education.">
+<meta property="og:site_name" content="Kymora Clinical Education">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="At the Threshold — Hyperkalemia, Clinical Story Mode">
+<meta name="twitter:description" content="The waveform is the lesson. Scroll and watch potassium bend the ECG.">
+<style>
+  html { background: #0B1014; }
+  :root {
+    --monitor:   #0B1014;
+    --bezel:     #141C22;
+    --bezel-2:   #1B262E;
+    --line:      #26333B;
+    --green:     #35E08A;
+    --green-dim: #1f7a4d;
+    --amber:     #F5B544;
+    --crimson:   #E23B4E;
+    --crimson-d: #8f1e2c;
+    --electric:  #38BDF8;
+    --electric-d:#1e6f97;
+    --paper:     #F2ECE1;
+    --paper-2:   #E7DFD0;
+    --ink:       #1A1714;
+    --ink-soft:  #4a423a;
+    --slate:     #8A9BA5;
+    --slate-dim: #5a6b74;
+    --mono: ui-monospace, "SF Mono", "Cascadia Code", "Roboto Mono", Menlo, Consolas, monospace;
+    --serif: "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua", Georgia, serif;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background:
+      radial-gradient(120% 80% at 50% -10%, #0f1820 0%, var(--monitor) 55%) fixed;
+    color: var(--slate);
+    font-family: var(--serif);
+    -webkit-font-smoothing: antialiased;
+    line-height: 1.6;
+  }
+
+  .wrap { max-width: 760px; margin: 0 auto; padding: 0 20px; }
+
+  /* ---------- sticky monitor bar ---------- */
+  .monitor {
+    position: sticky; top: 0; z-index: 50;
+    background: linear-gradient(180deg, #0e161c, #0a1116);
+    border-bottom: 1px solid var(--line);
+    box-shadow: 0 10px 30px -18px #000;
+  }
+  .monitor-inner {
+    max-width: 960px; margin: 0 auto;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 14px;
+    padding: 8px 16px;
+    align-items: stretch;
+  }
+  .m-left { display: flex; flex-direction: column; justify-content: center; gap: 4px; min-width: 130px; }
+  .m-clock {
+    font-family: var(--mono);
+    font-size: 12px; letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--slate-dim);
+  }
+  .m-clock b { color: var(--green); font-variant-numeric: tabular-nums; }
+  .m-status {
+    font-family: var(--mono);
+    font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase;
+    display: inline-flex; align-items: center; gap: 6px;
+    color: var(--green);
+  }
+  .m-status .dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--green); box-shadow: 0 0 8px var(--green);
+  }
+
+  .m-right {
+    display: grid;
+    grid-template-columns: 1.4fr repeat(3, 0.72fr);
+    gap: 10px;
+    align-items: center;
+  }
+  .trace-cell {
+    background: #060b0e;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    height: 62px;
+    position: relative;
+    overflow: hidden;
+  }
+  canvas#trace { display: block; width: 100%; height: 100%; }
+  .vital {
+    background: #060b0e;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    height: 62px;
+    padding: 5px 8px;
+    display: flex; flex-direction: column; justify-content: center;
+    font-family: var(--mono);
+  }
+  .vital .lab {
+    font-size: 9px; letter-spacing: 0.16em; color: var(--slate-dim); text-transform: uppercase;
+  }
+  .vital .num {
+    font-size: 24px; font-weight: 700; line-height: 1; font-variant-numeric: tabular-nums;
+    color: var(--val, var(--green));
+  }
+  .vital .unit { font-size: 9px; color: var(--slate-dim); letter-spacing: 0.08em; }
+  .vital.k .num { color: var(--kval, var(--green)); }
+  .vital.qrs .num { font-size: 20px; color: var(--qval, var(--green)); }
+
+  /* alarm state */
+  .monitor.alarm { animation: bezelFlash 1s steps(1) infinite; }
+  .monitor.alarm .m-status { color: var(--crimson); }
+  .monitor.alarm .m-status .dot { background: var(--crimson); box-shadow: 0 0 10px var(--crimson); }
+  @keyframes bezelFlash {
+    0%, 50% { background: linear-gradient(180deg, #1a0d10, #150a0d); }
+    50.01%, 100% { background: linear-gradient(180deg, #0e161c, #0a1116); }
+  }
+  .monitor.alarm .vital.critical { animation: tileFlash 1s steps(1) infinite; }
+  @keyframes tileFlash {
+    0%, 50% { background: #2a0c12; border-color: var(--crimson); }
+    50.01%, 100% { background: #060b0e; border-color: var(--line); }
+  }
+
+  /* ---------- hero ---------- */
+  header.hero { padding: 96px 0 70px; text-align: center; }
+  .eyebrow {
+    font-family: var(--mono);
+    font-size: 11px; letter-spacing: 0.34em; text-transform: uppercase;
+    color: var(--electric-d);
+    margin-bottom: 26px;
+  }
+  header.hero h1 {
+    font-family: var(--serif); font-weight: 700;
+    font-size: clamp(2.6rem, 8vw, 4.6rem);
+    line-height: 0.98; letter-spacing: -0.01em; text-wrap: balance;
+    color: var(--paper); margin: 0 0 22px;
+  }
+  header.hero h1 em { font-style: italic; color: var(--electric); }
+  .dek { font-size: 1.14rem; color: var(--slate); max-width: 31em; margin: 0 auto; text-wrap: pretty; }
+  .byline {
+    margin-top: 34px; font-family: var(--mono);
+    font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--slate-dim);
+  }
+  .scroll-cue {
+    margin-top: 54px; font-family: var(--mono);
+    font-size: 10px; letter-spacing: 0.3em; text-transform: uppercase; color: var(--slate-dim);
+  }
+  .scroll-cue span { display: block; margin-top: 8px; color: var(--electric-d); animation: bob 2.2s ease-in-out infinite; }
+  @keyframes bob { 0%,100% { transform: translateY(0);} 50% { transform: translateY(5px);} }
+
+  /* ---------- beats ---------- */
+  section.beat { padding: 40px 0; }
+  .timecard {
+    font-family: var(--mono);
+    font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--slate-dim);
+    display: flex; align-items: center; gap: 12px; margin-bottom: 20px;
+  }
+  .timecard .t { color: var(--green); }
+  .timecard::after { content: ""; flex: 1; height: 1px; background: var(--line); }
+  .timecard.crit .t { color: var(--crimson); }
+
+  .story {
+    background: var(--paper); color: var(--ink);
+    border-radius: 4px; padding: 34px 38px;
+    box-shadow: 0 30px 60px -40px #000, inset 0 0 0 1px var(--paper-2);
+    font-size: 1.12rem; line-height: 1.68;
+  }
+  .story.tight { padding: 26px 32px; }
+  .story p { margin: 0 0 1em; text-wrap: pretty; }
+  .story p:last-child { margin-bottom: 0; }
+  .story .drop::first-letter {
+    font-size: 3.4rem; line-height: 0.8; float: left;
+    padding: 6px 10px 0 0; color: var(--electric); font-weight: 700;
+  }
+  .story .said { color: var(--ink-soft); font-style: italic; }
+  .story b { color: #000; }
+
+  .decode {
+    margin-top: 18px; background: var(--bezel);
+    border: 1px solid var(--line); border-left: 3px solid var(--electric);
+    border-radius: 6px; padding: 22px 24px;
+  }
+  .decode.crimson { border-left-color: var(--crimson); }
+  .decode.amber { border-left-color: var(--amber); }
+  .decode.green { border-left-color: var(--green); }
+  .decode h3 {
+    font-family: var(--mono); font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--electric); margin: 0 0 12px; display: flex; align-items: center; gap: 8px;
+  }
+  .decode.crimson h3 { color: var(--crimson); }
+  .decode.amber h3 { color: var(--amber); }
+  .decode.green h3 { color: var(--green); }
+  .decode p { margin: 0 0 0.85em; font-size: 1rem; color: #c4d0d6; line-height: 1.62; }
+  .decode p:last-child { margin-bottom: 0; }
+  .decode strong { color: var(--paper); font-weight: 600; }
+  .decode .chip {
+    display: inline-block; font-family: var(--mono); font-size: 10px;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    padding: 2px 7px; border-radius: 3px; margin: 2px 4px 2px 0;
+    background: #0c1418; border: 1px solid var(--line); color: var(--slate);
+  }
+
+  /* nernst / safety-margin meter */
+  .margin-meter { margin-top: 10px; display: grid; gap: 8px; }
+  .mm-row { display: grid; grid-template-columns: 132px 1fr; gap: 12px; align-items: center; font-family: var(--mono); font-size: 11px; }
+  .mm-row .lbl { color: var(--slate); }
+  .mm-bar { height: 16px; border-radius: 3px; background: #0c1418; border: 1px solid var(--line); position: relative; overflow: hidden; }
+  .mm-fill { position: absolute; left: 0; top: 0; bottom: 0; }
+  .mm-row .val { position: absolute; right: 6px; top: 50%; transform: translateY(-50%); font-size: 10px; color: var(--paper); }
+
+  /* orders list */
+  .orders { list-style: none; margin: 8px 0 0; padding: 0; display: grid; gap: 8px; }
+  .orders li {
+    font-family: var(--mono); font-size: 12.5px; color: #c4d0d6;
+    padding: 9px 12px; background: #0c1418; border: 1px solid var(--line); border-radius: 5px;
+    display: flex; gap: 10px; align-items: baseline;
+  }
+  .orders li::before { content: "▸"; color: var(--electric); }
+  .orders li b { color: var(--paper); font-weight: 600; }
+
+  /* decision fork */
+  .fork { margin-top: 18px; }
+  .fork .q {
+    font-family: var(--mono); font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--amber); margin-bottom: 14px;
+  }
+  .choices { display: grid; gap: 12px; }
+  @media (min-width: 620px) { .choices { grid-template-columns: 1fr 1fr; } }
+  .choice {
+    text-align: left; cursor: pointer;
+    background: var(--bezel); border: 1px solid var(--line); border-radius: 8px;
+    padding: 18px; color: var(--slate); font-family: var(--serif); font-size: 1rem;
+    transition: border-color .15s, transform .1s;
+  }
+  .choice:hover { border-color: var(--slate-dim); transform: translateY(-2px); }
+  .choice:focus-visible { outline: 2px solid var(--electric); outline-offset: 2px; }
+  .choice .h { font-family: var(--mono); font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--paper); display: block; margin-bottom: 8px; }
+  .choice[data-picked] { pointer-events: none; }
+  .choice.right[data-picked] { border-color: var(--green); background: #0f1d16; }
+  .choice.wrong[data-picked] { border-color: var(--crimson); background: #1c0e11; opacity: 0.85; }
+  .verdict-box {
+    margin-top: 14px; font-size: 1rem; line-height: 1.6;
+    padding: 16px 18px; border-radius: 8px; display: none;
+    background: #0c1418; border: 1px solid var(--line); color: #c4d0d6;
+  }
+  .verdict-box.show { display: block; }
+  .verdict-box strong { color: var(--paper); }
+  .verdict-box .tag { font-family: var(--mono); font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; display: block; margin-bottom: 6px; }
+  .verdict-box.good .tag { color: var(--green); }
+  .verdict-box.bad .tag { color: var(--crimson); }
+
+  /* ---------- interactive: K slider ECG ---------- */
+  .tool {
+    margin-top: 18px;
+    background: linear-gradient(180deg, #101a20, #0c1419);
+    border: 1px solid var(--line); border-radius: 8px; padding: 24px;
+  }
+  .tool h3 { font-family: var(--mono); font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--paper); margin: 0 0 4px; }
+  .tool .sub { font-family: var(--serif); font-size: 0.95rem; color: var(--slate); margin: 0 0 18px; }
+  .slider-ecg { background: #060b0e; border: 1px solid var(--line); border-radius: 6px; height: 120px; overflow: hidden; }
+  canvas#sliderTrace { display: block; width: 100%; height: 100%; }
+  .slider-row { display: flex; align-items: center; gap: 16px; margin-top: 16px; }
+  .slider-row input[type=range] { flex: 1; accent-color: var(--electric); height: 4px; }
+  .slider-readout { font-family: var(--mono); min-width: 92px; text-align: right; }
+  .slider-readout .kv { font-size: 30px; font-weight: 700; line-height: 1; color: var(--kslide, var(--green)); font-variant-numeric: tabular-nums; }
+  .slider-readout .ku { font-size: 9px; letter-spacing: 0.14em; color: var(--slate-dim); text-transform: uppercase; }
+  .slider-finding {
+    margin-top: 14px; font-family: var(--serif); font-size: 1rem; color: #c4d0d6;
+    border-top: 1px solid var(--line); padding-top: 14px; min-height: 3em;
+  }
+  .slider-finding b { color: var(--paper); }
+  .slider-finding .stage { font-family: var(--mono); font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--kslide, var(--green)); display: block; margin-bottom: 4px; }
+
+  /* ---------- interactive: classifier ---------- */
+  .classifier { margin-top: 18px; background: linear-gradient(180deg, #101a20, #0c1419); border: 1px solid var(--line); border-radius: 8px; padding: 24px; }
+  .classifier h3 { font-family: var(--mono); font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--paper); margin: 0 0 4px; }
+  .classifier .sub { font-family: var(--serif); font-size: 0.95rem; color: var(--slate); margin: 0 0 18px; }
+  .pool { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 18px; min-height: 20px; }
+  .drug {
+    font-family: var(--mono); font-size: 12px; letter-spacing: 0.02em;
+    background: #0b1216; color: var(--paper);
+    border: 1px solid var(--line); border-radius: 20px;
+    padding: 9px 15px; cursor: pointer; transition: transform .1s, border-color .15s;
+  }
+  .drug:hover { border-color: var(--electric); transform: translateY(-2px); }
+  .drug:focus-visible { outline: 2px solid var(--electric); outline-offset: 2px; }
+  .buckets { display: grid; gap: 10px; }
+  @media (min-width: 620px) { .buckets { grid-template-columns: repeat(3, 1fr); } }
+  .bucket { background: #0a1216; border: 1px solid var(--line); border-radius: 8px; padding: 14px; min-height: 130px; }
+  .bucket .bt { font-family: var(--mono); font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 4px; }
+  .bucket .bd { font-family: var(--serif); font-size: 0.82rem; color: var(--slate-dim); margin-bottom: 12px; line-height: 1.4; }
+  .bucket.protect .bt { color: var(--electric); }
+  .bucket.shift .bt { color: var(--amber); }
+  .bucket.remove .bt { color: var(--green); }
+  .bucket.protect { border-top: 2px solid var(--electric); }
+  .bucket.shift { border-top: 2px solid var(--amber); }
+  .bucket.remove { border-top: 2px solid var(--green); }
+  .placed { display: grid; gap: 6px; }
+  .placed .p {
+    font-family: var(--mono); font-size: 11.5px; color: var(--paper);
+    background: #0c1418; border: 1px solid var(--line); border-radius: 5px; padding: 7px 9px;
+    animation: pop .25s ease;
+  }
+  .placed .p small { display: block; color: var(--slate-dim); font-family: var(--serif); font-size: 0.82rem; margin-top: 3px; letter-spacing: 0; text-transform: none; line-height: 1.35; }
+  @keyframes pop { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+  .cls-note { margin-top: 16px; font-family: var(--serif); font-size: 0.98rem; color: #c4d0d6; border-top: 1px solid var(--line); padding-top: 14px; min-height: 1.5em; }
+  .cls-note b { color: var(--paper); }
+
+  /* outro */
+  .outro { padding: 70px 0 40px; text-align: center; }
+  .outro .rule { width: 60px; height: 2px; background: var(--electric); margin: 0 auto 30px; }
+  .outro h2 { font-family: var(--serif); font-size: 1.9rem; color: var(--paper); margin: 0 0 16px; text-wrap: balance; }
+  .outro p { max-width: 34em; margin: 0 auto 1em; color: var(--slate); font-size: 1.05rem; }
+  footer.foot {
+    padding: 30px 0 60px; text-align: center;
+    font-family: var(--mono); font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--slate-dim);
+  }
+  .disc { max-width: 44em; margin: 12px auto 0; font-family: var(--serif); text-transform: none; letter-spacing: 0; font-size: 0.82rem; color: var(--slate-dim); line-height: 1.5; }
+
+  @media (max-width: 560px) {
+    .m-right { grid-template-columns: 1.2fr repeat(3, 1fr); gap: 6px; }
+    .vital .num { font-size: 17px; } .vital.qrs .num { font-size: 15px; }
+    .trace-cell, .vital { height: 54px; }
+    .story { padding: 26px 22px; }
+    .m-left { min-width: 92px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .monitor.alarm, .monitor.alarm .vital.critical, .scroll-cue span, .placed .p { animation: none !important; }
+    * { scroll-behavior: auto !important; }
+  }
+</style>
+</head>
+<body>
+
+<div class="monitor" id="monitor">
+  <div class="monitor-inner">
+    <div class="m-left">
+      <div class="m-clock">T+ <b id="clock">00:00</b></div>
+      <div class="m-status" id="mstatus"><span class="dot"></span><span id="statustxt">Monitoring</span></div>
+    </div>
+    <div class="m-right">
+      <div class="trace-cell"><canvas id="trace" width="360" height="124"></canvas></div>
+      <div class="vital hr"><div class="lab">HR</div><div class="num" id="v-hr" style="--val:var(--green)">58</div><div class="unit">bpm</div></div>
+      <div class="vital k critical"><div class="lab">K⁺ serum</div><div class="num" id="v-k" style="--kval:var(--slate-dim)">—</div><div class="unit">mEq/L</div></div>
+      <div class="vital qrs"><div class="lab">QRS</div><div class="num" id="v-qrs" style="--qval:var(--amber)">104</div><div class="unit">ms</div></div>
+    </div>
+  </div>
+</div>
+
+<header class="hero wrap">
+  <div class="eyebrow">Kymora · Clinical Story Mode · No. 2</div>
+  <h1>A Heart <em>at the Threshold</em></h1>
+  <p class="dek">Potassium is climbing, and the ECG will tell you before the lab does. The monitor above is his — watch the waveform bend as the number rises, and snap back when you treat it.</p>
+  <div class="byline">Adapted from the Season 2 scholarly article · Mike Giardina BSN, RN, CEN</div>
+  <div class="scroll-cue">Scroll to begin the case<span>▼</span></div>
+</header>
+
+<main>
+
+<!-- BEAT 1 -->
+<section class="beat wrap" data-hr="56" data-ecgk="6.3" data-k="pending" data-state="caution" data-clock="00:00">
+  <div class="timecard"><span class="t">00:00</span> Triage · arrives by wheelchair</div>
+  <div class="story">
+    <p class="drop">She's forty-nine and she apologizes for coming in. Missed her dialysis run on Tuesday — the ride fell through — and now her legs feel like sandbags and her lips won't stop tingling. She's calm. Too calm for what her heart is doing.</p>
+    <p>You get her onto the monitor before anything else, and the trace stops you: the QRS complexes are ordinary enough, but the <b>T waves are tall</b> — narrow, tented, pulling up to a point like circus tents. Her pulse is 56 and lazy. <span class="said">"I feel fine,"</span> she says. <span class="said">"Just tired."</span></p>
+  </div>
+  <div class="decode amber">
+    <h3>◇ The waveform is the first lab</h3>
+    <p>Those <strong>peaked T waves</strong> — narrow-based, symmetrical, tented — are the <strong>earliest ECG sign of hyperkalemia</strong>, and they show up before any blood comes back. In a dialysis patient who missed a session, that trace is a diagnosis you can act on now.</p>
+    <p>The rule the article is blunt about: a patient with reason to be hyperkalemic (renal failure, weakness, missed dialysis) <strong>gets an ECG immediately, and if the T waves are peaked, you treat before the lab confirms it.</strong> Don't wait for the number.</p>
+    <p><span class="chip">Peaked T = earliest sign</span><span class="chip">Bradycardia = worry</span><span class="chip">Treat before the draw</span></p>
+  </div>
+</section>
+
+<!-- BEAT 2 -->
+<section class="beat wrap" data-hr="54" data-ecgk="6.5" data-k="pending" data-state="caution" data-clock="00:04">
+  <div class="timecard"><span class="t">00:04</span> Why the tent?</div>
+  <div class="story tight">
+    <p>It's worth knowing what you're looking at, because it tells you where this is heading. Every one of her heart cells is sitting closer to its trigger than it should be.</p>
+  </div>
+  <div class="decode">
+    <h3>◇ The narrowing safety margin</h3>
+    <p>A resting cardiac cell sits at about <strong>−90 mV</strong>, and it fires at roughly <strong>−60 mV</strong>. That <strong>30 mV gap is the safety margin</strong> — the buffer between resting and firing. Potassium sets that resting voltage (Nernst): as serum K⁺ rises, the resting potential drifts <em>up</em> toward threshold, and the buffer shrinks.</p>
+    <div class="margin-meter" id="mm">
+      <div class="mm-row"><span class="lbl">K⁺ 4.0 · normal</span><div class="mm-bar"><span class="mm-fill" style="width:100%;background:linear-gradient(90deg,#1f7a4d,#35E08A)"></span><span class="val">30 mV buffer</span></div></div>
+      <div class="mm-row"><span class="lbl">K⁺ 6.3 · now</span><div class="mm-bar"><span class="mm-fill" style="width:50%;background:linear-gradient(90deg,#7a5a1f,#F5B544)"></span><span class="val">~15 mV</span></div></div>
+      <div class="mm-row"><span class="lbl">K⁺ 8+ · lethal</span><div class="mm-bar"><span class="mm-fill" style="width:8%;background:linear-gradient(90deg,#8f1e2c,#E23B4E)"></span><span class="val">~0 mV</span></div></div>
+    </div>
+    <p style="margin-top:12px;">Shrink the margin and you get the whole progression in order: <strong>peaked T</strong> (twitchy repolarization) → <strong>flattened P + widened QRS</strong> (conduction slows) → <strong>sine wave</strong> → asystole. The ECG is a voltmeter for how close she is to the edge.</p>
+  </div>
+</section>
+
+<!-- BEAT 3 -->
+<section class="beat wrap" data-hr="50" data-ecgk="6.9" data-k="7.3" data-state="critical" data-clock="00:09">
+  <div class="timecard crit"><span class="t">00:09</span> iSTAT back · K⁺ 7.3</div>
+  <div class="story">
+    <p>The point-of-care gas prints and there it is: potassium <b>7.3</b>. On the monitor, the P waves have gone shy and the QRS is starting to smear wider at the edges — the tent is becoming something worse. Heart rate drifting into the low 50s.</p>
+    <p>The resident reaches for the insulin. You stop them, because the order here is not the order you'd guess.</p>
+  </div>
+  <div class="fork" id="fork">
+    <div class="q">◇ Wide QRS, K⁺ 7.3, rate in the 50s — what goes in <em>first</em>?</div>
+    <div class="choices">
+      <button class="choice wrong" data-choice="insulin">
+        <span class="h">Insulin + dextrose</span>
+        Start lowering the potassium — drive it back into the cells.
+      </button>
+      <button class="choice right" data-choice="calcium">
+        <span class="h">Calcium gluconate</span>
+        Stabilize the membrane first, then lower the potassium.
+      </button>
+    </div>
+    <div class="verdict-box" id="forkverdict"></div>
+  </div>
+</section>
+
+<!-- BEAT 4 -->
+<section class="beat wrap" data-hr="60" data-ecgk="5.8" data-k="7.3" data-state="caution" data-clock="00:12">
+  <div class="timecard"><span class="t">00:12</span> Calcium · and a lesson in what it does</div>
+  <div class="story">
+    <p>Ten mL of 10% calcium gluconate, slow IV push over three minutes. You watch the monitor while it goes in, and within a couple of minutes the trace loosens — the QRS pulls back in, the T waves sit down, the P waves come back to visit. The heart looks, on screen, almost reassured.</p>
+    <p>Now look at the K⁺ tile. Still <b>7.3</b>.</p>
+  </div>
+  <div class="decode green">
+    <h3>◇ The most misunderstood drug in the room</h3>
+    <p>Calcium <strong>did not lower her potassium by a single point</strong> — and it was still exactly the right first move. Calcium raises the firing threshold back away from that drifted-up resting voltage, <strong>re-widening the safety margin</strong>. It buys the heart 30–60 minutes of protection while the drugs that actually lower K⁺ get to work.</p>
+    <p>That split — <strong>a calmer ECG sitting on top of an unchanged number</strong> — is the whole mental model of hyperkalemia. Onset 1–3 minutes; it is the first thing you give for any hyperkalemia <em>with</em> ECG changes. It is a shield, not a cure.</p>
+    <p><span class="chip">Onset 1–3 min</span><span class="chip">Lasts 30–60 min</span><span class="chip">On digoxin? push slow</span></p>
+  </div>
+</section>
+
+<!-- BEAT 5 -->
+<section class="beat wrap" data-hr="64" data-ecgk="5.6" data-k="6.1" data-state="caution" data-clock="00:22">
+  <div class="timecard"><span class="t">00:22</span> Now actually move the potassium</div>
+  <div class="story tight">
+    <p>Shield up, you go after the number. Two drugs to shove potassium back inside the cells where 98% of it belongs — and one pitfall you say out loud so nobody forgets it.</p>
+  </div>
+  <div class="decode">
+    <h3>◇ Shift therapy — temporary, but fast</h3>
+    <ul class="orders">
+      <li><b>Insulin 10 units IV + D50 25 g</b> — drives K⁺ into cells via the Na-K pump. Onset 10–20 min; drops K⁺ 0.5–1.2 mEq/L. Works even with no kidneys.</li>
+      <li><b>Albuterol 10–20 mg neb</b> — same pump, different key. Additive with insulin. Onset 20–30 min.</li>
+    </ul>
+    <p style="margin-top:12px;"><strong>The pitfall, said aloud:</strong> insulin without dextrose will lower her potassium and then drop her sugar into the floor. <strong>Always give the glucose</strong>, and check a fingerstick afterward — insulin outlasts a single amp of D50, so the hypoglycemia can arrive an hour later.</p>
+    <p>And know what shift buys you: it's a <strong>loan, not a payment</strong>. The potassium is hidden inside cells, not gone from the body. It will leak back out.</p>
+  </div>
+</section>
+
+<!-- BEAT 6: K slider tool -->
+<section class="beat wrap" data-hr="66" data-ecgk="5.6" data-k="6.1" data-state="caution" data-clock="00:30">
+  <div class="timecard"><span class="t">00:30</span> Feel the waveform bend</div>
+  <div class="story tight">
+    <p>Here's the thing that's hard to teach from a textbook plate, where every ECG is frozen at one number. Drag the potassium yourself and watch a single rhythm morph through the whole spectrum — the way hers did, only faster.</p>
+  </div>
+  <div class="tool" id="slidertool">
+    <h3>Potassium → ECG · drag it</h3>
+    <p class="sub">One lead, one patient. Move K⁺ and watch the morphology change.</p>
+    <div class="slider-ecg"><canvas id="sliderTrace" width="680" height="240"></canvas></div>
+    <div class="slider-row">
+      <input type="range" id="kslider" min="4" max="9.5" step="0.1" value="6.1" aria-label="Serum potassium level">
+      <div class="slider-readout"><div class="kv" id="ksliderval">6.1</div><div class="ku">mEq/L</div></div>
+    </div>
+    <div class="slider-finding" id="sliderfinding"></div>
+  </div>
+  <div class="decode amber" style="margin-top:14px;">
+    <h3>◇ The map is not the territory</h3>
+    <p>ECG changes <strong>track K⁺ loosely, not exactly</strong>. Some patients sit at 7+ with only tall T waves; others show a wide QRS at 6. Chronicity, calcium, and magnesium all bend the curve. So the ECG tells you <em>how unstable this heart is right now</em> — which is what you actually treat — while the serum number tells you <em>how much potassium you have to remove</em>. You need both.</p>
+  </div>
+</section>
+
+<!-- BEAT 7: classifier -->
+<section class="beat wrap" data-hr="70" data-ecgk="5.3" data-k="5.7" data-state="caution" data-clock="00:40">
+  <div class="timecard"><span class="t">00:40</span> Three jobs, not one</div>
+  <div class="story tight">
+    <p>By now her monitor looks almost normal and her potassium is trending down — but "trending down" is not "fixed," and the resident asks what's left to do. The answer is easier if you stop treating hyperkalemia as one problem. It's three jobs, and every drug does exactly one of them.</p>
+  </div>
+  <div class="classifier" id="classifier">
+    <h3>Protect · Shift · Remove — sort the shelf</h3>
+    <p class="sub">Tap each therapy. It drops into the one job it actually does.</p>
+    <div class="pool" id="pool"></div>
+    <div class="buckets">
+      <div class="bucket protect"><div class="bt">◇ Protect</div><div class="bd">Guards the heart. Changes no K⁺.</div><div class="placed" id="b-protect"></div></div>
+      <div class="bucket shift"><div class="bt">◇ Shift</div><div class="bd">Hides K⁺ in cells. Temporary.</div><div class="placed" id="b-shift"></div></div>
+      <div class="bucket remove"><div class="bt">◇ Remove</div><div class="bd">Takes K⁺ out of the body. Definitive.</div><div class="placed" id="b-remove"></div></div>
+    </div>
+    <div class="cls-note" id="clsnote">Only the <b>Remove</b> column ends the emergency. Everything else is buying time until it happens.</div>
+  </div>
+</section>
+
+<!-- BEAT 8 -->
+<section class="beat wrap" data-hr="74" data-ecgk="4.8" data-k="4.8" data-state="stable" data-clock="00:55">
+  <div class="timecard"><span class="t">00:55</span> The definitive move</div>
+  <div class="story">
+    <p>Insulin and albuterol bought the hour. Calcium bought the minutes. But she has no kidneys to pee the potassium out and no bowel trick fast enough to trust — so the only thing that actually <b>ends</b> this is the machine she missed on Tuesday. Nephrology is already placing the line.</p>
+    <p>Dialysis pulls the potassium out for real. On the monitor, the trace has forgotten it was ever a tent: ordinary P, tidy QRS, a T wave that sits back down where it belongs. Rate in the 70s. K⁺ 4.8.</p>
+  </div>
+  <div class="decode green">
+    <h3>◇ Removal is the only cure in ESRD</h3>
+    <p><strong>Hemodialysis is definitive</strong> for total-body hyperkalemia — it clears 1–2+ mEq/L and doesn't care whether she makes urine. Calcium protected, insulin and albuterol stalled, but in a dialysis-dependent patient <strong>only removal closes the case.</strong> Watch for <strong>rebound</strong>: potassium leaks back out of cells as the shift wears off, so the number can climb again after the run.</p>
+  </div>
+</section>
+
+<!-- BEAT 9 -->
+<section class="beat wrap" data-hr="76" data-ecgk="4.7" data-k="4.6" data-state="stable" data-clock="01:30">
+  <div class="timecard"><span class="t">01:30</span> Off to the unit</div>
+  <div class="story tight">
+    <p>Ninety minutes ago her heart was a few millivolts from quitting, and she apologized for the inconvenience. The save was never one dramatic drug — it was reading the waveform before the lab, shielding the membrane, stalling with the shift, and removing the load. In that order. Protect, shift, remove.</p>
+    <p>You watch the T wave sit quietly on the screen. Ordinary. Which, tonight, is the most beautiful shape it could make.</p>
+  </div>
+</section>
+
+<div class="outro wrap">
+  <div class="rule"></div>
+  <h2>The waveform did the teaching.</h2>
+  <p>Peaked T waves, the Nernst safety margin, calcium-that-doesn't-lower-potassium, the insulin-needs-dextrose trap, protect-shift-remove, dialysis as the only cure in ESRD — every beat of that is straight from the scholarly article. It was just wired to a monitor that moves.</p>
+  <p>A frozen ECG plate shows you one number. This shows you the <em>slope</em> — what the heart does as the potassium climbs, and what your drugs do to pull it back.</p>
+</div>
+
+<footer class="foot">
+  Kymora Clinical Education · Story Mode · No. 2
+  <p class="disc">Educational narrative adapted from a clinical teaching article grounded in peer-reviewed literature. Doses, thresholds, and ECG morphology are stylized to illustrate the referenced content and are not a substitute for current institutional protocols or clinical judgment. Patient is fictional; any resemblance to a real case is coincidental.</p>
+</footer>
+
+</main>
+
+<script>
+(function () {
+  "use strict";
+  var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  // ---------- ECG morphology by potassium ----------
+  // Four archetypes as functions of cycle phase p in [0,1], returning y (R peak ~1.0)
+  function wNormal(p) {
+    if (p < 0.10) return Math.sin(p / 0.10 * Math.PI) * 0.09;      // P
+    if (p < 0.16) return 0;
+    if (p < 0.19) return -0.12 * ((p - 0.16) / 0.03);              // Q
+    if (p < 0.235) return -0.12 + ((p - 0.19) / 0.045) * 1.12;     // R up
+    if (p < 0.27) return 1.0 - ((p - 0.235) / 0.035) * 1.25;       // R down to S
+    if (p < 0.31) return -0.25 + ((p - 0.27) / 0.04) * 0.25;       // S recover
+    if (p < 0.50) return 0;                                        // ST
+    if (p < 0.68) return Math.sin((p - 0.50) / 0.18 * Math.PI) * 0.26; // T
+    return 0;
+  }
+  function wPeaked(p) {                                            // tall, narrow, tented T
+    if (p < 0.10) return Math.sin(p / 0.10 * Math.PI) * 0.08;
+    if (p < 0.16) return 0;
+    if (p < 0.19) return -0.12 * ((p - 0.16) / 0.03);
+    if (p < 0.235) return -0.12 + ((p - 0.19) / 0.045) * 1.12;
+    if (p < 0.27) return 1.0 - ((p - 0.235) / 0.035) * 1.25;
+    if (p < 0.31) return -0.25 + ((p - 0.27) / 0.04) * 0.25;
+    if (p < 0.52) return 0;
+    if (p < 0.66) { var t = (p - 0.52) / 0.14; return Math.pow(Math.sin(t * Math.PI), 2.2) * 0.72; } // sharp tent
+    return 0;
+  }
+  function wWide(p) {                                              // flat P, broad slurred QRS merging into T
+    if (p < 0.14) return 0.02;                                    // P nearly gone
+    if (p < 0.20) return -0.10 * ((p - 0.14) / 0.06);             // slow Q
+    if (p < 0.30) return -0.10 + ((p - 0.20) / 0.10) * 0.95;      // broad R up
+    if (p < 0.46) return 0.85 - ((p - 0.30) / 0.16) * 1.05;       // broad slur down
+    if (p < 0.78) { var t = (p - 0.46) / 0.32; return -0.20 + Math.sin(t * Math.PI) * 0.55; } // merged broad T
+    return 0;
+  }
+  function wSine(p) { return Math.sin(p * 2 * Math.PI) * 0.5; }    // sine wave
+
+  var anchors = [
+    { k: 5.2, f: wNormal },
+    { k: 6.2, f: wPeaked },
+    { k: 7.6, f: wWide },
+    { k: 8.8, f: wSine }
+  ];
+  function ecgAt(p, k) {
+    if (k <= anchors[0].k) return anchors[0].f(p);
+    if (k >= anchors[anchors.length - 1].k) return anchors[anchors.length - 1].f(p);
+    for (var i = 0; i < anchors.length - 1; i++) {
+      var a = anchors[i], b = anchors[i + 1];
+      if (k >= a.k && k <= b.k) {
+        var t = (k - a.k) / (b.k - a.k);
+        return a.f(p) * (1 - t) + b.f(p) * t;
+      }
+    }
+    return anchors[0].f(p);
+  }
+  function clamp(v, lo, hi) { return v < lo ? lo : v > hi ? hi : v; }
+
+  // ---------- live vitals model ----------
+  var monitor = document.getElementById("monitor");
+  var elHR = document.getElementById("v-hr");
+  var elK = document.getElementById("v-k");
+  var elQRS = document.getElementById("v-qrs");
+  var elClock = document.getElementById("clock");
+  var elStatus = document.getElementById("statustxt");
+
+  var cur = { hr: 58, ecgk: 6.3, kval: 6.3 };
+  var tgt = { hr: 58, ecgk: 6.3, kval: 6.3 };
+  var kPending = true;
+  var state = "caution";
+
+  var STATES = {
+    stable:   { txt: "Stable" },
+    caution:  { txt: "Guarded" },
+    critical: { txt: "CRITICAL" }
+  };
+
+  function setBeat(el) {
+    tgt.hr = +el.dataset.hr;
+    tgt.ecgk = +el.dataset.ecgk;
+    var kd = el.dataset.k;
+    if (kd === "pending") { kPending = true; }
+    else { kPending = false; tgt.kval = +kd; }
+    state = el.dataset.state;
+    elStatus.textContent = (STATES[state] || STATES.caution).txt;
+    elClock.textContent = el.dataset.clock;
+    monitor.classList.toggle("alarm", state === "critical" && !reduce);
+    elHR.style.setProperty("--val", state === "critical" ? "var(--crimson)" : (tgt.hr < 60 ? "var(--amber)" : "var(--green)"));
+  }
+
+  function kColor(k) {
+    if (k >= 6.5) return "var(--crimson)";
+    if (k >= 5.5) return "var(--amber)";
+    return "var(--green)";
+  }
+  function qrsColor(ms) {
+    if (ms >= 130) return "var(--crimson)";
+    if (ms >= 110) return "var(--amber)";
+    return "var(--green)";
+  }
+
+  var beats = Array.prototype.slice.call(document.querySelectorAll(".beat"));
+  var io = new IntersectionObserver(function (entries) {
+    entries.forEach(function (e) { if (e.isIntersecting) setBeat(e.target); });
+  }, { rootMargin: "-45% 0px -45% 0px", threshold: 0 });
+  beats.forEach(function (b) { io.observe(b); });
+
+  function lerp(a, b, t) { return a + (b - a) * t; }
+  function tick() {
+    cur.hr = lerp(cur.hr, tgt.hr, 0.08);
+    cur.ecgk = lerp(cur.ecgk, tgt.ecgk, 0.06);
+    cur.kval = lerp(cur.kval, tgt.kval, 0.08);
+    elHR.textContent = Math.round(cur.hr);
+    if (kPending) { elK.textContent = "—"; elK.style.setProperty("--kval", "var(--slate-dim)"); }
+    else { elK.textContent = cur.kval.toFixed(1); elK.style.setProperty("--kval", kColor(cur.kval)); }
+    var qrsMs = Math.round(88 + clamp(cur.ecgk - 5.4, 0, 4) * 26);
+    elQRS.textContent = qrsMs;
+    elQRS.style.setProperty("--qval", qrsColor(qrsMs));
+    requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+
+  // ---------- monitor trace ----------
+  var canvas = document.getElementById("trace");
+  var ctx = canvas.getContext("2d");
+  var W = canvas.width, H = canvas.height;
+  var buf = new Array(W).fill(H * 0.5);
+  var phase = 0, last = 0;
+
+  function draw(ts) {
+    if (!last) last = ts;
+    var dt = Math.min(60, ts - last); last = ts;
+    if (reduce) dt = 0;
+
+    var hr = cur.hr;
+    var beatDur = 60000 / hr;
+    var pxPerMs = W / 3200;
+    var msPerPx = 1 / pxPerMs;
+    var k = cur.ecgk;
+    var critical = state === "critical";
+    var col = k >= 7.6 ? "#E23B4E" : (k >= 6.2 ? "#F5B544" : "#35E08A");
+
+    var step = Math.max(1, Math.round(dt * pxPerMs));
+    for (var s = 0; s < step; s++) {
+      phase = (phase + msPerPx / beatDur) % 1;
+      var y = H * 0.55 - ecgAt(phase, k) * H * 0.34;
+      buf.push(y); buf.shift();
+    }
+
+    ctx.clearRect(0, 0, W, H);
+    ctx.strokeStyle = "rgba(53,224,138,0.06)";
+    ctx.lineWidth = 1;
+    for (var gx = 0; gx < W; gx += 24) { ctx.beginPath(); ctx.moveTo(gx, 0); ctx.lineTo(gx, H); ctx.stroke(); }
+    for (var gy = 0; gy < H; gy += 24) { ctx.beginPath(); ctx.moveTo(0, gy); ctx.lineTo(W, gy); ctx.stroke(); }
+
+    ctx.shadowColor = col; ctx.shadowBlur = 6;
+    ctx.strokeStyle = col; ctx.lineWidth = 1.8;
+    ctx.beginPath();
+    for (var i = 0; i < W; i++) { i === 0 ? ctx.moveTo(i, buf[i]) : ctx.lineTo(i, buf[i]); }
+    ctx.stroke();
+    ctx.shadowBlur = 0;
+
+    ctx.fillStyle = col;
+    ctx.beginPath(); ctx.arc(W - 1, buf[W - 1], 2.2, 0, Math.PI * 2); ctx.fill();
+
+    requestAnimationFrame(draw);
+  }
+  requestAnimationFrame(draw);
+  if (reduce) { for (var q = 0; q < W; q++) { buf[q] = H * 0.55 - ecgAt((q / 96) % 1, cur.ecgk) * H * 0.34; } }
+
+  // ---------- decision fork ----------
+  var fork = document.getElementById("fork");
+  var fv = document.getElementById("forkverdict");
+  fork.querySelectorAll(".choice").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      fork.querySelectorAll(".choice").forEach(function (b) { b.setAttribute("data-picked", ""); });
+      var good = btn.dataset.choice === "calcium";
+      fv.className = "verdict-box show " + (good ? "good" : "bad");
+      if (good) {
+        fv.innerHTML = '<span class="tag">◇ Right order</span><strong>Calcium first — always, when the QRS is wide.</strong> Insulin is coming, but it needs 10–20 minutes to work, and her membrane is unstable <em>now</em>. Calcium restores the safety margin in 1–3 minutes and holds the heart while the potassium-lowering drugs get going. Shield, then treat.';
+      } else {
+        fv.innerHTML = '<span class="tag">◇ Not first</span>Insulin+dextrose is exactly right — <strong>second.</strong> It won\'t touch the membrane for 10–20 minutes, and with a widening QRS and a rate in the 50s she may not have 10 minutes. <strong>Calcium goes first</strong> to stabilize the myocardium, then insulin and albuterol to actually lower the K⁺.';
+      }
+    });
+  });
+
+  // ---------- K slider ECG ----------
+  var sCanvas = document.getElementById("sliderTrace");
+  var sCtx = sCanvas.getContext("2d");
+  var SW = sCanvas.width, SH = sCanvas.height;
+  var slider = document.getElementById("kslider");
+  var sVal = document.getElementById("ksliderval");
+  var sFind = document.getElementById("sliderfinding");
+  var tool = document.getElementById("slidertool");
+
+  function findingFor(k) {
+    if (k < 5.5) return { s: "Normal", c: "var(--green)", h: "<b>Normal tracing.</b> P, QRS and T all where they belong. Serum K⁺ 3.5–5.0 is home." };
+    if (k < 6.5) return { s: "Peaked T waves", c: "var(--amber)", h: "<b>Peaked T waves</b> — tall, narrow, tented. The earliest and most reliable sign. Treat if the clinical picture fits." };
+    if (k < 8.0) return { s: "Wide QRS · flat P", c: "var(--crimson)", h: "<b>Widening QRS and vanishing P waves.</b> Conduction is slowing across the atrium and ventricle. This is a stabilize-the-membrane-now tracing." };
+    return { s: "Sine wave · peri-arrest", c: "var(--crimson)", h: "<b>Sine wave.</b> QRS and T have merged into a rolling wave — the pre-terminal rhythm before asystole or VF. Calcium and everything else, at once." };
+  }
+  function drawSlider(k) {
+    sCtx.clearRect(0, 0, SW, SH);
+    sCtx.strokeStyle = "rgba(56,189,248,0.07)";
+    sCtx.lineWidth = 1;
+    for (var gx = 0; gx < SW; gx += 28) { sCtx.beginPath(); sCtx.moveTo(gx, 0); sCtx.lineTo(gx, SH); sCtx.stroke(); }
+    for (var gy = 0; gy < SH; gy += 28) { sCtx.beginPath(); sCtx.moveTo(0, gy); sCtx.lineTo(SW, gy); sCtx.stroke(); }
+    var col = k >= 8.0 ? "#E23B4E" : (k >= 6.5 ? "#F5B544" : (k >= 5.5 ? "#F5B544" : "#35E08A"));
+    var cycles = 3.0;
+    sCtx.shadowColor = col; sCtx.shadowBlur = 8;
+    sCtx.strokeStyle = col; sCtx.lineWidth = 2.2;
+    sCtx.beginPath();
+    for (var x = 0; x < SW; x++) {
+      var p = (x / SW * cycles) % 1;
+      var y = SH * 0.58 - ecgAt(p, k) * SH * 0.40;
+      x === 0 ? sCtx.moveTo(x, y) : sCtx.lineTo(x, y);
+    }
+    sCtx.stroke();
+    sCtx.shadowBlur = 0;
+  }
+  function updateSlider() {
+    var k = parseFloat(slider.value);
+    sVal.textContent = k.toFixed(1);
+    var col = k >= 6.5 ? "var(--crimson)" : (k >= 5.5 ? "var(--amber)" : "var(--green)");
+    tool.style.setProperty("--kslide", col);
+    var f = findingFor(k);
+    sFind.innerHTML = '<span class="stage" style="color:' + f.c + '">' + f.s + '</span>' + f.h;
+    drawSlider(k);
+  }
+  slider.addEventListener("input", updateSlider);
+  updateSlider();
+
+  // ---------- protect / shift / remove classifier ----------
+  var THERAPIES = [
+    { id: "calcium",  name: "Calcium gluconate", bucket: "protect", note: "Raises the firing threshold. Lowers K⁺ by zero." },
+    { id: "insulin",  name: "Insulin + dextrose", bucket: "shift",  note: "Na-K pump drives K⁺ into cells. Give the sugar." },
+    { id: "albuterol",name: "Albuterol (neb)",    bucket: "shift",   note: "Same pump via β2. Additive with insulin." },
+    { id: "bicarb",   name: "Sodium bicarbonate", bucket: "shift",   note: "Helps mainly when acidosis is driving the shift." },
+    { id: "furosemide",name: "Furosemide",        bucket: "remove",  note: "Pees K⁺ out — needs working kidneys." },
+    { id: "kayexalate",name: "SPS / kayexalate",  bucket: "remove",  note: "Binds K⁺ in the gut. Slow, and controversial." },
+    { id: "dialysis", name: "Hemodialysis",       bucket: "remove",  note: "Pulls K⁺ out for real. Definitive in ESRD." }
+  ];
+  var pool = document.getElementById("pool");
+  var zones = {
+    protect: document.getElementById("b-protect"),
+    shift: document.getElementById("b-shift"),
+    remove: document.getElementById("b-remove")
+  };
+  var clsnote = document.getElementById("clsnote");
+  var placedCount = 0;
+  // shuffle deterministically (no Math.random): rotate by a fixed offset
+  var order = THERAPIES.slice();
+  order = order.slice(3).concat(order.slice(0, 3));
+  order.forEach(function (thx) {
+    var b = document.createElement("button");
+    b.className = "drug";
+    b.type = "button";
+    b.textContent = thx.name;
+    b.addEventListener("click", function () {
+      var el = document.createElement("div");
+      el.className = "p";
+      el.innerHTML = thx.name + "<small>" + thx.note + "</small>";
+      zones[thx.bucket].appendChild(el);
+      b.remove();
+      placedCount++;
+      if (placedCount === THERAPIES.length) {
+        clsnote.innerHTML = 'All sorted. Notice the shape of a real resus: <b>one Protect, three Shift, three Remove</b> — and only that last column ends the emergency. Calcium and shift are the clock you run down while you get to removal.';
+      } else {
+        clsnote.innerHTML = '<b>' + thx.name + '</b> → <b style="color:var(--paper)">' + thx.bucket.toUpperCase() + '</b>. ' + thx.note;
+      }
+    });
+    pool.appendChild(b);
+  });
+})();
+</script>
+</body>
+</html>
