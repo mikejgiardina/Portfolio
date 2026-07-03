@@ -1,0 +1,769 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bay 4 Is Bleeding — A GI Hemorrhage in Real Time</title>
+<meta name="description" content="A gastrointestinal hemorrhage told in real time — the Kymora Clinical Story Mode prototype. Scroll the case and the patient monitor responds.">
+<meta name="theme-color" content="#0B1014">
+<meta name="author" content="Mike Giardina BSN, RN, CEN">
+<!-- Link-preview (OpenGraph / Twitter) so the URL unfurls nicely when sent -->
+<meta property="og:type" content="article">
+<meta property="og:title" content="Bay 4 Is Bleeding — Clinical Story Mode">
+<meta property="og:description" content="A GI hemorrhage, beat by beat, on a live patient monitor. A new way to present clinical education.">
+<meta property="og:site_name" content="Kymora Clinical Education">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Bay 4 Is Bleeding — Clinical Story Mode">
+<meta name="twitter:description" content="A GI hemorrhage, beat by beat, on a live patient monitor.">
+<style>
+  html { background: #0B1014; }
+  :root {
+    --monitor:   #0B1014;
+    --bezel:     #141C22;
+    --bezel-2:   #1B262E;
+    --line:      #26333B;
+    --green:     #35E08A;
+    --green-dim: #1f7a4d;
+    --amber:     #F5B544;
+    --crimson:   #E23B4E;
+    --crimson-d: #8f1e2c;
+    --paper:     #F2ECE1;
+    --paper-2:   #E7DFD0;
+    --ink:       #1A1714;
+    --ink-soft:  #4a423a;
+    --slate:     #8A9BA5;
+    --slate-dim: #5a6b74;
+    --mono: ui-monospace, "SF Mono", "Cascadia Code", "Roboto Mono", Menlo, Consolas, monospace;
+    --serif: "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua", Georgia, serif;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background:
+      radial-gradient(120% 80% at 50% -10%, #10191f 0%, var(--monitor) 55%) fixed;
+    color: var(--slate);
+    font-family: var(--serif);
+    -webkit-font-smoothing: antialiased;
+    line-height: 1.6;
+  }
+
+  .wrap { max-width: 760px; margin: 0 auto; padding: 0 20px; }
+
+  /* ---------- sticky monitor bar ---------- */
+  .monitor {
+    position: sticky; top: 0; z-index: 50;
+    background: linear-gradient(180deg, #0e161c, #0a1116);
+    border-bottom: 1px solid var(--line);
+    box-shadow: 0 10px 30px -18px #000;
+  }
+  .monitor-inner {
+    max-width: 960px; margin: 0 auto;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 14px;
+    padding: 8px 16px;
+    align-items: stretch;
+  }
+  .m-left { display: flex; flex-direction: column; justify-content: center; gap: 4px; min-width: 130px; }
+  .m-clock {
+    font-family: var(--mono);
+    font-size: 12px; letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--slate-dim);
+  }
+  .m-clock b { color: var(--green); font-variant-numeric: tabular-nums; }
+  .m-status {
+    font-family: var(--mono);
+    font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase;
+    display: inline-flex; align-items: center; gap: 6px;
+    color: var(--green);
+  }
+  .m-status .dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--green); box-shadow: 0 0 8px var(--green);
+  }
+
+  .m-right {
+    display: grid;
+    grid-template-columns: 1.4fr repeat(3, 0.72fr);
+    gap: 10px;
+    align-items: center;
+  }
+  .trace-cell {
+    background: #060b0e;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    height: 62px;
+    position: relative;
+    overflow: hidden;
+  }
+  canvas#trace { display: block; width: 100%; height: 100%; }
+  .vital {
+    background: #060b0e;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    height: 62px;
+    padding: 5px 8px;
+    display: flex; flex-direction: column; justify-content: center;
+    font-family: var(--mono);
+  }
+  .vital .lab {
+    font-size: 9px; letter-spacing: 0.16em; color: var(--slate-dim); text-transform: uppercase;
+  }
+  .vital .num {
+    font-size: 24px; font-weight: 700; line-height: 1; font-variant-numeric: tabular-nums;
+    color: var(--val, var(--green));
+  }
+  .vital .unit { font-size: 9px; color: var(--slate-dim); letter-spacing: 0.08em; }
+  .vital.spo2 .num { color: var(--amber); }
+  .vital.bp .num { font-size: 19px; }
+
+  /* alarm state */
+  .monitor.alarm { animation: bezelFlash 1s steps(1) infinite; }
+  .monitor.alarm .m-status { color: var(--crimson); }
+  .monitor.alarm .m-status .dot { background: var(--crimson); box-shadow: 0 0 10px var(--crimson); }
+  @keyframes bezelFlash {
+    0%, 50% { background: linear-gradient(180deg, #1a0d10, #150a0d); }
+    50.01%, 100% { background: linear-gradient(180deg, #0e161c, #0a1116); }
+  }
+  .monitor.alarm .vital.critical { animation: tileFlash 1s steps(1) infinite; }
+  @keyframes tileFlash {
+    0%, 50% { background: #2a0c12; border-color: var(--crimson); }
+    50.01%, 100% { background: #060b0e; border-color: var(--line); }
+  }
+
+  /* ---------- hero ---------- */
+  header.hero {
+    padding: 96px 0 70px;
+    text-align: center;
+  }
+  .eyebrow {
+    font-family: var(--mono);
+    font-size: 11px; letter-spacing: 0.34em; text-transform: uppercase;
+    color: var(--green-dim);
+    margin-bottom: 26px;
+  }
+  header.hero h1 {
+    font-family: var(--serif);
+    font-weight: 700;
+    font-size: clamp(2.6rem, 8vw, 4.6rem);
+    line-height: 0.98;
+    letter-spacing: -0.01em;
+    text-wrap: balance;
+    color: var(--paper);
+    margin: 0 0 22px;
+  }
+  header.hero h1 em { font-style: italic; color: var(--crimson); }
+  .dek {
+    font-size: 1.14rem;
+    color: var(--slate);
+    max-width: 30em; margin: 0 auto;
+    text-wrap: pretty;
+  }
+  .byline {
+    margin-top: 34px;
+    font-family: var(--mono);
+    font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase;
+    color: var(--slate-dim);
+  }
+  .scroll-cue {
+    margin-top: 54px;
+    font-family: var(--mono);
+    font-size: 10px; letter-spacing: 0.3em; text-transform: uppercase;
+    color: var(--slate-dim);
+  }
+  .scroll-cue span { display: block; margin-top: 8px; color: var(--green-dim); animation: bob 2.2s ease-in-out infinite; }
+  @keyframes bob { 0%,100% { transform: translateY(0);} 50% { transform: translateY(5px);} }
+
+  /* ---------- beats ---------- */
+  section.beat { padding: 40px 0; }
+  .timecard {
+    font-family: var(--mono);
+    font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--slate-dim);
+    display: flex; align-items: center; gap: 12px;
+    margin-bottom: 20px;
+  }
+  .timecard .t { color: var(--green); }
+  .timecard::after { content: ""; flex: 1; height: 1px; background: var(--line); }
+  .timecard.crit .t { color: var(--crimson); }
+
+  /* narrative paper panel */
+  .story {
+    background: var(--paper);
+    color: var(--ink);
+    border-radius: 4px;
+    padding: 34px 38px;
+    box-shadow: 0 30px 60px -40px #000, inset 0 0 0 1px var(--paper-2);
+    font-size: 1.12rem;
+    line-height: 1.68;
+  }
+  .story.tight { padding: 26px 32px; }
+  .story p { margin: 0 0 1em; text-wrap: pretty; }
+  .story p:last-child { margin-bottom: 0; }
+  .story .drop::first-letter {
+    font-size: 3.4rem; line-height: 0.8; float: left;
+    padding: 6px 10px 0 0; color: var(--crimson); font-weight: 700;
+  }
+  .story .said { color: var(--ink-soft); font-style: italic; }
+  .story b { color: #000; }
+
+  /* clinical decode card */
+  .decode {
+    margin-top: 18px;
+    background: var(--bezel);
+    border: 1px solid var(--line);
+    border-left: 3px solid var(--green);
+    border-radius: 6px;
+    padding: 22px 24px;
+  }
+  .decode.crimson { border-left-color: var(--crimson); }
+  .decode.amber { border-left-color: var(--amber); }
+  .decode h3 {
+    font-family: var(--mono);
+    font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--green);
+    margin: 0 0 12px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .decode.crimson h3 { color: var(--crimson); }
+  .decode.amber h3 { color: var(--amber); }
+  .decode p { margin: 0 0 0.85em; font-size: 1rem; color: #c4d0d6; line-height: 1.62; }
+  .decode p:last-child { margin-bottom: 0; }
+  .decode strong { color: var(--paper); font-weight: 600; }
+  .decode .chip {
+    display: inline-block; font-family: var(--mono); font-size: 10px;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    padding: 2px 7px; border-radius: 3px; margin: 2px 4px 2px 0;
+    background: #0c1418; border: 1px solid var(--line); color: var(--slate);
+  }
+
+  /* hemorrhage class ladder */
+  .ladder { display: grid; gap: 6px; margin-top: 6px; }
+  .rung {
+    display: grid; grid-template-columns: 54px 1fr auto; gap: 12px; align-items: center;
+    font-family: var(--mono); font-size: 12px;
+    padding: 8px 10px; border-radius: 5px; background: #0c1418; border: 1px solid var(--line);
+    color: var(--slate);
+  }
+  .rung .cls { font-weight: 700; letter-spacing: 0.1em; }
+  .rung .loss { color: var(--slate-dim); font-size: 11px; }
+  .rung.on { border-color: var(--crimson); background: #1c0e11; color: var(--paper); box-shadow: 0 0 0 1px var(--crimson-d); }
+  .rung.on .cls { color: var(--crimson); }
+  .rung .c1 { color: var(--green); } .rung .c2 { color: #9fd88a; }
+  .rung .c3 { color: var(--amber); } .rung .c4 { color: var(--crimson); }
+
+  /* interactive: blatchford calculator */
+  .tool {
+    margin-top: 18px;
+    background: linear-gradient(180deg, #101a20, #0c1419);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 24px;
+  }
+  .tool h3 {
+    font-family: var(--mono); font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--paper); margin: 0 0 4px;
+  }
+  .tool .sub { font-family: var(--serif); font-size: 0.95rem; color: var(--slate); margin: 0 0 18px; }
+  .toggles { display: flex; flex-wrap: wrap; gap: 8px; }
+  .toggles button {
+    font-family: var(--mono); font-size: 11px; letter-spacing: 0.04em;
+    background: #0b1216; color: var(--slate);
+    border: 1px solid var(--line); border-radius: 20px;
+    padding: 8px 14px; cursor: pointer; transition: all .15s ease;
+  }
+  .toggles button:hover { border-color: var(--slate-dim); color: var(--paper); }
+  .toggles button[aria-pressed="true"] {
+    background: var(--crimson-d); border-color: var(--crimson); color: #fff;
+  }
+  .toggles button:focus-visible { outline: 2px solid var(--green); outline-offset: 2px; }
+  .readout {
+    margin-top: 18px; display: flex; align-items: baseline; gap: 14px;
+    border-top: 1px solid var(--line); padding-top: 16px;
+  }
+  .readout .score {
+    font-family: var(--mono); font-size: 42px; font-weight: 700; line-height: 1;
+    color: var(--green); font-variant-numeric: tabular-nums; transition: color .2s;
+  }
+  .readout .verdict { font-family: var(--serif); font-size: 1rem; color: var(--slate); }
+  .readout .verdict b { color: var(--paper); }
+
+  /* interactive: decision fork */
+  .fork { margin-top: 18px; }
+  .fork .q {
+    font-family: var(--mono); font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--amber); margin-bottom: 14px;
+  }
+  .choices { display: grid; gap: 12px; }
+  @media (min-width: 620px) { .choices { grid-template-columns: 1fr 1fr; } }
+  .choice {
+    text-align: left; cursor: pointer;
+    background: var(--bezel); border: 1px solid var(--line); border-radius: 8px;
+    padding: 18px; color: var(--slate); font-family: var(--serif); font-size: 1rem;
+    transition: border-color .15s, transform .1s;
+  }
+  .choice:hover { border-color: var(--slate-dim); transform: translateY(-2px); }
+  .choice:focus-visible { outline: 2px solid var(--green); outline-offset: 2px; }
+  .choice .h { font-family: var(--mono); font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--paper); display: block; margin-bottom: 8px; }
+  .choice[data-picked] { pointer-events: none; }
+  .choice.right[data-picked] { border-color: var(--green); background: #0f1d16; }
+  .choice.wrong[data-picked] { border-color: var(--crimson); background: #1c0e11; opacity: 0.85; }
+  .verdict-box {
+    margin-top: 14px; font-size: 1rem; line-height: 1.6;
+    padding: 16px 18px; border-radius: 8px; display: none;
+    background: #0c1418; border: 1px solid var(--line); color: #c4d0d6;
+  }
+  .verdict-box.show { display: block; }
+  .verdict-box strong { color: var(--paper); }
+  .verdict-box .tag { font-family: var(--mono); font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; display: inline-block; margin-bottom: 6px; }
+  .verdict-box.good .tag { color: var(--green); }
+  .verdict-box.bad .tag { color: var(--crimson); }
+
+  /* pull / drug orders styling */
+  .orders { list-style: none; margin: 8px 0 0; padding: 0; display: grid; gap: 8px; }
+  .orders li {
+    font-family: var(--mono); font-size: 12.5px; color: #c4d0d6;
+    padding: 9px 12px; background: #0c1418; border: 1px solid var(--line); border-radius: 5px;
+    display: flex; gap: 10px; align-items: baseline;
+  }
+  .orders li::before { content: "▸"; color: var(--green); }
+  .orders li b { color: var(--paper); font-weight: 600; }
+
+  /* outro */
+  .outro { padding: 70px 0 40px; text-align: center; }
+  .outro .rule { width: 60px; height: 2px; background: var(--crimson); margin: 0 auto 30px; }
+  .outro h2 { font-family: var(--serif); font-size: 1.9rem; color: var(--paper); margin: 0 0 16px; text-wrap: balance; }
+  .outro p { max-width: 34em; margin: 0 auto 1em; color: var(--slate); font-size: 1.05rem; }
+  .meta-note {
+    margin-top: 40px; background: var(--bezel); border: 1px solid var(--line);
+    border-radius: 8px; padding: 22px 24px; text-align: left; color: var(--slate);
+    font-size: 0.96rem;
+  }
+  .meta-note .k { font-family: var(--mono); font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--green); display: block; margin-bottom: 10px; }
+  footer.foot {
+    padding: 30px 0 60px; text-align: center;
+    font-family: var(--mono); font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--slate-dim);
+  }
+  .disc { max-width: 44em; margin: 12px auto 0; font-family: var(--serif); text-transform: none; letter-spacing: 0; font-size: 0.82rem; color: var(--slate-dim); line-height: 1.5; }
+
+  @media (max-width: 560px) {
+    .m-right { grid-template-columns: 1.2fr repeat(3, 1fr); gap: 6px; }
+    .vital .num { font-size: 18px; } .vital.bp .num { font-size: 15px; }
+    .trace-cell, .vital { height: 54px; }
+    .story { padding: 26px 22px; }
+    .m-left { min-width: 96px; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .monitor.alarm, .monitor.alarm .vital.critical, .scroll-cue span { animation: none !important; }
+    * { scroll-behavior: auto !important; }
+  }
+</style>
+</head>
+<body>
+
+<div class="monitor" id="monitor">
+  <div class="monitor-inner">
+    <div class="m-left">
+      <div class="m-clock">T+ <b id="clock">00:00</b></div>
+      <div class="m-status" id="mstatus"><span class="dot"></span><span id="statustxt">Stable</span></div>
+    </div>
+    <div class="m-right">
+      <div class="trace-cell"><canvas id="trace" width="360" height="124"></canvas></div>
+      <div class="vital hr critical"><div class="lab">HR</div><div class="num" id="v-hr" style="--val:var(--green)">78</div><div class="unit">bpm</div></div>
+      <div class="vital bp critical"><div class="lab">NIBP</div><div class="num" id="v-bp" style="--val:var(--green)">128/76</div><div class="unit">mmHg</div></div>
+      <div class="vital spo2"><div class="lab">SpO₂</div><div class="num" id="v-spo2">98</div><div class="unit">%</div></div>
+    </div>
+  </div>
+</div>
+
+<header class="hero wrap">
+  <div class="eyebrow">Kymora · Clinical Story Mode</div>
+  <h1>Bay 4 Is <em>Bleeding</em></h1>
+  <p class="dek">A gastrointestinal hemorrhage, told in real time — from the doorway smell of melena to the endoscopy suite. The monitor at the top is his. Watch it as you read.</p>
+  <div class="byline">Adapted from the Season 2 scholarly article · Mike Giardina BSN, RN, CEN</div>
+  <div class="scroll-cue">Scroll to begin the case<span>▼</span></div>
+</header>
+
+<main>
+
+<!-- BEAT 1 -->
+<section class="beat wrap" data-hr="82" data-sbp="118" data-dbp="72" data-spo2="97" data-state="stable" data-clock="00:00">
+  <div class="timecard"><span class="t">00:00</span> Triage · walk-in</div>
+  <div class="story">
+    <p class="drop">He walks in on his own two feet, which is the first thing that fools everyone. Fifty-eight, pale as the floor, a plastic grocery bag clutched to his chest. He sets it on the triage desk without a word and opens the top so you can see inside: dark, coffee-ground vomit, and streaks of red that are unmistakably not coffee.</p>
+    <p><span class="said">"Started this morning,"</span> he says. <span class="said">"Thought it'd pass."</span> His skin is cool. His shirt collar is loose on a neck that used to fill it. On his abdomen, when you lift the shirt, a faint web of spider veins and a belly that's rounder than the rest of him.</p>
+  </div>
+  <div class="decode">
+    <h3>◇ What the bag is telling you</h3>
+    <p><strong>Hematemesis</strong> — vomited blood — plus <strong>melena</strong> (black, tarry, digested blood) points upstream: an <strong>upper GI bleed</strong>, proximal to the ligament of Treitz. Upper sources account for roughly <strong>80%</strong> of clinically significant GI hemorrhage.</p>
+    <p>The spider angiomas and distended abdomen are doing quiet diagnostic work. They whisper <strong>cirrhosis</strong> — and in a cirrhotic who is vomiting blood, you assume <strong>esophageal varices</strong> until an endoscope proves otherwise. Variceal bleeds are brisk, massive, and carry a 30-day mortality of 15–30%.</p>
+    <p><span class="chip">Coffee-ground = older blood</span><span class="chip">Bright red = active/brisk</span><span class="chip">Melena = digested, upper source</span></p>
+  </div>
+</section>
+
+<!-- BEAT 2 -->
+<section class="beat wrap" data-hr="104" data-sbp="104" data-dbp="78" data-spo2="96" data-state="caution" data-clock="00:04">
+  <div class="timecard"><span class="t">00:04</span> Room 4 · first vitals</div>
+  <div class="story tight">
+    <p>Back in the room, the numbers arrive and they don't match the calm man on the stretcher. Heart rate 104. Pressure 104 over 78 — the diastolic is <em>up</em>, the pulse pressure narrowing like a fist closing. He answers your questions, but a beat slow, and twice he asks where his wife is when she's standing right there.</p>
+  </div>
+  <div class="decode amber">
+    <h3>◇ The body is lying to protect him</h3>
+    <p>A "normal-ish" blood pressure early in hemorrhage is a <strong>trap</strong>. Young, healthy compensation can hold systolic pressure until 30–40% of blood volume is gone — then it falls off a cliff. Read the <em>compensation</em>, not the systolic:</p>
+    <div class="ladder" id="ladder">
+      <div class="rung" data-cls="1"><span class="cls c1">CLASS I</span><span>HR &lt;100 · BP normal · alert</span><span class="loss">&lt;15%</span></div>
+      <div class="rung" data-cls="2"><span class="cls c2">CLASS II</span><span>HR 100–120 · narrowing pulse pressure · anxious</span><span class="loss">15–30%</span></div>
+      <div class="rung" data-cls="3"><span class="cls c3">CLASS III</span><span>HR &gt;120 · systolic drops · confused</span><span class="loss">30–40%</span></div>
+      <div class="rung" data-cls="4"><span class="cls c4">CLASS IV</span><span>HR &gt;140 · SBP &lt;90 · obtunded</span><span class="loss">&gt;40%</span></div>
+    </div>
+    <p style="margin-top:12px;">Tachycardia, a narrowed pulse pressure, and new confusion put him in <strong>Class II sliding toward III</strong>. The slow answers aren't fear — they're the first sign of cerebral hypoperfusion.</p>
+  </div>
+</section>
+
+<!-- BEAT 3 -->
+<section class="beat wrap" data-hr="118" data-sbp="92" data-dbp="70" data-spo2="95" data-state="caution" data-clock="00:09">
+  <div class="timecard"><span class="t">00:09</span> Access & the first fork</div>
+  <div class="story tight">
+    <p>You go for access before you go for anything else. Two large-bore IVs — 18 gauge, one in each AC — because the size of the tube decides how fast you can give back what he's losing. Type and cross, CBC, coags, lactate, a full chem. The tech is already wheeling the ultrasound over.</p>
+    <p>Then the resident says the thing that used to be reflex: <span class="said">"Let's open up fluids wide, two liters."</span> You pause with your hand on the bag.</p>
+  </div>
+  <div class="fork" id="fork">
+    <div class="q">◇ Your move — what runs through those IVs first?</div>
+    <div class="choices">
+      <button class="choice wrong" data-choice="crystal">
+        <span class="h">2 L crystalloid, wide open</span>
+        Chase the pressure back to normal with saline, fast.
+      </button>
+      <button class="choice right" data-choice="balanced">
+        <span class="h">Blood early · permissive hypotension</span>
+        Warmed crystalloid to bridge, activate products, accept a SBP of 80–90 until the source is controlled.
+      </button>
+    </div>
+    <div class="verdict-box" id="forkverdict"></div>
+  </div>
+</section>
+
+<!-- BEAT 4 -->
+<section class="beat wrap" data-hr="131" data-sbp="82" data-dbp="64" data-spo2="93" data-state="critical" data-clock="00:16">
+  <div class="timecard crit"><span class="t">00:16</span> He crashes</div>
+  <div class="story">
+    <p>It happens the way it always happens — between one set of vitals and the next. He turns his head and brings up a full emesis basin of bright red blood, and the monitor screams before you do. HR 131. Systolic 82. His lips go the color of the walls.</p>
+    <p><span class="said">"Massive transfusion — go."</span></p>
+    <p>The cooler comes up from the blood bank. You hang the first unit of red cells and someone starts the count, because from here it's a ratio, not a guess.</p>
+  </div>
+  <div class="decode crimson">
+    <h3>◇ Balanced resuscitation — replace blood with blood</h3>
+    <p>He is now <strong>Class IV</strong>. Crystalloid alone would dilute what few clotting factors he has left and drop his temperature — feeding the lethal spiral of <strong>hypothermia, acidosis, and coagulopathy</strong>. So you give back what he's losing, in the proportion he's losing it:</p>
+    <p style="text-align:center; font-family:var(--mono); font-size:1.15rem; color:var(--paper); letter-spacing:0.06em; margin:14px 0;">1 : 1 : 1<br><span style="font-size:11px; letter-spacing:0.14em; color:var(--slate-dim);">PRBC : FFP : PLATELETS</span></p>
+    <p><strong>Permissive hypotension</strong> is the counterintuitive heart of it: aim for a systolic of just <strong>80–90 mmHg</strong> while he's actively bleeding. Push the pressure higher and you pop the fragile clots forming at the varix. Keep it low enough to perfuse brain and kidney, no higher, <em>until the source is sealed.</em></p>
+  </div>
+</section>
+
+<!-- BEAT 5 -->
+<section class="beat wrap" data-hr="122" data-sbp="94" data-dbp="66" data-spo2="96" data-state="caution" data-clock="00:24">
+  <div class="timecard"><span class="t">00:24</span> The right drugs, now</div>
+  <div class="story tight">
+    <p>While the products run, you build the pharmacology around the working diagnosis. Cirrhotic, likely variceal — so this is not a plain ulcer, and the orders reflect that. You call them back as you draw them up.</p>
+  </div>
+  <div class="decode">
+    <h3>◇ Orders that match the source</h3>
+    <ul class="orders">
+      <li><b>Octreotide</b> — 50 mcg IV bolus, then 50 mcg/hr. Somatostatin analog; drops portal pressure and slows the variceal bleed.</li>
+      <li><b>Ceftriaxone</b> — 1 g IV. Prophylactic antibiotics in a cirrhotic GI bleed measurably cut infection <b>and mortality</b>.</li>
+      <li><b>Pantoprazole</b> — 80 mg IV bolus, then 8 mg/hr infusion. If any of this turns out to be ulcer, a gastric pH &gt;6 stabilizes the clot.</li>
+    </ul>
+    <p style="margin-top:12px;">Note what's <em>not</em> reflexive here: the PPI is the star for peptic ulcers, but in a variceal bleed it rides shotgun. <strong>Octreotide and antibiotics</strong> are the mortality movers. Match the drug to the source, not to the habit.</p>
+  </div>
+</section>
+
+<!-- BEAT 6: Blatchford tool -->
+<section class="beat wrap" data-hr="112" data-sbp="100" data-dbp="68" data-spo2="97" data-state="caution" data-clock="00:31">
+  <div class="timecard"><span class="t">00:31</span> Putting a number on the danger</div>
+  <div class="story tight">
+    <p>The GI fellow is on the phone and asks the question every consultant asks: <span class="said">"How sick is he, really?"</span> You don't hand them a vibe. You hand them a score — the same one the literature uses to decide who can go home and who cannot.</p>
+  </div>
+  <div class="tool" id="blatchford">
+    <h3>Glasgow-Blatchford Score · live</h3>
+    <p class="sub">Toggle what's true for him. The score climbs as the risk does. (Simplified from the full weighting.)</p>
+    <div class="toggles" id="gbtoggles">
+      <button data-pts="3" aria-pressed="false">Systolic &lt; 100</button>
+      <button data-pts="3" aria-pressed="false">Pulse ≥ 100</button>
+      <button data-pts="6" aria-pressed="false">Urea markedly ↑ (BUN)</button>
+      <button data-pts="6" aria-pressed="false">Hgb &lt; 10 g/dL</button>
+      <button data-pts="1" aria-pressed="false">Melena present</button>
+      <button data-pts="2" aria-pressed="false">Syncope</button>
+      <button data-pts="2" aria-pressed="false">Hepatic disease</button>
+    </div>
+    <div class="readout">
+      <div class="score" id="gbscore">0</div>
+      <div class="verdict" id="gbverdict"><b>Score 0.</b> The only score that reliably means "safe for outpatient." Anything above it earns admission.</div>
+    </div>
+  </div>
+  <div class="decode amber" style="margin-top:14px;">
+    <h3>◇ Why score at all</h3>
+    <p>A Glasgow-Blatchford of <strong>0</strong> is the rare green light for discharge and outpatient scope. Our patient — hypotensive, tachycardic, melena, known liver disease — lands <strong>high</strong>. The score doesn't tell you anything your gut didn't; it tells the <em>next</em> clinician, the bed manager, and the chart, in a language that travels.</p>
+  </div>
+</section>
+
+<!-- BEAT 7 -->
+<section class="beat wrap" data-hr="104" data-sbp="103" data-dbp="70" data-spo2="98" data-state="caution" data-clock="00:48">
+  <div class="timecard"><span class="t">00:48</span> The definitive move</div>
+  <div class="story">
+    <p>Resuscitation buys minutes; it doesn't fix pipes. The only thing that stops a variceal bleed is getting eyes and a band on the varix. GI is scrubbing. He's held at a systolic in the low 100s now, mentating again, the cell-saver ratio holding his coags together.</p>
+    <p>You wheel him to the suite yourself — NPO confirmed, a second unit checked and hanging, suction tested, the airway cart at the head of the bed because a stomach full of blood is an aspiration waiting to happen. <span class="said">"Ready when you are,"</span> the endoscopist says. The scope goes down. On the screen: a column of dilated veins, one of them weeping. A band snaps closed around it. The weeping stops.</p>
+  </div>
+  <div class="decode">
+    <h3>◇ Timing is the therapy</h3>
+    <p><strong>Urgent endoscopy</strong> — within the first hour or two — is for the unstable, actively-bleeding patient like this one; it is both the diagnosis and the treatment. <strong>Band ligation</strong> achieves hemostasis in 80–90% of variceal bleeds. Your job in the doorway to the suite is airway, access, and blood — endoscopy can't work on a patient who's aspirated or arrested on the way.</p>
+    <p>Now — and only now that the source is controlled — the pressure target comes up. Permissive hypotension ends when the bleeding does.</p>
+  </div>
+</section>
+
+<!-- BEAT 8 -->
+<section class="beat wrap" data-hr="88" data-sbp="118" data-dbp="74" data-spo2="98" data-state="stable" data-clock="01:20">
+  <div class="timecard"><span class="t">01:20</span> Handoff to the ICU</div>
+  <div class="story tight">
+    <p>Eighty minutes from the grocery bag to a banded varix. He's going to the unit, not the morgue, and the difference was never one heroic act — it was a dozen ordinary ones done in the right order: two good IVs, blood instead of saline, a pressure held deliberately low, the right three drugs, a number on the danger, and a clean road to the scope.</p>
+    <p>You watch the monitor settle. HR in the 80s. A real systolic, earned honestly. You clean the room. Somewhere out front, someone else is walking in on their own two feet.</p>
+  </div>
+</section>
+
+<div class="outro wrap">
+  <div class="rule"></div>
+  <h2>Same medicine. Different doorway.</h2>
+  <p>Every fact in that story — the hemorrhage classes, permissive hypotension, the 1:1:1 ratio, octreotide before PPI, the Blatchford cutoff, the timing of endoscopy — is lifted straight from the scholarly article. Nothing was softened. It was just <em>staged</em>.</p>
+  <p>The scholarly version teaches you what to know. This version teaches you what it feels like to know it at 3 a.m. with a bag of blood on the desk.</p>
+  <div class="meta-note">
+    <span class="k">◇ Format note — for the team</span>
+    This is one article, one treatment. The same engine works for any Season 2 topic: <b style="color:var(--paper)">the monitor drives the stakes</b> (hyperkalemia's peaking T-waves, sepsis's creeping lactate), <b style="color:var(--paper)">the paper panels carry the human story</b>, and <b style="color:var(--paper)">decode cards + one live tool</b> surface the didactic content at the moment it bites. Candidates that would sing in this form: Pediatric Sepsis, Hyperkalemia, MTP, Acute Agitation. 
+  </div>
+</div>
+
+<footer class="foot">
+  Kymora Clinical Education · Story Mode Prototype
+  <p class="disc">Educational narrative adapted from a peer-reviewed teaching article. Doses and thresholds illustrate the referenced content and are not a substitute for current institutional protocols or clinical judgment. Patient is fictional; any resemblance to a real case is coincidental.</p>
+</footer>
+
+</main>
+
+<script>
+(function () {
+  "use strict";
+  var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  // ---------- live vitals model ----------
+  var monitor = document.getElementById("monitor");
+  var elHR = document.getElementById("v-hr");
+  var elBP = document.getElementById("v-bp");
+  var elSpO2 = document.getElementById("v-spo2");
+  var elClock = document.getElementById("clock");
+  var elStatus = document.getElementById("statustxt");
+
+  var cur = { hr: 78, sbp: 128, dbp: 76, spo2: 98 };
+  var tgt = { hr: 78, sbp: 128, dbp: 76, spo2: 98 };
+  var state = "stable";
+  var clock = "00:00";
+
+  var STATES = {
+    stable:   { txt: "Stable",       col: "var(--green)" },
+    caution:  { txt: "Compensating", col: "var(--amber)" },
+    critical: { txt: "CRITICAL",     col: "var(--crimson)" }
+  };
+
+  function setBeat(el) {
+    tgt.hr   = +el.dataset.hr;
+    tgt.sbp  = +el.dataset.sbp;
+    tgt.dbp  = +el.dataset.dbp;
+    tgt.spo2 = +el.dataset.spo2;
+    state    = el.dataset.state;
+    clock    = el.dataset.clock;
+    var s = STATES[state] || STATES.stable;
+    elStatus.textContent = s.txt;
+    elClock.textContent = clock;
+    monitor.classList.toggle("alarm", state === "critical" && !reduce);
+    // vital number colors
+    elHR.style.setProperty("--val", state === "critical" ? "var(--crimson)" : (tgt.hr > 100 ? "var(--amber)" : "var(--green)"));
+    elBP.style.setProperty("--val", state === "critical" ? "var(--crimson)" : (tgt.sbp < 100 ? "var(--amber)" : "var(--green)"));
+  }
+
+  var beats = Array.prototype.slice.call(document.querySelectorAll(".beat"));
+  var io = new IntersectionObserver(function (entries) {
+    entries.forEach(function (e) {
+      if (e.isIntersecting) setBeat(e.target);
+    });
+  }, { rootMargin: "-45% 0px -45% 0px", threshold: 0 });
+  beats.forEach(function (b) { io.observe(b); });
+
+  // lerp displayed numbers toward target
+  function lerp(a, b, t) { return a + (b - a) * t; }
+  function tick() {
+    cur.hr   = lerp(cur.hr, tgt.hr, 0.08);
+    cur.sbp  = lerp(cur.sbp, tgt.sbp, 0.08);
+    cur.dbp  = lerp(cur.dbp, tgt.dbp, 0.08);
+    cur.spo2 = lerp(cur.spo2, tgt.spo2, 0.08);
+    elHR.textContent = Math.round(cur.hr);
+    elBP.textContent = Math.round(cur.sbp) + "/" + Math.round(cur.dbp);
+    elSpO2.textContent = Math.round(cur.spo2);
+    requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+
+  // ---------- ECG + pleth trace ----------
+  var canvas = document.getElementById("trace");
+  var ctx = canvas.getContext("2d");
+  var W = canvas.width, H = canvas.height;
+  var x = 0;
+  var lastBeatX = 0;
+  var buf = new Array(W).fill(H * 0.42);   // ecg baseline
+  var pbuf = new Array(W).fill(H * 0.86);  // pleth baseline
+
+  // one ECG PQRST sample given phase 0..1
+  function ecgAt(p) {
+    var y = 0;
+    if (p < 0.10) y = Math.sin(p / 0.10 * Math.PI) * 0.10;      // P
+    else if (p < 0.16) y = 0;
+    else if (p < 0.19) y = -0.16 * ((p - 0.16) / 0.03);         // Q
+    else if (p < 0.23) { var q = (p - 0.19) / 0.04; y = -0.16 + q * 1.16; } // R up
+    else if (p < 0.27) { var r = (p - 0.23) / 0.04; y = 1.0 - r * 1.28; }   // R down to S
+    else if (p < 0.31) { var s = (p - 0.27) / 0.04; y = -0.28 + s * 0.28; } // S back
+    else if (p < 0.50) y = 0;
+    else if (p < 0.66) y = Math.sin((p - 0.50) / 0.16 * Math.PI) * 0.26;    // T
+    else y = 0;
+    return y;
+  }
+  function plethAt(p) {
+    // quick upstroke, dicrotic notch, decay
+    var v;
+    if (p < 0.14) v = Math.pow(p / 0.14, 0.7);
+    else if (p < 0.42) { var d = (p - 0.14) / 0.28; v = 1 - d * 0.55; }
+    else if (p < 0.50) { var n = (p - 0.42) / 0.08; v = 0.45 + Math.sin(n * Math.PI) * 0.10; }
+    else { var e = (p - 0.50) / 0.50; v = 0.45 * (1 - e); }
+    return v;
+  }
+
+  var phase = 0;
+  var last = 0;
+  function draw(ts) {
+    if (!last) last = ts;
+    var dt = Math.min(60, ts - last); last = ts;
+    if (reduce) dt = 0;
+
+    var hr = cur.hr;
+    var beatDur = 60000 / hr;           // ms per cardiac cycle
+    var pxPerMs = W / 3200;             // sweep speed
+    var amp = state === "critical" ? 0.62 : 1.0;   // thready when crashing
+    var col = state === "critical" ? "#E23B4E" : "#35E08A";
+
+    // advance the trace by however many pixels this frame's dt covers,
+    // stepping phase one pixel-of-time at a time so the morphology is intact
+    var msPerPx = 1 / pxPerMs;
+    var step = Math.max(1, Math.round(dt * pxPerMs));
+    for (var s = 0; s < step; s++) {
+      phase = (phase + msPerPx / beatDur) % 1;
+      var ey = H * 0.42 - ecgAt(phase) * H * 0.30 * amp;
+      var py = H * 0.90 - plethAt(phase) * H * 0.30 * amp;
+      buf.push(ey); buf.shift();
+      pbuf.push(py); pbuf.shift();
+    }
+
+    // render
+    ctx.clearRect(0, 0, W, H);
+    // faint grid
+    ctx.strokeStyle = "rgba(53,224,138,0.06)";
+    ctx.lineWidth = 1;
+    for (var gx = 0; gx < W; gx += 24) { ctx.beginPath(); ctx.moveTo(gx, 0); ctx.lineTo(gx, H); ctx.stroke(); }
+    for (var gy = 0; gy < H; gy += 24) { ctx.beginPath(); ctx.moveTo(0, gy); ctx.lineTo(W, gy); ctx.stroke(); }
+
+    // pleth (amber, thinner, behind)
+    ctx.strokeStyle = state === "critical" ? "rgba(226,59,78,0.5)" : "rgba(245,181,68,0.55)";
+    ctx.lineWidth = 1.4;
+    ctx.beginPath();
+    for (var j = 0; j < W; j++) { j === 0 ? ctx.moveTo(j, pbuf[j]) : ctx.lineTo(j, pbuf[j]); }
+    ctx.stroke();
+
+    // ecg (green/crimson, glow)
+    ctx.shadowColor = col; ctx.shadowBlur = 6;
+    ctx.strokeStyle = col; ctx.lineWidth = 1.8;
+    ctx.beginPath();
+    for (var k = 0; k < W; k++) { k === 0 ? ctx.moveTo(k, buf[k]) : ctx.lineTo(k, buf[k]); }
+    ctx.stroke();
+    ctx.shadowBlur = 0;
+
+    // sweep leading dot
+    ctx.fillStyle = col;
+    ctx.beginPath(); ctx.arc(W - 1, buf[W - 1], 2.2, 0, Math.PI * 2); ctx.fill();
+
+    requestAnimationFrame(draw);
+  }
+  requestAnimationFrame(draw);
+  if (reduce) {
+    // render one static frame
+    for (var q = 0; q < W; q++) {
+      var ph = (q / 90) % 1;
+      buf[q] = H * 0.42 - ecgAt(ph) * H * 0.30;
+      pbuf[q] = H * 0.90 - plethAt(ph) * H * 0.30;
+    }
+  }
+
+  // ---------- decision fork ----------
+  var fork = document.getElementById("fork");
+  var fv = document.getElementById("forkverdict");
+  fork.querySelectorAll(".choice").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      fork.querySelectorAll(".choice").forEach(function (b) { b.setAttribute("data-picked", ""); });
+      var good = btn.dataset.choice === "balanced";
+      fv.className = "verdict-box show " + (good ? "good" : "bad");
+      if (good) {
+        fv.innerHTML = '<span class="tag">◇ Sound call</span><strong>Blood early, pressure held low.</strong> Aggressive crystalloid dilutes clotting factors, drops core temperature, and — by pushing the pressure up — dislodges the fragile clot forming on the bleeding vessel. You bridge with warmed fluid, activate products, and accept a systolic of 80–90 until the source is sealed.';
+      } else {
+        fv.innerHTML = '<span class="tag">◇ The old reflex — and its cost</span>Two liters of saline may briefly lift the number on the screen, but it <strong>dilutes his clotting factors, cools him toward coagulopathy, and can pop the clot</strong> by over-pressurizing the bleed. Chasing a normal pressure with crystalloid is exactly the practice the evidence moved away from. Give blood; tolerate a low pressure until hemostasis.';
+      }
+    });
+  });
+
+  // ---------- blatchford tool ----------
+  var toggles = document.getElementById("gbtoggles");
+  var scoreEl = document.getElementById("gbscore");
+  var verdictEl = document.getElementById("gbverdict");
+  function gbUpdate() {
+    var total = 0;
+    toggles.querySelectorAll("button").forEach(function (b) {
+      if (b.getAttribute("aria-pressed") === "true") total += +b.dataset.pts;
+    });
+    scoreEl.textContent = total;
+    var col, msg;
+    if (total === 0) { col = "var(--green)"; msg = "<b>Score 0.</b> The only score that reliably means “safe for outpatient.” Anything above it earns admission."; }
+    else if (total <= 5) { col = "var(--amber)"; msg = "<b>Low–moderate.</b> Not dischargeable — standard inpatient management and timely endoscopy."; }
+    else { col = "var(--crimson)"; msg = "<b>High risk.</b> Urgent intervention, ICU-level monitoring, early endoscopy. This is where our patient sits."; }
+    scoreEl.style.color = col;
+    verdictEl.innerHTML = msg;
+  }
+  toggles.querySelectorAll("button").forEach(function (b) {
+    b.addEventListener("click", function () {
+      b.setAttribute("aria-pressed", b.getAttribute("aria-pressed") === "true" ? "false" : "true");
+      gbUpdate();
+    });
+  });
+
+  // ---------- ladder highlight (beat 2) ----------
+  var ladder = document.getElementById("ladder");
+  var ladderBeat = ladder.closest(".beat");
+  var lio = new IntersectionObserver(function (entries) {
+    entries.forEach(function (e) {
+      if (e.isIntersecting) {
+        var rungs = ladder.querySelectorAll(".rung");
+        rungs.forEach(function (r) { r.classList.remove("on"); });
+        // highlight class II as active for this beat
+        var on = ladder.querySelector('.rung[data-cls="2"]');
+        if (on) setTimeout(function () { on.classList.add("on"); }, 200);
+      }
+    });
+  }, { threshold: 0.4 });
+  lio.observe(ladderBeat);
+})();
+</script>
+</body>
+</html>
