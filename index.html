@@ -321,15 +321,15 @@
                 <div class="app-card flagship">
                     <div class="app-number">ENGINE</div>
                     <h3 class="app-title">Computational Physiology Engine</h3>
-                    <p class="app-subtitle">Multi-Agent Physiological Simulation Engine</p>
+                    <p class="app-subtitle">Evidence-Based Physiology, Computed in Real Time</p>
                     <div class="flagship-inner">
                         <div>
                             <div class="app-problem">
                                 <span class="app-problem-label">Clinical Problem</span>
-                                Clinical simulation platforms are either low-fidelity or prohibitively expensive. Educators, researchers, and developers need a physiologically grounded engine where complex clinical behavior is driven by underlying mechanisms — not by scripted scenarios.
+                                Every clinical tool downstream — simulators, training, decision support — needs a source of truth for how a body behaves over time. Today that's either a rigid script or off-the-shelf tooling. Neither is a physiology you can compute, audit, and build on.
                             </div>
                             <p class="app-description">
-                                A physiologically grounded multi-agent simulation engine spanning cellular to system levels, where complex clinical behavior is driven by underlying physiology rather than scripted scenarios. Async Python/PyTorch architecture with GPU-accelerated batch computation and a Core ML surrogate path for on-device inference.
+                                A physiologically grounded engine that computes a patient's trajectory from underlying mechanisms, cellular to system level. Vitals, labs, and drug response evolve as physiology, not a script or a generated story. Because it's computed rather than scripted playback, presentations are genuinely novel and are distinct on every run.
                             </p>
                         </div>
                         <div>
@@ -362,10 +362,10 @@
                     <p class="app-subtitle">Clinical Simulator Front-End</p>
                     <div class="app-problem">
                         <span class="app-problem-label">Clinical Problem</span>
-                        Bedside-quality patient simulators are typically locked into expensive vendor mannequins. Educators and researchers need a software-only simulator that pairs the physiological engine with a real clinical interface.
+                        Bedside-quality patient simulators are locked into expensive vendor mannequins tied to a single training room. Every discipline that trains on patients needs a software-only simulator driven by real physiology, not scripted playback.
                     </div>
                     <p class="app-description">
-                        React/TypeScript front-end driven by a live WebSocket bridge to the engine. Real-time vitals, 4-channel waveforms, and pharmacological response — all rendered from engine state, not scripted playback.
+                        A clinical front-end wired live to the physiology engine over a WebSocket bridge. Vitals, four-channel waveforms, and drug response render from computed engine state in real time, with a graceful fallback when the bridge is offline.
                     </p>
                     <ul class="app-features">
                         <li>Live WebSocket bridge to the engine</li>
@@ -391,7 +391,7 @@
                     <p class="app-subtitle">AI-Driven Clinical Training Simulator</p>
                     <div class="app-problem">
                         <span class="app-problem-label">Clinical Problem</span>
-                        Sim-based education is expensive, schedule-dependent, and doesn't scale. Nurses need on-demand, realistic case exposure — especially for low-frequency, high-acuity events.
+                        Sim-based education is expensive, schedule-dependent, and doesn't scale. Clinicians across every discipline need on-demand, realistic case exposure, especially for low-frequency, high-acuity events.
                     </div>
                     <p class="app-description">
                         Standalone simulation with AI-driven evolving clinical narratives, real-time vitals, and 45+ interactive procedures.
@@ -413,10 +413,10 @@
                     </div>
                 </div>
 
-                <!-- Project Atlas / Kymora -->
+                <!-- Meridian / Kymora -->
                 <div class="app-card">
                     <div class="app-number">CONSUMER iOS</div>
-                    <h3 class="app-title">Project Atlas</h3>
+                    <h3 class="app-title">Meridian</h3>
                     <p class="app-subtitle">Kymora — Consumer iOS Application</p>
                     <div class="app-problem">
                         <span class="app-problem-label">Consumer Problem</span>
@@ -490,9 +490,9 @@
                                     <span class="tech-badge">Zero-Dependency</span>
                                 </div>
                                 <div style="display:flex; gap:1rem; flex-wrap:wrap; margin-top:0.5rem;">
-                                    <a href="story/gi-bleed/" class="launch-btn" target="_blank" rel="noopener noreferrer" style="text-decoration:none; cursor:pointer;">GI HEMORRHAGE →</a>
-                                    <a href="story/hyperkalemia/" class="launch-btn" target="_blank" rel="noopener noreferrer" style="text-decoration:none; cursor:pointer;">HYPERKALEMIA →</a>
-                                    <a href="story/first-code-blue/" class="launch-btn" target="_blank" rel="noopener noreferrer" style="text-decoration:none; cursor:pointer;">YOUR FIRST CODE →</a>
+                                    <a href="story/gi-bleed/" class="launch-btn" style="text-decoration:none; cursor:pointer;">GI HEMORRHAGE →</a>
+                                    <a href="story/hyperkalemia/" class="launch-btn" style="text-decoration:none; cursor:pointer;">HYPERKALEMIA →</a>
+                                    <a href="story/first-code-blue/" class="launch-btn" style="text-decoration:none; cursor:pointer;">YOUR FIRST CODE →</a>
                                 </div>
                             </div>
                         </div>
@@ -585,7 +585,7 @@
                 <div class="app-card">
                     <div class="app-number">PROJECT_04</div>
                     <h3 class="app-title">Clinical Information Workflow Engine</h3>
-                    <p class="app-subtitle">Nurse Educator Automation Platform</p>
+                    <p class="app-subtitle">Clinical Educator Automation Platform</p>
                     <div class="app-problem">
                         <span class="app-problem-label">Clinical Problem</span>
                         Nurse educators spend hours writing CE content, simulation scenarios, and policy-aligned materials that could be generated in minutes with the right clinical context layer.
@@ -603,7 +603,9 @@
                         <div>
                             <span class="tech-badge">React</span>
                             <span class="tech-badge">TypeScript</span>
-                            <span class="tech-badge">Gemini AI</span>
+                            <span class="tech-badge">Gemini</span>
+                            <span class="tech-badge">Claude</span>
+                            <span class="tech-badge">Perplexity</span>
                         </div>
                     </div>
                 </div>
@@ -635,35 +637,9 @@
                     </div>
                 </div>
 
-                <!-- Ecosystem Navigator -->
-                <div class="app-card">
-                    <div class="app-number">PROJECT_06</div>
-                    <h3 class="app-title">Ecosystem Navigator</h3>
-                    <p class="app-subtitle">Platform Architecture Map</p>
-                    <div class="app-problem">
-                        <span class="app-problem-label">Design Problem</span>
-                        Cross-app dependency relationships in complex ecosystems are invisible without explicit tooling — making architectural decisions harder to communicate and validate.
-                    </div>
-                    <p class="app-description">
-                        Interactive visualization of the full Trimergent Ecosystem — showing data flows, shared AI backends, and dependency relationships across all applications.
-                    </p>
-                    <ul class="app-features">
-                        <li>Interactive ecosystem topology</li>
-                        <li>Cross-app dependency mapping</li>
-                        <li>Shared AI backend visualization</li>
-                        <li>Architecture overview for stakeholder review</li>
-                    </ul>
-                    <div class="app-card-footer">
-                        <div>
-                            <span class="tech-badge">React</span>
-                            <span class="tech-badge">Interactive</span>
-                        </div>
-                    </div>
-                </div>
-
                 <!-- Clinical Article Library -->
                 <div class="app-card">
-                    <div class="app-number">PROJECT_07</div>
+                    <div class="app-number">PROJECT_06</div>
                     <h3 class="app-title">Clinical Article Library</h3>
                     <p class="app-subtitle">Open-Source Nursing Education</p>
                     <div class="app-problem">
