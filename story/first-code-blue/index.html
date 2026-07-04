@@ -1,0 +1,516 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sink or Swim — Surviving Your First Code Blue</title>
+<meta name="description" content="Your first code blue, told through the one monitor no one shows you — your own. A Kymora Clinical Story Mode piece, from the original essay by Mike Giardina, BSN, RN, CEN.">
+<meta name="theme-color" content="#0B1014">
+<meta name="author" content="Mike Giardina BSN, RN, CEN">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Sink or Swim — Surviving Your First Code Blue">
+<meta property="og:description" content="The first pulse you need to check is your own. A code blue told through the provider's monitor — with a breathing pacer that settles your heart as you read.">
+<meta property="og:site_name" content="Kymora Clinical Education">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Sink or Swim — Surviving Your First Code Blue">
+<meta name="twitter:description" content="The monitor at the top is yours. Breathe with it.">
+<style>
+  html { background: #0B1014; }
+  :root {
+    --monitor:   #0B1014;
+    --bezel:     #141C22;
+    --bezel-2:   #1B262E;
+    --line:      #26333B;
+    --breath:    #43D9C4;
+    --breath-d:  #227e73;
+    --amber:     #E6B450;
+    --amber-d:   #8a6a26;
+    --crimson:   #E23B4E;
+    --crimson-d: #8f1e2c;
+    --paper:     #F2ECE1;
+    --paper-2:   #E7DFD0;
+    --ink:       #1A1714;
+    --ink-soft:  #4a423a;
+    --slate:     #8A9BA5;
+    --slate-dim: #5a6b74;
+    --mono: ui-monospace, "SF Mono", "Cascadia Code", "Roboto Mono", Menlo, Consolas, monospace;
+    --serif: "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua", Georgia, serif;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: radial-gradient(120% 80% at 50% -10%, #0f1a1e 0%, var(--monitor) 55%) fixed;
+    color: var(--slate); font-family: var(--serif); -webkit-font-smoothing: antialiased; line-height: 1.6;
+  }
+  .wrap { max-width: 760px; margin: 0 auto; padding: 0 20px; }
+
+  /* ---------- provider monitor ---------- */
+  .monitor { position: sticky; top: 0; z-index: 50; background: linear-gradient(180deg, #0e1a1c, #0a1214); border-bottom: 1px solid var(--line); box-shadow: 0 10px 30px -18px #000; }
+  .monitor-inner { max-width: 960px; margin: 0 auto; display: grid; grid-template-columns: auto 1fr; gap: 14px; padding: 8px 16px; align-items: stretch; }
+  .m-left { display: flex; flex-direction: column; justify-content: center; gap: 4px; min-width: 128px; }
+  .m-who { font-family: var(--mono); font-size: 12px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--breath); display: flex; align-items: center; gap: 6px; }
+  .m-who .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--breath); box-shadow: 0 0 8px var(--breath); }
+  .m-state { font-family: var(--mono); font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--slate-dim); }
+  .m-right { display: grid; grid-template-columns: 1.35fr repeat(3, 0.72fr); gap: 10px; align-items: center; }
+  .trace-cell { background: #060c0d; border: 1px solid var(--line); border-radius: 6px; height: 62px; overflow: hidden; }
+  canvas#trace { display: block; width: 100%; height: 100%; }
+  .vital { background: #060c0d; border: 1px solid var(--line); border-radius: 6px; height: 62px; padding: 5px 8px; display: flex; flex-direction: column; justify-content: center; font-family: var(--mono); }
+  .vital .lab { font-size: 9px; letter-spacing: 0.14em; color: var(--slate-dim); text-transform: uppercase; }
+  .vital .num { font-size: 24px; font-weight: 700; line-height: 1; font-variant-numeric: tabular-nums; color: var(--val, var(--breath)); }
+  .vital .unit { font-size: 9px; color: var(--slate-dim); letter-spacing: 0.08em; }
+  .vital.patient .num { font-size: 13px; color: var(--crimson); letter-spacing: 0.02em; }
+  .vital.patient .num.rosc { color: var(--breath); }
+  .vital.patient .num.tod { color: var(--slate-dim); }
+
+  .monitor.panic { animation: bezelPanic 0.85s steps(1) infinite; }
+  @keyframes bezelPanic { 0%,50% { background: linear-gradient(180deg,#1a0d10,#150a0d);} 50.01%,100% { background: linear-gradient(180deg,#0e1a1c,#0a1214);} }
+
+  /* ---------- hero ---------- */
+  header.hero { padding: 96px 0 70px; text-align: center; }
+  .eyebrow { font-family: var(--mono); font-size: 11px; letter-spacing: 0.32em; text-transform: uppercase; color: var(--breath-d); margin-bottom: 26px; }
+  header.hero h1 { font-family: var(--serif); font-weight: 700; font-size: clamp(2.8rem, 9vw, 5rem); line-height: 0.98; letter-spacing: -0.01em; text-wrap: balance; color: var(--paper); margin: 0 0 22px; }
+  header.hero h1 em { font-style: italic; color: var(--breath); }
+  .dek { font-size: 1.16rem; color: var(--slate); max-width: 30em; margin: 0 auto; text-wrap: pretty; }
+  .byline { margin-top: 34px; font-family: var(--mono); font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--slate-dim); line-height: 1.9; }
+  .byline b { color: var(--slate); font-weight: 400; }
+  .scroll-cue { margin-top: 50px; font-family: var(--mono); font-size: 10px; letter-spacing: 0.3em; text-transform: uppercase; color: var(--slate-dim); }
+  .scroll-cue span { display: block; margin-top: 8px; color: var(--breath-d); animation: bob 2.4s ease-in-out infinite; }
+  @keyframes bob { 0%,100% { transform: translateY(0);} 50% { transform: translateY(5px);} }
+
+  /* ---------- beats ---------- */
+  section.beat { padding: 40px 0; }
+  .phase { font-family: var(--mono); font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--slate-dim); display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+  .phase .n { color: var(--breath); }
+  .phase::after { content: ""; flex: 1; height: 1px; background: var(--line); }
+  .phase.warm .n { color: var(--amber); }
+  .phase.crit .n { color: var(--crimson); }
+
+  .story { background: var(--paper); color: var(--ink); border-radius: 4px; padding: 34px 38px; box-shadow: 0 30px 60px -40px #000, inset 0 0 0 1px var(--paper-2); font-size: 1.12rem; line-height: 1.7; }
+  .story.tight { padding: 26px 32px; }
+  .story p { margin: 0 0 1em; text-wrap: pretty; }
+  .story p:last-child { margin-bottom: 0; }
+  .story .drop::first-letter { font-size: 3.4rem; line-height: 0.8; float: left; padding: 6px 10px 0 0; color: var(--breath-d); font-weight: 700; }
+  .story b { color: #000; }
+  .story em { color: var(--ink-soft); }
+  .pull { font-size: 1.32rem; line-height: 1.4; color: var(--ink); font-style: italic; text-align: center; margin: 6px auto; max-width: 22em; }
+  .pull b { color: #000; font-style: normal; }
+
+  .decode { margin-top: 18px; background: var(--bezel); border: 1px solid var(--line); border-left: 3px solid var(--breath); border-radius: 6px; padding: 22px 24px; }
+  .decode.amber { border-left-color: var(--amber); }
+  .decode.crimson { border-left-color: var(--crimson); }
+  .decode h3 { font-family: var(--mono); font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--breath); margin: 0 0 12px; }
+  .decode.amber h3 { color: var(--amber); }
+  .decode.crimson h3 { color: var(--crimson); }
+  .decode p { margin: 0 0 0.85em; font-size: 1rem; color: #c4d0d6; line-height: 1.62; }
+  .decode p:last-child { margin-bottom: 0; }
+  .decode strong { color: var(--paper); font-weight: 600; }
+  .decode .chip { display: inline-block; font-family: var(--mono); font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; padding: 2px 7px; border-radius: 3px; margin: 2px 4px 2px 0; background: #0c1416; border: 1px solid var(--line); color: var(--slate); }
+
+  /* ---------- breathing pacer ---------- */
+  .pacer { margin-top: 18px; background: linear-gradient(180deg, #0f1c1e, #0b1416); border: 1px solid var(--line); border-radius: 10px; padding: 30px 24px; text-align: center; }
+  .pacer h3 { font-family: var(--mono); font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--paper); margin: 0 0 6px; }
+  .pacer .sub { font-family: var(--serif); font-size: 0.95rem; color: var(--slate); margin: 0 0 22px; }
+  .breath-stage { position: relative; width: 200px; height: 200px; margin: 0 auto 18px; display: grid; place-items: center; }
+  .breath-ring { position: absolute; inset: 0; margin: auto; width: 72px; height: 72px; border-radius: 50%; border: 2px solid var(--breath); box-shadow: 0 0 30px -6px var(--breath); background: radial-gradient(circle, rgba(67,217,196,0.18), transparent 70%); transition: transform 0.1s linear; }
+  .breath-label { position: relative; z-index: 2; font-family: var(--mono); text-transform: uppercase; letter-spacing: 0.16em; font-size: 13px; color: var(--breath); }
+  .breath-count { position: relative; z-index: 2; font-family: var(--mono); font-size: 34px; font-weight: 700; color: var(--paper); font-variant-numeric: tabular-nums; margin-top: 4px; min-height: 40px; }
+  .pacer button { font-family: var(--mono); font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; background: rgba(67,217,196,0.1); color: var(--breath); border: 1px solid var(--breath); border-radius: 22px; padding: 11px 26px; cursor: pointer; transition: background .15s; }
+  .pacer button:hover { background: rgba(67,217,196,0.2); }
+  .pacer button:focus-visible { outline: 2px solid var(--breath); outline-offset: 3px; }
+  .pacer .hint { margin-top: 16px; font-family: var(--serif); font-size: 0.9rem; color: var(--slate-dim); min-height: 1.4em; }
+
+  /* ---------- pit crew roles ---------- */
+  .roles { margin-top: 18px; display: grid; gap: 12px; }
+  @media (min-width: 640px) { .roles { grid-template-columns: repeat(3, 1fr); } }
+  .role { text-align: left; cursor: pointer; background: var(--bezel); border: 1px solid var(--line); border-radius: 8px; padding: 18px; color: var(--slate); font-family: var(--serif); transition: border-color .15s, transform .1s; }
+  .role:hover { border-color: var(--breath); transform: translateY(-2px); }
+  .role:focus-visible { outline: 2px solid var(--breath); outline-offset: 2px; }
+  .role .rt { font-family: var(--mono); font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--paper); display: block; margin-bottom: 4px; }
+  .role .rq { font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--breath); }
+  .role .rbody { font-size: 0.96rem; line-height: 1.55; color: #c4d0d6; margin-top: 10px; display: none; }
+  .role.open { border-color: var(--breath); background: #0f1c1e; }
+  .role.open .rbody { display: block; }
+
+  /* ---------- closed-loop ---------- */
+  .loop { margin-top: 18px; background: linear-gradient(180deg, #0f1c1e, #0b1416); border: 1px solid var(--line); border-radius: 10px; padding: 24px; }
+  .loop h3 { font-family: var(--mono); font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--paper); margin: 0 0 4px; }
+  .loop .sub { font-family: var(--serif); font-size: 0.95rem; color: var(--slate); margin: 0 0 18px; }
+  .loop-lines { display: grid; gap: 10px; margin-bottom: 16px; }
+  .ll { font-family: var(--mono); font-size: 13px; padding: 12px 14px; border-radius: 6px; background: #0b1416; border: 1px solid var(--line); color: var(--slate-dim); opacity: 0.35; transform: translateY(4px); transition: opacity .3s, transform .3s, border-color .3s, color .3s; }
+  .ll.on { opacity: 1; transform: translateY(0); color: var(--paper); border-color: var(--breath-d); }
+  .ll .who { color: var(--breath); }
+  .ll.confirm .who { color: var(--amber); }
+  .loop button { font-family: var(--mono); font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase; background: rgba(67,217,196,0.1); color: var(--breath); border: 1px solid var(--breath); border-radius: 22px; padding: 9px 20px; cursor: pointer; }
+  .loop button:hover { background: rgba(67,217,196,0.2); }
+  .loop button:focus-visible { outline: 2px solid var(--breath); outline-offset: 2px; }
+
+  /* ---------- compression fraction bar ---------- */
+  .cpr { margin-top: 12px; }
+  .cpr-bar { height: 26px; border-radius: 5px; background: repeating-linear-gradient(90deg, #0c1416 0 8px, #0f1c1e 8px 16px); border: 1px solid var(--line); position: relative; overflow: hidden; }
+  .cpr-fill { position: absolute; inset: 0; width: 92%; background: linear-gradient(90deg, var(--breath-d), var(--breath)); opacity: 0.8; }
+  .cpr-label { position: absolute; right: 8px; top: 50%; transform: translateY(-50%); font-family: var(--mono); font-size: 11px; color: #041012; font-weight: 700; }
+
+  /* ---------- reverence close ---------- */
+  .reverence { margin: 30px 0; padding: 46px 34px; text-align: center; background: radial-gradient(120% 120% at 50% 0%, #14100a 0%, #0b0f10 70%); border: 1px solid var(--amber-d); border-radius: 10px; }
+  .reverence .flat { height: 40px; margin: 0 auto 26px; max-width: 320px; }
+  .reverence p { color: var(--paper); font-size: 1.14rem; line-height: 1.7; max-width: 30em; margin: 0 auto 1em; }
+  .reverence .soft { color: var(--slate); font-size: 1.02rem; }
+
+  .mantra { margin-top: 8px; display: grid; gap: 10px; max-width: 30em; margin-left: auto; margin-right: auto; text-align: left; }
+  .mantra .m { font-family: var(--serif); font-size: 1.14rem; color: var(--paper); padding-left: 18px; border-left: 2px solid var(--amber); }
+  .mantra .m b { color: var(--amber); font-weight: 600; }
+
+  /* outro */
+  .outro { padding: 60px 0 30px; text-align: center; }
+  .outro .rule { width: 60px; height: 2px; background: var(--breath); margin: 0 auto 28px; }
+  .outro h2 { font-family: var(--serif); font-size: 1.7rem; color: var(--paper); margin: 0 0 16px; text-wrap: balance; }
+  .outro p { max-width: 34em; margin: 0 auto 1em; color: var(--slate); font-size: 1.04rem; }
+  .signoff { margin-top: 26px; font-family: var(--mono); font-size: 12px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--breath); }
+  footer.foot { padding: 26px 0 60px; text-align: center; font-family: var(--mono); font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--slate-dim); }
+  .disc { max-width: 44em; margin: 12px auto 0; font-family: var(--serif); text-transform: none; letter-spacing: 0; font-size: 0.82rem; color: var(--slate-dim); line-height: 1.5; }
+  .back { display: inline-block; margin-top: 18px; font-family: var(--mono); font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--slate); text-decoration: none; border-bottom: 1px solid var(--line); padding-bottom: 2px; }
+  .back:hover { color: var(--breath); }
+
+  @media (max-width: 560px) {
+    .m-right { grid-template-columns: 1.1fr repeat(3, 1fr); gap: 6px; }
+    .vital .num { font-size: 17px; } .vital.patient .num { font-size: 10px; }
+    .trace-cell, .vital { height: 52px; } .m-left { min-width: 88px; }
+    .story { padding: 26px 22px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .monitor.panic, .scroll-cue span { animation: none !important; }
+    * { scroll-behavior: auto !important; }
+  }
+</style>
+</head>
+<body>
+
+<div class="monitor" id="monitor">
+  <div class="monitor-inner">
+    <div class="m-left">
+      <div class="m-who"><span class="dot"></span>You</div>
+      <div class="m-state" id="mstate">Baseline</div>
+    </div>
+    <div class="m-right">
+      <div class="trace-cell"><canvas id="trace" width="360" height="124"></canvas></div>
+      <div class="vital"><div class="lab">Your HR</div><div class="num" id="v-hr" style="--val:var(--breath)">76</div><div class="unit">bpm</div></div>
+      <div class="vital"><div class="lab">Your RR</div><div class="num" id="v-rr" style="--val:var(--breath)">14</div><div class="unit">/min</div></div>
+      <div class="vital patient"><div class="lab">Patient</div><div class="num" id="v-pt">—</div><div class="unit">rhythm</div></div>
+    </div>
+  </div>
+</div>
+
+<header class="hero wrap">
+  <div class="eyebrow">Kymora · Clinical Story Mode · No. 3</div>
+  <h1>Sink or <em>Swim</em></h1>
+  <p class="dek">Surviving your first code blue — told through the one monitor nobody ever shows you. Your own. The vitals up top are yours; steady them as you read.</p>
+  <div class="byline">The original essay, staged.<br><b>Written by Mike Giardina, BSN, RN, CEN</b></div>
+  <div class="scroll-cue">Begin<span>▼</span></div>
+</header>
+
+<main>
+
+<!-- INTRO -->
+<section class="beat wrap" data-hr="138" data-rr="28" data-state="Fight-or-flight" data-panic="1" data-patient="VF ARREST">
+  <div class="phase crit"><span class="n">Intro</span> The physiology of the provider</div>
+  <div class="story">
+    <p class="drop">The first time a new nurse hears someone scream <em>"I NEED HELP!"</em> or <em>"GRAB THE CART!"</em>, the physiological response is nearly identical to that of the patient they're about to treat. Heart rate spikes or drops to the floor, peripheral vision narrows, fine motor skills deteriorate. Knees weak. Arms heavy. There might even be vomit on the sweater already. This is fight or flight at its core.</p>
+    <p>It's an instinctual response — a survival mechanism evolved for running from predators, never made for calculating epinephrine intervals or measuring the depth of chest compressions. We spend cumulative months on mannequins that don't bleed, vomit, or have grieving families screaming in the corner. <b>The gap between simulation and reality is where many new graduates falter.</b></p>
+  </div>
+  <div class="decode crimson">
+    <h3>◇ Look up. That's your monitor.</h3>
+    <p>This piece isn't a guide to what to give and when. Plenty of things can teach you the algorithm. What nothing teaches you is the part that decides whether you can <em>run</em> the algorithm: your own nervous system, redlining before you've touched the patient.</p>
+    <p><strong>The first pulse you need to check is your own — before you walk through the door.</strong></p>
+  </div>
+</section>
+
+<!-- PHASE 1 -->
+<section class="beat wrap" data-hr="128" data-rr="26" data-state="Pre-code" data-patient="VF ARREST">
+  <div class="phase"><span class="n">Phase 1</span> The pre-code pause</div>
+  <div class="story tight">
+    <p>The most critical moment of a resuscitation often happens before you touch the patient — the ten seconds it takes to walk from the station to the bay. In that window you perform a self-triage. Arrest with a couple-minute ETA? Time to crack the cart and set up your laboratory. Epi. Amio. Bicarb. <em>Modern alchemy at its finest.</em></p>
+    <p class="pull">If you enter a chaotic room at a heart rate of 140, <b>you're going to be part of the problem, not the solution.</b></p>
+  </div>
+  <div class="pacer" id="pacer">
+    <h3>Take a tactical breath · 4-4-4</h3>
+    <p class="sub">Box breathing engages the parasympathetic nervous system and widens your cognitive bandwidth. Follow the circle. Watch your monitor.</p>
+    <div class="breath-stage">
+      <div class="breath-ring" id="ring"></div>
+      <div>
+        <div class="breath-label" id="breathLabel">Ready</div>
+        <div class="breath-count" id="breathCount"></div>
+      </div>
+    </div>
+    <button id="breathBtn" type="button">Begin breathing</button>
+    <div class="hint" id="breathHint">Three rounds. You cannot organize a chaotic room if your own internal state is in chaos.</div>
+  </div>
+</section>
+
+<!-- PHASE 2 -->
+<section class="beat wrap" data-hr="92" data-rr="16" data-state="Regulated" data-patient="VF ARREST">
+  <div class="phase"><span class="n">Phase 2</span> The pit crew — finding your lane</div>
+  <div class="story tight">
+    <p>In high-acuity situations we work like a pit crew. No one on the side of a racetrack asks anyone else what to do — they fall in line and claim the role that suits them. Scan for the code lead. Attending, resident, ICU charge — doesn't matter. There's only one question to ask:</p>
+    <p class="pull"><b>"What do you need?"</b></p>
+    <p>You'll default to one of three high-value, low-ambiguity roles. Tap the one calling you.</p>
+  </div>
+  <div class="roles" id="roles">
+    <button class="role" type="button">
+      <span class="rt">Compressor</span>
+      <span class="rq">burn the energy</span>
+      <div class="rbody">High-quality CPR is the single most important intervention. It's stamina, not decision-making — the ideal role for a nurse running on adrenaline. Use your body, not just your arms, and you'll do more for that person than a LUCAS device ever could.</div>
+    </button>
+    <button class="role" type="button">
+      <span class="rt">Recorder</span>
+      <span class="rq">learn the flow</span>
+      <div class="rbody">Standing at the computer with the record open lets you watch the code, learn the algorithm, and contribute by calling the intervals — "two minutes since last epi," "pulse check in thirty." You won't hesitate on epi timing twice.</div>
+    </button>
+    <button class="role" type="button">
+      <span class="rt">Runner</span>
+      <span class="rq">clear the room</span>
+      <div class="rbody">If the room's already saturated, step out. Being the gopher isn't inglorious — knowing what people need before they need it, and the fastest way to get it, is its own skill. Flushes, more epi, lab results, the Accu-Chek. That can mean life or death.</div>
+    </button>
+  </div>
+  <div class="decode amber">
+    <h3>◇ The hazard of hovering</h3>
+    <p>The most dangerous thing a new nurse does is <strong>hover</strong> — standing near the bed without a task. It adds noise, blocks the leader's line of sight, and physically obstructs the team. <strong>If you don't have a role, find one</strong> — or go hold down the rest of the department, because the world doesn't stop when this happens.</p>
+  </div>
+</section>
+
+<!-- PHASE 3 -->
+<section class="beat wrap" data-hr="96" data-rr="17" data-state="In the code" data-patient="VF → CPR">
+  <div class="phase"><span class="n">Phase 3</span> The mechanics of efficacy</div>
+  <div class="story tight">
+    <p>Effective resuscitation is physics and chemistry, not magic. The one number the AHA hammers is <b>compression fraction</b> — the percentage of the code that hands are actually on the chest. Every time you come off, coronary perfusion pressure falls toward zero, and it takes several compressions to build it back.</p>
+  </div>
+  <div class="decode">
+    <h3>◇ Compression fraction — keep the pressure up</h3>
+    <p>Every minute of coronary perfusion is a minute of cerebral blood flow restored. It doesn't matter if you restart everything if the heart and brain aren't recoverable.</p>
+    <div class="cpr"><div class="cpr-bar"><div class="cpr-fill"></div><span class="cpr-label">HANDS ON</span></div></div>
+    <p style="margin-top:12px;"><strong>The pearl:</strong> do not pause compressions for intubation. Do not pause for access. The only pauses are rhythm checks — under 10 seconds — and defibrillation. The first thing on everyone's mind, in every role: <em>compressions stop only to check for a true pulse.</em></p>
+  </div>
+  <div class="loop" id="loop">
+    <h3>Closed-loop communication</h3>
+    <p class="sub">Auditory exclusion is real. Repeat what you heard, out loud, before a mistake is made. Play it through.</p>
+    <div class="loop-lines">
+      <div class="ll" data-step="0"><span class="who">Leader:</span> "Give 1 mg epinephrine IV push."</div>
+      <div class="ll" data-step="1"><span class="who">Med nurse:</span> "1 mg epinephrine IV push."</div>
+      <div class="ll confirm" data-step="2"><span class="who">Med nurse:</span> <em>(administers)</em> "1 mg epinephrine is in."</div>
+      <div class="ll" data-step="3"><span class="who">Scribe:</span> marks the time. Order heard, dose verified, action closed.</div>
+    </div>
+    <button id="loopBtn" type="button">▶ Run the loop</button>
+  </div>
+</section>
+
+<!-- PHASE 4 -->
+<section class="beat wrap" data-hr="118" data-rr="22" data-state="The crash" data-patient="ROSC" data-rhythmclass="rosc">
+  <div class="phase crit"><span class="n">Phase 4</span> The fall</div>
+  <div class="story">
+    <p>The code doesn't end when the pulse comes back or time of death is called. For a new grad, the minutes after are the ambush. <b>The high you felt from that rush of adrenaline will drop you off a cliff.</b> Crashing is the only option if you didn't already pack a parachute — and plenty of nurses have crashed and not gotten back up.</p>
+    <p>So do it again. The 4-4-4, this time with your eyes closed, clearing your head. Don't internalize what you saw. That exposure builds over each code until it spills over — and there's a better name for it than trauma dumping.</p>
+  </div>
+  <div class="decode amber">
+    <h3>◇ Debrief — and don't do it alone</h3>
+    <p>A five-minute standing huddle right after, standard practice in any high-performing ER. Not blame, not guilt — systems. <strong>What went well:</strong> "good role assignment," "high compression fraction," "a recommendation I hadn't thought of." <strong>What we improve:</strong> "delay getting the IO drill," "too much noise," "too long between compressions."</p>
+    <p>The "stiff upper lip" culture of the past is what feeds burnout and PTSD. <strong>Acknowledging that a code was hard is not weakness; it is humanity</strong> — and there's no greater loss than losing yours along with someone else's life.</p>
+  </div>
+</section>
+
+<!-- PHASE 5 — reverence -->
+<section class="beat wrap" data-hr="80" data-rr="13" data-state="After" data-patient="TIME OF DEATH" data-rhythmclass="tod">
+  <div class="phase warm"><span class="n">Phase 5</span> The aftermath</div>
+  <div class="story tight">
+    <p>Sometimes, after all of it, death wins. This isn't a textbook, and the order was never the point — every code is different. But if the work ends in a loss, there has to be more than a debrief. There has to be a moment.</p>
+  </div>
+  <div class="reverence">
+    <svg class="flat" viewBox="0 0 320 40" preserveAspectRatio="none" aria-hidden="true"><polyline points="0,20 320,20" fill="none" stroke="#8a6a26" stroke-width="2"/></svg>
+    <p>It isn't a question of belief. It's respect. The body in front of you was someone's mother, father, child, friend, or spouse — someone who, a couple of hours ago, might have said <em>"see you later"</em> for the last time.</p>
+    <p class="soft">Remove the equipment you can. Clear the caps out of the sink. Clean the floor, even if it's been there for days. Find a couple of chairs and a box of tissues. Sit them up, wash their face and hands, a fresh gown and fresh linens. Treat their body the way you'd want another nurse to treat someone you love. It gives everyone in the room a turning point — from fighting for a life to honoring a death.</p>
+    <p style="color:var(--amber); font-style:italic;">If you ever lose the feeling of being humbled by this, consider it time to reach out for more help than you're already getting.</p>
+  </div>
+</section>
+
+<!-- MANTRA -->
+<section class="beat wrap" data-hr="74" data-rr="12" data-state="Steady" data-patient="—">
+  <div class="phase warm"><span class="n">Carry this</span> what the next one already knows</div>
+  <div class="story tight" style="margin-bottom:20px;">
+    <p>The next code will be a little easier. You'll fill a different role, with a little more confidence, and you'll teach the one standing where you're standing now. Until then, carry these.</p>
+  </div>
+  <div class="mantra">
+    <div class="m"><b>Don't panic;</b> breathe.</div>
+    <div class="m"><b>Don't assume;</b> communicate.</div>
+    <div class="m"><b>Don't take flight;</b> stay and fight.</div>
+    <div class="m"><b>Don't forget</b> to respect the situation, the person, and their loved ones.</div>
+    <div class="m"><b>Don't disconnect;</b> debrief.</div>
+    <div class="m"><b>And remember</b> that you trained for this.</div>
+  </div>
+</section>
+
+<div class="outro wrap">
+  <div class="rule"></div>
+  <h2>This is the pinnacle of your skill and profession.</h2>
+  <p>There's no greater honor than taking everything you know and using it to restore as much life as possible to the person who entrusted it to you. Sink, or swim. You already know how to swim — you just have to remember to breathe.</p>
+  <div class="signoff">— Mike Giardina, BSN, RN, CEN</div>
+  <a class="back" href="../../">← Back to the portfolio</a>
+</div>
+
+<footer class="foot">
+  Kymora Clinical Education · Story Mode · No. 3
+  <p class="disc">A reflective essay for newer emergency nurses, written from the bedside. It is about the human experience of resuscitation, not a substitute for ACLS training, institutional protocol, or clinical judgment. If a code is sitting heavy with you, reach out — a colleague, a debrief, your EAP.</p>
+</footer>
+
+</main>
+
+<script>
+(function () {
+  "use strict";
+  var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  // ---------- provider vitals ----------
+  var monitor = document.getElementById("monitor");
+  var elHR = document.getElementById("v-hr");
+  var elRR = document.getElementById("v-rr");
+  var elPt = document.getElementById("v-pt");
+  var elState = document.getElementById("mstate");
+
+  var cur = { hr: 76, rr: 14 };
+  var tgt = { hr: 76, rr: 14 };
+  var panic = false;
+
+  function hrColor(hr) { return hr >= 120 ? "var(--crimson)" : (hr >= 100 ? "var(--amber)" : "var(--breath)"); }
+
+  function setBeat(el) {
+    tgt.hr = +el.dataset.hr;
+    tgt.rr = +el.dataset.rr;
+    panic = el.dataset.panic === "1";
+    elState.textContent = el.dataset.state || "";
+    monitor.classList.toggle("panic", panic && !reduce);
+    var pt = el.dataset.patient || "—";
+    elPt.textContent = pt;
+    elPt.className = "num " + (el.dataset.rhythmclass || "");
+  }
+
+  var beats = Array.prototype.slice.call(document.querySelectorAll(".beat"));
+  var io = new IntersectionObserver(function (entries) {
+    entries.forEach(function (e) { if (e.isIntersecting) setBeat(e.target); });
+  }, { rootMargin: "-45% 0px -45% 0px", threshold: 0 });
+  beats.forEach(function (b) { io.observe(b); });
+
+  function lerp(a, b, t) { return a + (b - a) * t; }
+  function tick() {
+    cur.hr = lerp(cur.hr, tgt.hr, 0.07);
+    cur.rr = lerp(cur.rr, tgt.rr, 0.07);
+    elHR.textContent = Math.round(cur.hr);
+    elRR.textContent = Math.round(cur.rr);
+    elHR.style.setProperty("--val", hrColor(cur.hr));
+    elRR.style.setProperty("--val", hrColor(cur.hr));
+    requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+
+  // ---------- provider ECG (rate follows your HR) ----------
+  function ecgAt(p) {
+    if (p < 0.10) return Math.sin(p / 0.10 * Math.PI) * 0.09;
+    if (p < 0.16) return 0;
+    if (p < 0.19) return -0.12 * ((p - 0.16) / 0.03);
+    if (p < 0.235) return -0.12 + ((p - 0.19) / 0.045) * 1.12;
+    if (p < 0.27) return 1.0 - ((p - 0.235) / 0.035) * 1.25;
+    if (p < 0.31) return -0.25 + ((p - 0.27) / 0.04) * 0.25;
+    if (p < 0.50) return 0;
+    if (p < 0.68) return Math.sin((p - 0.50) / 0.18 * Math.PI) * 0.26;
+    return 0;
+  }
+  var canvas = document.getElementById("trace"), ctx = canvas.getContext("2d");
+  var W = canvas.width, H = canvas.height;
+  var buf = new Array(W).fill(H * 0.55), phase = 0, last = 0;
+  function draw(ts) {
+    if (!last) last = ts; var dt = Math.min(60, ts - last); last = ts;
+    if (reduce) dt = 0;
+    var beatDur = 60000 / cur.hr, pxPerMs = W / 3200, msPerPx = 1 / pxPerMs;
+    var col = cur.hr >= 120 ? "#E23B4E" : (cur.hr >= 100 ? "#E6B450" : "#43D9C4");
+    var step = Math.max(1, Math.round(dt * pxPerMs));
+    for (var s = 0; s < step; s++) { phase = (phase + msPerPx / beatDur) % 1; buf.push(H * 0.55 - ecgAt(phase) * H * 0.34); buf.shift(); }
+    ctx.clearRect(0, 0, W, H);
+    ctx.strokeStyle = "rgba(67,217,196,0.06)"; ctx.lineWidth = 1;
+    for (var gx = 0; gx < W; gx += 24) { ctx.beginPath(); ctx.moveTo(gx, 0); ctx.lineTo(gx, H); ctx.stroke(); }
+    for (var gy = 0; gy < H; gy += 24) { ctx.beginPath(); ctx.moveTo(0, gy); ctx.lineTo(W, gy); ctx.stroke(); }
+    ctx.shadowColor = col; ctx.shadowBlur = 6; ctx.strokeStyle = col; ctx.lineWidth = 1.8;
+    ctx.beginPath();
+    for (var i = 0; i < W; i++) { i === 0 ? ctx.moveTo(i, buf[i]) : ctx.lineTo(i, buf[i]); }
+    ctx.stroke(); ctx.shadowBlur = 0;
+    ctx.fillStyle = col; ctx.beginPath(); ctx.arc(W - 1, buf[W - 1], 2.2, 0, Math.PI * 2); ctx.fill();
+    requestAnimationFrame(draw);
+  }
+  requestAnimationFrame(draw);
+  if (reduce) { for (var q = 0; q < W; q++) buf[q] = H * 0.55 - ecgAt((q / 96) % 1) * H * 0.34; }
+
+  // ---------- breathing pacer ----------
+  var ring = document.getElementById("ring");
+  var bLabel = document.getElementById("breathLabel");
+  var bCount = document.getElementById("breathCount");
+  var bBtn = document.getElementById("breathBtn");
+  var bHint = document.getElementById("breathHint");
+  var running = false, rounds = 0, rafB = null;
+  var PHASES = [
+    { name: "Inhale", dur: 4000, from: 0.4, to: 1.0 },
+    { name: "Hold",   dur: 4000, from: 1.0, to: 1.0 },
+    { name: "Exhale", dur: 4000, from: 1.0, to: 0.4 }
+  ];
+  var pIdx = 0, pStart = 0;
+  function scaleRing(v) { ring.style.transform = "scale(" + v + ")"; }
+  function stepBreath(ts) {
+    if (!running) return;
+    if (!pStart) pStart = ts;
+    var ph = PHASES[pIdx], el = ts - pStart, frac = Math.min(1, el / ph.dur);
+    scaleRing(ph.from + (ph.to - ph.from) * frac);
+    bLabel.textContent = ph.name;
+    bCount.textContent = Math.max(1, Math.ceil((ph.dur - el) / 1000));
+    if (frac >= 1) {
+      pIdx++;
+      pStart = ts;
+      if (pIdx >= PHASES.length) {
+        pIdx = 0; rounds++;
+        // each completed round eases your body toward baseline
+        tgt.hr = Math.max(78, tgt.hr - 16);
+        tgt.rr = Math.max(12, tgt.rr - 4);
+        if (rounds >= 3) { finishBreath(); return; }
+        bHint.textContent = "Round " + (rounds + 1) + " of 3. Feel the monitor settle.";
+      }
+    }
+    rafB = requestAnimationFrame(stepBreath);
+  }
+  function finishBreath() {
+    running = false; cancelAnimationFrame(rafB); rafB = null;
+    scaleRing(0.4); bLabel.textContent = "Baseline"; bCount.textContent = "";
+    bBtn.textContent = "Breathe again"; bBtn.disabled = false;
+    bHint.textContent = "That's the parasympathetic system doing its job. Now you can organize the room.";
+  }
+  bBtn.addEventListener("click", function () {
+    if (running) return;
+    running = true; rounds = 0; pIdx = 0; pStart = 0;
+    bBtn.textContent = "Breathing…"; bBtn.disabled = true;
+    bHint.textContent = "Round 1 of 3. Follow the circle.";
+    rafB = requestAnimationFrame(stepBreath);
+  });
+
+  // ---------- pit crew roles ----------
+  document.querySelectorAll("#roles .role").forEach(function (r) {
+    r.addEventListener("click", function () { r.classList.toggle("open"); });
+  });
+
+  // ---------- closed-loop ----------
+  var loopBtn = document.getElementById("loopBtn");
+  var lls = Array.prototype.slice.call(document.querySelectorAll("#loop .ll"));
+  var loopTimers = [];
+  loopBtn.addEventListener("click", function () {
+    loopTimers.forEach(clearTimeout); loopTimers = [];
+    lls.forEach(function (l) { l.classList.remove("on"); });
+    lls.forEach(function (l, i) {
+      loopTimers.push(setTimeout(function () { l.classList.add("on"); }, 350 + i * 900));
+    });
+    loopBtn.textContent = "▶ Run it again";
+  });
+})();
+</script>
+</body>
+</html>
