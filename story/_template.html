@@ -1,0 +1,283 @@
+<!doctype html>
+<!--
+  ┌────────────────────────────────────────────────────────────────────┐
+  │  CLINICAL STORY MODE — TEMPLATE SCAFFOLD                            │
+  │  Copy this file to  story/<slug>/index.html  and fill it in.        │
+  │  Full method + interactive-module snippets: story/PIPELINE.md       │
+  │                                                                     │
+  │  What this scaffold gives you for free:                             │
+  │   • the sticky "monitor" bar (canvas ECG + 3 vitals)               │
+  │   • the vitals engine: each <section class="beat"> carries the      │
+  │     patient's numbers as data-* attrs; scrolling to it eases the    │
+  │     monitor toward them (IntersectionObserver + rAF lerp)           │
+  │   • the two-register layout (dark monitor vs. warm "chart paper")   │
+  │   • reduced-motion handling                                         │
+  │  FILL-IN spots are marked below with a  ✎  pencil                   │
+  └────────────────────────────────────────────────────────────────────┘
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- ✎ Title: "<Evocative title> — <topic> in Real Time" -->
+<title>Untitled — Clinical Story Mode</title>
+<!-- ✎ Description + OG/Twitter tags so the link unfurls when shared -->
+<meta name="description" content="A clinical case told in real time. Kymora Clinical Story Mode.">
+<meta name="theme-color" content="#0B1014">
+<meta name="author" content="Mike Giardina BSN, RN, CEN">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Untitled — Clinical Story Mode">
+<meta property="og:description" content="A clinical case told in real time, on a live monitor.">
+<meta property="og:site_name" content="Kymora Clinical Education">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Untitled — Clinical Story Mode">
+<meta name="twitter:description" content="A clinical case told in real time, on a live monitor.">
+<style>
+  html { background: #0B1014; }
+  :root {
+    /* — shared monitor palette (keep) — */
+    --monitor: #0B1014; --bezel: #141C22; --line: #26333B;
+    --paper: #F2ECE1; --paper-2: #E7DFD0; --ink: #1A1714; --ink-soft: #4a423a;
+    --slate: #8A9BA5; --slate-dim: #5a6b74;
+    /* semantic states (keep) */
+    --green: #35E08A; --amber: #F5B544; --crimson: #E23B4E;
+    /* ✎ ACCENT — pick ONE per topic so pieces read as a series but stay distinct.
+       GI bleed = crimson, hyperkalemia = electric #38BDF8, code blue = teal #43D9C4. */
+    --accent: #38BDF8; --accent-d: #1e6f97;
+    --mono: ui-monospace, "SF Mono", "Cascadia Code", "Roboto Mono", Menlo, Consolas, monospace;
+    --serif: "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua", Georgia, serif;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: radial-gradient(120% 80% at 50% -10%, #10191f 0%, var(--monitor) 55%) fixed; color: var(--slate); font-family: var(--serif); -webkit-font-smoothing: antialiased; line-height: 1.6; }
+  .wrap { max-width: 760px; margin: 0 auto; padding: 0 20px; }
+
+  /* ---------- sticky monitor ---------- */
+  .monitor { position: sticky; top: 0; z-index: 50; background: linear-gradient(180deg, #0e161c, #0a1116); border-bottom: 1px solid var(--line); box-shadow: 0 10px 30px -18px #000; }
+  .monitor-inner { max-width: 960px; margin: 0 auto; display: grid; grid-template-columns: auto 1fr; gap: 14px; padding: 8px 16px; align-items: stretch; }
+  .m-left { display: flex; flex-direction: column; justify-content: center; gap: 4px; min-width: 130px; }
+  .m-clock { font-family: var(--mono); font-size: 12px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--slate-dim); }
+  .m-clock b { color: var(--accent); font-variant-numeric: tabular-nums; }
+  .m-status { font-family: var(--mono); font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; display: inline-flex; align-items: center; gap: 6px; color: var(--green); }
+  .m-status .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--green); box-shadow: 0 0 8px var(--green); }
+  .m-right { display: grid; grid-template-columns: 1.4fr repeat(3, 0.72fr); gap: 10px; align-items: center; }
+  .trace-cell { background: #060b0e; border: 1px solid var(--line); border-radius: 6px; height: 62px; overflow: hidden; }
+  canvas#trace { display: block; width: 100%; height: 100%; }
+  .vital { background: #060b0e; border: 1px solid var(--line); border-radius: 6px; height: 62px; padding: 5px 8px; display: flex; flex-direction: column; justify-content: center; font-family: var(--mono); }
+  .vital .lab { font-size: 9px; letter-spacing: 0.16em; color: var(--slate-dim); text-transform: uppercase; }
+  .vital .num { font-size: 24px; font-weight: 700; line-height: 1; font-variant-numeric: tabular-nums; color: var(--val, var(--green)); }
+  .vital .unit { font-size: 9px; color: var(--slate-dim); letter-spacing: 0.08em; }
+  /* alarm state: add class "critical" to any vital tile you want to flash on a crash */
+  .monitor.alarm { animation: bezelFlash 1s steps(1) infinite; }
+  .monitor.alarm .m-status { color: var(--crimson); }
+  .monitor.alarm .m-status .dot { background: var(--crimson); box-shadow: 0 0 10px var(--crimson); }
+  @keyframes bezelFlash { 0%,50% { background: linear-gradient(180deg,#1a0d10,#150a0d);} 50.01%,100% { background: linear-gradient(180deg,#0e161c,#0a1116);} }
+  .monitor.alarm .vital.critical { animation: tileFlash 1s steps(1) infinite; }
+  @keyframes tileFlash { 0%,50% { background:#2a0c12; border-color:var(--crimson);} 50.01%,100% { background:#060b0e; border-color:var(--line);} }
+
+  /* ---------- hero ---------- */
+  header.hero { padding: 96px 0 70px; text-align: center; }
+  .eyebrow { font-family: var(--mono); font-size: 11px; letter-spacing: 0.34em; text-transform: uppercase; color: var(--accent-d); margin-bottom: 26px; }
+  header.hero h1 { font-family: var(--serif); font-weight: 700; font-size: clamp(2.6rem, 8vw, 4.6rem); line-height: 0.98; letter-spacing: -0.01em; text-wrap: balance; color: var(--paper); margin: 0 0 22px; }
+  header.hero h1 em { font-style: italic; color: var(--accent); }
+  .dek { font-size: 1.14rem; color: var(--slate); max-width: 30em; margin: 0 auto; text-wrap: pretty; }
+  .byline { margin-top: 34px; font-family: var(--mono); font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--slate-dim); }
+  .scroll-cue { margin-top: 54px; font-family: var(--mono); font-size: 10px; letter-spacing: 0.3em; text-transform: uppercase; color: var(--slate-dim); }
+  .scroll-cue span { display: block; margin-top: 8px; color: var(--accent-d); animation: bob 2.2s ease-in-out infinite; }
+  @keyframes bob { 0%,100% { transform: translateY(0);} 50% { transform: translateY(5px);} }
+
+  /* ---------- beats ---------- */
+  section.beat { padding: 40px 0; }
+  .timecard { font-family: var(--mono); font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--slate-dim); display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+  .timecard .t { color: var(--accent); }
+  .timecard.crit .t { color: var(--crimson); }
+  .timecard::after { content: ""; flex: 1; height: 1px; background: var(--line); }
+
+  .story { background: var(--paper); color: var(--ink); border-radius: 4px; padding: 34px 38px; box-shadow: 0 30px 60px -40px #000, inset 0 0 0 1px var(--paper-2); font-size: 1.12rem; line-height: 1.68; }
+  .story.tight { padding: 26px 32px; }
+  .story p { margin: 0 0 1em; text-wrap: pretty; } .story p:last-child { margin-bottom: 0; }
+  .story .drop::first-letter { font-size: 3.4rem; line-height: 0.8; float: left; padding: 6px 10px 0 0; color: var(--accent); font-weight: 700; }
+  .story .said { color: var(--ink-soft); font-style: italic; } .story b { color: #000; }
+
+  .decode { margin-top: 18px; background: var(--bezel); border: 1px solid var(--line); border-left: 3px solid var(--accent); border-radius: 6px; padding: 22px 24px; }
+  .decode.crimson { border-left-color: var(--crimson); } .decode.amber { border-left-color: var(--amber); }
+  .decode h3 { font-family: var(--mono); font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--accent); margin: 0 0 12px; }
+  .decode.crimson h3 { color: var(--crimson); } .decode.amber h3 { color: var(--amber); }
+  .decode p { margin: 0 0 0.85em; font-size: 1rem; color: #c4d0d6; line-height: 1.62; } .decode p:last-child { margin-bottom: 0; }
+  .decode strong { color: var(--paper); font-weight: 600; }
+  .decode .chip { display: inline-block; font-family: var(--mono); font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; padding: 2px 7px; border-radius: 3px; margin: 2px 4px 2px 0; background: #0c1418; border: 1px solid var(--line); color: var(--slate); }
+
+  /* ---------- outro ---------- */
+  .outro { padding: 70px 0 40px; text-align: center; }
+  .outro .rule { width: 60px; height: 2px; background: var(--accent); margin: 0 auto 30px; }
+  .outro h2 { font-family: var(--serif); font-size: 1.9rem; color: var(--paper); margin: 0 0 16px; text-wrap: balance; }
+  .outro p { max-width: 34em; margin: 0 auto 1em; color: var(--slate); font-size: 1.05rem; }
+  footer.foot { padding: 30px 0 60px; text-align: center; font-family: var(--mono); font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--slate-dim); }
+  .disc { max-width: 44em; margin: 12px auto 0; font-family: var(--serif); text-transform: none; letter-spacing: 0; font-size: 0.82rem; color: var(--slate-dim); line-height: 1.5; }
+
+  @media (max-width: 560px) {
+    .m-right { grid-template-columns: 1.2fr repeat(3, 1fr); gap: 6px; }
+    .vital .num { font-size: 18px; } .trace-cell, .vital { height: 54px; } .m-left { min-width: 92px; }
+    .story { padding: 26px 22px; }
+  }
+  @media (prefers-reduced-motion: reduce) { .monitor.alarm, .scroll-cue span { animation: none !important; } * { scroll-behavior: auto !important; } }
+</style>
+</head>
+<body>
+
+<!-- ✎ MONITOR — rename the 3 vital tiles for your topic (HR/BP/SpO₂, HR/K⁺/QRS, …). -->
+<div class="monitor" id="monitor">
+  <div class="monitor-inner">
+    <div class="m-left">
+      <div class="m-clock">T+ <b id="clock">00:00</b></div>
+      <div class="m-status" id="mstatus"><span class="dot"></span><span id="statustxt">Stable</span></div>
+    </div>
+    <div class="m-right">
+      <div class="trace-cell"><canvas id="trace" width="360" height="124"></canvas></div>
+      <div class="vital"><div class="lab">HR</div><div class="num" id="v-a" style="--val:var(--green)">78</div><div class="unit">bpm</div></div>
+      <div class="vital"><div class="lab">BP</div><div class="num" id="v-b" style="--val:var(--green)">120/76</div><div class="unit">mmHg</div></div>
+      <div class="vital"><div class="lab">SpO₂</div><div class="num" id="v-c" style="--val:var(--green)">98</div><div class="unit">%</div></div>
+    </div>
+  </div>
+</div>
+
+<header class="hero wrap">
+  <div class="eyebrow">Kymora · Clinical Story Mode · No. ✎</div>
+  <h1>✎ Title with an <em>emphasis</em></h1>
+  <p class="dek">✎ One-sentence hook. Tell the reader the monitor above is the patient's, and to watch it as they read.</p>
+  <div class="byline">Adapted from the scholarly article · Mike Giardina BSN, RN, CEN</div>
+  <div class="scroll-cue">Scroll to begin the case<span>▼</span></div>
+</header>
+
+<main>
+
+  <!-- ✎ BEAT — duplicate per story moment.
+       data-* attrs are the patient's numbers AT THIS MOMENT; scrolling here eases the monitor to them.
+       data-state: stable | caution | critical   (critical adds the flashing alarm)
+       Add data-hr/data-b/data-c to match your #v-a/#v-b/#v-c tiles. -->
+  <section class="beat wrap" data-a="88" data-b="118/74" data-c="97" data-state="stable" data-clock="00:00">
+    <div class="timecard"><span class="t">00:00</span> ✎ Beat label · setting</div>
+    <div class="story">
+      <p class="drop">✎ Open the scene. First beat gets a drop-cap. Narrative prose — what the nurse sees, hears, smells. Keep it human; the didactic content goes in the decode card below.</p>
+      <p>✎ Continue the moment. Use <span class="said">"dialogue"</span> for what people say, and <b>bold</b> for the one thing that matters.</p>
+    </div>
+    <div class="decode">
+      <h3>◇ ✎ What this beat teaches</h3>
+      <p>✎ The clinical content, surfaced exactly when the story reaches it. Lift it from the source article — <strong>nothing softened</strong>.</p>
+      <p><span class="chip">key fact</span><span class="chip">key fact</span></p>
+    </div>
+  </section>
+
+  <!-- ✎ Second beat — numbers change; scrolling here moves the monitor. Mark data-state="critical" for the crash beat. -->
+  <section class="beat wrap" data-a="118" data-b="92/70" data-c="94" data-state="critical" data-clock="00:12">
+    <div class="timecard crit"><span class="t">00:12</span> ✎ The turn</div>
+    <div class="story tight">
+      <p>✎ The patient deteriorates (or improves). The monitor bezel flashes on a critical beat. Drop in an interactive module here — see story/PIPELINE.md § Interactive modules (decision fork, slider, classifier, breathing pacer, role picker, closed-loop).</p>
+    </div>
+    <div class="decode crimson">
+      <h3>◇ ✎ The decision / mechanism</h3>
+      <p>✎ Teaching payoff.</p>
+    </div>
+  </section>
+
+  <!-- ✎ Add remaining beats (typically 6–9 total): assessment → decision → intervention → resolution. -->
+
+</main>
+
+<div class="outro wrap">
+  <div class="rule"></div>
+  <h2>✎ The closing thesis, in one line.</h2>
+  <p>✎ Remind the reader that every fact was lifted from the source article — it was only <em>staged</em>. Name what this format adds that a static article can't.</p>
+</div>
+
+<footer class="foot">
+  Kymora Clinical Education · Story Mode Prototype
+  <p class="disc">Educational narrative adapted from a clinical teaching article grounded in peer-reviewed literature. Doses and thresholds illustrate the referenced content and are not a substitute for current institutional protocols or clinical judgment. Patient is fictional; any resemblance to a real case is coincidental.</p>
+</footer>
+
+<script>
+(function () {
+  "use strict";
+  var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  // ---------- vitals engine ----------
+  // Each beat carries data-a / data-b / data-c (mapped to the three tiles) + data-state + data-clock.
+  // Numeric vitals lerp smoothly; string vitals (e.g. "118/74") are shown verbatim.
+  var monitor = document.getElementById("monitor");
+  var elA = document.getElementById("v-a"), elB = document.getElementById("v-b"), elC = document.getElementById("v-c");
+  var elClock = document.getElementById("clock"), elStatus = document.getElementById("statustxt");
+
+  var cur = { a: 78, c: 98 };            // numeric tiles that lerp (rename as needed)
+  var tgt = { a: 78, c: 98 };
+  var strB = "120/76";                    // string tile shown verbatim (e.g. BP)
+  var state = "stable";
+
+  var STATES = { stable: "Stable", caution: "Compensating", critical: "CRITICAL" };
+
+  function setBeat(el) {
+    if (el.dataset.a != null) tgt.a = +el.dataset.a;
+    if (el.dataset.c != null) tgt.c = +el.dataset.c;
+    if (el.dataset.b != null) strB = el.dataset.b;
+    state = el.dataset.state || "stable";
+    elStatus.textContent = STATES[state] || "Stable";
+    elClock.textContent = el.dataset.clock || "";
+    monitor.classList.toggle("alarm", state === "critical" && !reduce);
+    var col = state === "critical" ? "var(--crimson)" : (state === "caution" ? "var(--amber)" : "var(--green)");
+    elA.style.setProperty("--val", col); elB.style.setProperty("--val", col); elC.style.setProperty("--val", col);
+  }
+
+  var beats = Array.prototype.slice.call(document.querySelectorAll(".beat"));
+  var io = new IntersectionObserver(function (entries) {
+    entries.forEach(function (e) { if (e.isIntersecting) setBeat(e.target); });
+  }, { rootMargin: "-45% 0px -45% 0px", threshold: 0 });   // beat is "active" when it hits mid-viewport
+  beats.forEach(function (b) { io.observe(b); });
+
+  function lerp(a, b, t) { return a + (b - a) * t; }
+  function tick() {
+    cur.a = lerp(cur.a, tgt.a, 0.08); cur.c = lerp(cur.c, tgt.c, 0.08);
+    elA.textContent = Math.round(cur.a); elB.textContent = strB; elC.textContent = Math.round(cur.c);
+    requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+
+  // ---------- monitor ECG trace ----------
+  // Normal sinus PQRST, rate follows tile A (HR). To make morphology change with a value
+  // (e.g. hyperkalemia's peaked-T → wide-QRS → sine), see story/PIPELINE.md § Morphing the waveform.
+  function ecgAt(p) {
+    if (p < 0.10) return Math.sin(p / 0.10 * Math.PI) * 0.09;
+    if (p < 0.16) return 0;
+    if (p < 0.19) return -0.12 * ((p - 0.16) / 0.03);
+    if (p < 0.235) return -0.12 + ((p - 0.19) / 0.045) * 1.12;
+    if (p < 0.27) return 1.0 - ((p - 0.235) / 0.035) * 1.25;
+    if (p < 0.31) return -0.25 + ((p - 0.27) / 0.04) * 0.25;
+    if (p < 0.50) return 0;
+    if (p < 0.68) return Math.sin((p - 0.50) / 0.18 * Math.PI) * 0.26;
+    return 0;
+  }
+  var canvas = document.getElementById("trace"), ctx = canvas.getContext("2d");
+  var W = canvas.width, H = canvas.height, buf = new Array(W).fill(H * 0.55), phase = 0, last = 0;
+  function draw(ts) {
+    if (!last) last = ts; var dt = Math.min(60, ts - last); last = ts; if (reduce) dt = 0;
+    var beatDur = 60000 / cur.a, pxPerMs = W / 3200, msPerPx = 1 / pxPerMs;
+    var col = state === "critical" ? "#E23B4E" : (state === "caution" ? "#F5B544" : "#35E08A");
+    var step = Math.max(1, Math.round(dt * pxPerMs));
+    for (var s = 0; s < step; s++) { phase = (phase + msPerPx / beatDur) % 1; buf.push(H * 0.55 - ecgAt(phase) * H * 0.34); buf.shift(); }
+    ctx.clearRect(0, 0, W, H);
+    ctx.strokeStyle = "rgba(53,224,138,0.06)"; ctx.lineWidth = 1;
+    for (var gx = 0; gx < W; gx += 24) { ctx.beginPath(); ctx.moveTo(gx, 0); ctx.lineTo(gx, H); ctx.stroke(); }
+    for (var gy = 0; gy < H; gy += 24) { ctx.beginPath(); ctx.moveTo(0, gy); ctx.lineTo(W, gy); ctx.stroke(); }
+    ctx.shadowColor = col; ctx.shadowBlur = 6; ctx.strokeStyle = col; ctx.lineWidth = 1.8;
+    ctx.beginPath();
+    for (var i = 0; i < W; i++) { i === 0 ? ctx.moveTo(i, buf[i]) : ctx.lineTo(i, buf[i]); }
+    ctx.stroke(); ctx.shadowBlur = 0;
+    ctx.fillStyle = col; ctx.beginPath(); ctx.arc(W - 1, buf[W - 1], 2.2, 0, Math.PI * 2); ctx.fill();
+    requestAnimationFrame(draw);
+  }
+  requestAnimationFrame(draw);
+  if (reduce) { for (var q = 0; q < W; q++) buf[q] = H * 0.55 - ecgAt((q / 96) % 1) * H * 0.34; }
+
+  // ---------- ✎ interactive modules go here ----------
+  // Copy the module you want from story/PIPELINE.md § Interactive modules and paste it below.
+})();
+</script>
+</body>
+</html>
