@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lifecycle-Hook Automation for a Multi-Repo AI Workspace — Case Study</title>
+<meta name="description" content="How a five-repository codebase where AI coding sessions run daily was given a lifecycle-hook automation layer that enforces safety, quality, and workflow — plus the command and skill layers driven by hand.">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Crimson+Pro:wght@400;600&family=Work+Sans:wght@300;500;700&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --primary-bg: #0a0e14;
+    --secondary-bg: #151922;
+    --raise-bg: #1b212c;
+    --accent-cyan: #00d9ff;
+    --accent-green: #00ff9f;
+    --accent-red: #ff006e;
+    --accent-amber: #ffb454;
+    --text-primary: #e6edf3;
+    --text-muted: #8b949e;
+    --text-dim: #5b636d;
+    --line: rgba(0, 217, 255, 0.18);
+    --line-soft: rgba(139, 148, 158, 0.16);
+    --grid-color: rgba(0, 217, 255, 0.1);
+    --serif: 'Crimson Pro', Georgia, 'Times New Roman', serif;
+    --sans: 'Work Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+    --mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+  }
+  html { scroll-behavior: smooth; }
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+  body {
+    background: var(--primary-bg);
+    color: var(--text-primary);
+    font-family: var(--sans);
+    line-height: 1.65;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  .grid-bg {
+    position: fixed; inset: 0; z-index: 0; pointer-events: none;
+    background-image:
+      linear-gradient(var(--grid-color) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid-color) 1px, transparent 1px);
+    background-size: 50px 50px;
+    animation: gridPulse 4s ease-in-out infinite;
+  }
+  @keyframes gridPulse { 0%, 100% { opacity: 0.3; } 50% { opacity: 0.55; } }
+  @media (prefers-reduced-motion: reduce) { .grid-bg { animation: none; opacity: 0.35; } }
+
+  .wrap { max-width: 1000px; margin: 0 auto; padding: 0 2rem 6rem; position: relative; z-index: 1; }
+
+  /* ---- top bar ---- */
+  .topbar {
+    position: sticky; top: 0; z-index: 20;
+    background: color-mix(in srgb, var(--primary-bg) 86%, transparent);
+    backdrop-filter: blur(9px);
+    border-bottom: 1px solid var(--line);
+  }
+  .topin {
+    max-width: 1000px; margin: 0 auto; padding: 0.7rem 2rem;
+    display: flex; align-items: center; gap: 1rem;
+  }
+  .mark { font-family: var(--mono); font-size: 0.78rem; color: var(--text-muted); letter-spacing: 0.02em; }
+  .mark b { color: var(--accent-cyan); font-weight: 700; }
+  .topnav { margin-left: auto; display: flex; gap: 0.15rem; align-items: center; flex-wrap: wrap; }
+  .topnav a {
+    font-family: var(--mono); font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.09em;
+    color: var(--text-muted); text-decoration: none; padding: 0.35rem 0.6rem; border-radius: 5px;
+    transition: color 0.15s, background 0.15s;
+  }
+  .topnav a:hover { color: var(--accent-cyan); background: rgba(0, 217, 255, 0.06); }
+  .topnav a.back { color: var(--text-dim); }
+  .topnav a:focus-visible { outline: 2px solid var(--accent-cyan); outline-offset: 2px; }
+
+  /* ---- hero ---- */
+  header.hero { padding: 4.5rem 0 3rem; border-bottom: 1px solid var(--line-soft); }
+  .status-bar {
+    font-family: var(--mono); font-size: 0.72rem; color: var(--accent-green);
+    display: flex; gap: 1.6rem; flex-wrap: wrap; margin-bottom: 1.8rem;
+  }
+  .status-item { display: flex; align-items: center; gap: 0.5rem; letter-spacing: 0.04em; }
+  .status-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--accent-green); animation: pulse 2s ease-in-out infinite; }
+  @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+  @media (prefers-reduced-motion: reduce) { .status-dot { animation: none; } }
+  .kicker { font-family: var(--mono); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.16em; color: var(--accent-cyan); margin-bottom: 1rem; }
+  h1 {
+    font-family: var(--serif); font-weight: 600; font-size: clamp(2.3rem, 5.5vw, 3.9rem);
+    line-height: 1.08; letter-spacing: -0.01em; margin-bottom: 1.1rem; max-width: 18ch;
+    color: var(--text-primary);
+    background: linear-gradient(135deg, var(--text-primary) 0%, var(--accent-cyan) 100%);
+    -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+  }
+  .lede { font-size: clamp(1.05rem, 2vw, 1.22rem); color: var(--text-muted); max-width: 68ch; font-weight: 300; }
+  .lede b { color: var(--text-primary); font-weight: 500; }
+  .lede .cy { color: var(--accent-cyan); font-weight: 500; }
+  .context { font-family: var(--mono); font-size: 0.8rem; color: var(--text-dim); margin-top: 1.6rem; letter-spacing: 0.01em; }
+
+  .stats { display: flex; flex-wrap: wrap; gap: 1.1rem 2.4rem; margin-top: 2.4rem; font-family: var(--mono); }
+  .stat { display: flex; flex-direction: column; }
+  .stat .n { font-size: 2.3rem; font-weight: 700; color: var(--accent-cyan); line-height: 1; font-variant-numeric: tabular-nums; }
+  .stat .l { font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.09em; margin-top: 0.5rem; }
+  .statnote {
+    margin-top: 1.7rem; font-size: 0.85rem; color: var(--text-muted); max-width: 70ch;
+    border-left: 2px solid var(--line); padding-left: 0.9rem;
+  }
+  .statnote code { font-family: var(--mono); font-size: 0.82em; color: var(--accent-cyan); background: rgba(0,217,255,0.07); padding: 0.05rem 0.3rem; border-radius: 3px; }
+
+  /* ---- sections ---- */
+  section.sec { padding-top: 4.5rem; }
+  .sechead { display: flex; align-items: center; gap: 1rem; margin-bottom: 0.7rem; }
+  .secnum { font-family: var(--mono); font-size: 0.9rem; color: var(--accent-cyan); opacity: 0.6; }
+  h2 { font-family: var(--serif); font-weight: 600; font-size: clamp(1.7rem, 4vw, 2.4rem); letter-spacing: -0.01em; }
+  .divider { flex: 1; height: 1px; background: linear-gradient(90deg, var(--accent-cyan) 0%, transparent 100%); margin-left: 1rem; }
+  .secsub { color: var(--text-muted); font-size: 1rem; max-width: 74ch; margin: 0.4rem 0 2rem; }
+
+  /* ---- principle cards ---- */
+  .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.1rem; }
+  .card {
+    position: relative; background: var(--secondary-bg); border: 1px solid var(--line);
+    padding: 1.4rem 1.5rem; overflow: hidden; transition: transform 0.25s, border-color 0.25s, box-shadow 0.25s;
+  }
+  .card::before {
+    content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 2px;
+    background: linear-gradient(90deg, var(--accent-cyan), var(--accent-green));
+    transform: scaleX(0); transform-origin: left; transition: transform 0.3s ease;
+  }
+  .card:hover { transform: translateY(-4px); border-color: var(--accent-cyan); box-shadow: 0 10px 34px rgba(0, 217, 255, 0.13); }
+  .card:hover::before { transform: scaleX(1); }
+  .card .tag { font-family: var(--mono); font-size: 0.66rem; text-transform: uppercase; letter-spacing: 0.11em; color: var(--accent-green); margin-bottom: 0.7rem; }
+  .card h3 { font-family: var(--serif); font-size: 1.25rem; font-weight: 600; margin-bottom: 0.5rem; color: var(--text-primary); }
+  .card p { font-size: 0.9rem; color: var(--text-muted); }
+  .card em { color: var(--accent-amber); font-style: normal; font-weight: 500; }
+  .card code { font-family: var(--mono); font-size: 0.82em; color: var(--accent-cyan); }
+
+  /* ---- legend ---- */
+  .legend { display: flex; gap: 0.6rem; flex-wrap: wrap; margin-bottom: 1.4rem; }
+  .chip { font-family: var(--mono); font-size: 0.68rem; font-weight: 700; letter-spacing: 0.03em; padding: 0.2rem 0.65rem; border-radius: 999px; white-space: nowrap; border: 1px solid transparent; }
+  .c-block { background: rgba(255, 0, 110, 0.12); color: #ff5c9d; border-color: rgba(255,0,110,0.4); }
+  .c-cond  { background: rgba(255, 180, 84, 0.12); color: var(--accent-amber); border-color: rgba(255,180,84,0.4); }
+  .c-ctx   { background: rgba(0, 217, 255, 0.1); color: var(--accent-cyan); border-color: rgba(0,217,255,0.4); }
+  .c-adv   { background: rgba(139, 148, 158, 0.1); color: var(--text-muted); border-color: var(--line-soft); }
+
+  /* ---- event lanes ---- */
+  .lane { background: var(--secondary-bg); border: 1px solid var(--line-soft); margin-bottom: 0.9rem; overflow: hidden; }
+  .lh { display: flex; align-items: baseline; gap: 0.8rem; flex-wrap: wrap; padding: 0.8rem 1.1rem; background: var(--raise-bg); border-bottom: 1px solid var(--line-soft); }
+  .lh .ev { font-family: var(--mono); font-size: 0.9rem; font-weight: 700; color: var(--accent-cyan); }
+  .lh .when { font-size: 0.8rem; color: var(--text-dim); }
+  .lh .match { margin-left: auto; font-family: var(--mono); font-size: 0.68rem; color: var(--text-muted); border: 1px solid var(--line-soft); border-radius: 4px; padding: 0.05rem 0.5rem; }
+  .row { display: flex; align-items: center; gap: 0.9rem; padding: 0.65rem 1.1rem; border-top: 1px solid var(--line-soft); border-left: 2px solid transparent; transition: background 0.14s, border-color 0.14s; }
+  .row:first-child { border-top: none; }
+  .row:hover { background: rgba(0, 217, 255, 0.04); border-left-color: var(--accent-cyan); }
+  .rname { font-family: var(--mono); font-size: 0.82rem; font-weight: 700; color: var(--text-primary); min-width: 190px; }
+  .rdesc { font-size: 0.86rem; color: var(--text-muted); flex: 1; min-width: 200px; }
+  .rchip { margin-left: auto; }
+  .wonly { font-family: var(--mono); font-size: 0.6rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.06em; margin-left: 0.4rem; }
+
+  /* ---- command groups ---- */
+  .cmdgroup { margin-bottom: 1.8rem; }
+  .cmdgh { font-family: var(--mono); font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-dim); margin-bottom: 0.8rem; padding-bottom: 0.5rem; border-bottom: 1px solid var(--line-soft); }
+  .cmd { background: var(--secondary-bg); border: 1px solid var(--line-soft); border-left: 2px solid var(--line); padding: 0.75rem 1.1rem; margin-bottom: 0.55rem; transition: border-color 0.15s, transform 0.15s; }
+  .cmd:hover { border-left-color: var(--accent-cyan); transform: translateX(3px); }
+  .cmdname { font-family: var(--mono); font-size: 0.9rem; font-weight: 700; color: var(--accent-cyan); }
+  .cmdbody { font-size: 0.88rem; color: var(--text-muted); margin-top: 0.25rem; }
+  .cmdbody b { color: var(--text-primary); font-weight: 500; }
+  .note { background: var(--raise-bg); border: 1px solid var(--line-soft); border-left: 2px solid var(--accent-amber); padding: 0.85rem 1.1rem; font-size: 0.88rem; color: var(--text-muted); }
+  .note b { color: var(--text-primary); font-weight: 500; }
+
+  /* ---- skills ---- */
+  .skills { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 0.9rem; }
+  .skill { background: var(--secondary-bg); border: 1px solid var(--line-soft); padding: 1rem 1.2rem; transition: border-color 0.2s; }
+  .skill:hover { border-color: var(--accent-green); }
+  .skill h4 { font-family: var(--mono); font-size: 0.82rem; font-weight: 700; color: var(--accent-green); margin-bottom: 0.35rem; }
+  .skill p { font-size: 0.84rem; color: var(--text-muted); }
+
+  /* ---- takeaway ---- */
+  .takeaway { margin-top: 3.2rem; background: linear-gradient(135deg, rgba(0,217,255,0.05), rgba(0,255,159,0.03)); border: 1px solid var(--line); padding: 1.8rem; }
+  .takeaway h3 { font-family: var(--serif); font-size: 1.4rem; font-weight: 600; margin-bottom: 0.7rem; }
+  .takeaway p { color: var(--text-muted); font-size: 0.95rem; max-width: 78ch; }
+  .takeaway p + p { margin-top: 0.7rem; }
+  .takeaway b { color: var(--text-primary); font-weight: 500; }
+
+  footer { margin-top: 3.5rem; padding-top: 1.6rem; border-top: 1px solid var(--line); font-family: var(--mono); font-size: 0.78rem; color: var(--text-dim); }
+  footer p { margin-bottom: 0.4rem; line-height: 1.7; }
+  footer a { color: var(--accent-cyan); text-decoration: none; }
+  footer a:hover { color: var(--accent-green); }
+
+  @media (max-width: 620px) {
+    .wrap, .topin { padding-left: 1.25rem; padding-right: 1.25rem; }
+    .rname, .rdesc { min-width: 0; }
+    .row { flex-wrap: wrap; gap: 0.3rem 0.9rem; }
+    .rchip { margin-left: 0; }
+    .lh .match { margin-left: 0; }
+  }
+</style>
+</head>
+<body>
+<div class="grid-bg"></div>
+
+<div class="topbar">
+  <div class="topin">
+    <span class="mark"><b>hooks/</b> · ai workspace automation</span>
+    <nav class="topnav">
+      <a href="#principles">Principles</a>
+      <a href="#automatic">Automatic</a>
+      <a href="#commands">Commands</a>
+      <a href="#skills">Skills</a>
+      <a href="../" class="back">← portfolio</a>
+    </nav>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <header class="hero" id="top">
+    <div class="status-bar">
+      <div class="status-item"><span class="status-dot"></span><span>ENGINEERING CASE STUDY</span></div>
+      <div class="status-item"><span class="status-dot"></span><span>CLAUDE CODE · MULTI-REPO WORKSPACE</span></div>
+    </div>
+    <p class="kicker">Developer tooling · workflow automation</p>
+    <h1>Giving a multi-repo AI workspace a nervous system.</h1>
+    <p class="lede">A five-repository codebase where <b>AI coding sessions run daily</b> needs guardrails a person can't be relied on to remember. I built a <span class="cy">lifecycle-hook automation layer</span>: small, portable scripts that fire at fixed moments in every session to enforce safety, quality, and workflow &mdash; backed by a command layer for the work you drive by hand and a skill layer of packaged procedures.</p>
+    <p class="context">python simulation engine · typescript / react apps · swift ios app · markdown docs corpus · agent-config repo</p>
+
+    <div class="stats">
+      <div class="stat"><div class="n">5</div><div class="l">repositories</div></div>
+      <div class="stat"><div class="n">6</div><div class="l">lifecycle events</div></div>
+      <div class="stat"><div class="n">22</div><div class="l">event-wired hooks</div></div>
+      <div class="stat"><div class="n">15</div><div class="l">slash commands</div></div>
+      <div class="stat"><div class="n">6</div><div class="l">skills</div></div>
+    </div>
+    <p class="statnote">The hooks directory holds <b>28 scripts</b> (27 shell, 1 python); <b>22</b> are wired to the six lifecycle events in one <code>settings.json</code> &mdash; a few fire at more than one moment, so the same registry script registers, heartbeats, and deregisters across three events &mdash; and the remaining six back slash-commands or serve as shared helpers. Of the wired hooks, exactly <b>two can gate a command</b>: one fails <em>closed</em>, one is conditional.</p>
+  </header>
+
+  <section class="sec" id="principles">
+    <div class="sechead"><span class="secnum">01</span><h2>Design principles</h2><div class="divider"></div></div>
+    <p class="secsub">The hooks aren't a pile of scripts &mdash; they follow a few rules that keep them safe to run on anyone's machine, every session, without becoming noise or a liability.</p>
+    <div class="cards">
+      <div class="card">
+        <div class="tag">posture</div>
+        <h3>Fail open &mdash; except for secrets</h3>
+        <p>A degraded toolchain makes a hook a silent no-op, never a hang or a false block. The one deliberate exception is the secret scanner, which fails <em>closed</em>: it blocks a commit it cannot prove is clean.</p>
+      </div>
+      <div class="card">
+        <div class="tag">philosophy</div>
+        <h3>Narrated &rarr; enforced</h3>
+        <p>A convention written in a doc gets forgotten. Wherever a rule can be expressed as a check, it becomes one &mdash; so the guarantee holds even when no one remembers it, and self-clears the moment the check goes green.</p>
+      </div>
+      <div class="card">
+        <div class="tag">portability</div>
+        <h3>One script, every OS</h3>
+        <p>The same hooks run on Windows, macOS, and Linux: no hardcoded drive letters, <code>python3</code>-first resolution, POSIX-only tools, LF endings enforced. They sync to every machine through one config repo.</p>
+      </div>
+      <div class="card">
+        <div class="tag">integrity</div>
+        <h3>Single source of truth</h3>
+        <p>Volatile metrics are computed once into one file, then propagated into docs and dashboards mechanically. A broken environment degrades to &ldquo;no change,&rdquo; never to bad numbers overwriting good ones.</p>
+      </div>
+      <div class="card">
+        <div class="tag">concurrency</div>
+        <h3>Multi-session safety</h3>
+        <p>Several AI sessions can share one workspace. A live-session registry warns before two of them edit the same sub-repo and commit onto each other's branches &mdash; a real failure this layer was built to prevent.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec" id="automatic">
+    <div class="sechead"><span class="secnum">02</span><h2>The automatic layer</h2><div class="divider"></div></div>
+    <p class="secsub">Each hook hangs off one of the runtime's six built-in lifecycle events and fires when that moment arrives &mdash; nothing to type. Only two can block you; the rest inject context, advise, or run silently in the background.</p>
+    <div class="legend">
+      <span class="chip c-block">blocks &middot; fail-closed</span>
+      <span class="chip c-cond">conditional gate</span>
+      <span class="chip c-ctx">injects context</span>
+      <span class="chip c-adv">advisory &middot; nag / log</span>
+    </div>
+
+    <div class="lane">
+      <div class="lh"><span class="ev">SessionStart</span><span class="when">session begins &middot; output enters the model's context</span></div>
+      <div class="row"><span class="rname">Parallel-session registry</span><span class="rdesc">registers this session and warns when another session already shares a sub-repo, before edits collide</span><span class="chip c-ctx rchip">context</span></div>
+      <div class="row"><span class="rname">Backup reminder</span><span class="rdesc">flags overdue off-machine backups of irreplaceable working files</span><span class="chip c-ctx rchip">context</span></div>
+      <div class="row"><span class="rname">Metrics provenance</span><span class="rdesc">reports which git state the project's canonical metrics were last computed from</span><span class="chip c-ctx rchip">context</span></div>
+    </div>
+
+    <div class="lane">
+      <div class="lh"><span class="ev">UserPromptSubmit</span><span class="when">every prompt you send &middot; output enters context</span></div>
+      <div class="row"><span class="rname">Work-queue inject</span><span class="rdesc">on a work-intent phrase, surfaces your assigned issues from the tracker &mdash; once per session, so it never repeats</span><span class="chip c-ctx rchip">context</span></div>
+    </div>
+
+    <div class="lane">
+      <div class="lh"><span class="ev">PreToolUse</span><span class="when">before a shell command runs &middot; can block it</span><span class="match">Bash</span></div>
+      <div class="row"><span class="rname">Secret guard</span><span class="rdesc">blocks any commit that stages a secret &mdash; env files, private keys, secret JSON. Fails closed: if it can't prove the commit is clean, it blocks</span><span class="chip c-block rchip">blocks</span></div>
+      <div class="row"><span class="rname">Dirty-tree guard</span><span class="rdesc">warns before a pull / merge / rebase onto uncommitted work, and asks you to commit or stash first</span><span class="chip c-cond rchip">conditional</span></div>
+      <div class="row"><span class="rname">Pre-run validation</span><span class="rdesc">validates the simulation config before a run is launched</span><span class="chip c-adv rchip">advisory</span></div>
+      <div class="row"><span class="rname">Manifest check</span><span class="rdesc">confirms the module manifest matches the source files actually on disk</span><span class="chip c-adv rchip">advisory</span></div>
+    </div>
+
+    <div class="lane">
+      <div class="lh"><span class="ev">PostToolUse</span><span class="when">after a shell command completes</span><span class="match">Bash</span></div>
+      <div class="row"><span class="rname">Inventory metric</span><span class="rdesc">records a project inventory count after shell commands</span><span class="chip c-adv rchip">advisory</span></div>
+      <div class="row"><span class="rname">Issue auto-flag</span><span class="rdesc">marks a tracker issue In Progress the moment its feature branch is created</span><span class="chip c-adv rchip">advisory</span></div>
+    </div>
+
+    <div class="lane">
+      <div class="lh"><span class="ev">PostToolUse</span><span class="when">after a file is written or edited</span><span class="match">Write / Edit</span></div>
+      <div class="row"><span class="rname">Architecture linter</span><span class="rdesc">checks core modules against the project's conventions &mdash; syntax and known anti-patterns</span><span class="chip c-adv rchip">advisory</span></div>
+      <div class="row"><span class="rname">Test reminder</span><span class="rdesc">nudges to run the suite when a core module changes</span><span class="chip c-adv rchip">advisory</span></div>
+      <div class="row"><span class="rname">Stale-docs flag</span><span class="rdesc">flags a module's docs as stale when its code changes underneath them</span><span class="chip c-adv rchip">advisory</span></div>
+      <div class="row"><span class="rname">Confidential-term scan</span><span class="rdesc">flags sensitive terms in files bound for public paths before they can be committed</span><span class="chip c-adv rchip">advisory</span></div>
+      <div class="row"><span class="rname">Claims lint</span><span class="rdesc">checks outward-facing docs for unsupported performance claims</span><span class="chip c-adv rchip">advisory</span></div>
+      <div class="row"><span class="rname">Doc-placement guard</span><span class="rdesc">keeps docs in the docs repo instead of scattered across the code repos<span class="wonly">write only</span></span><span class="chip c-adv rchip">advisory</span></div>
+      <div class="row"><span class="rname">Ad-hoc-script sniff</span><span class="rdesc">catches one-off scripts at creation and nudges toward maintained tooling<span class="wonly">write only</span></span><span class="chip c-adv rchip">advisory</span></div>
+    </div>
+
+    <div class="lane">
+      <div class="lh"><span class="ev">Stop</span><span class="when">when the assistant finishes a response</span></div>
+      <div class="row"><span class="rname">Metrics propagation</span><span class="rdesc">pushes single-source metrics into narrative docs and dashboards</span><span class="chip c-adv rchip">advisory</span></div>
+      <div class="row"><span class="rname">Commit log</span><span class="rdesc">records commit metadata after each turn</span><span class="chip c-adv rchip">advisory</span></div>
+      <div class="row"><span class="rname">Work-hours log</span><span class="rdesc">maintains a local hours log derived from git activity</span><span class="chip c-adv rchip">advisory</span></div>
+      <div class="row"><span class="rname">Pacing audit</span><span class="rdesc">warns when a newly added simulation component is missing a required timing parameter</span><span class="chip c-adv rchip">advisory</span></div>
+      <div class="row"><span class="rname">Tiered backups</span><span class="rdesc">runs off-machine backups on per-stream cadences</span><span class="chip c-adv rchip">advisory</span></div>
+      <div class="row"><span class="rname">Liveness heartbeat</span><span class="rdesc">keeps this session's registry timestamp fresh so peers see it as live</span><span class="chip c-adv rchip">advisory</span></div>
+    </div>
+
+    <div class="lane">
+      <div class="lh"><span class="ev">SessionEnd</span><span class="when">session ends</span></div>
+      <div class="row"><span class="rname">Session deregister</span><span class="rdesc">removes this session from the live-session registry</span><span class="chip c-adv rchip">advisory</span></div>
+    </div>
+  </section>
+
+  <section class="sec" id="commands">
+    <div class="sechead"><span class="secnum">03</span><h2>The command layer</h2><div class="divider"></div></div>
+    <p class="secsub">Alongside the automatic hooks, fifteen slash commands drive the work you do by hand. Command first, purpose first &mdash; <span style="font-family:var(--mono);color:var(--accent-cyan)">/thing</span> does X so that Y.</p>
+
+    <div class="cmdgroup">
+      <div class="cmdgh">Start &amp; steer your work</div>
+      <div class="cmd"><div class="cmdname">/session-start</div><div class="cmdbody">opens a development session &mdash; loads current state, git status, and the issue board so you start with full context instead of cold.</div></div>
+      <div class="cmd"><div class="cmdname">/status</div><div class="cmdbody">prints a project snapshot &mdash; where things stand across repos, at a glance.</div></div>
+      <div class="cmd"><div class="cmdname">/my-work</div><div class="cmdbody">lists the issues assigned to you across repos, so &ldquo;what am I meant to be doing&rdquo; is one command.</div></div>
+      <div class="cmd"><div class="cmdname">/start &lt;#&gt;</div><div class="cmdbody">picks up an issue &mdash; creates the branch, marks it In Progress, and posts a pickup comment so the board reflects reality without you touching it.</div></div>
+      <div class="cmd"><div class="cmdname">/close-out</div><div class="cmdbody">wraps a session cleanly &mdash; captures loose ends into issues, reconciles what you touched against the board, and flags stale items so nothing gets lost. <span style="color:var(--text-dim)">(/session-end is a kept alias.)</span></div></div>
+    </div>
+
+    <div class="cmdgroup">
+      <div class="cmdgh">Machine &amp; environment</div>
+      <div class="cmd"><div class="cmdname">/doctor</div><div class="cmdbody">checks a machine is ready &mdash; verifies the toolchain the hooks and commands depend on, and prints a one-line fix for each gap.</div></div>
+      <div class="cmd"><div class="cmdname">/whereami</div><div class="cmdbody">confirms which machine you're on &mdash; reports host, hardware, and a task-fit verdict so heavy work doesn't run on the wrong box.</div></div>
+    </div>
+
+    <div class="cmdgroup">
+      <div class="cmdgh">Domain commands</div>
+      <div class="note">The platform layers on <b>seven</b> more commands for running and checking the simulation &mdash; launch a run, audit module wiring, grade calibration against reference data, stress-test scale, rebuild the dashboards, and report automation health. Specifics are omitted from this public write-up.</div>
+    </div>
+  </section>
+
+  <section class="sec" id="skills">
+    <div class="sechead"><span class="secnum">04</span><h2>The skill layer</h2><div class="divider"></div></div>
+    <p class="secsub">Six skills package multi-step procedures the agent invokes on demand &mdash; each one a repeatable workflow with its own instructions and helper scripts, so a complex task runs the same way every time.</p>
+    <div class="skills">
+      <div class="skill"><h4>publish-safety scrubber</h4><p>Scans an outward-facing file for confidential terms against a maintained registry and rewrites them before it can leave a private repo.</p></div>
+      <div class="skill"><h4>citation verifier</h4><p>Validates a reference against a public index at the moment it's written, so a wrong attribution never lands in the source.</p></div>
+      <div class="skill"><h4>automation-placement advisor</h4><p>Decides whether a new automation belongs in CI, a local lifecycle hook, or a scheduled job &mdash; and whether it's safe to run.</p></div>
+      <div class="skill"><h4>document generator</h4><p>Builds branded documents from a single canonical content source, so figures and numbers never drift between formats.</p></div>
+    </div>
+    <p class="secsub" style="margin-top:1.4rem; margin-bottom:0;">Two further skills cover session self-review and an archival export routine. Together with the hooks and commands, the three layers share one design goal: <b style="color:var(--text-primary)">make the right thing automatic, and the wrong thing hard.</b></p>
+  </section>
+
+  <div class="takeaway">
+    <h3>Why it's built this way</h3>
+    <p>An AI coding agent is fast and tireless, but it forgets between sessions and it runs on whatever machine happens to be in front of it. The value of this layer isn't any single script &mdash; it's that the <b>guarantees survive the forgetting</b>: a secret can't be committed, a metric can't drift, two sessions can't silently clobber each other, and a convention no one remembers is still enforced because it was turned into a check.</p>
+    <p>Every design choice trades toward <b>safety-under-degradation</b>: fail open so a broken toolchain never blocks real work, fail closed on the one gate where a false pass is unacceptable, and make every script portable enough to run identically on three operating systems from one synced config repo.</p>
+  </div>
+
+  <footer>
+    <p>Case study &middot; lifecycle-hook automation for an AI-assisted, multi-repo workspace.</p>
+    <p>Implementation details are generalized and proprietary specifics are omitted. Built and maintained with Claude Code.</p>
+    <p>Michael Giardina &middot; <a href="../">portfolio</a> &middot; <a href="https://www.linkedin.com/in/michael-giardina">linkedin.com/in/michael-giardina</a></p>
+  </footer>
+
+</div>
+</body>
+</html>
