@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Publishing Out of a Patent-Pending Codebase — Case Study</title>
+<meta name="description" content="A six-stage IP disclosure-control pipeline for a patent-pending codebase: term registry, write-time scan, scrub loop, hostile-reader review, publish checklist, counsel queue — plus the two failures and the one gap still open.">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Crimson+Pro:wght@400;600&family=Work+Sans:wght@300;500;700&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --primary-bg: #0a0e14;
+    --secondary-bg: #151922;
+    --raise-bg: #1b212c;
+    --accent-cyan: #00d9ff;
+    --accent-green: #00ff9f;
+    --accent-red: #ff006e;
+    --accent-amber: #ffb454;
+    --text-primary: #e6edf3;
+    --text-muted: #8b949e;
+    --text-dim: #5b636d;
+    --line: rgba(0, 217, 255, 0.18);
+    --line-soft: rgba(139, 148, 158, 0.16);
+    --grid-color: rgba(0, 217, 255, 0.1);
+    --serif: 'Crimson Pro', Georgia, 'Times New Roman', serif;
+    --sans: 'Work Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+    --mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+  }
+  html { scroll-behavior: smooth; }
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+  body {
+    background: var(--primary-bg);
+    color: var(--text-primary);
+    font-family: var(--sans);
+    line-height: 1.65;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  .grid-bg {
+    position: fixed; inset: 0; z-index: 0; pointer-events: none;
+    background-image:
+      linear-gradient(var(--grid-color) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid-color) 1px, transparent 1px);
+    background-size: 50px 50px;
+    animation: gridPulse 4s ease-in-out infinite;
+  }
+  @keyframes gridPulse { 0%, 100% { opacity: 0.3; } 50% { opacity: 0.55; } }
+  @media (prefers-reduced-motion: reduce) { .grid-bg { animation: none; opacity: 0.35; } }
+
+  .wrap { max-width: 1000px; margin: 0 auto; padding: 0 2rem 6rem; position: relative; z-index: 1; }
+
+  /* ---- top bar ---- */
+  .topbar {
+    position: sticky; top: 0; z-index: 20;
+    background: color-mix(in srgb, var(--primary-bg) 86%, transparent);
+    backdrop-filter: blur(9px);
+    border-bottom: 1px solid var(--line);
+  }
+  .topin {
+    max-width: 1000px; margin: 0 auto; padding: 0.7rem 2rem;
+    display: flex; align-items: center; gap: 1rem;
+  }
+  .mark { font-family: var(--mono); font-size: 0.78rem; color: var(--text-muted); letter-spacing: 0.02em; }
+  .mark b { color: var(--accent-cyan); font-weight: 700; }
+  .topnav { margin-left: auto; display: flex; gap: 0.15rem; align-items: center; flex-wrap: wrap; }
+  .topnav a {
+    font-family: var(--mono); font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.09em;
+    color: var(--text-muted); text-decoration: none; padding: 0.35rem 0.6rem; border-radius: 5px;
+    transition: color 0.15s, background 0.15s;
+  }
+  .topnav a:hover { color: var(--accent-cyan); background: rgba(0, 217, 255, 0.06); }
+  .topnav a.back { color: var(--text-dim); }
+  .topnav a:focus-visible { outline: 2px solid var(--accent-cyan); outline-offset: 2px; }
+
+  /* ---- hero ---- */
+  header.hero { padding: 4.5rem 0 3rem; border-bottom: 1px solid var(--line-soft); }
+  .status-bar {
+    font-family: var(--mono); font-size: 0.72rem; color: var(--accent-green);
+    display: flex; gap: 1.6rem; flex-wrap: wrap; margin-bottom: 1.8rem;
+  }
+  .status-item { display: flex; align-items: center; gap: 0.5rem; letter-spacing: 0.04em; }
+  .status-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--accent-green); animation: pulse 2s ease-in-out infinite; }
+  @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+  @media (prefers-reduced-motion: reduce) { .status-dot { animation: none; } }
+  .kicker { font-family: var(--mono); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.16em; color: var(--accent-cyan); margin-bottom: 1rem; }
+  h1 {
+    font-family: var(--serif); font-weight: 600; font-size: clamp(2.3rem, 5.5vw, 3.9rem);
+    line-height: 1.08; letter-spacing: -0.01em; margin-bottom: 1.1rem; max-width: 18ch;
+    color: var(--text-primary);
+    background: linear-gradient(135deg, var(--text-primary) 0%, var(--accent-cyan) 100%);
+    -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+  }
+  .lede { font-size: clamp(1.05rem, 2vw, 1.22rem); color: var(--text-muted); max-width: 68ch; font-weight: 300; }
+  .lede b { color: var(--text-primary); font-weight: 500; }
+  .lede .cy { color: var(--accent-cyan); font-weight: 500; }
+  .context { font-family: var(--mono); font-size: 0.8rem; color: var(--text-dim); margin-top: 1.6rem; letter-spacing: 0.01em; }
+
+  .stats { display: flex; flex-wrap: wrap; gap: 1.1rem 2.4rem; margin-top: 2.4rem; font-family: var(--mono); }
+  .stat { display: flex; flex-direction: column; }
+  .stat .n { font-size: 2.3rem; font-weight: 700; color: var(--accent-cyan); line-height: 1; font-variant-numeric: tabular-nums; }
+  .stat .l { font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.09em; margin-top: 0.5rem; }
+  .statnote {
+    margin-top: 1.7rem; font-size: 0.85rem; color: var(--text-muted); max-width: 70ch;
+    border-left: 2px solid var(--line); padding-left: 0.9rem;
+  }
+  .statnote code { font-family: var(--mono); font-size: 0.82em; color: var(--accent-cyan); background: rgba(0,217,255,0.07); padding: 0.05rem 0.3rem; border-radius: 3px; }
+
+  /* ---- sections ---- */
+  section.sec { padding-top: 4.5rem; }
+  .sechead { display: flex; align-items: center; gap: 1rem; margin-bottom: 0.7rem; }
+  .secnum { font-family: var(--mono); font-size: 0.9rem; color: var(--accent-cyan); opacity: 0.6; }
+  h2 { font-family: var(--serif); font-weight: 600; font-size: clamp(1.7rem, 4vw, 2.4rem); letter-spacing: -0.01em; }
+  .divider { flex: 1; height: 1px; background: linear-gradient(90deg, var(--accent-cyan) 0%, transparent 100%); margin-left: 1rem; }
+  .secsub { color: var(--text-muted); font-size: 1rem; max-width: 74ch; margin: 0.4rem 0 2rem; }
+
+  /* ---- principle cards ---- */
+  .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.1rem; }
+  .card {
+    position: relative; background: var(--secondary-bg); border: 1px solid var(--line);
+    padding: 1.4rem 1.5rem; overflow: hidden; transition: transform 0.25s, border-color 0.25s, box-shadow 0.25s;
+  }
+  .card::before {
+    content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 2px;
+    background: linear-gradient(90deg, var(--accent-cyan), var(--accent-green));
+    transform: scaleX(0); transform-origin: left; transition: transform 0.3s ease;
+  }
+  .card:hover { transform: translateY(-4px); border-color: var(--accent-cyan); box-shadow: 0 10px 34px rgba(0, 217, 255, 0.13); }
+  .card:hover::before { transform: scaleX(1); }
+  .card .tag { font-family: var(--mono); font-size: 0.66rem; text-transform: uppercase; letter-spacing: 0.11em; color: var(--accent-green); margin-bottom: 0.7rem; }
+  .card h3 { font-family: var(--serif); font-size: 1.25rem; font-weight: 600; margin-bottom: 0.5rem; color: var(--text-primary); }
+  .card p { font-size: 0.9rem; color: var(--text-muted); }
+  .card em { color: var(--accent-amber); font-style: normal; font-weight: 500; }
+  .card code { font-family: var(--mono); font-size: 0.82em; color: var(--accent-cyan); }
+
+  /* ---- legend ---- */
+  .legend { display: flex; gap: 0.6rem; flex-wrap: wrap; margin-bottom: 1.4rem; }
+  .chip { font-family: var(--mono); font-size: 0.68rem; font-weight: 700; letter-spacing: 0.03em; padding: 0.2rem 0.65rem; border-radius: 999px; white-space: nowrap; border: 1px solid transparent; }
+  .c-block { background: rgba(255, 0, 110, 0.12); color: #ff5c9d; border-color: rgba(255,0,110,0.4); }
+  .c-cond  { background: rgba(255, 180, 84, 0.12); color: var(--accent-amber); border-color: rgba(255,180,84,0.4); }
+  .c-ctx   { background: rgba(0, 217, 255, 0.1); color: var(--accent-cyan); border-color: rgba(0,217,255,0.4); }
+  .c-adv   { background: rgba(139, 148, 158, 0.1); color: var(--text-muted); border-color: var(--line-soft); }
+
+  /* ---- event lanes ---- */
+  .lane { background: var(--secondary-bg); border: 1px solid var(--line-soft); margin-bottom: 0.9rem; overflow: hidden; }
+  .lh { display: flex; align-items: baseline; gap: 0.8rem; flex-wrap: wrap; padding: 0.8rem 1.1rem; background: var(--raise-bg); border-bottom: 1px solid var(--line-soft); }
+  .lh .ev { font-family: var(--mono); font-size: 0.9rem; font-weight: 700; color: var(--accent-cyan); }
+  .lh .when { font-size: 0.8rem; color: var(--text-dim); }
+  .lh .match { margin-left: auto; font-family: var(--mono); font-size: 0.68rem; color: var(--text-muted); border: 1px solid var(--line-soft); border-radius: 4px; padding: 0.05rem 0.5rem; }
+  .row { display: flex; align-items: center; gap: 0.9rem; padding: 0.65rem 1.1rem; border-top: 1px solid var(--line-soft); border-left: 2px solid transparent; transition: background 0.14s, border-color 0.14s; }
+  .row:first-child { border-top: none; }
+  .row:hover { background: rgba(0, 217, 255, 0.04); border-left-color: var(--accent-cyan); }
+  .rname { font-family: var(--mono); font-size: 0.82rem; font-weight: 700; color: var(--text-primary); min-width: 190px; }
+  .rdesc { font-size: 0.86rem; color: var(--text-muted); flex: 1; min-width: 200px; }
+  .rchip { margin-left: auto; }
+  .wonly { font-family: var(--mono); font-size: 0.6rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.06em; margin-left: 0.4rem; }
+
+  /* ---- command groups ---- */
+  .cmdgroup { margin-bottom: 1.8rem; }
+  .cmdgh { font-family: var(--mono); font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-dim); margin-bottom: 0.8rem; padding-bottom: 0.5rem; border-bottom: 1px solid var(--line-soft); }
+  .cmd { background: var(--secondary-bg); border: 1px solid var(--line-soft); border-left: 2px solid var(--line); padding: 0.75rem 1.1rem; margin-bottom: 0.55rem; transition: border-color 0.15s, transform 0.15s; }
+  .cmd:hover { border-left-color: var(--accent-cyan); transform: translateX(3px); }
+  .cmdname { font-family: var(--mono); font-size: 0.9rem; font-weight: 700; color: var(--accent-cyan); }
+  .cmdbody { font-size: 0.88rem; color: var(--text-muted); margin-top: 0.25rem; }
+  .cmdbody b { color: var(--text-primary); font-weight: 500; }
+  .note { background: var(--raise-bg); border: 1px solid var(--line-soft); border-left: 2px solid var(--accent-amber); padding: 0.85rem 1.1rem; font-size: 0.88rem; color: var(--text-muted); }
+  .note b { color: var(--text-primary); font-weight: 500; }
+
+  /* ---- skills ---- */
+  .skills { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 0.9rem; }
+  .skill { background: var(--secondary-bg); border: 1px solid var(--line-soft); padding: 1rem 1.2rem; transition: border-color 0.2s; }
+  .skill:hover { border-color: var(--accent-green); }
+  .skill h4 { font-family: var(--mono); font-size: 0.82rem; font-weight: 700; color: var(--accent-green); margin-bottom: 0.35rem; }
+  .skill p { font-size: 0.84rem; color: var(--text-muted); }
+
+  /* ---- takeaway ---- */
+  .takeaway { margin-top: 3.2rem; background: linear-gradient(135deg, rgba(0,217,255,0.05), rgba(0,255,159,0.03)); border: 1px solid var(--line); padding: 1.8rem; }
+  .takeaway h3 { font-family: var(--serif); font-size: 1.4rem; font-weight: 600; margin-bottom: 0.7rem; }
+  .takeaway p { color: var(--text-muted); font-size: 0.95rem; max-width: 78ch; }
+  .takeaway p + p { margin-top: 0.7rem; }
+  .takeaway b { color: var(--text-primary); font-weight: 500; }
+
+  footer { margin-top: 3.5rem; padding-top: 1.6rem; border-top: 1px solid var(--line); font-family: var(--mono); font-size: 0.78rem; color: var(--text-dim); }
+  footer p { margin-bottom: 0.4rem; line-height: 1.7; }
+  footer a { color: var(--accent-cyan); text-decoration: none; }
+  footer a:hover { color: var(--accent-green); }
+
+  @media (max-width: 620px) {
+    .wrap, .topin { padding-left: 1.25rem; padding-right: 1.25rem; }
+    .rname, .rdesc { min-width: 0; }
+    .row { flex-wrap: wrap; gap: 0.3rem 0.9rem; }
+    .rchip { margin-left: 0; }
+    .lh .match { margin-left: 0; }
+  }
+  /* ---- pipeline stages ---- */
+  .stage { position: relative; background: var(--secondary-bg); border: 1px solid var(--line-soft); border-left: 2px solid var(--line); padding: 1.15rem 1.3rem; margin-bottom: 0.75rem; transition: border-color 0.18s; }
+  .stage:hover { border-left-color: var(--accent-cyan); }
+  .stagehead { display: flex; align-items: baseline; gap: 0.8rem; flex-wrap: wrap; margin-bottom: 0.45rem; }
+  .stagenum { font-family: var(--mono); font-size: 0.7rem; font-weight: 700; color: var(--accent-cyan); border: 1px solid var(--line); border-radius: 4px; padding: 0.05rem 0.45rem; }
+  .stagename { font-family: var(--serif); font-size: 1.15rem; font-weight: 600; color: var(--text-primary); }
+  .stagekind { margin-left: auto; font-family: var(--mono); font-size: 0.66rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-dim); }
+  .stage p { font-size: 0.9rem; color: var(--text-muted); }
+  .stage p + p { margin-top: 0.55rem; }
+  .stage em { color: var(--accent-amber); font-style: normal; font-weight: 500; }
+  .stage b { color: var(--text-primary); font-weight: 500; }
+  .stage code { font-family: var(--mono); font-size: 0.82em; color: var(--accent-cyan); }
+
+  /* ---- table ---- */
+  .tablewrap { overflow-x: auto; border: 1px solid var(--line-soft); background: var(--secondary-bg); }
+  table { border-collapse: collapse; width: 100%; min-width: 620px; font-size: 0.87rem; }
+  th { text-align: left; font-family: var(--mono); font-size: 0.66rem; text-transform: uppercase; letter-spacing: 0.09em; color: var(--text-dim); padding: 0.7rem 1rem; background: var(--raise-bg); border-bottom: 1px solid var(--line-soft); font-weight: 700; white-space: nowrap; }
+  td { padding: 0.75rem 1rem; border-bottom: 1px solid var(--line-soft); color: var(--text-muted); vertical-align: top; }
+  tr:last-child td { border-bottom: none; }
+  tbody tr:hover { background: rgba(0, 217, 255, 0.035); }
+  td b { color: var(--text-primary); font-weight: 500; }
+  td code { font-family: var(--mono); font-size: 0.82em; color: var(--accent-cyan); }
+  .st { font-family: var(--mono); font-size: 0.66rem; font-weight: 700; letter-spacing: 0.04em; padding: 0.15rem 0.5rem; border-radius: 999px; white-space: nowrap; border: 1px solid transparent; }
+  .st-e { background: rgba(0,255,159,0.11); color: var(--accent-green); border-color: rgba(0,255,159,0.35); }
+  .st-n { background: rgba(255,0,110,0.11); color: #ff5c9d; border-color: rgba(255,0,110,0.35); }
+  .st-h { background: rgba(255,180,84,0.11); color: var(--accent-amber); border-color: rgba(255,180,84,0.35); }
+
+  /* ---- bar / numbered criteria ---- */
+  .bar { counter-reset: barc; display: grid; gap: 0.7rem; }
+  .barit { position: relative; background: var(--secondary-bg); border: 1px solid var(--line-soft); padding: 1rem 1.2rem 1rem 3.3rem; }
+  .barit::before { counter-increment: barc; content: counter(barc); position: absolute; left: 1.15rem; top: 0.95rem; font-family: var(--mono); font-size: 1.1rem; font-weight: 700; color: var(--accent-cyan); opacity: 0.55; }
+  .barit h4 { font-family: var(--serif); font-size: 1.08rem; font-weight: 600; color: var(--text-primary); margin-bottom: 0.3rem; }
+  .barit p { font-size: 0.88rem; color: var(--text-muted); }
+  .barit em { color: var(--accent-amber); font-style: normal; font-weight: 500; }
+  .barit code { font-family: var(--mono); font-size: 0.82em; color: var(--accent-cyan); }
+
+  /* ---- casualty callout ---- */
+  .cas { background: var(--raise-bg); border: 1px solid rgba(255,0,110,0.28); border-left: 2px solid var(--accent-red); padding: 1.15rem 1.3rem; margin-bottom: 0.9rem; }
+  .cas .ct { font-family: var(--mono); font-size: 0.66rem; text-transform: uppercase; letter-spacing: 0.1em; color: #ff5c9d; margin-bottom: 0.5rem; }
+  .cas h4 { font-family: var(--serif); font-size: 1.15rem; font-weight: 600; color: var(--text-primary); margin-bottom: 0.45rem; }
+  .cas p { font-size: 0.9rem; color: var(--text-muted); }
+  .cas p + p { margin-top: 0.55rem; }
+  .cas b { color: var(--text-primary); font-weight: 500; }
+  .cas em { color: var(--accent-amber); font-style: normal; font-weight: 500; }
+  .cas code { font-family: var(--mono); font-size: 0.82em; color: var(--accent-cyan); }
+
+  /* ---- verdict block ---- */
+  .verdict { background: #06090d; border: 1px solid var(--line); padding: 1.2rem 1.35rem; overflow-x: auto; }
+  .verdict pre { font-family: var(--mono); font-size: 0.8rem; line-height: 1.85; color: var(--text-muted); white-space: pre; }
+  .verdict .vk { color: var(--accent-cyan); font-weight: 700; }
+  .verdict .vb { color: #ff5c9d; font-weight: 700; }
+  .verdict .vg { color: var(--accent-green); }
+  .verdict .vd { color: var(--text-dim); }
+
+</style>
+</head>
+<body>
+<div class="grid-bg"></div>
+
+<div class="topbar">
+  <div class="topin">
+    <span class="mark"><b>publish/</b> · ip disclosure control</span>
+    <nav class="topnav">
+      <a href="#problem">Problem</a>
+      <a href="#pipeline">Pipeline</a>
+      <a href="#audience">Audience</a>
+      <a href="#verdict">Verdict</a>
+      <a href="#gaps">Known gaps</a>
+      <a href="../automation/">Hooks →</a>
+      <a href="../enforcement/">Enforcement →</a>
+      <a href="../" class="back">← portfolio</a>
+    </nav>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <header class="hero" id="top">
+    <div class="status-bar">
+      <div class="status-item"><span class="status-dot"></span><span>ENGINEERING CASE STUDY</span></div>
+      <div class="status-item"><span class="status-dot"></span><span>IP DISCLOSURE CONTROL</span></div>
+    </div>
+    <p class="kicker">Process design · defense in depth</p>
+    <h1>Publishing out of a patent-pending codebase.</h1>
+    <p class="lede">I write in public constantly &mdash; grant submissions, investor material, a portfolio, conference talks, an open clinical article library &mdash; and all of it is drafted inside private repositories that contain <b>patentable mechanism</b>. Every outward-facing file is a potential disclosure, and a federal filing is <span class="cy">permanent and public the moment it lands</span>. So publishing isn't a step at the end. It's a pipeline with six stages, four audience tiers, and a written record of every place it has failed.</p>
+    <p class="context">provisional patent filed feb 2026 · solo founder-engineer · outward artifacts drafted in-repo, never in a separate &ldquo;public&rdquo; workspace</p>
+
+    <div class="stats">
+      <div class="stat"><div class="n">6</div><div class="l">pipeline stages</div></div>
+      <div class="stat"><div class="n">4</div><div class="l">audience tiers</div></div>
+      <div class="stat"><div class="n">1</div><div class="l">term registry</div></div>
+      <div class="stat"><div class="n">3</div><div class="l">documented failure modes</div></div>
+    </div>
+    <p class="statnote">One registry feeds every stage. <b>Two stages are automated; three are read</b> &mdash; by an agent or by me. That ratio is deliberate rather than a gap waiting to be closed: the automatable part of disclosure control is <b>literal matching</b>, and literal matching is the easy half. <em>Paraphrase is the hard half</em>, and no regex has ever caught it.</p>
+  </header>
+
+  <section class="sec" id="problem">
+    <div class="sechead"><span class="secnum">01</span><h2>Why a checklist wasn't enough</h2><div class="divider"></div></div>
+    <p class="secsub">The naive version of this is a pre-send checklist. I have one, and it's stage five &mdash; but on its own it fails for a specific structural reason worth naming.</p>
+    <div class="cards">
+      <div class="card">
+        <div class="tag">asymmetry</div>
+        <h3>The costs don't match</h3>
+        <p>A late filing is recoverable. A disclosed mechanism in a filing that becomes public record is <em>not</em>. When one side of a decision is permanent and the other is an inconvenience, the process has to be biased, not balanced.</p>
+      </div>
+      <div class="card">
+        <div class="tag">drafting reality</div>
+        <h3>Public text is written in private repos</h3>
+        <p>Outward artifacts are drafted next to the source they describe, because that's the only way the numbers in them stay true. The convenience that keeps claims accurate is the same one that puts mechanism a paragraph away from the public draft.</p>
+      </div>
+      <div class="card">
+        <div class="tag">the actual failure mode</div>
+        <h3>A quiet check reads as coverage</h3>
+        <p>The write-time scanner reports nothing when a file is clean &mdash; and nothing when it never examined the file at all. Those two outcomes are <em>indistinguishable from the author's chair</em>, which is precisely how a gap survives for months.</p>
+      </div>
+      <div class="card">
+        <div class="tag">bias</div>
+        <h3>I'm the worst reader of my own draft</h3>
+        <p>I know what I meant, so I read past the sentence that gives the mechanism away. A hostile reader &mdash; someone whose only job is to find the disclosure &mdash; has to be a different reader than the author. That's a role, and roles can be assigned.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec" id="pipeline">
+    <div class="sechead"><span class="secnum">02</span><h2>The pipeline</h2><div class="divider"></div></div>
+    <p class="secsub">Six stages, ordered by when they fire &mdash; from the moment a proprietary term is defined through to the record that goes to patent counsel. Each stage catches a class the stage before it structurally cannot.</p>
+
+    <div class="stage">
+      <div class="stagehead"><span class="stagenum">01</span><span class="stagename">The term registry</span><span class="stagekind">single source of truth</span></div>
+      <p>One versioned file holds every proprietary term, each paired with a <b>replacement hint</b> &mdash; not just &ldquo;don't say this&rdquo; but &ldquo;say this instead.&rdquo; Nothing downstream hardcodes a term; every later stage reads the registry at run time, so adding one term propagates to the scanner, the scrubber, and the reviewer at once.</p>
+      <p>The replacement hints carry a rule that matters more than it looks: a rewrite must <em>preserve the claim</em>, dropping only to the next-lowest useful specificity. Sanitizing a capability into vagueness is a different failure &mdash; it protects the IP by making the work sound like nothing.</p>
+    </div>
+
+    <div class="stage">
+      <div class="stagehead"><span class="stagenum">02</span><span class="stagename">Write-time scan</span><span class="stagekind">automated · fires on every edit</span></div>
+      <p>A lifecycle hook fires after any write to a file under an outward-facing path and flags registry terms immediately, while the sentence is still on screen. It's the cheapest stage and it catches the largest volume &mdash; the flat, literal mistakes.</p>
+      <p>It is also the <em>narrowest</em> stage, in two ways that are properties of its design rather than bugs to fix: it only sees paths matching a set of globs, and it only fires on write and edit events. Both limits are documented at the top of the script, next to the incident that revealed them.</p>
+    </div>
+
+    <div class="stage">
+      <div class="stagehead"><span class="stagenum">03</span><span class="stagename">The scrub loop</span><span class="stagekind">on demand · rewrites</span></div>
+      <p>A packaged skill takes a target file and runs scan &rarr; propose rewrite &rarr; apply &rarr; <b>re-scan</b>, looping until the file comes back clean, capped at five passes before it hard-fails with a report naming the stubborn terms.</p>
+      <p>The re-scan is the whole point. A single-pass rewrite can introduce a second listed term while removing the first, and a capped loop that reports failure honestly beats an uncapped one that quietly declares success.</p>
+    </div>
+
+    <div class="stage">
+      <div class="stagehead"><span class="stagenum">04</span><span class="stagename">Hostile-reader review</span><span class="stagekind">specialist agent · assumes nothing ran</span></div>
+      <p>A dedicated review agent reads the <b>finished</b> artifact end to end and returns a verdict. Its brief is explicit: <em>assume nothing upstream ran.</em> It exists because stage two is a path filter, and a path filter cannot protect a directory nobody told it about.</p>
+      <p>It hunts what a pattern can't express &mdash; mechanism described accurately enough to reimplement regardless of vocabulary, internal architecture nomenclature, scale figures that don't trace to a named source, overclaiming verbs, and credential drift. Three rules shape it: it reads the registry fresh every run rather than working from memory, it <em>never edits the artifact</em> (findings only, so a human applies every change to a public document), and it <b>may not report clear on a file it did not read in full</b>.</p>
+    </div>
+
+    <div class="stage">
+      <div class="stagehead"><span class="stagenum">05</span><span class="stagename">The publish checklist</span><span class="stagekind">human · pre-flight</span></div>
+      <p>A written pre-flight run top to bottom before anything leaves for a non-NDA audience. Universal checks first &mdash; scrubber clean, claims linter clean, <b>a manual paraphrase eyeball</b> with the registry in mind, every numeric claim re-derived from source rather than memory, no &ldquo;shipped&rdquo; or &ldquo;production&rdquo; language for things that aren't, patent scope not overstated into adjacent territory nobody filed on.</p>
+      <p>One item is a taste rule rather than a safety rule, and it stays because it's true: <em>no count-stuffing.</em> A pile of impressive-sounding totals is impressive once and exhausting twice. Lead with what the system does, not what it contains.</p>
+    </div>
+
+    <div class="stage">
+      <div class="stagehead"><span class="stagenum">06</span><span class="stagename">The counsel queue</span><span class="stagekind">record · same session</span></div>
+      <p>When engineering work touches the patent thesis, a review packet is filed <b>in the same session the work lands</b> &mdash; monotonically numbered, never renumbered, held in a directory excluded from version control. The bodies never enter a tracked repo; only an existence-and-status pointer does, so the queue is auditable without being disclosable.</p>
+      <p>The same-session rule was bought the expensive way. One early packet had to be reconstructed retroactively because the queue didn't exist when the work landed, and the recipe for a piece of engineering &mdash; the context, the path that produced it, the prior-art comparison &mdash; decays much faster than the code does. The marginal cost of filing now is small; the cost of waiting grows every week.</p>
+    </div>
+  </section>
+
+  <section class="sec" id="audience">
+    <div class="sechead"><span class="secnum">03</span><h2>Weighted by destination</h2><div class="divider"></div></div>
+    <p class="secsub">&ldquo;Is this safe to publish?&rdquo; has no answer without a destination. The same paragraph can be fine for a clinical audience and unrecoverable in a federal filing, so the review agent asks where an artifact is going &mdash; and, when it isn't told, <b>states the tier it assumed</b>.</p>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Destination</th><th>Assumption</th><th>Bar</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><b>Government / public-record filing</b></td>
+            <td>The full text becomes public and permanent, and a competitor reads it.</td>
+            <td>Strictest. <em>No mechanism detail survives this bar</em> &mdash; not paraphrased, not partial.</td>
+          </tr>
+          <tr>
+            <td><b>Investor</b></td>
+            <td>No NDA unless one is signed and in hand.</td>
+            <td>Mechanism out. Every number must survive diligence and trace to a named artifact.</td>
+          </tr>
+          <tr>
+            <td><b>Public web / portfolio / press</b></td>
+            <td>Permanent and search-indexed.</td>
+            <td>Benefit framing, not mechanism. <span class="st st-h">this page</span></td>
+          </tr>
+          <tr>
+            <td><b>Conference / clinical</b></td>
+            <td>Expert audience, sympathetic but sharp.</td>
+            <td>Mechanism still out; every clinical claim needs a named source.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="note" style="margin-top:1.3rem;"><b>This page went through its own pipeline.</b> A write-up about a disclosure-control process is exactly the kind of artifact that has to clear it &mdash; which is why what you're reading describes stages, ordering, and failure modes, and never once shows you a registry entry.</p>
+  </section>
+
+  <section class="sec" id="verdict">
+    <div class="sechead"><span class="secnum">04</span><h2>The output contract</h2><div class="divider"></div></div>
+    <p class="secsub">The review stage returns a fixed shape, and the shape is doing real work. Verdict first, no preamble. Every finding quotes the offending text and names the replacement, because a category label without the sentence isn't actionable. And the last section is the one that keeps the whole pipeline honest.</p>
+    <div class="verdict">
+<pre><span class="vk">VERDICT:</span> <span class="vb">BLOCK</span> | <span class="st st-h">REVISE</span> | <span class="vg">CLEAR</span>
+  one sentence &mdash; and if BLOCK, the single reason
+
+<span class="vk">BLOCKERS</span>  <span class="vd">— must fix before this leaves the repo</span>
+  file:line   category   the offending text, quoted
+              └─ why it is a disclosure, and the replacement to use
+
+<span class="vk">REVISIONS</span>  <span class="vd">— should fix, not fatal</span>
+  file:line   category   quoted text
+              └─ suggested rewrite
+
+<span class="vk">UNVERIFIED CLAIMS</span>
+  the claim  →  what it must trace to  →  traced? yes / no
+
+<span class="vk">COVERAGE</span>
+  files read · sections skipped and why · <span class="vg">whether the automated
+  scan would have caught each blocker on its own</span></pre>
+    </div>
+    <p class="secsub" style="margin-top:1.4rem;">That last line is the part I'd keep if I could keep only one. Every review reports <b>which findings the automated stage would have missed</b> &mdash; so the pipeline measures its own front end continuously, from real artifacts rather than from a test fixture. A review that keeps reporting &ldquo;the scanner would have caught this&rdquo; means the human stages are wasting effort. A review reporting the opposite is telling me exactly where the next check belongs.</p>
+    <p class="secsub">Two anti-softening rules ride alongside it: a blocker is never downgraded to a revision because a deadline is close (say it's a blocker, let the human override on the record), and a sampled read caps the verdict at <em>revise</em> &mdash; clear requires having read the whole thing.</p>
+  </section>
+
+  <section class="sec" id="gaps">
+    <div class="sechead"><span class="secnum">05</span><h2>Where it has failed</h2><div class="divider"></div></div>
+    <p class="secsub">A disclosure-control write-up that only lists controls is marketing. These are the two failures on record and the gap still open &mdash; all three documented in the repo, at the top of the scripts they affect, next to the fix.</p>
+
+    <div class="cas">
+      <div class="ct">failure · found july 2026</div>
+      <h4>A plural directory name</h4>
+      <p>The write-time scanner's path filter listed the <em>singular</em> form of a directory name. The live directory was the <em>plural</em>. Every file in it &mdash; including a federal grant packet, the single most disclosure-sensitive artifact class in the entire workspace &mdash; fell outside the filter entirely.</p>
+      <p>The scanner didn't fail. It ran, matched no path, and exited clean, <b>every single time</b>. From the author's chair that's identical to a passing scan. The packet was drafted with zero scan coverage while the tooling reported success.</p>
+      <p>Fixed by adding the pattern, but the real fix was the conclusion drawn from it: <em>path-glob scoping is brittle by nature.</em> The script now says so in a comment, and the reviewer agent &mdash; which reads finished artifacts regardless of where they live &mdash; was promoted from nice-to-have to the actual pre-publish gate. One layer's structural blind spot became another layer's job description.</p>
+    </div>
+
+    <div class="cas">
+      <div class="ct">failure · found june 2026</div>
+      <h4>Enforced on the map, absent on the machine</h4>
+      <p>Before the failure above, the same scanner spent an unknown stretch as a complete no-op for a different reason: it read the edited file's path from environment variables the runtime no longer set, so the path came back empty and it bailed on the first line. Its warning also went to a stream the wiring discarded. Two independent bugs, stacked, both silent.</p>
+      <p>Meanwhile the process register listed the discipline as <b>enforced</b>. It was found by accident, while editing a neighbouring hook &mdash; not by any check.</p>
+      <p>This is what produced the standing rule now applied to every gate in the workspace: <em>a check that exists is not a check that bites.</em> Proving it goes red on a known-bad input is a separate, mandatory step from writing it. That rule, and the ledger tracking it, is <a href="../enforcement/" style="color:var(--accent-cyan); text-decoration:none; border-bottom:1px solid var(--line)">its own write-up</a>.</p>
+    </div>
+
+    <div class="cas" style="border-color: rgba(255,180,84,0.28); border-left-color: var(--accent-amber);">
+      <div class="ct" style="color: var(--accent-amber);">open gap · tracked, not fixed</div>
+      <h4>The paraphrase hole</h4>
+      <p>The registry catches a proprietary term written literally. It does not catch the same mechanism described in plain English by someone who understands it &mdash; and <b>architecture described accurately enough to reimplement is a disclosure regardless of vocabulary</b>.</p>
+      <p>So the discipline is enforced at the literal layer and narrated at the paraphrase layer. That's an honest description of a real hole, and it sits on the conversion backlog with a named target: a fuzzy pattern family per protected term, failing on near-matches under outward-facing paths.</p>
+      <p>It is not fixed. It's <em>ranked</em> &mdash; second-highest leverage on the backlog &mdash; and covered in the interim by the two human-read stages, which is exactly what the review layer is for. I'd rather publish the gap with its mitigation than imply coverage I don't have.</p>
+    </div>
+  </section>
+
+  <div class="takeaway">
+    <h3>What this is really a case study in</h3>
+    <p>Not IP paranoia &mdash; <b>layering controls against known blind spots, and knowing which blind spot each layer covers.</b> Every stage here was added because the stage before it failed in a way I could name, and the two human stages exist specifically because the automated one is a pattern matcher wearing a path filter.</p>
+    <p>The through-line is the same one that runs through the rest of this workspace: <b>a check that fails quietly is worse than no check</b>, because it reads as coverage you don't have. The answer isn't more scripts. It's pairing every automated gate with a reader whose job is to assume the gate didn't run &mdash; and writing down what it missed, every time, so the next check is chosen from evidence instead of instinct.</p>
+    <p style="margin-top:1.1rem; padding-top:1.1rem; border-top:1px solid var(--line-soft);">Companion write-ups: <a href="../automation/" style="color:var(--accent-cyan); text-decoration:none; border-bottom:1px solid var(--line)">the lifecycle-hook layer this pipeline runs on</a> · <a href="../enforcement/" style="color:var(--accent-cyan); text-decoration:none; border-bottom:1px solid var(--line)">how a written convention becomes an enforced check</a>.</p>
+  </div>
+
+  <footer>
+    <p>Case study &middot; IP disclosure control for a patent-pending, AI-assisted codebase.</p>
+    <p>Process shape only. No registry contents, mechanism detail, or proprietary vocabulary appears on this page &mdash; by the same pipeline it describes.</p>
+    <p>Michael Giardina &middot; <a href="../">portfolio</a> &middot; <a href="https://www.linkedin.com/in/michael-giardina">linkedin.com/in/michael-giardina</a></p>
+  </footer>
+
+</div>
+</body>
+</html>

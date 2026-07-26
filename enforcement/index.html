@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Narrated → Enforced: Making Conventions Outlive the Author — Case Study</title>
+<meta name="description" content="Key-man risk reduction as an engineering problem: classifying every process discipline as enforced, narrated, or hybrid; a four-part bar for what counts as enforced; three ledgers tracking the conversion; and the two checks that turned out not to fire at all.">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Crimson+Pro:wght@400;600&family=Work+Sans:wght@300;500;700&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --primary-bg: #0a0e14;
+    --secondary-bg: #151922;
+    --raise-bg: #1b212c;
+    --accent-cyan: #00d9ff;
+    --accent-green: #00ff9f;
+    --accent-red: #ff006e;
+    --accent-amber: #ffb454;
+    --text-primary: #e6edf3;
+    --text-muted: #8b949e;
+    --text-dim: #5b636d;
+    --line: rgba(0, 217, 255, 0.18);
+    --line-soft: rgba(139, 148, 158, 0.16);
+    --grid-color: rgba(0, 217, 255, 0.1);
+    --serif: 'Crimson Pro', Georgia, 'Times New Roman', serif;
+    --sans: 'Work Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+    --mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+  }
+  html { scroll-behavior: smooth; }
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+  body {
+    background: var(--primary-bg);
+    color: var(--text-primary);
+    font-family: var(--sans);
+    line-height: 1.65;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  .grid-bg {
+    position: fixed; inset: 0; z-index: 0; pointer-events: none;
+    background-image:
+      linear-gradient(var(--grid-color) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid-color) 1px, transparent 1px);
+    background-size: 50px 50px;
+    animation: gridPulse 4s ease-in-out infinite;
+  }
+  @keyframes gridPulse { 0%, 100% { opacity: 0.3; } 50% { opacity: 0.55; } }
+  @media (prefers-reduced-motion: reduce) { .grid-bg { animation: none; opacity: 0.35; } }
+
+  .wrap { max-width: 1000px; margin: 0 auto; padding: 0 2rem 6rem; position: relative; z-index: 1; }
+
+  /* ---- top bar ---- */
+  .topbar {
+    position: sticky; top: 0; z-index: 20;
+    background: color-mix(in srgb, var(--primary-bg) 86%, transparent);
+    backdrop-filter: blur(9px);
+    border-bottom: 1px solid var(--line);
+  }
+  .topin {
+    max-width: 1000px; margin: 0 auto; padding: 0.7rem 2rem;
+    display: flex; align-items: center; gap: 1rem;
+  }
+  .mark { font-family: var(--mono); font-size: 0.78rem; color: var(--text-muted); letter-spacing: 0.02em; }
+  .mark b { color: var(--accent-cyan); font-weight: 700; }
+  .topnav { margin-left: auto; display: flex; gap: 0.15rem; align-items: center; flex-wrap: wrap; }
+  .topnav a {
+    font-family: var(--mono); font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.09em;
+    color: var(--text-muted); text-decoration: none; padding: 0.35rem 0.6rem; border-radius: 5px;
+    transition: color 0.15s, background 0.15s;
+  }
+  .topnav a:hover { color: var(--accent-cyan); background: rgba(0, 217, 255, 0.06); }
+  .topnav a.back { color: var(--text-dim); }
+  .topnav a:focus-visible { outline: 2px solid var(--accent-cyan); outline-offset: 2px; }
+
+  /* ---- hero ---- */
+  header.hero { padding: 4.5rem 0 3rem; border-bottom: 1px solid var(--line-soft); }
+  .status-bar {
+    font-family: var(--mono); font-size: 0.72rem; color: var(--accent-green);
+    display: flex; gap: 1.6rem; flex-wrap: wrap; margin-bottom: 1.8rem;
+  }
+  .status-item { display: flex; align-items: center; gap: 0.5rem; letter-spacing: 0.04em; }
+  .status-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--accent-green); animation: pulse 2s ease-in-out infinite; }
+  @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+  @media (prefers-reduced-motion: reduce) { .status-dot { animation: none; } }
+  .kicker { font-family: var(--mono); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.16em; color: var(--accent-cyan); margin-bottom: 1rem; }
+  h1 {
+    font-family: var(--serif); font-weight: 600; font-size: clamp(2.3rem, 5.5vw, 3.9rem);
+    line-height: 1.08; letter-spacing: -0.01em; margin-bottom: 1.1rem; max-width: 18ch;
+    color: var(--text-primary);
+    background: linear-gradient(135deg, var(--text-primary) 0%, var(--accent-cyan) 100%);
+    -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+  }
+  .lede { font-size: clamp(1.05rem, 2vw, 1.22rem); color: var(--text-muted); max-width: 68ch; font-weight: 300; }
+  .lede b { color: var(--text-primary); font-weight: 500; }
+  .lede .cy { color: var(--accent-cyan); font-weight: 500; }
+  .context { font-family: var(--mono); font-size: 0.8rem; color: var(--text-dim); margin-top: 1.6rem; letter-spacing: 0.01em; }
+
+  .stats { display: flex; flex-wrap: wrap; gap: 1.1rem 2.4rem; margin-top: 2.4rem; font-family: var(--mono); }
+  .stat { display: flex; flex-direction: column; }
+  .stat .n { font-size: 2.3rem; font-weight: 700; color: var(--accent-cyan); line-height: 1; font-variant-numeric: tabular-nums; }
+  .stat .l { font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.09em; margin-top: 0.5rem; }
+  .statnote {
+    margin-top: 1.7rem; font-size: 0.85rem; color: var(--text-muted); max-width: 70ch;
+    border-left: 2px solid var(--line); padding-left: 0.9rem;
+  }
+  .statnote code { font-family: var(--mono); font-size: 0.82em; color: var(--accent-cyan); background: rgba(0,217,255,0.07); padding: 0.05rem 0.3rem; border-radius: 3px; }
+
+  /* ---- sections ---- */
+  section.sec { padding-top: 4.5rem; }
+  .sechead { display: flex; align-items: center; gap: 1rem; margin-bottom: 0.7rem; }
+  .secnum { font-family: var(--mono); font-size: 0.9rem; color: var(--accent-cyan); opacity: 0.6; }
+  h2 { font-family: var(--serif); font-weight: 600; font-size: clamp(1.7rem, 4vw, 2.4rem); letter-spacing: -0.01em; }
+  .divider { flex: 1; height: 1px; background: linear-gradient(90deg, var(--accent-cyan) 0%, transparent 100%); margin-left: 1rem; }
+  .secsub { color: var(--text-muted); font-size: 1rem; max-width: 74ch; margin: 0.4rem 0 2rem; }
+
+  /* ---- principle cards ---- */
+  .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.1rem; }
+  .card {
+    position: relative; background: var(--secondary-bg); border: 1px solid var(--line);
+    padding: 1.4rem 1.5rem; overflow: hidden; transition: transform 0.25s, border-color 0.25s, box-shadow 0.25s;
+  }
+  .card::before {
+    content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 2px;
+    background: linear-gradient(90deg, var(--accent-cyan), var(--accent-green));
+    transform: scaleX(0); transform-origin: left; transition: transform 0.3s ease;
+  }
+  .card:hover { transform: translateY(-4px); border-color: var(--accent-cyan); box-shadow: 0 10px 34px rgba(0, 217, 255, 0.13); }
+  .card:hover::before { transform: scaleX(1); }
+  .card .tag { font-family: var(--mono); font-size: 0.66rem; text-transform: uppercase; letter-spacing: 0.11em; color: var(--accent-green); margin-bottom: 0.7rem; }
+  .card h3 { font-family: var(--serif); font-size: 1.25rem; font-weight: 600; margin-bottom: 0.5rem; color: var(--text-primary); }
+  .card p { font-size: 0.9rem; color: var(--text-muted); }
+  .card em { color: var(--accent-amber); font-style: normal; font-weight: 500; }
+  .card code { font-family: var(--mono); font-size: 0.82em; color: var(--accent-cyan); }
+
+  /* ---- legend ---- */
+  .legend { display: flex; gap: 0.6rem; flex-wrap: wrap; margin-bottom: 1.4rem; }
+  .chip { font-family: var(--mono); font-size: 0.68rem; font-weight: 700; letter-spacing: 0.03em; padding: 0.2rem 0.65rem; border-radius: 999px; white-space: nowrap; border: 1px solid transparent; }
+  .c-block { background: rgba(255, 0, 110, 0.12); color: #ff5c9d; border-color: rgba(255,0,110,0.4); }
+  .c-cond  { background: rgba(255, 180, 84, 0.12); color: var(--accent-amber); border-color: rgba(255,180,84,0.4); }
+  .c-ctx   { background: rgba(0, 217, 255, 0.1); color: var(--accent-cyan); border-color: rgba(0,217,255,0.4); }
+  .c-adv   { background: rgba(139, 148, 158, 0.1); color: var(--text-muted); border-color: var(--line-soft); }
+
+  /* ---- event lanes ---- */
+  .lane { background: var(--secondary-bg); border: 1px solid var(--line-soft); margin-bottom: 0.9rem; overflow: hidden; }
+  .lh { display: flex; align-items: baseline; gap: 0.8rem; flex-wrap: wrap; padding: 0.8rem 1.1rem; background: var(--raise-bg); border-bottom: 1px solid var(--line-soft); }
+  .lh .ev { font-family: var(--mono); font-size: 0.9rem; font-weight: 700; color: var(--accent-cyan); }
+  .lh .when { font-size: 0.8rem; color: var(--text-dim); }
+  .lh .match { margin-left: auto; font-family: var(--mono); font-size: 0.68rem; color: var(--text-muted); border: 1px solid var(--line-soft); border-radius: 4px; padding: 0.05rem 0.5rem; }
+  .row { display: flex; align-items: center; gap: 0.9rem; padding: 0.65rem 1.1rem; border-top: 1px solid var(--line-soft); border-left: 2px solid transparent; transition: background 0.14s, border-color 0.14s; }
+  .row:first-child { border-top: none; }
+  .row:hover { background: rgba(0, 217, 255, 0.04); border-left-color: var(--accent-cyan); }
+  .rname { font-family: var(--mono); font-size: 0.82rem; font-weight: 700; color: var(--text-primary); min-width: 190px; }
+  .rdesc { font-size: 0.86rem; color: var(--text-muted); flex: 1; min-width: 200px; }
+  .rchip { margin-left: auto; }
+  .wonly { font-family: var(--mono); font-size: 0.6rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.06em; margin-left: 0.4rem; }
+
+  /* ---- command groups ---- */
+  .cmdgroup { margin-bottom: 1.8rem; }
+  .cmdgh { font-family: var(--mono); font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-dim); margin-bottom: 0.8rem; padding-bottom: 0.5rem; border-bottom: 1px solid var(--line-soft); }
+  .cmd { background: var(--secondary-bg); border: 1px solid var(--line-soft); border-left: 2px solid var(--line); padding: 0.75rem 1.1rem; margin-bottom: 0.55rem; transition: border-color 0.15s, transform 0.15s; }
+  .cmd:hover { border-left-color: var(--accent-cyan); transform: translateX(3px); }
+  .cmdname { font-family: var(--mono); font-size: 0.9rem; font-weight: 700; color: var(--accent-cyan); }
+  .cmdbody { font-size: 0.88rem; color: var(--text-muted); margin-top: 0.25rem; }
+  .cmdbody b { color: var(--text-primary); font-weight: 500; }
+  .note { background: var(--raise-bg); border: 1px solid var(--line-soft); border-left: 2px solid var(--accent-amber); padding: 0.85rem 1.1rem; font-size: 0.88rem; color: var(--text-muted); }
+  .note b { color: var(--text-primary); font-weight: 500; }
+
+  /* ---- skills ---- */
+  .skills { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 0.9rem; }
+  .skill { background: var(--secondary-bg); border: 1px solid var(--line-soft); padding: 1rem 1.2rem; transition: border-color 0.2s; }
+  .skill:hover { border-color: var(--accent-green); }
+  .skill h4 { font-family: var(--mono); font-size: 0.82rem; font-weight: 700; color: var(--accent-green); margin-bottom: 0.35rem; }
+  .skill p { font-size: 0.84rem; color: var(--text-muted); }
+
+  /* ---- takeaway ---- */
+  .takeaway { margin-top: 3.2rem; background: linear-gradient(135deg, rgba(0,217,255,0.05), rgba(0,255,159,0.03)); border: 1px solid var(--line); padding: 1.8rem; }
+  .takeaway h3 { font-family: var(--serif); font-size: 1.4rem; font-weight: 600; margin-bottom: 0.7rem; }
+  .takeaway p { color: var(--text-muted); font-size: 0.95rem; max-width: 78ch; }
+  .takeaway p + p { margin-top: 0.7rem; }
+  .takeaway b { color: var(--text-primary); font-weight: 500; }
+
+  footer { margin-top: 3.5rem; padding-top: 1.6rem; border-top: 1px solid var(--line); font-family: var(--mono); font-size: 0.78rem; color: var(--text-dim); }
+  footer p { margin-bottom: 0.4rem; line-height: 1.7; }
+  footer a { color: var(--accent-cyan); text-decoration: none; }
+  footer a:hover { color: var(--accent-green); }
+
+  @media (max-width: 620px) {
+    .wrap, .topin { padding-left: 1.25rem; padding-right: 1.25rem; }
+    .rname, .rdesc { min-width: 0; }
+    .row { flex-wrap: wrap; gap: 0.3rem 0.9rem; }
+    .rchip { margin-left: 0; }
+    .lh .match { margin-left: 0; }
+  }
+  /* ---- pipeline stages ---- */
+  .stage { position: relative; background: var(--secondary-bg); border: 1px solid var(--line-soft); border-left: 2px solid var(--line); padding: 1.15rem 1.3rem; margin-bottom: 0.75rem; transition: border-color 0.18s; }
+  .stage:hover { border-left-color: var(--accent-cyan); }
+  .stagehead { display: flex; align-items: baseline; gap: 0.8rem; flex-wrap: wrap; margin-bottom: 0.45rem; }
+  .stagenum { font-family: var(--mono); font-size: 0.7rem; font-weight: 700; color: var(--accent-cyan); border: 1px solid var(--line); border-radius: 4px; padding: 0.05rem 0.45rem; }
+  .stagename { font-family: var(--serif); font-size: 1.15rem; font-weight: 600; color: var(--text-primary); }
+  .stagekind { margin-left: auto; font-family: var(--mono); font-size: 0.66rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-dim); }
+  .stage p { font-size: 0.9rem; color: var(--text-muted); }
+  .stage p + p { margin-top: 0.55rem; }
+  .stage em { color: var(--accent-amber); font-style: normal; font-weight: 500; }
+  .stage b { color: var(--text-primary); font-weight: 500; }
+  .stage code { font-family: var(--mono); font-size: 0.82em; color: var(--accent-cyan); }
+
+  /* ---- table ---- */
+  .tablewrap { overflow-x: auto; border: 1px solid var(--line-soft); background: var(--secondary-bg); }
+  table { border-collapse: collapse; width: 100%; min-width: 620px; font-size: 0.87rem; }
+  th { text-align: left; font-family: var(--mono); font-size: 0.66rem; text-transform: uppercase; letter-spacing: 0.09em; color: var(--text-dim); padding: 0.7rem 1rem; background: var(--raise-bg); border-bottom: 1px solid var(--line-soft); font-weight: 700; white-space: nowrap; }
+  td { padding: 0.75rem 1rem; border-bottom: 1px solid var(--line-soft); color: var(--text-muted); vertical-align: top; }
+  tr:last-child td { border-bottom: none; }
+  tbody tr:hover { background: rgba(0, 217, 255, 0.035); }
+  td b { color: var(--text-primary); font-weight: 500; }
+  td code { font-family: var(--mono); font-size: 0.82em; color: var(--accent-cyan); }
+  .st { font-family: var(--mono); font-size: 0.66rem; font-weight: 700; letter-spacing: 0.04em; padding: 0.15rem 0.5rem; border-radius: 999px; white-space: nowrap; border: 1px solid transparent; }
+  .st-e { background: rgba(0,255,159,0.11); color: var(--accent-green); border-color: rgba(0,255,159,0.35); }
+  .st-n { background: rgba(255,0,110,0.11); color: #ff5c9d; border-color: rgba(255,0,110,0.35); }
+  .st-h { background: rgba(255,180,84,0.11); color: var(--accent-amber); border-color: rgba(255,180,84,0.35); }
+
+  /* ---- bar / numbered criteria ---- */
+  .bar { counter-reset: barc; display: grid; gap: 0.7rem; }
+  .barit { position: relative; background: var(--secondary-bg); border: 1px solid var(--line-soft); padding: 1rem 1.2rem 1rem 3.3rem; }
+  .barit::before { counter-increment: barc; content: counter(barc); position: absolute; left: 1.15rem; top: 0.95rem; font-family: var(--mono); font-size: 1.1rem; font-weight: 700; color: var(--accent-cyan); opacity: 0.55; }
+  .barit h4 { font-family: var(--serif); font-size: 1.08rem; font-weight: 600; color: var(--text-primary); margin-bottom: 0.3rem; }
+  .barit p { font-size: 0.88rem; color: var(--text-muted); }
+  .barit em { color: var(--accent-amber); font-style: normal; font-weight: 500; }
+  .barit code { font-family: var(--mono); font-size: 0.82em; color: var(--accent-cyan); }
+
+  /* ---- casualty callout ---- */
+  .cas { background: var(--raise-bg); border: 1px solid rgba(255,0,110,0.28); border-left: 2px solid var(--accent-red); padding: 1.15rem 1.3rem; margin-bottom: 0.9rem; }
+  .cas .ct { font-family: var(--mono); font-size: 0.66rem; text-transform: uppercase; letter-spacing: 0.1em; color: #ff5c9d; margin-bottom: 0.5rem; }
+  .cas h4 { font-family: var(--serif); font-size: 1.15rem; font-weight: 600; color: var(--text-primary); margin-bottom: 0.45rem; }
+  .cas p { font-size: 0.9rem; color: var(--text-muted); }
+  .cas p + p { margin-top: 0.55rem; }
+  .cas b { color: var(--text-primary); font-weight: 500; }
+  .cas em { color: var(--accent-amber); font-style: normal; font-weight: 500; }
+  .cas code { font-family: var(--mono); font-size: 0.82em; color: var(--accent-cyan); }
+
+  /* ---- verdict block ---- */
+  .verdict { background: #06090d; border: 1px solid var(--line); padding: 1.2rem 1.35rem; overflow-x: auto; }
+  .verdict pre { font-family: var(--mono); font-size: 0.8rem; line-height: 1.85; color: var(--text-muted); white-space: pre; }
+  .verdict .vk { color: var(--accent-cyan); font-weight: 700; }
+  .verdict .vb { color: #ff5c9d; font-weight: 700; }
+  .verdict .vg { color: var(--accent-green); }
+  .verdict .vd { color: var(--text-dim); }
+
+</style>
+</head>
+<body>
+<div class="grid-bg"></div>
+
+<div class="topbar">
+  <div class="topin">
+    <span class="mark"><b>enforce/</b> · narrated → enforced</span>
+    <nav class="topnav">
+      <a href="#premise">Premise</a>
+      <a href="#states">Three states</a>
+      <a href="#bar">The bar</a>
+      <a href="#ledgers">Ledgers</a>
+      <a href="#casualties">Casualties</a>
+      <a href="#absent">Not written</a>
+      <a href="../automation/">Hooks →</a>
+      <a href="../publishing/">Publishing →</a>
+      <a href="../" class="back">← portfolio</a>
+    </nav>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <header class="hero" id="top">
+    <div class="status-bar">
+      <div class="status-item"><span class="status-dot"></span><span>ENGINEERING CASE STUDY</span></div>
+      <div class="status-item"><span class="status-dot"></span><span>PROCESS &middot; KEY-MAN RISK</span></div>
+    </div>
+    <p class="kicker">Process design · governance</p>
+    <h1>Turning conventions into checks that outlive the author.</h1>
+    <p class="lede">A process document that only works because the person who wrote it keeps re-reading it isn't risk mitigation &mdash; <b>it's a journal.</b> A process enforced by a failing check survives that person leaving. So I sorted every discipline this workspace runs on into those two piles on purpose, and built a scoreboard for <span class="cy">moving items from one pile to the other</span>. When the scoreboard shrinks, key-man risk shrinks &mdash; measurably, not rhetorically.</p>
+    <p class="context">solo founder-engineer · five repositories · 36 decision records · 17 living process documents</p>
+
+    <div class="stats">
+      <div class="stat"><div class="n">3</div><div class="l">enforcement states</div></div>
+      <div class="stat"><div class="n">4</div><div class="l">criteria to qualify</div></div>
+      <div class="stat"><div class="n">3</div><div class="l">ledgers</div></div>
+      <div class="stat"><div class="n">36</div><div class="l">decision records</div></div>
+      <div class="stat"><div class="n">6</div><div class="l">SOPs deliberately unwritten</div></div>
+    </div>
+    <p class="statnote">Two artifacts do the work. A <b>register</b> maps every discipline and classifies it. A <b>ledger</b> tracks the conversion work and verifies that the ones already claimed as enforced actually fire. The register is the map; the ledger is the scoreboard. Keeping them separate is the point &mdash; a backlog buried inside a reference document stops being a backlog.</p>
+  </header>
+
+  <section class="sec" id="premise">
+    <div class="sechead"><span class="secnum">01</span><h2>The two columns most registers leave out</h2><div class="divider"></div></div>
+    <p class="secsub">Plenty of projects keep an index of their process docs. It answers &ldquo;what governs us, and where does it live.&rdquo; That's useful and it isn't enough, so the register adds four columns &mdash; and two of them are the whole reason it exists.</p>
+    <div class="cards">
+      <div class="card">
+        <div class="tag">column</div>
+        <h3>Forged by</h3>
+        <p>The specific incident that produced this rule. Every entry names one. A procedure with no incident behind it is <em>process theater</em> &mdash; it reads hollow precisely because nothing forced it into existence, and it's the first thing a successor correctly ignores.</p>
+      </div>
+      <div class="card">
+        <div class="tag">column</div>
+        <h3>Enforcement</h3>
+        <p>Enforced, narrated, or hybrid. This is the load-bearing column: the gap between the enforced pile and the narrated pile <em>is</em> the key-man risk, written down where it can be watched shrinking.</p>
+      </div>
+      <div class="card">
+        <div class="tag">column</div>
+        <h3>Owner on handoff</h3>
+        <p>Who owns this when I'm not the one running it. Today most rows say &ldquo;founder,&rdquo; and that's the honest answer &mdash; but naming the <em>role</em> that inherits each one makes the handoff a delegation exercise instead of an excavation.</p>
+      </div>
+      <div class="card">
+        <div class="tag">discipline</div>
+        <h3>Point, never copy</h3>
+        <p>The register classifies and links; it never holds a procedure's body. If a procedure's content starts getting pasted in, that's the signal to stop and link instead &mdash; a rule with two homes has already begun to drift.</p>
+      </div>
+    </div>
+    <p class="note" style="margin-top:1.5rem;"><b>The stranger-trap tier.</b> The register also catalogues rules that live as prose <em>inside</em> configuration and context files, never extracted into a standalone document. Those are the ones a newcomer misses completely, because nobody thinks to go looking for a policy inside a config file. They're indexed here so they're findable &mdash; and left where they are, because that's where they're enforced.</p>
+  </section>
+
+  <section class="sec" id="states">
+    <div class="sechead"><span class="secnum">02</span><h2>Three states, one honest caveat</h2><div class="divider"></div></div>
+    <p class="secsub">Every discipline gets exactly one value. The definitions are deliberately unflattering, because a generous classification is worse than none.</p>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>State</th><th>Means</th><th>Survives the author leaving?</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><span class="st st-e">ENFORCED</span></td>
+            <td>A test, audit, hook, or CI gate goes red when the procedure is violated.</td>
+            <td><b>Yes.</b> This is the real asset &mdash; the only category that is.</td>
+          </tr>
+          <tr>
+            <td><span class="st st-h">HYBRID</span></td>
+            <td>Part is checked; part rides on a human reading the prose.</td>
+            <td><b>Partly.</b> The narrated portion is the exposure &mdash; name it explicitly.</td>
+          </tr>
+          <tr>
+            <td><span class="st st-n">NARRATED</span></td>
+            <td>Prose. Often correct, often battle-forged, but it holds only while someone reads it.</td>
+            <td><b>No.</b> Degrades the moment attention lapses.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="note" style="margin-top:1.4rem; border-left-color: var(--accent-red);"><b>The caveat printed at the top of the column.</b> These values reflect what the source documents <em>claim</em> is enforced. Confirming that each enforced row has a live check which actually goes red &mdash; rather than one that silently passes &mdash; is itself the first hardening task. Until a row has been walked, it reads <em>&ldquo;claimed enforced, verify it bites.&rdquo;</em> That caveat turned out to be load-bearing; see below.</p>
+  </section>
+
+  <section class="sec" id="bar">
+    <div class="sechead"><span class="secnum">03</span><h2>What earns the word &ldquo;enforced&rdquo;</h2><div class="divider"></div></div>
+    <p class="secsub">All four have to be true. The bar is this high because <b>a check that silently passes is worse than no check at all</b> &mdash; it reads as coverage you don't have, and it stops anyone from looking again.</p>
+    <div class="bar">
+      <div class="barit">
+        <h4>It fails red on a real violation</h4>
+        <p>Proven with a known-bad fixture, not assumed from reading the code. <em>If you can't show it failing, it isn't a check yet</em> &mdash; it's an intention with a filename.</p>
+      </div>
+      <div class="barit">
+        <h4>It does not pass green on a degraded environment</h4>
+        <p>A cold virtual environment, a missing dependency, an absent file: all must produce an explicit error, never a silent pass. The reference pattern resolves through a chain of fallbacks and, when it runs out, <b>degrades to &ldquo;no result&rdquo; rather than to a wrong one</b>.</p>
+      </div>
+      <div class="barit">
+        <h4>It runs automatically</h4>
+        <p>A CI gate, a session lifecycle hook, or a pre-publish step &mdash; not &ldquo;remember to run it.&rdquo; A check that depends on being remembered has the same failure mode as the convention it replaced.</p>
+      </div>
+      <div class="barit">
+        <h4>Its failure message points at the fix</h4>
+        <p>A red check that doesn't say what to do hasn't removed the tacit knowledge from the founder's head. It has <em>relocated it into a stack trace</em>, where it's harder to find.</p>
+      </div>
+    </div>
+    <p class="secsub" style="margin-top:1.5rem;">Criterion two came from a real incident: an audit's last-resort fallback fired on a cold environment and manufactured a regression of over a thousand findings that did not exist. Nothing was broken except the ability to tell. Chasing a phantom for an afternoon is a cheap lesson in why <b>degrade-to-nothing beats degrade-to-plausible</b>.</p>
+  </section>
+
+  <section class="sec" id="ledgers">
+    <div class="sechead"><span class="secnum">04</span><h2>Three ledgers</h2><div class="divider"></div></div>
+    <p class="secsub">The scoreboard splits three ways, because &ldquo;not yet enforced,&rdquo; &ldquo;claims to be enforced,&rdquo; and &ldquo;can never be enforced&rdquo; need three different kinds of attention &mdash; and mixing them is how a backlog becomes a wish list.</p>
+
+    <div class="stage">
+      <div class="stagehead"><span class="stagenum">A</span><span class="stagename">Conversion backlog</span><span class="stagekind">narrated → target check</span></div>
+      <p>The work, ordered by leverage. Each row names the concrete check to build, where it will live, what it must assert, and what it costs to keep not having it. Highest-leverage items are the ones with direct external exposure &mdash; anything that could put a wrong number in front of a grant reviewer or an investor.</p>
+      <p>Rows are honest about partiality. Several are marked <em>&ldquo;backlog (partial)&rdquo;</em> because only the mechanical portion of the discipline can be checked and a judgment residue will always remain. Pretending otherwise would produce a check that passes while the actual rule is broken.</p>
+    </div>
+
+    <div class="stage">
+      <div class="stagehead"><span class="stagenum">B</span><span class="stagename">Verification queue</span><span class="stagekind">claimed-enforced → prove it bites</span></div>
+      <p>Every check that <em>says</em> it's enforced, with two separate columns: <code>exists</code> (the file is on disk) and <code>bite-tested</code> (a known-bad input has been shown to make it go red). Until the second column is filled in, the check is provisional no matter how good the code looks.</p>
+      <p>This queue is why the register has that caveat at the top &mdash; and it earned its keep on the very first pass through it, twice over.</p>
+    </div>
+
+    <div class="stage">
+      <div class="stagehead"><span class="stagenum">C</span><span class="stagename">Won't enforce</span><span class="stagekind">judgment · stop trying</span></div>
+      <p>Disciplines that are irreducibly judgment: how to collaborate with an agent, when a change deserves a decision record, whether a given commit is a release, the order to work through a triage. These stay narrated, and <b>that's correct</b> &mdash; their mitigation is onboarding and documentation, not a gate.</p>
+      <p>Writing them down as permanently unenforceable is the point. It stops effort being spent trying, and it stops the ledger from carrying items that will never close, which is how backlogs quietly lose credibility.</p>
+    </div>
+  </section>
+
+  <section class="sec" id="casualties">
+    <div class="sechead"><span class="secnum">05</span><h2>What the first pass found</h2><div class="divider"></div></div>
+    <p class="secsub">The verification queue was built on a suspicion: that some checks the register listed as enforced weren't firing. The first walk through it confirmed that twice, and both were worse than a missing check &mdash; because both looked like passing ones.</p>
+
+    <div class="cas">
+      <div class="ct">casualty one · failed to warn</div>
+      <h4>The scanner that examined nothing</h4>
+      <p>A protective scanner read the path of the edited file from environment variables the runtime no longer provided. The path came back empty, so it exited on its first line &mdash; every run, silently. Its warning was also written to a stream the wiring discarded, so even when it did have something to say, nobody heard it. <b>Two independent bugs, stacked, both quiet.</b></p>
+      <p>The register had it as enforced. It was found <em>by accident</em>, while a neighbouring script was being edited &mdash; not by any check, which is the entire argument for the queue.</p>
+    </div>
+
+    <div class="cas">
+      <div class="ct">casualty two · allowed what it blocked</div>
+      <h4>The gate that depended on a tool that wasn't installed</h4>
+      <p>A commit gate &mdash; the one whose whole job is to refuse a commit that stages a credential &mdash; used a JSON command-line utility for both reading its input and emitting its decision. That utility isn't installed on the machine in question, deliberately. Its wiring swallowed errors so a broken hook could never block real work. Net effect: <b>every commit passed, including ones staging exactly what it existed to stop.</b></p>
+      <p>Two further latent bugs surfaced during the fix: the denial used a message format the runtime had superseded, and the scan ran from a working directory that wasn't the repository being committed to &mdash; so even with the tool present, it would have inspected nothing.</p>
+      <p>Worse than casualty one in a specific way. That one failed to <em>warn</em>; this one silently <em>allowed</em>. And it was wired but never registered in either artifact &mdash; so it read as neither enforced nor tracked, <em>the worst of both</em>. The rewrite inverted its posture: any commit-shaped command it cannot evaluate &mdash; interpreter missing, interpreter crashing, target unresolved &mdash; now denies. Then it was re-tested twice: once against crafted inputs, once live through the real wiring, including a simulated broken toolchain that the old version waved through.</p>
+    </div>
+
+    <p class="secsub" style="margin-top:1.6rem;">Two softer findings landed in the same pass, both &ldquo;the map said enforced, the territory disagreed&rdquo;: one check was a <em>reminder</em> mislabelled as a gate (the rule it supposedly enforced was narrated all along), and another was present on disk but never wired to any event, so it had never once run. Neither was a fail-open, but both were corrected in the register, because an overclaimed check is a lie about coverage even when the code is fine.</p>
+
+    <p class="note" style="margin-top:1.5rem; border-left-color: var(--accent-green);"><b>The rule that came out of it.</b> A wired hook is not a tracked check, and a tracked check is not a biting one &mdash; <b>only the bite-test closes that gap.</b> The corollary is scheduling: both casualties were caught reactively, by luck. The proactive complement is deliberately <em>not</em> a one-session sprint &mdash; a few rows driven to bite-tested per session, reviewed at every release. The queue's job is to keep the residual visible in the meantime, and it says out loud which proofs are still owed.</p>
+  </section>
+
+  <section class="sec" id="absent">
+    <div class="sechead"><span class="secnum">06</span><h2>The SOPs I refuse to write yet</h2><div class="divider"></div></div>
+    <p class="secsub">A full corporate process suite would cover finance close, HR onboarding, procurement, sales ops, support. All of it is deliberately absent &mdash; and listed as absent, with <b>the trigger that earns each one</b>. Documenting the gaps is part of documenting the system: a successor learns as much from what's missing on purpose as from what's present.</p>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Deferred procedure</th><th>Existing seed</th><th>Write it when</th></tr></thead>
+        <tbody>
+          <tr><td><b>HR onboarding / offboarding</b></td><td>Role operating packets already drafted</td><td>The first non-founder hire signs.</td></tr>
+          <tr><td><b>Finance / burn / AP-AR</b></td><td>A founding-era stub</td><td>First real burn &mdash; a raise closes, or a contractor gets paid.</td></tr>
+          <tr><td><b>Data-privacy operations</b></td><td>Threat model + architecture review</td><td>First real patient data, or first clinical customer.</td></tr>
+          <tr><td><b>Sales ops / pipeline</b></td><td>Go-to-market planning docs</td><td>First paying customer.</td></tr>
+          <tr><td><b>Support / incident comms</b></td><td>Internal triage procedure</td><td>First external user cohort.</td></tr>
+          <tr><td><b>Procurement / vendors</b></td><td>Stack inventory</td><td>A vendor contract worth governing.</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="secsub" style="margin-top:1.4rem;">The reasoning is the same one that makes the <em>forged-by</em> column mandatory. What makes every procedure in this register credible is that a real event produced it. Writing one for a function nobody runs yet produces a document that reads hollow, buries the ones that matter, and creates exactly the too-much-governance-for-the-headcount smell the register exists to avoid. <b>Write it when the trigger fires, not before.</b></p>
+    <p class="secsub">One row on the reconciliation list has no living successor at all &mdash; the finance procedure &mdash; and it's marked as genuinely orphaned rather than quietly dropped. A register that only lists what's covered is a marketing document.</p>
+  </section>
+
+  <div class="takeaway">
+    <h3>Why a solo founder builds this</h3>
+    <p>Because the risk that matters isn't a bug. It's that the working knowledge of how a five-repository system stays correct lives in one person's head, and every convention that survives only by being remembered is a piece of that exposure. <b>Converting a remembered rule into a red check is the only move that reduces it permanently</b> &mdash; and unlike documentation, it can be counted.</p>
+    <p>Which is why the ledger is a separate artifact rather than a section. <b>Ledger A shrinking, and Ledger B graduating to bite-tested, is the literal measure of how much of this operating layer now survives the author leaving.</b> It's the only process metric here I'd defend in a diligence conversation, because it's the only one that can go the wrong way and show it.</p>
+    <p style="margin-top:1.1rem; padding-top:1.1rem; border-top:1px solid var(--line-soft);">Companion write-ups: <a href="../automation/" style="color:var(--accent-cyan); text-decoration:none; border-bottom:1px solid var(--line)">the lifecycle-hook layer these checks run in</a> &middot; <a href="../publishing/" style="color:var(--accent-cyan); text-decoration:none; border-bottom:1px solid var(--line)">the disclosure-control pipeline for anything published</a>.</p>
+  </div>
+
+  <footer>
+    <p>Case study &middot; converting narrated conventions into enforced checks, and tracking the conversion.</p>
+    <p>Process shape only. Specific checks, thresholds, and proprietary specifics are generalized or omitted.</p>
+    <p>Michael Giardina &middot; <a href="../">portfolio</a> &middot; <a href="https://www.linkedin.com/in/michael-giardina">linkedin.com/in/michael-giardina</a></p>
+  </footer>
+
+</div>
+</body>
+</html>
