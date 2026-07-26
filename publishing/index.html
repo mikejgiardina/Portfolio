@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Publishing Out of a Patent-Pending Codebase — Case Study</title>
-<meta name="description" content="A six-stage IP disclosure-control pipeline for a patent-pending codebase: term registry, write-time scan, scrub loop, hostile-reader review, publish checklist, counsel queue — plus the two failures and the one gap still open.">
+<meta name="description" content="A seven-stage IP disclosure-control pipeline for a patent-pending codebase: term registry, write-time scan, scrub loop, hostile-reader review, publish checklist, publish gate, counsel queue — plus the three failures and the one gap still open.">
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Crimson+Pro:wght@400;600&family=Work+Sans:wght@300;500;700&display=swap" rel="stylesheet">
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -276,21 +276,21 @@
     </div>
     <p class="kicker">Process design · defense in depth</p>
     <h1>Publishing out of a patent-pending codebase.</h1>
-    <p class="lede">I write in public constantly &mdash; grant submissions, investor material, a portfolio, conference talks, an open clinical article library &mdash; and all of it is drafted inside private repositories that contain <b>patentable mechanism</b>. Every outward-facing file is a potential disclosure, and a federal filing is <span class="cy">permanent and public the moment it lands</span>. So publishing isn't a step at the end. It's a pipeline with six stages, four audience tiers, and a written record of every place it has failed.</p>
+    <p class="lede">I write in public constantly &mdash; grant submissions, investor material, a portfolio, conference talks, an open clinical article library &mdash; and all of it is drafted inside private repositories that contain <b>patentable mechanism</b>. Every outward-facing file is a potential disclosure, and a federal filing is <span class="cy">permanent and public the moment it lands</span>. So publishing isn't a step at the end. It's a pipeline with seven stages, four audience tiers, and a written record of every place it has failed.</p>
     <p class="context">provisional patent filed feb 2026 · solo founder-engineer · outward artifacts drafted in-repo, never in a separate &ldquo;public&rdquo; workspace</p>
 
     <div class="stats">
-      <div class="stat"><div class="n">6</div><div class="l">pipeline stages</div></div>
+      <div class="stat"><div class="n">7</div><div class="l">pipeline stages</div></div>
       <div class="stat"><div class="n">4</div><div class="l">audience tiers</div></div>
       <div class="stat"><div class="n">1</div><div class="l">term registry</div></div>
-      <div class="stat"><div class="n">3</div><div class="l">documented failure modes</div></div>
+      <div class="stat"><div class="n">4</div><div class="l">documented failure modes</div></div>
     </div>
-    <p class="statnote">One registry feeds every stage. <b>Two stages are automated; three are read</b> &mdash; by an agent or by me. That ratio is deliberate rather than a gap waiting to be closed: the automatable part of disclosure control is <b>literal matching</b>, and literal matching is the easy half. <em>Paraphrase is the hard half</em>, and no regex has ever caught it.</p>
+    <p class="statnote">One registry feeds every stage. <b>Three stages are automated; three are read</b> &mdash; by an agent or by me. That ratio is deliberate rather than a gap waiting to be closed: the automatable part of disclosure control is <b>literal matching</b>, and literal matching is the easy half. <em>Paraphrase is the hard half</em>, and no regex has ever caught it.</p>
   </header>
 
   <section class="sec" id="problem">
     <div class="sechead"><span class="secnum">01</span><h2>Why a checklist wasn't enough</h2><div class="divider"></div></div>
-    <p class="secsub">The naive version of this is a pre-send checklist. I have one, and it's stage five &mdash; but on its own it fails for a specific structural reason worth naming.</p>
+    <p class="secsub">The naive version of this is a pre-send checklist. I have one, and it's stage five &mdash; but on its own it fails for a specific structural reason.</p>
     <div class="cards">
       <div class="card">
         <div class="tag">asymmetry</div>
@@ -305,7 +305,7 @@
       <div class="card">
         <div class="tag">the actual failure mode</div>
         <h3>A quiet check reads as coverage</h3>
-        <p>The write-time scanner reports nothing when a file is clean &mdash; and nothing when it never examined the file at all. Those two outcomes are <em>indistinguishable from the author's chair</em>, which is precisely how a gap survives for months.</p>
+        <p>The write-time scanner reports nothing when a file is clean &mdash; and nothing when it never examined the file at all. Those two outcomes are <em>indistinguishable from the author's chair</em>, which is how a gap survives for months.</p>
       </div>
       <div class="card">
         <div class="tag">bias</div>
@@ -317,7 +317,7 @@
 
   <section class="sec" id="pipeline">
     <div class="sechead"><span class="secnum">02</span><h2>The pipeline</h2><div class="divider"></div></div>
-    <p class="secsub">Six stages, ordered by when they fire &mdash; from the moment a proprietary term is defined through to the record that goes to patent counsel. Each stage catches a class the stage before it structurally cannot.</p>
+    <p class="secsub">Seven stages, ordered by when they fire &mdash; from the moment a proprietary term is defined through to the record that goes to patent counsel. Each stage catches a class the stage before it structurally cannot.</p>
 
     <div class="stage">
       <div class="stagehead"><span class="stagenum">01</span><span class="stagename">The term registry</span><span class="stagekind">single source of truth</span></div>
@@ -334,7 +334,7 @@
     <div class="stage">
       <div class="stagehead"><span class="stagenum">03</span><span class="stagename">The scrub loop</span><span class="stagekind">on demand · rewrites</span></div>
       <p>A packaged skill takes a target file and runs scan &rarr; propose rewrite &rarr; apply &rarr; <b>re-scan</b>, looping until the file comes back clean, capped at five passes before it hard-fails with a report naming the stubborn terms.</p>
-      <p>The re-scan is the whole point. A single-pass rewrite can introduce a second listed term while removing the first, and a capped loop that reports failure honestly beats an uncapped one that quietly declares success.</p>
+      <p>The re-scan is why it loops. A single-pass rewrite can introduce a second listed term while removing the first, and a capped loop that reports failure honestly beats an uncapped one that quietly declares success.</p>
     </div>
 
     <div class="stage">
@@ -350,7 +350,13 @@
     </div>
 
     <div class="stage">
-      <div class="stagehead"><span class="stagenum">06</span><span class="stagename">The counsel queue</span><span class="stagekind">record · same session</span></div>
+      <div class="stagehead"><span class="stagenum">06</span><span class="stagename">The publish gate</span><span class="stagekind">automated · fires on the push</span></div>
+      <p>The last automated thing that happens before anything leaves. It hangs off the <b>push</b>, not the file path: when the destination is one that publishes on receipt, every changed file in the outgoing commits is scanned against the registry &mdash; whatever directory it sits in.</p>
+      <p>This stage exists because stage two's scoping failed three times in two months. A push is the choke point &mdash; nothing reaches a public destination without one &mdash; so gating it takes path matching off the critical path entirely. It fails <em>closed</em>, but only for destinations that publish; everywhere else it exits without an opinion. A gate that blocks everything gets switched off within a week, and a gate that is switched off is worth less than no gate at all.</p>
+    </div>
+
+    <div class="stage">
+      <div class="stagehead"><span class="stagenum">07</span><span class="stagename">The counsel queue</span><span class="stagekind">record · same session</span></div>
       <p>When engineering work touches the patent thesis, a review packet is filed <b>in the same session the work lands</b> &mdash; monotonically numbered, never renumbered, held in a directory excluded from version control. The bodies never enter a tracked repo; only an existence-and-status pointer does, so the queue is auditable without being disclosable.</p>
       <p>The same-session rule was bought the expensive way. One early packet had to be reconstructed retroactively because the queue didn't exist when the work landed, and the recipe for a piece of engineering &mdash; the context, the path that produced it, the prior-art comparison &mdash; decays much faster than the code does. The marginal cost of filing now is small; the cost of waiting grows every week.</p>
     </div>
@@ -391,7 +397,7 @@
 
   <section class="sec" id="verdict">
     <div class="sechead"><span class="secnum">04</span><h2>The output contract</h2><div class="divider"></div></div>
-    <p class="secsub">The review stage returns a fixed shape, and the shape is doing real work. Verdict first, no preamble. Every finding quotes the offending text and names the replacement, because a category label without the sentence isn't actionable. And the last section is the one that keeps the whole pipeline honest.</p>
+    <p class="secsub">The review stage returns a fixed shape. Verdict first, no preamble. Every finding quotes the offending text and names the replacement, because a category label without the sentence isn't actionable. And the last section is the one that keeps the whole pipeline honest.</p>
     <div class="verdict">
 <pre><span class="vk">VERDICT:</span> <span class="vb">BLOCK</span> | <span class="st st-h">REVISE</span> | <span class="vg">CLEAR</span>
   one sentence &mdash; and if BLOCK, the single reason
@@ -417,7 +423,7 @@
 
   <section class="sec" id="gaps">
     <div class="sechead"><span class="secnum">05</span><h2>Where it has failed</h2><div class="divider"></div></div>
-    <p class="secsub">A disclosure-control write-up that only lists controls is marketing. These are the two failures on record and the gap still open &mdash; all three documented in the repo, at the top of the scripts they affect, next to the fix.</p>
+    <p class="secsub">A disclosure-control write-up that only lists controls is marketing. These are the three failures on record and the gap still open &mdash; all four documented in the repo, at the top of the scripts they affect, next to the fix. Two of the three are the <em>same</em> failure.</p>
 
     <div class="cas">
       <div class="ct">failure · found july 2026</div>
@@ -425,7 +431,14 @@
       <p>The write-time scanner's path filter listed the <em>singular</em> form of a directory name. The live directory was the <em>plural</em>. Every file in it &mdash; including a federal grant packet, the single most disclosure-sensitive artifact class in the entire workspace &mdash; fell outside the filter entirely.</p>
       <p>The scanner didn't fail. It ran, matched no path, and exited clean, <b>every single time</b>. From the author's chair that's identical to a passing scan. The packet was drafted with zero scan coverage while the tooling reported success.</p>
       <p>Fixed by adding the pattern, but the real fix was the conclusion drawn from it: <em>path-glob scoping is brittle by nature.</em> The script now says so in a comment, and the reviewer agent &mdash; which reads finished artifacts regardless of where they live &mdash; was promoted from nice-to-have to the pre-publish gate of record. One layer's structural blind spot became another layer's job description.</p>
-      <p><b>It recurred once more before the pattern was ended structurally.</b> Two permanent, search-indexed pages &mdash; including this one &mdash; were drafted outside the filter, caught only because the review stage was run by hand. The automated check now hangs off the <em>push</em> instead of the path: every changed file bound for a destination that publishes on receipt is scanned, whatever directory it sits in. The path filter stays, as an early warning &mdash; it is no longer the thing standing between a draft and the public.</p>
+    </div>
+
+    <div class="cas">
+      <div class="ct">failure &middot; found july 2026 &middot; third instance</div>
+      <h4>The same miss, on this page</h4>
+      <p>Two permanent, search-indexed case-study pages &mdash; <b>including the one you are reading</b> &mdash; were drafted in a directory the filter had never been told about. Same silent shape as the packet above: the scanner ran, matched no path, exited clean. It was caught only because the review stage was run by hand.</p>
+      <p>Three instances of one bug in two months, each &ldquo;fixed&rdquo; by adding another pattern, is no longer a bug. It's the design. <em>Whether something will be published is not a property of its path</em> &mdash; so a hand-maintained list of paths will keep missing new public surfaces as fast as they are created, and keep missing them <b>silently</b>, which is the part that matters.</p>
+      <p>That produced stage six. The automated check now hangs off the <b>push</b> rather than the path, which takes path matching off the critical path entirely. The filter stays as an early warning; it is no longer the thing standing between a draft and the public. Its remaining gaps became a latency problem &mdash; you find out later &mdash; instead of a silent-hole problem.</p>
     </div>
 
     <div class="cas">
@@ -440,14 +453,14 @@
       <div class="ct" style="color: var(--accent-amber);">open gap · tracked, not fixed</div>
       <h4>The paraphrase hole</h4>
       <p>The registry catches a proprietary term written literally. It does not catch the same mechanism described in plain English by someone who understands it &mdash; and <b>architecture described accurately enough to reimplement is a disclosure regardless of vocabulary</b>.</p>
-      <p>So the discipline is enforced at the literal layer and narrated at the paraphrase layer. That's an honest description of a real hole, and it sits on the conversion backlog with a named target: a fuzzy pattern family per protected term, failing on near-matches under outward-facing paths.</p>
-      <p>It is not fixed. It's <em>ranked</em> &mdash; the highest-leverage item still open &mdash; and covered in the interim by the two human-read stages, which is exactly what the review layer is for. I'd rather publish the gap with its mitigation than imply coverage I don't have.</p>
+      <p>So the discipline is enforced at the literal layer and narrated at the paraphrase layer. It sits on the conversion backlog with a named target: a fuzzy pattern family per protected term, failing on near-matches under outward-facing paths.</p>
+      <p>It is not fixed. It's <em>ranked</em> &mdash; the highest-leverage item still open &mdash; and covered in the interim by the two human-read stages.</p>
     </div>
   </section>
 
   <div class="takeaway">
     <h3>What this is really a case study in</h3>
-    <p>Not IP paranoia &mdash; <b>layering controls against known blind spots, and knowing which blind spot each layer covers.</b> Every stage here was added because the stage before it failed in a way I could name, and the two human stages exist specifically because the automated one is a pattern matcher wearing a path filter.</p>
+    <p>Not IP paranoia &mdash; <b>layering controls against known blind spots, and knowing which blind spot each layer covers.</b> Every stage here was added because the stage before it failed in a way I could name. The human stages exist because literal matching cannot catch paraphrase. The newest automated stage exists because the oldest one was scoped by file path, and three separate misses were what it took to accept that <em>path is the wrong thing to key on</em>.</p>
     <p>The through-line is the same one that runs through the rest of this workspace: <b>a check that fails quietly is worse than no check</b>, because it reads as coverage you don't have. The answer isn't more scripts. It's pairing every automated gate with a reader whose job is to assume the gate didn't run &mdash; and writing down what it missed, every time, so the next check is chosen from evidence instead of instinct.</p>
     <p style="margin-top:1.1rem; padding-top:1.1rem; border-top:1px solid var(--line-soft);">Companion write-ups: <a href="../automation/" style="color:var(--accent-cyan); text-decoration:none; border-bottom:1px solid var(--line)">the lifecycle-hook layer this pipeline runs on</a> · <a href="../enforcement/" style="color:var(--accent-cyan); text-decoration:none; border-bottom:1px solid var(--line)">how a written convention becomes an enforced check</a>.</p>
   </div>

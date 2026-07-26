@@ -287,7 +287,7 @@
       <div class="stat"><div class="n">36</div><div class="l">decision records</div></div>
       <div class="stat"><div class="n">6</div><div class="l">SOPs deliberately unwritten</div></div>
     </div>
-    <p class="statnote">Two artifacts do the work. A <b>register</b> maps every discipline and classifies it. A <b>ledger</b> tracks the conversion work and verifies that the ones already claimed as enforced actually fire. The register is the map; the ledger is the scoreboard. Keeping them separate is the point &mdash; a backlog buried inside a reference document stops being a backlog.</p>
+    <p class="statnote">Two artifacts do the work. A <b>register</b> maps every discipline and classifies it. A <b>ledger</b> tracks the conversion work and verifies that the ones already claimed as enforced actually fire. The register is the map; the ledger is the scoreboard. They're separate because a backlog buried inside a reference document stops being a backlog.</p>
   </header>
 
   <section class="sec" id="premise">
@@ -320,7 +320,7 @@
 
   <section class="sec" id="states">
     <div class="sechead"><span class="secnum">02</span><h2>Three states, one honest caveat</h2><div class="divider"></div></div>
-    <p class="secsub">Every discipline gets exactly one value. The definitions are deliberately unflattering, because a generous classification is worse than none.</p>
+    <p class="secsub">Every discipline gets exactly one value. A generous classification is worse than none, so the definitions are strict.</p>
     <div class="tablewrap">
       <table>
         <thead><tr><th>State</th><th>Means</th><th>Survives the author leaving?</th></tr></thead>
@@ -389,7 +389,7 @@
     <div class="stage">
       <div class="stagehead"><span class="stagenum">C</span><span class="stagename">Won't enforce</span><span class="stagekind">judgment · stop trying</span></div>
       <p>Disciplines that are irreducibly judgment: how to collaborate with an agent, when a change deserves a decision record, whether a given commit is a release, the order to work through a triage. These stay narrated, and <b>that's correct</b> &mdash; their mitigation is onboarding and documentation, not a gate.</p>
-      <p>Writing them down as permanently unenforceable is the point. It stops effort being spent trying, and it stops the ledger from carrying items that will never close, which is how backlogs quietly lose credibility.</p>
+      <p>Writing them down as permanently unenforceable stops effort being spent trying, and stops the ledger from carrying items that will never close, which is how backlogs quietly lose credibility.</p>
     </div>
   </section>
 
@@ -401,7 +401,7 @@
       <div class="ct">casualty one · failed to warn</div>
       <h4>The scanner that examined nothing</h4>
       <p>A protective scanner read the path of the edited file from environment variables the runtime no longer provided. The path came back empty, so it exited on its first line &mdash; every run, silently. Its warning was also written to a stream the wiring discarded, so even when it did have something to say, nobody heard it. <b>Two independent bugs, stacked, both quiet.</b></p>
-      <p>The register had it as enforced. It was found <em>by accident</em>, while a neighbouring script was being edited &mdash; not by any check, which is the entire argument for the queue.</p>
+      <p>The register had it as enforced. It was found <em>by accident</em>, while a neighbouring script was being edited &mdash; not by any check.</p>
     </div>
 
     <div class="cas">
@@ -440,7 +440,7 @@
   <div class="takeaway">
     <h3>Why a solo founder builds this</h3>
     <p>Because the risk that matters isn't a bug. It's that the working knowledge of how a five-repository system stays correct lives in one person's head, and every convention that survives only by being remembered is a piece of that exposure. <b>Converting a remembered rule into a red check is the only move that reduces it permanently</b> &mdash; and unlike documentation, it can be counted.</p>
-    <p>Which is why the ledger is a separate artifact rather than a section. <b>Ledger A shrinking, and Ledger B graduating to bite-tested, is the literal measure of how much of this operating layer now survives the author leaving.</b> It's the only process metric here I'd defend in a diligence conversation, because it's the only one that can go the wrong way and show it.</p>
+    <p>Which is why the ledger is a separate artifact rather than a section. <b>Ledger A shrinking, and Ledger B graduating to bite-tested, is the literal measure of how much of this operating layer now survives the author leaving.</b> It's the only process metric here that can go the wrong way and show it.</p>
     <p style="margin-top:1.1rem; padding-top:1.1rem; border-top:1px solid var(--line-soft);">Companion write-ups: <a href="../automation/" style="color:var(--accent-cyan); text-decoration:none; border-bottom:1px solid var(--line)">the lifecycle-hook layer these checks run in</a> &middot; <a href="../publishing/" style="color:var(--accent-cyan); text-decoration:none; border-bottom:1px solid var(--line)">the disclosure-control pipeline for anything published</a>.</p>
   </div>
 

@@ -391,7 +391,7 @@
         <p>Reconciles the issue board, syncing the mechanical facts on its own and escalating only the judgment calls &mdash; priority, and what to cut. The split is deliberate: <em>facts are the agent's, values are the founder's.</em></p>
       </div>
     </div>
-    <p class="secsub" style="margin-top:1.4rem; margin-bottom:0;">The pattern across all three is the same, and it's the reason this layer is separate rather than more hooks: <b style="color:var(--text-primary)">a check that fails open is indistinguishable from a check that found nothing.</b> Every automated gate here is deliberately quiet when it passes, so each one is paired with a reader whose entire job is to assume the gate didn't run. Together, the four layers share one design goal: <b style="color:var(--text-primary)">make the right thing automatic, and the wrong thing hard.</b></p>
+    <p class="secsub" style="margin-top:1.4rem; margin-bottom:0;">The pattern across all three is the same, and it's why this layer is separate rather than more hooks: <b style="color:var(--text-primary)">a check that fails open is indistinguishable from a check that found nothing.</b> Every automated gate here is quiet when it passes, so each one is paired with a reader whose entire job is to assume the gate didn't run. Together, the four layers share one design goal: <b style="color:var(--text-primary)">make the right thing automatic, and the wrong thing hard.</b></p>
   </section>
 
   <div class="takeaway">
