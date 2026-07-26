@@ -274,6 +274,8 @@
         .quicknav a.qn-study:hover {
             background: var(--accent-green); color: var(--primary-bg); box-shadow: 0 0 16px rgba(0, 255, 159, 0.45);
         }
+        /* the hub tab reads as the parent of the three that follow it */
+        .quicknav a.qn-hub { background: rgba(0, 255, 159, 0.22); }
         .quicknav .qn-sep {
             font-family: 'JetBrains Mono', monospace; font-size: 0.64rem; font-weight: 700;
             text-transform: uppercase; letter-spacing: 0.12em; color: var(--accent-cyan);
@@ -297,6 +299,7 @@
 
     <nav class="quicknav" aria-label="Jump to the live, interactive pages">
         <span class="qn-sep">Case Studies</span>
+        <a class="qn-study qn-hub" href="case-studies/">Overview</a>
         <a class="qn-study" href="automation/">Hooks</a>
         <a class="qn-study" href="enforcement/">Enforcement</a>
         <a class="qn-study" href="publishing/">Publishing</a>
