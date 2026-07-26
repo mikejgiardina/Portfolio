@@ -296,7 +296,10 @@
     <div class="grid-bg"></div>
 
     <nav class="quicknav" aria-label="Jump to the live, interactive pages">
-        <a class="qn-study" href="automation/">Case Study</a>
+        <span class="qn-sep">Case Studies</span>
+        <a class="qn-study" href="automation/">Hooks</a>
+        <a class="qn-study" href="enforcement/">Enforcement</a>
+        <a class="qn-study" href="publishing/">Publishing</a>
         <a href="https://erinfo.netlify.app" target="_blank" rel="noopener noreferrer">ER Articles</a>
         <span class="qn-sep">Story Mode</span>
         <a href="story/gi-bleed/">GI Hemorrhage</a>
@@ -548,29 +551,30 @@
                     </div>
                 </div>
 
-                <!-- AI Workspace Automation Layer — Flagship (LIVE, clickable) -->
+                <!-- Engineering Practice — Flagship series (LIVE, three case studies) -->
                 <div class="app-card flagship">
-                    <div class="app-number">DEVELOPER TOOLING · LIVE</div>
-                    <h3 class="app-title">AI Workspace Automation Layer</h3>
-                    <p class="app-subtitle">Lifecycle Hooks Across a Multi-Repo Codebase</p>
+                    <div class="app-number">ENGINEERING PRACTICE · LIVE · THREE CASE STUDIES</div>
+                    <h3 class="app-title">How the Work Gets Built Safely</h3>
+                    <p class="app-subtitle">Automation, Enforcement, and Disclosure Control Across a Multi-Repo Codebase</p>
                     <div class="flagship-inner">
                         <div>
                             <div class="app-problem">
                                 <span class="app-problem-label">Engineering Problem</span>
-                                AI coding agents are fast and tireless, but they forget between sessions and run on whatever machine is in front of them. Safety and workflow conventions can't rely on anyone — human or agent — remembering them.
+                                A solo founder-engineer running daily AI coding sessions across five repositories has two exposures nobody else will catch: conventions that hold only while someone remembers them, and patentable mechanism sitting one paragraph away from every public draft.
                             </div>
                             <p class="app-description">
-                                A lifecycle-hook layer that fires small, portable scripts at fixed moments in every AI coding session to enforce safety, quality, and workflow — backed by a command layer for hand-driven work and a skill layer of packaged procedures. The guarantees survive the forgetting.
+                                Three write-ups on the layer around the code. A <strong>lifecycle-hook layer</strong> that makes safety automatic; a <strong>register and ledger</strong> that convert remembered conventions into checks that go red; and a <strong>seven-stage pipeline</strong> that controls what leaves a patent-pending repo. Each one documents where it has failed.
                             </p>
-                            <div class="validation-badge"><span class="validation-dot"></span>LIVE · CASE STUDY OPEN NOW</div>
+                            <div class="validation-badge"><span class="validation-dot"></span>LIVE · ALL THREE OPEN NOW</div>
                         </div>
                         <div>
                             <ul class="app-features">
-                                <li>22 hooks wired across 6 session lifecycle events</li>
-                                <li>Fail-open by default; fail-closed on the secret-scan gate</li>
-                                <li>One script set, three operating systems, one synced config repo</li>
-                                <li>Single-source metrics that can't drift into docs</li>
-                                <li>Multi-writer collision guard — human teammates or AI sessions</li>
+                                <li>24 hooks wired across 6 session lifecycle events, on 3 operating systems</li>
+                                <li>Fail-open by default; fail-closed where a false pass is unrecoverable</li>
+                                <li>Every discipline classified enforced, narrated, or hybrid — and tracked</li>
+                                <li>A four-part bar before a check may be called "enforced"</li>
+                                <li>Two checks that turned out never to fire — found, fixed, published</li>
+                                <li>Seven-stage disclosure pipeline, four audience tiers, gaps named</li>
                             </ul>
                             <div class="app-card-footer">
                                 <div>
@@ -578,9 +582,12 @@
                                     <span class="tech-badge">Python</span>
                                     <span class="tech-badge">Git</span>
                                     <span class="tech-badge">Claude Code</span>
+                                    <span class="tech-badge">Process Design</span>
                                 </div>
-                                <div style="display:flex; gap:1rem; flex-wrap:wrap; margin-top:0.5rem;">
-                                    <a href="automation/" class="launch-btn" style="text-decoration:none; cursor:pointer;">READ THE CASE STUDY →</a>
+                                <div style="display:flex; gap:0.75rem; flex-wrap:wrap; margin-top:0.5rem;">
+                                    <a href="automation/" class="launch-btn" style="text-decoration:none; cursor:pointer;">THE HOOK LAYER →</a>
+                                    <a href="enforcement/" class="launch-btn" style="text-decoration:none; cursor:pointer;">NARRATED → ENFORCED →</a>
+                                    <a href="publishing/" class="launch-btn" style="text-decoration:none; cursor:pointer;">PUBLISHING SAFELY →</a>
                                 </div>
                             </div>
                         </div>

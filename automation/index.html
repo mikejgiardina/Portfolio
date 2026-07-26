@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Lifecycle-Hook Automation for a Multi-Repo AI Workspace — Case Study</title>
-<meta name="description" content="How a five-repository codebase where AI coding sessions run daily was given a lifecycle-hook automation layer that enforces safety, quality, and workflow — plus the command and skill layers driven by hand.">
+<meta name="description" content="How a five-repository codebase where AI coding sessions run daily was given a lifecycle-hook automation layer that enforces safety, quality, and workflow — plus the command, skill, and review-agent layers around it.">
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Crimson+Pro:wght@400;600&family=Work+Sans:wght@300;500;700&display=swap" rel="stylesheet">
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -205,6 +205,9 @@
       <a href="#automatic">Automatic</a>
       <a href="#commands">Commands</a>
       <a href="#skills">Skills</a>
+      <a href="#review">Review</a>
+      <a href="../enforcement/">Enforcement →</a>
+      <a href="../publishing/">Publishing →</a>
       <a href="../" class="back">← portfolio</a>
     </nav>
   </div>
@@ -219,28 +222,29 @@
     </div>
     <p class="kicker">Developer tooling · workflow automation</p>
     <h1>Giving a multi-repo AI workspace a nervous system.</h1>
-    <p class="lede">A five-repository codebase where <b>AI coding sessions run daily</b> needs guardrails a person can't be relied on to remember. I built a <span class="cy">lifecycle-hook automation layer</span>: small, portable scripts that fire at fixed moments in every session to enforce safety, quality, and workflow &mdash; backed by a command layer for the work you drive by hand and a skill layer of packaged procedures.</p>
+    <p class="lede">A five-repository codebase where <b>AI coding sessions run daily</b> needs guardrails a person can't be relied on to remember. I built a <span class="cy">lifecycle-hook automation layer</span>: small, portable scripts that fire at fixed moments in every session to enforce safety, quality, and workflow &mdash; backed by a command layer for the work you drive by hand, a skill layer of packaged procedures, and a review layer of specialist agents that audit what the scripts structurally cannot see.</p>
     <p class="context">python simulation engine · typescript / react apps · swift ios app · markdown docs corpus · agent-config repo</p>
 
     <div class="stats">
       <div class="stat"><div class="n">5</div><div class="l">repositories</div></div>
       <div class="stat"><div class="n">6</div><div class="l">lifecycle events</div></div>
-      <div class="stat"><div class="n">22</div><div class="l">event-wired hooks</div></div>
+      <div class="stat"><div class="n">24</div><div class="l">event-wired hooks</div></div>
       <div class="stat"><div class="n">15</div><div class="l">slash commands</div></div>
       <div class="stat"><div class="n">6</div><div class="l">skills</div></div>
+      <div class="stat"><div class="n">3</div><div class="l">review agents</div></div>
     </div>
-    <p class="statnote">The hooks directory holds <b>28 scripts</b> (27 shell, 1 python); <b>22</b> are wired to six of the runtime's lifecycle events in one <code>settings.json</code> &mdash; a few fire at more than one moment (the session registry, for one, registers when a session starts, refreshes its timestamp on each turn so other writers still see it as active, and removes itself when the session ends) &mdash; and the remaining six back slash-commands or serve as shared helpers. Of the wired hooks, exactly <b>two can gate a command</b>: one fails <em>closed</em>, one is conditional.</p>
+    <p class="statnote">The hooks directory holds <b>30 scripts</b> (29 shell, 1 python); <b>24</b> are wired to six of the runtime's lifecycle events in one <code>settings.json</code> &mdash; a few fire at more than one moment (the session registry, for one, registers when a session starts, refreshes its timestamp on each turn so other writers still see it as active, and removes itself when the session ends) &mdash; and the remaining six back slash-commands or serve as shared helpers. Of the wired hooks, <b>four can gate a command</b>: three fail <em>closed</em>, one is conditional.</p>
     <p class="statnote" style="border-left-color: var(--accent-green);"><b style="color:var(--text-primary)">Platform vs. build.</b> Claude Code supplies the runtime &mdash; the lifecycle events themselves, the slash-command and skill mechanisms, and the hook-wiring format. What's documented here is the layer built on top of it: the specific scripts, commands, and skills, the choice of which event each hangs off, and the engineering decisions that make them safe to run unattended on every machine, every session.</p>
   </header>
 
   <section class="sec" id="principles">
     <div class="sechead"><span class="secnum">01</span><h2>Design principles</h2><div class="divider"></div></div>
-    <p class="secsub">The hooks aren't a pile of scripts &mdash; they follow a few rules that keep them safe to run on anyone's machine, every session, without becoming noise or a liability.</p>
+    <p class="secsub">The hooks follow a few rules that keep them safe to run on anyone's machine, every session, without becoming noise or a liability.</p>
     <div class="cards">
       <div class="card">
         <div class="tag">posture</div>
-        <h3>Fail open &mdash; except for secrets</h3>
-        <p>A degraded toolchain makes a hook a silent no-op, never a hang or a false block. The one deliberate exception is the secret scanner, which fails <em>closed</em>: it blocks a commit it cannot prove is clean.</p>
+        <h3>Fail open &mdash; except where it's unrecoverable</h3>
+        <p>A degraded toolchain makes a hook a silent no-op, never a hang or a false block. The three deliberate exceptions are the secret scanner, the repo-identity guard, and the publish gate, which fail <em>closed</em>: each blocks an operation it cannot prove is safe.</p>
       </div>
       <div class="card">
         <div class="tag">philosophy</div>
@@ -267,7 +271,7 @@
 
   <section class="sec" id="automatic">
     <div class="sechead"><span class="secnum">02</span><h2>The automatic layer</h2><div class="divider"></div></div>
-    <p class="secsub">Each hook hangs off one of the six lifecycle events wired here &mdash; hook points the runtime exposes, from session start to session end &mdash; and fires when that moment arrives; nothing to type. Only two can block you; the rest inject context, advise, or run silently in the background.</p>
+    <p class="secsub">Each hook hangs off one of the six lifecycle events wired here &mdash; hook points the runtime exposes, from session start to session end &mdash; and fires when that moment arrives; nothing to type. Only four can block you; the rest inject context, advise, or run silently in the background.</p>
     <div class="legend">
       <span class="chip c-block">blocks &middot; fail-closed</span>
       <span class="chip c-cond">conditional gate</span>
@@ -291,10 +295,14 @@
     <div class="lane">
       <div class="lh"><span class="ev">PreToolUse</span><span class="when">before a shell command runs &middot; can block it</span><span class="match">Bash</span></div>
       <div class="row"><span class="rname">Secret guard</span><span class="rdesc">blocks any commit that stages a secret &mdash; env files, private keys, secret JSON. Fails closed: if it can't prove the commit is clean, it blocks</span><span class="chip c-block rchip">blocks</span></div>
+      <div class="row"><span class="rname">Repo-identity guard</span><span class="rdesc">blocks a destructive repository operation &mdash; archive, delete, rename &mdash; when the name you typed no longer resolves to the repository you mean. Fails closed on destructive verbs</span><span class="chip c-block rchip">blocks</span></div>
+      <div class="row"><span class="rname">Publish gate</span><span class="rdesc">blocks a push to a repository whose remote publishes on receipt, scanning every changed file in the outgoing commits &mdash; whatever path they sit on. Fails closed, on those destinations only</span><span class="chip c-block rchip">blocks</span></div>
       <div class="row"><span class="rname">Dirty-tree guard</span><span class="rdesc">warns before a pull / merge / rebase onto uncommitted work, and asks you to commit or stash first</span><span class="chip c-cond rchip">conditional</span></div>
       <div class="row"><span class="rname">Pre-run validation</span><span class="rdesc">validates the simulation config before a run is launched</span><span class="chip c-adv rchip">advisory</span></div>
       <div class="row"><span class="rname">Manifest check</span><span class="rdesc">confirms the module manifest matches the source files actually on disk</span><span class="chip c-adv rchip">advisory</span></div>
     </div>
+
+    <div class="note" style="margin: -0.2rem 0 1.4rem;"><b>Where the repo-identity guard came from.</b> A repository had been transferred between owners, which leaves a redirect behind. An archive command typed against the <em>old</em> name silently followed that redirect and archived the canonical repository instead &mdash; the one being kept. The check that catches it is a single API call asking whether the name you typed still equals its own canonical name; if it doesn't resolve, or resolves to something else, the destructive verb is denied. Nearly every gate on this page exists because something like that happened once.</div>
 
     <div class="lane">
       <div class="lh"><span class="ev">PostToolUse</span><span class="when">after a shell command completes</span><span class="match">Bash</span></div>
@@ -363,13 +371,34 @@
       <div class="skill"><h4>automation-placement advisor</h4><p>Decides whether a new automation belongs in CI, a local lifecycle hook, or a scheduled job &mdash; and whether it's safe to run.</p></div>
       <div class="skill"><h4>document generator</h4><p>Builds branded documents from a single canonical content source, so figures and numbers never drift between formats.</p></div>
     </div>
-    <p class="secsub" style="margin-top:1.4rem; margin-bottom:0;">Two further skills cover session self-review and an archival export routine. Together with the hooks and commands, the three layers share one design goal: <b style="color:var(--text-primary)">make the right thing automatic, and the wrong thing hard.</b></p>
+    <p class="secsub" style="margin-top:1.4rem; margin-bottom:0;">Two further skills cover session self-review and an archival export routine.</p>
+  </section>
+
+  <section class="sec" id="review">
+    <div class="sechead"><span class="secnum">05</span><h2>The review layer</h2><div class="divider"></div></div>
+    <p class="secsub">The fourth layer exists because of something the first three can't fix. A script only looks for what it was told to look for, where it was told to look. Three specialist review agents read for the things a pattern can't express &mdash; and each one is scoped to a blind spot I could name.</p>
+    <div class="skills">
+      <div class="skill">
+        <h4>pre-publish IP reviewer</h4>
+        <p>Reads a finished outward-facing artifact the way a hostile reader would, and returns a verdict &mdash; block, revise, or clear. It exists because the write-time scanner is a <em>path filter</em>, and a path filter can only protect the directories it was told about.</p>
+      </div>
+      <div class="skill">
+        <h4>hook-health auditor</h4>
+        <p>Audits the automation layer for <em>silent failure</em>: filters that match nothing, swallowed errors, dead references, drift between the config and what's on disk. Fail-open has a cost: a broken hook and a clean run look identical.</p>
+      </div>
+      <div class="skill">
+        <h4>backlog triager</h4>
+        <p>Reconciles the issue board, syncing the mechanical facts on its own and escalating only the judgment calls &mdash; priority, and what to cut. <em>Facts are the agent's, values are the founder's.</em></p>
+      </div>
+    </div>
+    <p class="secsub" style="margin-top:1.4rem; margin-bottom:0;">The pattern across all three is the same, and it's why this layer is separate rather than more hooks: <b style="color:var(--text-primary)">a check that fails open is indistinguishable from a check that found nothing.</b> Every automated gate here is quiet when it passes, so each one is paired with a reader whose entire job is to assume the gate didn't run. Together, the four layers share one design goal: <b style="color:var(--text-primary)">make the right thing automatic, and the wrong thing hard.</b></p>
   </section>
 
   <div class="takeaway">
     <h3>Why it's built this way</h3>
     <p>An AI coding agent is fast and tireless, but it forgets between sessions and it runs on whatever machine happens to be in front of it. The value of this layer isn't any single script &mdash; it's that the <b>guarantees survive the forgetting</b>: a secret can't be committed, a metric can't drift, two sessions can't silently clobber each other, and a convention no one remembers is still enforced because it was turned into a check.</p>
-    <p>Every design choice trades toward <b>safety-under-degradation</b>: fail open so a broken toolchain never blocks real work, fail closed on the one gate where a false pass is unacceptable, and make every script portable enough to run identically on three operating systems from one synced config repo.</p>
+    <p>Every design choice trades toward <b>safety-under-degradation</b>: fail open so a broken toolchain never blocks real work, fail closed on the three gates where a false pass is unrecoverable, and make every script portable enough to run identically on three operating systems from one synced config repo.</p>
+    <p style="margin-top:1.1rem; padding-top:1.1rem; border-top:1px solid var(--line-soft);">This page covers the layer that <b>runs</b>. Two companion write-ups cover the layer that <b>decides</b>: <a href="../enforcement/" style="color:var(--accent-cyan); text-decoration:none; border-bottom:1px solid var(--line)">how a written convention becomes an enforced check</a>, and <a href="../publishing/" style="color:var(--accent-cyan); text-decoration:none; border-bottom:1px solid var(--line)">how anything gets published out of a patent-pending codebase</a>.</p>
   </div>
 
   <footer>
