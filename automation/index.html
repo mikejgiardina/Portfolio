@@ -243,8 +243,8 @@
     <div class="cards">
       <div class="card">
         <div class="tag">posture</div>
-        <h3>Fail open &mdash; except for secrets</h3>
-        <p>A degraded toolchain makes a hook a silent no-op, never a hang or a false block. The one deliberate exception is the secret scanner, which fails <em>closed</em>: it blocks a commit it cannot prove is clean.</p>
+        <h3>Fail open &mdash; except where it's unrecoverable</h3>
+        <p>A degraded toolchain makes a hook a silent no-op, never a hang or a false block. The two deliberate exceptions are the secret scanner and the repo-identity guard, which fail <em>closed</em>: each blocks an operation it cannot prove is safe.</p>
       </div>
       <div class="card">
         <div class="tag">philosophy</div>
