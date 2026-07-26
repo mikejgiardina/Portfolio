@@ -260,7 +260,6 @@
       <a href="#bar">The bar</a>
       <a href="#ledgers">Ledgers</a>
       <a href="#casualties">Casualties</a>
-      <a href="#absent">Not written</a>
       <a href="../automation/">Hooks →</a>
       <a href="../publishing/">Publishing →</a>
       <a href="../" class="back">← portfolio</a>
@@ -285,29 +284,28 @@
       <div class="stat"><div class="n">4</div><div class="l">criteria to qualify</div></div>
       <div class="stat"><div class="n">3</div><div class="l">ledgers</div></div>
       <div class="stat"><div class="n">36</div><div class="l">decision records</div></div>
-      <div class="stat"><div class="n">6</div><div class="l">SOPs deliberately unwritten</div></div>
     </div>
     <p class="statnote">Two artifacts do the work. A <b>register</b> maps every discipline and classifies it. A <b>ledger</b> tracks the conversion work and verifies that the ones already claimed as enforced actually fire. The register is the map; the ledger is the scoreboard. They're separate because a backlog buried inside a reference document stops being a backlog.</p>
   </header>
 
   <section class="sec" id="premise">
     <div class="sechead"><span class="secnum">01</span><h2>The two columns most registers leave out</h2><div class="divider"></div></div>
-    <p class="secsub">Plenty of projects keep an index of their process docs. It answers &ldquo;what governs us, and where does it live.&rdquo; That's useful and it isn't enough, so the register adds four columns &mdash; and two of them are the whole reason it exists.</p>
+    <p class="secsub">Plenty of projects keep an index of their process docs. It answers &ldquo;what governs us, and where does it live.&rdquo; That's useful and it isn't enough, so the register adds four columns.</p>
     <div class="cards">
       <div class="card">
         <div class="tag">column</div>
         <h3>Forged by</h3>
-        <p>The specific incident that produced this rule. Every entry names one. A procedure with no incident behind it is <em>process theater</em> &mdash; it reads hollow precisely because nothing forced it into existence, and it's the first thing a successor correctly ignores.</p>
+        <p>The specific incident that produced this rule. Every entry names one. A procedure with no incident behind it is <em>process theater</em>, and it's the first thing a successor ignores.</p>
       </div>
       <div class="card">
         <div class="tag">column</div>
         <h3>Enforcement</h3>
-        <p>Enforced, narrated, or hybrid. This is the load-bearing column: the gap between the enforced pile and the narrated pile <em>is</em> the key-man risk, written down where it can be watched shrinking.</p>
+        <p>Enforced, narrated, or hybrid. The gap between the enforced pile and the narrated pile is the key-man risk, written down where it can be watched shrinking.</p>
       </div>
       <div class="card">
         <div class="tag">column</div>
         <h3>Owner on handoff</h3>
-        <p>Who owns this when I'm not the one running it. Today most rows say &ldquo;founder,&rdquo; and that's the honest answer &mdash; but naming the <em>role</em> that inherits each one makes the handoff a delegation exercise instead of an excavation.</p>
+        <p>Who owns this when I'm not the one running it. Today most rows say &ldquo;founder.&rdquo; Naming the <em>role</em> that inherits each one makes the handoff a delegation exercise instead of an excavation.</p>
       </div>
       <div class="card">
         <div class="tag">discipline</div>
@@ -315,11 +313,11 @@
         <p>The register classifies and links; it never holds a procedure's body. If a procedure's content starts getting pasted in, that's the signal to stop and link instead &mdash; a rule with two homes has already begun to drift.</p>
       </div>
     </div>
-    <p class="note" style="margin-top:1.5rem;"><b>The stranger-trap tier.</b> The register also catalogues rules that live as prose <em>inside</em> configuration and context files, never extracted into a standalone document. Those are the ones a newcomer misses completely, because nobody thinks to go looking for a policy inside a config file. They're indexed here so they're findable &mdash; and left where they are, because that's where they're enforced.</p>
+    <p class="note" style="margin-top:1.5rem;"><b>The stranger-trap tier.</b> The register also catalogues rules that live as prose <em>inside</em> configuration and context files, never extracted into a standalone document &mdash; the ones a newcomer misses completely. They're indexed here so they're findable, and left where they are, because that's where they're enforced. It tracks procedures that don't exist yet as well, each with the event that would earn one.</p>
   </section>
 
   <section class="sec" id="states">
-    <div class="sechead"><span class="secnum">02</span><h2>Three states, one honest caveat</h2><div class="divider"></div></div>
+    <div class="sechead"><span class="secnum">02</span><h2>Three states, and a caveat</h2><div class="divider"></div></div>
     <p class="secsub">Every discipline gets exactly one value. A generous classification is worse than none, so the definitions are strict.</p>
     <div class="tablewrap">
       <table>
@@ -328,27 +326,27 @@
           <tr>
             <td><span class="st st-e">ENFORCED</span></td>
             <td>A test, audit, hook, or CI gate goes red when the procedure is violated.</td>
-            <td><b>Yes.</b> This is the real asset &mdash; the only category that is.</td>
+            <td><b>Yes.</b></td>
           </tr>
           <tr>
             <td><span class="st st-h">HYBRID</span></td>
             <td>Part is checked; part rides on a human reading the prose.</td>
-            <td><b>Partly.</b> The narrated portion is the exposure &mdash; name it explicitly.</td>
+            <td><b>Partly</b> &mdash; the narrated half doesn't.</td>
           </tr>
           <tr>
             <td><span class="st st-n">NARRATED</span></td>
             <td>Prose. Often correct, often battle-forged, but it holds only while someone reads it.</td>
-            <td><b>No.</b> Degrades the moment attention lapses.</td>
+            <td><b>No.</b></td>
           </tr>
         </tbody>
       </table>
     </div>
-    <p class="note" style="margin-top:1.4rem; border-left-color: var(--accent-red);"><b>The caveat printed at the top of the column.</b> These values reflect what the source documents <em>claim</em> is enforced. Confirming that each enforced row has a live check which actually goes red &mdash; rather than one that silently passes &mdash; is itself the first hardening task. Until a row has been walked, it reads <em>&ldquo;claimed enforced, verify it bites.&rdquo;</em> That caveat turned out to be load-bearing; see below.</p>
+    <p class="note" style="margin-top:1.4rem; border-left-color: var(--accent-red);"><b>The caveat printed at the top of the column.</b> These values reflect what the source documents <em>claim</em> is enforced. Until a row has been walked &mdash; a live check shown to go red rather than silently pass &mdash; it reads <em>&ldquo;claimed enforced, verify it bites.&rdquo;</em></p>
   </section>
 
   <section class="sec" id="bar">
     <div class="sechead"><span class="secnum">03</span><h2>What earns the word &ldquo;enforced&rdquo;</h2><div class="divider"></div></div>
-    <p class="secsub">All four have to be true. The bar is this high because <b>a check that silently passes is worse than no check at all</b> &mdash; it reads as coverage you don't have, and it stops anyone from looking again.</p>
+    <p class="secsub">All four have to be true, because <b>a check that silently passes is worse than no check at all</b>.</p>
     <div class="bar">
       <div class="barit">
         <h4>It fails red on a real violation</h4>
@@ -367,12 +365,12 @@
         <p>A red check that doesn't say what to do hasn't removed the tacit knowledge from the founder's head. It has <em>relocated it into a stack trace</em>, where it's harder to find.</p>
       </div>
     </div>
-    <p class="secsub" style="margin-top:1.5rem;">Criterion two came from a real incident: an audit's last-resort fallback fired on a cold environment and manufactured a regression of over a thousand findings that did not exist. Nothing was broken except the ability to tell. Chasing a phantom for an afternoon is a cheap lesson in why <b>degrade-to-nothing beats degrade-to-plausible</b>.</p>
+    <p class="secsub" style="margin-top:1.5rem;">Criterion two came from a real incident: an audit's last-resort fallback fired on a cold environment and manufactured a regression of over a thousand findings that did not exist. Nothing was broken except the ability to tell. <b>Degrade-to-nothing beats degrade-to-plausible.</b></p>
   </section>
 
   <section class="sec" id="ledgers">
     <div class="sechead"><span class="secnum">04</span><h2>Three ledgers</h2><div class="divider"></div></div>
-    <p class="secsub">The scoreboard splits three ways, because &ldquo;not yet enforced,&rdquo; &ldquo;claims to be enforced,&rdquo; and &ldquo;can never be enforced&rdquo; need three different kinds of attention &mdash; and mixing them is how a backlog becomes a wish list.</p>
+    <p class="secsub">The scoreboard splits three ways, because &ldquo;not yet enforced,&rdquo; &ldquo;claims to be enforced,&rdquo; and &ldquo;can never be enforced&rdquo; need three different kinds of attention.</p>
 
     <div class="stage">
       <div class="stagehead"><span class="stagenum">A</span><span class="stagename">Conversion backlog</span><span class="stagekind">narrated → target check</span></div>
@@ -383,19 +381,19 @@
     <div class="stage">
       <div class="stagehead"><span class="stagenum">B</span><span class="stagename">Verification queue</span><span class="stagekind">claimed-enforced → prove it bites</span></div>
       <p>Every check that <em>says</em> it's enforced, with two separate columns: <code>exists</code> (the file is on disk) and <code>bite-tested</code> (a known-bad input has been shown to make it go red). Until the second column is filled in, the check is provisional no matter how good the code looks.</p>
-      <p>This queue is why the register has that caveat at the top &mdash; and it earned its keep on the very first pass through it, twice over.</p>
+      <p>This queue is why the register carries that caveat. The first pass through it found two.</p>
     </div>
 
     <div class="stage">
       <div class="stagehead"><span class="stagenum">C</span><span class="stagename">Won't enforce</span><span class="stagekind">judgment · stop trying</span></div>
-      <p>Disciplines that are irreducibly judgment: how to collaborate with an agent, when a change deserves a decision record, whether a given commit is a release, the order to work through a triage. These stay narrated, and <b>that's correct</b> &mdash; their mitigation is onboarding and documentation, not a gate.</p>
-      <p>Writing them down as permanently unenforceable stops effort being spent trying, and stops the ledger from carrying items that will never close, which is how backlogs quietly lose credibility.</p>
+      <p>Disciplines that are irreducibly judgment: how to collaborate with an agent, when a change deserves a decision record, whether a given commit is a release, the order to work through a triage. These stay narrated; their mitigation is onboarding and documentation, not a gate.</p>
+      <p>Writing them down as permanently unenforceable stops effort being spent trying, and keeps the ledger from carrying items that will never close.</p>
     </div>
   </section>
 
   <section class="sec" id="casualties">
     <div class="sechead"><span class="secnum">05</span><h2>What the first pass found</h2><div class="divider"></div></div>
-    <p class="secsub">The verification queue was built on a suspicion: that some checks the register listed as enforced weren't firing. The first walk through it confirmed that twice, and both were worse than a missing check &mdash; because both looked like passing ones.</p>
+    <p class="secsub">The verification queue was built on a suspicion: that some checks the register listed as enforced weren't firing. The first walk through it confirmed that twice. Both had been reporting success.</p>
 
     <div class="cas">
       <div class="ct">casualty one · failed to warn</div>
@@ -409,32 +407,12 @@
       <h4>The gate that depended on a tool that wasn't installed</h4>
       <p>A commit gate &mdash; the one whose whole job is to refuse a commit that stages a credential &mdash; used a JSON command-line utility for both reading its input and emitting its decision. That utility isn't installed on the machine in question, deliberately. Its wiring swallowed errors so a broken hook could never block real work. Net effect: <b>the gate errored before it evaluated a single commit &mdash; one staging a real credential would have passed indistinguishably from a clean one.</b></p>
       <p>Two further latent bugs surfaced during the fix: the denial used a message format the runtime had superseded, and the scan ran from a working directory that wasn't the repository being committed to &mdash; so even with the tool present, it would have inspected nothing.</p>
-      <p>Worse than casualty one in a specific way. That one failed to <em>warn</em>; this one silently <em>allowed</em>. And it was wired but never registered in either artifact &mdash; so it read as neither enforced nor tracked, <em>the worst of both</em>. The rewrite inverted its posture: any commit-shaped command it cannot evaluate &mdash; interpreter missing, interpreter crashing, target unresolved &mdash; now denies. Then it was re-tested twice: once against crafted inputs, once live through the real wiring, including a simulated broken toolchain that the old version waved through.</p>
+      <p>That one failed to <em>warn</em>; this one silently <em>allowed</em>. It was wired but never registered in either artifact, so it read as neither enforced nor tracked. The rewrite inverted its posture: any commit-shaped command it cannot evaluate &mdash; interpreter missing, interpreter crashing, target unresolved &mdash; now denies. Then it was re-tested twice: once against crafted inputs, once live through the real wiring, including a simulated broken toolchain that the old version waved through.</p>
     </div>
 
     <p class="secsub" style="margin-top:1.6rem;">Two softer findings landed in the same pass, both &ldquo;the map said enforced, the territory disagreed&rdquo;: one check was a <em>reminder</em> mislabelled as a gate (the rule it supposedly enforced was narrated all along), and another was present on disk but never wired to any event, so it had never once run. Neither was a fail-open, but both were corrected in the register, because an overclaimed check is a lie about coverage even when the code is fine.</p>
 
     <p class="note" style="margin-top:1.5rem; border-left-color: var(--accent-green);"><b>The rule that came out of it.</b> A wired hook is not a tracked check, and a tracked check is not a biting one &mdash; <b>only the bite-test closes that gap.</b> The corollary is scheduling: both casualties were caught reactively, by luck. The proactive complement is deliberately <em>not</em> a one-session sprint &mdash; a few rows driven to bite-tested per session, reviewed at every release. The queue's job is to keep the residual visible in the meantime, and it says out loud which proofs are still owed.</p>
-  </section>
-
-  <section class="sec" id="absent">
-    <div class="sechead"><span class="secnum">06</span><h2>The SOPs I refuse to write yet</h2><div class="divider"></div></div>
-    <p class="secsub">A full corporate process suite would cover finance close, HR onboarding, procurement, sales ops, support. All of it is deliberately absent &mdash; and listed as absent, with <b>the trigger that earns each one</b>. Documenting the gaps is part of documenting the system: a successor learns as much from what's missing on purpose as from what's present.</p>
-    <div class="tablewrap">
-      <table>
-        <thead><tr><th>Deferred procedure</th><th>Existing seed</th><th>Write it when</th></tr></thead>
-        <tbody>
-          <tr><td><b>HR onboarding / offboarding</b></td><td>Role operating packets already drafted</td><td>The first non-founder hire signs.</td></tr>
-          <tr><td><b>Finance / burn / AP-AR</b></td><td>A founding-era stub</td><td>First real burn &mdash; a raise closes, or a contractor gets paid.</td></tr>
-          <tr><td><b>Data-privacy operations</b></td><td>Threat model + architecture review</td><td>First real patient data, or first clinical customer.</td></tr>
-          <tr><td><b>Sales ops / pipeline</b></td><td>Go-to-market planning docs</td><td>First paying customer.</td></tr>
-          <tr><td><b>Support / incident comms</b></td><td>Internal triage procedure</td><td>First external user cohort.</td></tr>
-          <tr><td><b>Procurement / vendors</b></td><td>Stack inventory</td><td>A vendor contract worth governing.</td></tr>
-        </tbody>
-      </table>
-    </div>
-    <p class="secsub" style="margin-top:1.4rem;">The reasoning is the same one that makes the <em>forged-by</em> column mandatory. What makes every procedure in this register credible is that a real event produced it. Writing one for a function nobody runs yet produces a document that reads hollow, buries the ones that matter, and creates exactly the too-much-governance-for-the-headcount smell the register exists to avoid. <b>Write it when the trigger fires, not before.</b></p>
-    <p class="secsub">One row on the reconciliation list has no living successor at all &mdash; the finance procedure &mdash; and it's marked as genuinely orphaned rather than quietly dropped. A register that only lists what's covered is a marketing document.</p>
   </section>
 
   <div class="takeaway">

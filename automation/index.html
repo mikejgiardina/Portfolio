@@ -239,7 +239,7 @@
 
   <section class="sec" id="principles">
     <div class="sechead"><span class="secnum">01</span><h2>Design principles</h2><div class="divider"></div></div>
-    <p class="secsub">The hooks aren't a pile of scripts &mdash; they follow a few rules that keep them safe to run on anyone's machine, every session, without becoming noise or a liability.</p>
+    <p class="secsub">The hooks follow a few rules that keep them safe to run on anyone's machine, every session, without becoming noise or a liability.</p>
     <div class="cards">
       <div class="card">
         <div class="tag">posture</div>
@@ -376,7 +376,7 @@
 
   <section class="sec" id="review">
     <div class="sechead"><span class="secnum">05</span><h2>The review layer</h2><div class="divider"></div></div>
-    <p class="secsub">The fourth layer exists because of something the first three can't fix. A script is a pattern matcher: it sees what it was told to look for, in the places it was told to look. Three specialist review agents read for the things a pattern can't express &mdash; and each one is scoped to a blind spot I could name.</p>
+    <p class="secsub">The fourth layer exists because of something the first three can't fix. A script only looks for what it was told to look for, where it was told to look. Three specialist review agents read for the things a pattern can't express &mdash; and each one is scoped to a blind spot I could name.</p>
     <div class="skills">
       <div class="skill">
         <h4>pre-publish IP reviewer</h4>
@@ -384,11 +384,11 @@
       </div>
       <div class="skill">
         <h4>hook-health auditor</h4>
-        <p>Audits the automation layer for <em>silent failure</em>: filters that match nothing, swallowed errors, dead references, drift between the config and what's on disk. Fail-open is the right posture, but its cost is that a broken hook and a clean run look identical. This agent is the compensating control.</p>
+        <p>Audits the automation layer for <em>silent failure</em>: filters that match nothing, swallowed errors, dead references, drift between the config and what's on disk. Fail-open has a cost: a broken hook and a clean run look identical.</p>
       </div>
       <div class="skill">
         <h4>backlog triager</h4>
-        <p>Reconciles the issue board, syncing the mechanical facts on its own and escalating only the judgment calls &mdash; priority, and what to cut. The split is deliberate: <em>facts are the agent's, values are the founder's.</em></p>
+        <p>Reconciles the issue board, syncing the mechanical facts on its own and escalating only the judgment calls &mdash; priority, and what to cut. <em>Facts are the agent's, values are the founder's.</em></p>
       </div>
     </div>
     <p class="secsub" style="margin-top:1.4rem; margin-bottom:0;">The pattern across all three is the same, and it's why this layer is separate rather than more hooks: <b style="color:var(--text-primary)">a check that fails open is indistinguishable from a check that found nothing.</b> Every automated gate here is quiet when it passes, so each one is paired with a reader whose entire job is to assume the gate didn't run. Together, the four layers share one design goal: <b style="color:var(--text-primary)">make the right thing automatic, and the wrong thing hard.</b></p>

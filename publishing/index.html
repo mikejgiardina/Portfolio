@@ -285,7 +285,7 @@
       <div class="stat"><div class="n">1</div><div class="l">term registry</div></div>
       <div class="stat"><div class="n">4</div><div class="l">documented failure modes</div></div>
     </div>
-    <p class="statnote">One registry feeds every stage. <b>Three stages are automated; three are read</b> &mdash; by an agent or by me. That ratio is deliberate rather than a gap waiting to be closed: the automatable part of disclosure control is <b>literal matching</b>, and literal matching is the easy half. <em>Paraphrase is the hard half</em>, and no regex has ever caught it.</p>
+    <p class="statnote">One registry feeds every stage. <b>Three stages are automated; three are read</b> &mdash; by an agent or by me. The automatable part of disclosure control is <b>literal matching</b>, and literal matching is the easy half. <em>Paraphrase is the hard half</em>, and no regex has ever caught it.</p>
   </header>
 
   <section class="sec" id="problem">
@@ -322,13 +322,13 @@
     <div class="stage">
       <div class="stagehead"><span class="stagenum">01</span><span class="stagename">The term registry</span><span class="stagekind">single source of truth</span></div>
       <p>One versioned file holds every proprietary term, each paired with a <b>replacement hint</b> &mdash; not just &ldquo;don't say this&rdquo; but &ldquo;say this instead.&rdquo; Nothing downstream hardcodes a term; every later stage reads the registry at run time, so adding one term propagates to the scanner, the scrubber, and the reviewer at once.</p>
-      <p>The replacement hints carry a rule that matters more than it looks: a rewrite must <em>preserve the claim</em>, dropping only to the next-lowest useful specificity. Sanitizing a capability into vagueness is a different failure &mdash; it protects the IP by making the work sound like nothing.</p>
+      <p>The replacement hints carry a rule: a rewrite must <em>preserve the claim</em>, dropping only to the next-lowest useful specificity. Sanitizing a capability into vagueness is a different failure &mdash; it protects the IP by making the work sound like nothing.</p>
     </div>
 
     <div class="stage">
       <div class="stagehead"><span class="stagenum">02</span><span class="stagename">Write-time scan</span><span class="stagekind">automated · fires on every edit</span></div>
       <p>A lifecycle hook fires after any write to a file under an outward-facing path and flags registry terms immediately, while the sentence is still on screen. It's the cheapest stage and it catches the largest volume &mdash; the flat, literal mistakes.</p>
-      <p>It is also the <em>narrowest</em> stage, in two ways that are properties of its design rather than bugs to fix: it only sees paths matching a set of globs, and it only fires on write and edit events. Both limits are documented at the top of the script, next to the incident that revealed them.</p>
+      <p>It is also the <em>narrowest</em> stage, in two ways: it only sees paths matching a set of globs, and it only fires on write and edit events. Both limits are documented at the top of the script, next to the incident that revealed them.</p>
     </div>
 
     <div class="stage">
@@ -346,7 +346,7 @@
     <div class="stage">
       <div class="stagehead"><span class="stagenum">05</span><span class="stagename">The publish checklist</span><span class="stagekind">human · pre-flight</span></div>
       <p>A written pre-flight run top to bottom before anything leaves for a non-NDA audience. Universal checks first &mdash; scrubber clean, claims linter clean, <b>a manual paraphrase eyeball</b> with the registry in mind, every numeric claim re-derived from source rather than memory, no &ldquo;shipped&rdquo; or &ldquo;production&rdquo; language for things that aren't, patent scope not overstated into adjacent territory nobody filed on.</p>
-      <p>One item is a taste rule rather than a safety rule, and it stays because it's true: <em>no count-stuffing.</em> A pile of impressive-sounding totals is impressive once and exhausting twice. Lead with what the system does, not what it contains.</p>
+      <p>One item is a taste rule rather than a safety rule: <em>no count-stuffing.</em> A pile of impressive-sounding totals is impressive once and exhausting twice. Lead with what the system does, not what it contains.</p>
     </div>
 
     <div class="stage">
@@ -392,7 +392,7 @@
         </tbody>
       </table>
     </div>
-    <p class="note" style="margin-top:1.3rem;"><b>This page went through its own pipeline.</b> A write-up about a disclosure-control process is exactly the kind of artifact that has to clear it &mdash; which is why what you're reading describes stages, ordering, and failure modes, and never once shows you a registry entry.</p>
+    <p class="note" style="margin-top:1.3rem;"><b>This page went through its own pipeline.</b> It describes stages, ordering, and failure modes, and never shows a registry entry.</p>
   </section>
 
   <section class="sec" id="verdict">
@@ -417,7 +417,7 @@
   files read · sections skipped and why · <span class="vg">whether the automated
   scan would have caught each blocker on its own</span></pre>
     </div>
-    <p class="secsub" style="margin-top:1.4rem;">That last line is the part I'd keep if I could keep only one. Every review reports <b>which findings the automated stage would have missed</b> &mdash; so the pipeline measures its own front end continuously, from real artifacts rather than from a test fixture. A review that keeps reporting &ldquo;the scanner would have caught this&rdquo; means the human stages are wasting effort. A review reporting the opposite is telling me exactly where the next check belongs.</p>
+    <p class="secsub" style="margin-top:1.4rem;">Every review reports <b>which findings the automated stage would have missed</b> &mdash; so the pipeline measures its own front end continuously, from real artifacts rather than from a test fixture. A review that keeps reporting &ldquo;the scanner would have caught this&rdquo; means the human stages are wasting effort. A review reporting the opposite is telling me exactly where the next check belongs.</p>
     <p class="secsub">Two anti-softening rules ride alongside it: a blocker is never downgraded to a revision because a deadline is close (say it's a blocker, let the human override on the record), and a sampled read caps the verdict at <em>revise</em> &mdash; clear requires having read the whole thing.</p>
   </section>
 
