@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Narrated → Enforced: Making Conventions Outlive the Author — Case Study</title>
-<meta name="description" content="Key-man risk reduction as an engineering problem: classifying every process discipline as enforced, narrated, or hybrid; a four-part bar for what counts as enforced; three ledgers tracking the conversion; and the two checks that turned out not to fire at all.">
+<meta name="description" content="Key-man risk reduction as an engineering problem: classifying every process discipline as enforced, narrated, or hybrid; a four-part bar for what counts as enforced; three ledgers tracking the conversion; and the checks that turned out not to fire at all.">
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Crimson+Pro:wght@400;600&family=Work+Sans:wght@300;500;700&display=swap" rel="stylesheet">
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -278,15 +278,10 @@
     <p class="kicker">Process design · governance</p>
     <h1>Turning conventions into checks that outlive the author.</h1>
     <p class="lede">A process document that only works because the person who wrote it keeps re-reading it isn't risk mitigation &mdash; <b>it's a journal.</b> A process enforced by a failing check survives that person leaving. So I sorted every discipline this workspace runs on into those two piles on purpose, and built a scoreboard for <span class="cy">moving items from one pile to the other</span>. When the scoreboard shrinks, key-man risk shrinks &mdash; measurably, not rhetorically.</p>
-    <p class="context">solo founder-engineer · 36 decision records · 17 living process documents</p>
+    <p class="context">solo founder-engineer · a decision-record corpus · a set of living process documents</p>
 
-    <div class="stats">
-      <div class="stat"><div class="n">3</div><div class="l">enforcement states</div></div>
-      <div class="stat"><div class="n">4</div><div class="l">criteria to qualify</div></div>
-      <div class="stat"><div class="n">3</div><div class="l">ledgers</div></div>
-      <div class="stat"><div class="n">36</div><div class="l">decision records</div></div>
-    </div>
     <p class="statnote">Two artifacts do the work. A <b>register</b> maps every discipline and classifies it. A <b>ledger</b> tracks the conversion work and verifies that the ones already claimed as enforced actually fire. The register is the map; the ledger is the scoreboard. They're separate because a backlog buried inside a reference document stops being a backlog.</p>
+    <p class="statnote">Totals are deliberately absent from this page. The only figure worth quoting is a <em>direction</em> &mdash; how much of the operating layer has moved from remembered to checked &mdash; and a level quoted on a permanent page goes stale on its own, which is the precise failure the whole exercise is about.</p>
   </header>
 
   <section class="sec" id="premise">
@@ -382,7 +377,7 @@
     <div class="stage">
       <div class="stagehead"><span class="stagenum">B</span><span class="stagename">Verification queue</span><span class="stagekind">claimed-enforced → prove it bites</span></div>
       <p>Every check that <em>says</em> it's enforced, with two separate columns: <code>exists</code> (the file is on disk) and <code>bite-tested</code> (a known-bad input has been shown to make it go red). Until the second column is filled in, the check is provisional no matter how good the code looks.</p>
-      <p>This queue is why the register carries that caveat. The first pass through it found two.</p>
+      <p>This queue is why the register carries that caveat. The first pass through it found two. No pass since has come back empty.</p>
     </div>
 
     <div class="stage">
@@ -390,17 +385,20 @@
       <p>Disciplines that are irreducibly judgment: how to collaborate with an agent, when a change deserves a decision record, whether a given commit is a release, the order to work through a triage. These stay narrated; their mitigation is onboarding and documentation, not a gate.</p>
       <p>Writing them down as permanently unenforceable stops effort being spent trying, and keeps the ledger from carrying items that will never close.</p>
     </div>
+
+    <p class="note" style="margin-top:1.5rem;"><b>Open gap: the map drifted.</b> The ledger gets touched every time a check moves, so it stays current by construction. The register doesn't &mdash; nothing forces a visit &mdash; and it fell roughly two months behind the layer it classifies while that layer was being worked on heavily. It now <em>understates</em> coverage, which is the benign direction and is not the point: the artifact whose job is tracking drift drifted, and nothing noticed. The fix isn't diligence, it's the same move as everywhere else on this page &mdash; a check asserting the map is not more than N days behind the scoreboard. Until that exists, this is a narrated rule about a document full of narrated rules.</p>
   </section>
 
   <section class="sec" id="casualties">
-    <div class="sechead"><span class="secnum">05</span><h2>What the first pass found</h2><div class="divider"></div></div>
-    <p class="secsub">The verification queue was built on a suspicion: that some checks the register listed as enforced weren't firing. The first walk through it confirmed that twice. Both had been reporting success.</p>
+    <div class="sechead"><span class="secnum">05</span><h2>What the walks found</h2><div class="divider"></div></div>
+    <p class="secsub">The verification queue was built on a suspicion: that some checks the register listed as enforced weren't firing. The first walk confirmed it twice. Both had been reporting success.</p>
 
     <div class="cas">
       <div class="ct">casualty one · failed to warn</div>
       <h4>The scanner that examined nothing</h4>
       <p>A protective scanner read the path of the edited file from environment variables the runtime no longer provided. The path came back empty, so it exited on its first line &mdash; every run, silently. Its warning was also written to a stream the wiring discarded, so even when it did have something to say, nobody heard it. <b>Two independent bugs, stacked, both quiet.</b></p>
       <p>The register had it as enforced. It was found <em>by accident</em>, while a neighbouring script was being edited &mdash; not by any check.</p>
+      <p><b>The fix was also wrong, and that took seven more weeks to notice.</b> The diagnosis was right &mdash; the variable didn't exist &mdash; and the correction reached for a second variable that didn't exist either. Identical symptom, now with a commit message claiming it was resolved. Everything built on top of that scanner in the interim was built on nothing. <em>A fix verified by reading is not verified.</em></p>
     </div>
 
     <div class="cas">
@@ -408,12 +406,24 @@
       <h4>The gate that depended on a tool that wasn't installed</h4>
       <p>A commit gate &mdash; the one whose whole job is to refuse a commit that stages a credential &mdash; used a JSON command-line utility for both reading its input and emitting its decision. That utility isn't installed on the machine in question, deliberately. Its wiring swallowed errors so a broken hook could never block real work. Net effect: <b>the gate errored before it evaluated a single commit &mdash; one staging a real credential would have passed indistinguishably from a clean one.</b></p>
       <p>Two further latent bugs surfaced during the fix: the denial used a message format the runtime had superseded, and the scan ran from a working directory that wasn't the repository being committed to &mdash; so even with the tool present, it would have inspected nothing.</p>
+      <p>Worth being precise about how this surfaced, because it changes what it is: no credential ever leaked. The gap was found by walking the queue on purpose and feeding the gate a crafted bad input &mdash; the proactive path, before anything exercised it in anger &mdash; and it was closed the same day. That is the queue doing its job, not an incident report.</p>
       <p>That one failed to <em>warn</em>; this one silently <em>allowed</em>. It was wired but never registered in either artifact, so it read as neither enforced nor tracked. The rewrite inverted its posture: any commit-shaped command it cannot evaluate &mdash; interpreter missing, interpreter crashing, target unresolved &mdash; now denies. Then it was re-tested twice: once against crafted inputs, once live through the real wiring, including a simulated broken toolchain that the old version waved through.</p>
     </div>
 
     <p class="secsub" style="margin-top:1.6rem;">Two softer findings landed in the same pass, both &ldquo;the map said enforced, the territory disagreed&rdquo;: one check was a <em>reminder</em> mislabelled as a gate (the rule it supposedly enforced was narrated all along), and another was present on disk but never wired to any event, so it had never once run. Neither was a fail-open, but both were corrected in the register, because an overclaimed check is a lie about coverage even when the code is fine.</p>
 
-    <p class="note" style="margin-top:1.5rem; border-left-color: var(--accent-green);"><b>The rule that came out of it.</b> A wired hook is not a tracked check, and a tracked check is not a biting one &mdash; <b>only the bite-test closes that gap.</b> The corollary is scheduling: both casualties were caught reactively, by luck. The proactive complement is deliberately <em>not</em> a one-session sprint &mdash; a few rows driven to bite-tested per session, reviewed at every release. The queue's job is to keep the residual visible in the meantime, and it says out loud which proofs are still owed.</p>
+    <div class="cas">
+      <div class="ct">casualty three · the verifier had the bug</div>
+      <h4>A suite where every passing test proved nothing</h4>
+      <p>Both casualties above were found by luck, so the queue stopped being walked by hand and started being walked by a regression suite &mdash; a test file per hook, each one asserting the hook fires on a known-bad input <em>and</em> stays quiet on a control.</p>
+      <p>The first run of one of those files came back twelve passing, twelve failing. The twelve passes were every <em>&ldquo;no write occurred&rdquo;</em> case &mdash; and they passed because the stubbed-out command was never reached at all: the test harness had been talking to the live production board the entire time. It was recording real successes as proof that nothing had happened. <b>Only the paired control caught it</b>, because the assertion that something is absent is satisfied perfectly by a test that never ran.</p>
+      <p>The cause was a platform detail with no relationship to the check being tested: the native process launcher appends one specific extension to an extensionless command name and ignores the rest, so both forms of the stub were skipped and the real tool resolved instead. <b>The verification layer had exactly the property it was built to detect in the layer beneath it</b> &mdash; and it caught its own author twice in one sitting, on malformed fixtures that produced clean exits and zero output, indistinguishable from a hook that was genuinely dead.</p>
+      <p>Which is now the standing rule for the suite: <em>every fire case is paired with a control.</em> Most of these hooks are advisory, so silence is their success case &mdash; and an all-quiet suite is also precisely what a dead hook produces. Without the control, a green run is not evidence of anything.</p>
+    </div>
+
+    <p class="secsub" style="margin-top:1.6rem;">That sweep found five further defects. None was fixed in the same pass, because changing a hook's behavior sits behind a confirmation gate that adding a test deliberately does not &mdash; so each was filed instead, and carried as a <b>self-converting known-gap test</b>: an assertion of the <em>current, wrong</em> behavior that goes red the moment someone fixes it, with the instruction to convert it and close the item written into the failure message. A defect you've decided not to fix yet is still worth pinning down, and this keeps the backlog honest without letting the suite lie about what's working.</p>
+
+    <p class="note" style="margin-top:1.5rem; border-left-color: var(--accent-green);"><b>The rule that came out of it.</b> A wired hook is not a tracked check, a tracked check is not a biting one, and a passing test is not a check that ran &mdash; <b>each gap closes only from the outside, by something that assumes the layer beneath it is lying.</b> The corollary is scheduling: the first two casualties were caught reactively, by luck. The proactive complement is deliberately <em>not</em> a one-session sprint &mdash; a few rows driven to bite-tested per session, reviewed at every release, plus a recurring sweep that files what it finds where the work actually is. The queue's job is to keep the residual visible in the meantime, and it says out loud which proofs are still owed.</p>
   </section>
 
   <div class="takeaway">

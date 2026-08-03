@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Publishing Out of a Patent-Pending Codebase — Case Study</title>
-<meta name="description" content="A seven-stage IP disclosure-control pipeline for a patent-pending codebase: term registry, write-time scan, scrub loop, hostile-reader review, publish checklist, publish gate, counsel queue — plus the three failures and the one gap still open.">
+<meta name="description" content="A seven-stage IP disclosure-control pipeline for a patent-pending codebase: term registry, write-time scan, scrub loop, hostile-reader review, publish checklist, publish gate, counsel queue — plus every failure on record and the one gap still open.">
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Crimson+Pro:wght@400;600&family=Work+Sans:wght@300;500;700&display=swap" rel="stylesheet">
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -278,15 +278,9 @@
     <p class="kicker">Process design · defense in depth</p>
     <h1>Publishing out of a patent-pending codebase.</h1>
     <p class="lede">I write in public constantly &mdash; grant submissions, investor material, a portfolio, conference talks, an open clinical article library &mdash; and all of it is drafted inside private repositories that contain <b>patentable mechanism</b>. Every outward-facing file is a potential disclosure, and a federal filing is <span class="cy">permanent and public the moment it lands</span>. So publishing isn't a step at the end. It's a pipeline with seven stages, four audience tiers, and a written record of every place it has failed.</p>
-    <p class="context">provisional patent filed feb 2026 · solo founder-engineer · outward artifacts drafted in-repo, never in a separate &ldquo;public&rdquo; workspace</p>
+    <p class="context">patent pending · solo founder-engineer · outward artifacts drafted in-repo, never in a separate &ldquo;public&rdquo; workspace</p>
 
-    <div class="stats">
-      <div class="stat"><div class="n">7</div><div class="l">pipeline stages</div></div>
-      <div class="stat"><div class="n">4</div><div class="l">audience tiers</div></div>
-      <div class="stat"><div class="n">1</div><div class="l">term registry</div></div>
-      <div class="stat"><div class="n">4</div><div class="l">documented failure modes</div></div>
-    </div>
-    <p class="statnote">One registry feeds every stage. <b>Three stages are automated; three are read</b> &mdash; by an agent or by me. The automatable part of disclosure control is <b>literal matching</b>, and literal matching is the easy half. <em>Paraphrase is the hard half</em>, and no regex has ever caught it.</p>
+    <p class="statnote"><b>Two registries feed every stage</b> &mdash; one for <em>what</em> is protected, one for <em>where</em> publishing actually happens. Nothing downstream hardcodes either. Some stages are automated and some are read, by an agent or by me, and the split is not a matter of budget: the automatable part of disclosure control is <b>literal matching</b>, which is the easy half. <em>Paraphrase is the hard half</em>, and no regex has ever caught it.</p>
   </header>
 
   <section class="sec" id="problem">
@@ -321,15 +315,17 @@
     <p class="secsub">Seven stages, ordered by when they fire &mdash; from the moment a proprietary term is defined through to the record that goes to patent counsel. Each stage catches a class the stage before it structurally cannot.</p>
 
     <div class="stage">
-      <div class="stagehead"><span class="stagenum">01</span><span class="stagename">The term registry</span><span class="stagekind">single source of truth</span></div>
-      <p>One versioned file holds every proprietary term, each paired with a <b>replacement hint</b> &mdash; not just &ldquo;don't say this&rdquo; but &ldquo;say this instead.&rdquo; Nothing downstream hardcodes a term; every later stage reads the registry at run time, so adding one term propagates to the scanner, the scrubber, and the reviewer at once.</p>
+      <div class="stagehead"><span class="stagenum">01</span><span class="stagename">The registries</span><span class="stagekind">single source of truth</span></div>
+      <p>One versioned file holds every proprietary term, each paired with a <b>replacement hint</b> &mdash; not just &ldquo;don't say this&rdquo; but &ldquo;say this instead.&rdquo; Nothing downstream hardcodes a term; every later stage reads it at run time, so adding one term propagates to the scanner, the scrubber, and the reviewer at once.</p>
       <p>The replacement hints carry a rule: a rewrite must <em>preserve the claim</em>, dropping only to the next-lowest useful specificity. Sanitizing a capability into vagueness is a different failure &mdash; it protects the IP by making the work sound like nothing.</p>
+      <p>A second registry was added later and answers a different question: not <em>what</em> is protected but <b>where publishing actually happens</b> &mdash; the destinations where a push is itself the act of publishing. It's a hand-kept list, which is a weakness, so it carries an explicit bias rule: <em>when unsure whether a destination belongs, add it.</em> A false inclusion costs one extra scan. A false exclusion is a permanent disclosure. Splitting <em>what</em> from <em>where</em> is what let the later stages stop guessing either one from a file path.</p>
     </div>
 
     <div class="stage">
       <div class="stagehead"><span class="stagenum">02</span><span class="stagename">Write-time scan</span><span class="stagekind">automated · fires on every edit</span></div>
       <p>A lifecycle hook fires after any write to a file under an outward-facing path and flags registry terms immediately, while the sentence is still on screen. It's the cheapest stage and it catches the largest volume &mdash; the flat, literal mistakes.</p>
-      <p>It is also the <em>narrowest</em> stage, in two ways: it only sees paths matching a set of globs, and it only fires on write and edit events. Both limits are documented at the top of the script, next to the incident that revealed them.</p>
+      <p>It is also the <em>narrowest</em> stage, in two ways: it only sees paths it was told to watch, and it only fires on write and edit events. Both limits are documented at the top of the script, next to each incident that revealed them.</p>
+      <p>Its scoping has since been widened twice, and the second time is the more interesting one. First, filename patterns were added alongside directory ones &mdash; three dashboards carried their audience in the <em>filename</em> and sat in an internal directory, so every directory rule missed them. Then the glob list stopped being the last word: anything it doesn't match is now checked against the <em>destinations</em> registry before the hook gives up. Registering a new public surface in one place extends coverage here for free, which is the whole point &mdash; four surfaces had already been missed by hand-kept globs while sitting in that registry the entire time.</p>
     </div>
 
     <div class="stage">
@@ -353,7 +349,8 @@
     <div class="stage">
       <div class="stagehead"><span class="stagenum">06</span><span class="stagename">The publish gate</span><span class="stagekind">automated · fires on the push</span></div>
       <p>The last automated thing that happens before anything leaves. It hangs off the <b>push</b>, not the file path: when the destination is one that publishes on receipt, every changed file in the outgoing commits is scanned against the registry &mdash; whatever directory it sits in.</p>
-      <p>This stage exists because stage two's scoping failed three times in two months. A push is the choke point &mdash; nothing reaches a public destination without one &mdash; so gating it takes path matching off the critical path entirely. It fails <em>closed</em>, but only for destinations that publish; everywhere else it exits without an opinion. A gate that blocks everything gets switched off within a week, and a gate that is switched off is worth less than no gate at all.</p>
+      <p>This stage exists because stage two's scoping kept failing &mdash; four times in two months. A push is the choke point &mdash; nothing reaches a public destination without one &mdash; so gating it takes path matching off the critical path entirely. It fails <em>closed</em>, but only for destinations that publish; everywhere else it exits without an opinion. A gate that blocks everything gets switched off within a week, and a gate that is switched off is worth less than no gate at all.</p>
+      <p class="note" style="margin-top:0.9rem;"><b>And then this stage had the same bug.</b> Its own &ldquo;I could not work out what is being pushed&rdquo; branch &mdash; the fail-closed one, the reason the stage is trustworthy at all &mdash; was <em>unreachable</em>. A shell idiom used to keep the command from aborting also overwrote the status the guard was reading, so the check was testing a value that could only ever be zero. An unreadable push range therefore read as &ldquo;nothing to push,&rdquo; and a commit carrying a protected term would have been <b>allowed</b>. It was found by writing a regression test for a stage that had never had one. The lesson isn't about this gate: <em>a fail-closed posture is a claim about a code path, and an untested code path is not a posture.</em></p>
     </div>
 
     <div class="stage">
@@ -424,7 +421,7 @@
 
   <section class="sec" id="gaps">
     <div class="sechead"><span class="secnum">05</span><h2>Where it has failed</h2><div class="divider"></div></div>
-    <p class="secsub">A disclosure-control write-up that only lists controls is marketing. These are the three failures on record and the gap still open &mdash; all four documented in the repo, at the top of the scripts they affect, next to the fix. Two of the three are the <em>same</em> failure.</p>
+    <p class="secsub">A disclosure-control write-up that only lists controls is marketing. These are the failures on record and the gap still open &mdash; each one documented in the repo, at the top of the script it affects, next to the fix. They are mostly the <em>same</em> failure, and the last one turns out to have been sitting underneath the others the whole time.</p>
 
     <div class="cas">
       <div class="ct">failure · found july 2026</div>
@@ -443,11 +440,20 @@
     </div>
 
     <div class="cas">
-      <div class="ct">failure · found june 2026</div>
-      <h4>Enforced on the map, absent on the machine</h4>
-      <p>Before the failure above, the same scanner spent an unknown stretch as a complete no-op for a different reason: it read the edited file's path from environment variables the runtime no longer set, so the path came back empty and it bailed on the first line. Its warning also went to a stream the wiring discarded. Two independent bugs, stacked, both silent.</p>
-      <p>Meanwhile the process register listed the discipline as <b>enforced</b>. It was found by accident, while editing a neighbouring hook &mdash; not by any check.</p>
-      <p>This is what produced the standing rule now applied to every gate in the workspace: <em>a check that exists is not a check that bites.</em> Proving it goes red on a known-bad input is a separate, mandatory step from writing it. That rule, and the ledger tracking it, is <a href="../enforcement/" style="color:var(--accent-cyan); text-decoration:none; border-bottom:1px solid var(--line)">its own write-up</a>.</p>
+      <div class="ct">failure &middot; found july 2026 &middot; fourth instance</div>
+      <h4>The surface that was already on the list</h4>
+      <p>A live public site had never been written into the write-time filter, so everything drafted for it was scanned by nothing. Predictable by now &mdash; except for one detail that changed the conclusion: <b>it was already enumerated in the destinations registry</b>, and had been the whole time. The stage that gates the push knew about it. The stage that scans the draft was reading a different, hand-kept list and had never been told.</p>
+      <p>Three prior instances read as &ldquo;the list keeps missing things.&rdquo; This one reads as something worse and more fixable: <em>two stages were answering the same question from two different sources.</em> The fix was not a fifth pattern. The early stage now falls through to the destinations registry when its own globs don't match, so the two stages can no longer disagree about what publishes. Adding a surface in one place is now the whole job.</p>
+      <p>The generalisation is the one worth keeping: a duplicated source of truth doesn't announce itself while the copies agree. It surfaces as a gap in whichever copy is consulted less often &mdash; and that copy is always the cheap early check, because it's the one nobody notices staying quiet.</p>
+    </div>
+
+    <div class="cas">
+      <div class="ct">failure &middot; found june 2026 &middot; underneath all three</div>
+      <h4>Enforced on the map, dead on the machine &mdash; the whole time</h4>
+      <p>Underneath all three of the above, the same scanner was a complete no-op for an unrelated reason: it read the edited file's path from an environment variable the runtime doesn't set, so the path came back empty and it bailed on its first line. Its warning also went to a stream the wiring discarded. Two independent bugs, stacked, both silent. It was found by accident, while editing a neighbouring hook &mdash; not by any check &mdash; while the process register listed the discipline as <b>enforced</b>.</p>
+      <p><b>And the fix for it didn't work either.</b> The diagnosis was right &mdash; wrong variable &mdash; and the correction substituted a <em>second</em> variable that was equally imaginary. Same empty path, same exit on line one, now with a commit message saying it was fixed. The hook stayed dead for another seven weeks.</p>
+      <p>Which reframes the three failures above, and this is the part worth keeping: <b>every one of those path fixes was applied to a scanner that could not run at all.</b> Each was reasoned about carefully, tested by reading, and landed against a hook that was going to exit on line one no matter what the filter said. The scoping was never the reason nothing was being caught. It only looked like the reason, because scoping is what you can see by reading the script &mdash; and a dead hook and a correctly-scoped clean one produce byte-identical output.</p>
+      <p>This is what produced the standing rule now applied to every gate in the workspace: <em>a check that exists is not a check that bites &mdash; and a fix that reads correctly is not a fix.</em> Both close only by feeding the thing a known-bad input and watching it go red. That rule, and the ledger tracking it, is <a href="../enforcement/" style="color:var(--accent-cyan); text-decoration:none; border-bottom:1px solid var(--line)">its own write-up</a>.</p>
     </div>
 
     <div class="cas" style="border-color: rgba(255,180,84,0.28); border-left-color: var(--accent-amber);">
@@ -461,7 +467,7 @@
 
   <div class="takeaway">
     <h3>What this is really a case study in</h3>
-    <p>Not IP paranoia &mdash; <b>layering controls against known blind spots, and knowing which blind spot each layer covers.</b> Every stage here was added because the stage before it failed in a way I could name. The human stages exist because literal matching cannot catch paraphrase. The newest automated stage exists because the oldest one was scoped by file path, and three separate misses were what it took to accept that <em>path is the wrong thing to key on</em>.</p>
+    <p>Not IP paranoia &mdash; <b>layering controls against known blind spots, and knowing which blind spot each layer covers.</b> Every stage here was added because the stage before it failed in a way I could name. The human stages exist because literal matching cannot catch paraphrase. The newest automated stage exists because the oldest one was scoped by file path, and it took four separate misses to accept that <em>path is the wrong thing to key on</em> &mdash; then a fifth to notice the two stages had been reading different lists.</p>
     <p>The through-line is the same one that runs through the rest of this workspace: <b>a check that fails quietly is worse than no check</b>, because it reads as coverage you don't have. The answer isn't more scripts. It's pairing every automated gate with a reader whose job is to assume the gate didn't run &mdash; and writing down what it missed, every time, so the next check is chosen from evidence instead of instinct.</p>
     <p style="margin-top:1.1rem; padding-top:1.1rem; border-top:1px solid var(--line-soft);">Companion write-ups: <a href="../automation/" style="color:var(--accent-cyan); text-decoration:none; border-bottom:1px solid var(--line)">the lifecycle-hook layer this pipeline runs on</a> · <a href="../enforcement/" style="color:var(--accent-cyan); text-decoration:none; border-bottom:1px solid var(--line)">how a written convention becomes an enforced check</a>.</p>
   </div>
