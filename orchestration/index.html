@@ -139,6 +139,9 @@
 
   /* ---- principle cards ---- */
   .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.1rem; }
+  /* auto-fit gives 3 columns at this width, so a group of four orphans its
+     last card. Every group on this page is 2 or 4, so pin to two. */
+  @media (min-width: 700px) { .cards { grid-template-columns: repeat(2, 1fr); } }
   .card {
     position: relative; background: var(--secondary-bg); border: 1px solid var(--line);
     padding: 1.4rem 1.5rem; overflow: hidden; transition: transform 0.25s, border-color 0.25s, box-shadow 0.25s;
@@ -332,6 +335,7 @@
       <a href="#cost">Cost</a>
       <a href="#green">Plausible green</a>
       <a href="#brief">The brief</a>
+      <a href="#next">What's next</a>
       <a href="../automation/">Hooks →</a>
       <a href="../enforcement/">Enforcement →</a>
       <a href="../case-studies/" class="back">← all four</a>
@@ -360,13 +364,15 @@
       <div class="stat"><span class="n">19</span><span class="l">issues closed &middot; rounds 2&ndash;3</span></div>
     </div>
 
-    <p class="statnote">The issue figure covers rounds 2 and 3 only. <b>Round 1 did not track it</b> &mdash; which is the first honest thing to say about this pattern: the instrumentation lagged the practice, and several questions asked later in this write-up cannot be answered backwards. Where a number is missing it is shown as missing rather than filled in.</p>
-    <p class="statnote">Nothing here is a product claim. The work these sessions did is described only at the level of <em>shape</em> &mdash; a checker, a gate, a test suite &mdash; because the transferable part is the coordination, not the subject matter.</p>
+    <p class="statnote">The issue count covers rounds 2 and 3. <b>Round 1 has no usable numbers because of how it was run:</b> nearly every step waited on me to approve it, and I came back to approve things whenever I got to it. Those sessions sat idle for most of that round, so its timing and cost don't compare to the two that followed. Taking those gates out is most of what changed between round 1 and round 2.</p>
+    <p class="statnote">Nothing here is a product claim. The work itself is described only by shape &mdash; a checker, a gate, a test suite. The coordination is the transferable part.</p>
   </header>
 
   <section class="sec" id="leases">
     <div class="sechead"><span class="secnum">01</span><h2>Lease by write-surface, not by topic</h2><div class="divider"></div></div>
-    <p class="secsub">The failure mode that motivates everything else: two sessions given clearly unrelated jobs, both of which turn out to need the same file. Topic independence does not imply file independence, and you find out at merge time, which is the worst time.</p>
+    <p class="secsub">The failure mode that motivates everything else: two sessions given clearly unrelated jobs, both of which turn out to need the same file. Topic independence does not imply file independence, and you find out at merge time.</p>
+
+    <p class="note" style="margin-bottom:1.6rem;"><b>To be clear about what is and isn't new here:</b> partitioning work by file ownership is old. Locking schemes, <code>CODEOWNERS</code>, monorepo ownership boundaries and branch policies have all been about this for decades, and none of it was invented for this project. What's specific to the AI-session case is that <em>the workers can't negotiate.</em> Two engineers who both need the same file end up talking to each other, usually before either has finished. Two sessions don't. They both just write it, and the first anyone hears about it is the merge.</p>
 
     <div class="cards">
       <div class="card">
@@ -382,7 +388,7 @@
       <div class="card">
         <div class="tag">the isolation</div>
         <h3>One worktree per lease</h3>
-        <p>Each session gets its own git worktree and its own branch. The lease is the intent; the worktree is the enforcement. Two sessions physically cannot be editing the same working copy.</p>
+        <p>Each session gets its own git worktree and its own branch. The lease says what a session is allowed to write; the worktree makes it physically impossible for two of them to be editing the same working copy at once.</p>
       </div>
       <div class="card">
         <div class="tag">the consequence</div>
@@ -391,12 +397,13 @@
       </div>
     </div>
 
-    <p class="note" style="margin-top:1.5rem;"><b>Where this leaks.</b> A lease constrains writes; it does not constrain <em>reading a file that a neighbour is mid-way through rewriting</em>. A worker can therefore build correct work on a premise that another worker is in the process of invalidating. Nothing in the pattern catches that today &mdash; it is caught, if at all, at review. The mitigation in use is ordering: when two leases are known to sit on either side of a shared assumption, they go in different rounds rather than the same one.</p>
+    <p class="note" style="margin-top:1.5rem;"><b>Where this leaks.</b> A lease constrains writes. It does nothing about a session <em>reading</em> a file another session is halfway through rewriting, so a worker can build correct work on a premise that's being invalidated underneath it.</p>
+    <p class="note" style="margin-top:0.7rem;">Nothing automated catches that. What catches it is the coordinator, reading the diffs as they come back, spotting that two of them disagree about the same assumption, deciding which one is right, and telling the affected lease directly. Scheduling helps as well &mdash; two leases known to sit on either side of a shared assumption go in different rounds. Both of those are conventions rather than checks, and <a href="../enforcement/" style="color:var(--accent-cyan); text-decoration:none; border-bottom:1px solid var(--line)">the sibling write-up on enforcement</a> is blunt about what a convention is worth. This one is on that ledger, unfixed.</p>
   </section>
 
   <section class="sec" id="topology">
     <div class="sechead"><span class="secnum">02</span><h2>The shape of a round</h2><div class="divider"></div></div>
-    <p class="secsub">Two things are happening at once, and the diagram is worth more than the paragraph because they run in opposite directions. Writes <b>fan out</b> to disjoint surfaces. Everything that cannot be done twice <b>funnels back</b> through a single point.</p>
+    <p class="secsub">Writes fan out to disjoint surfaces. Everything that can't be done twice funnels back through one point.</p>
 
     <figure class="fig">
       <div class="figtitle">Figure 1 &middot; orchestration topology</div>
@@ -508,7 +515,9 @@
       </div>
       <p class="scrollhint">&larr; scroll to pan the diagram &rarr;</p>
 
-      <figcaption><b>The asymmetry is the whole design.</b> Adding a worker adds a parallel write path and costs almost nothing. Adding a worker also adds traffic to the single return rail &mdash; and that side does not parallelise. <em>The bottleneck is not the machine, it is the one writer.</em></figcaption>
+      <figcaption>Adding a worker adds a parallel write path, which costs almost nothing. It also adds traffic to the return rail, which doesn't parallelise at all. The bottleneck isn't compute. It's the single writer, and specifically two jobs that writer holds: <b>validating what comes back</b>, and <b>keeping the combined context of every lease in one head</b>. Neither gets easier with more workers.</figcaption>
+
+      <p class="srcline">the diagram shows one model per box for legibility; in practice they are not the same model &mdash; see below</p>
 
       <details class="src">
         <summary>diagram source (mermaid)</summary>
@@ -544,6 +553,35 @@
 </pre>
       </details>
     </figure>
+
+    <h3 style="font-family:var(--serif); font-size:1.45rem; font-weight:600; margin:2.6rem 0 0.5rem;">A lease carries more than paths</h3>
+    <p class="secsub">The path globs are the part that prevents collisions. Three other things get assigned at the same time, and the first of them is the one people are most surprised by.</p>
+
+    <div class="cards">
+      <div class="card">
+        <div class="tag">assigned at spawn</div>
+        <h3>A model, per lease</h3>
+        <p>The planning layer picks which model each lease runs on. They are not all the same. A recent round ran the coordinator on <b>Fable 5</b>, two leases on <b>Sonnet 5</b>, two on <b>Opus 5</b>, one on <b>Opus 4.8</b>, one on <b>Haiku 4.5</b>, and one driving a browser.</p>
+        <p>Mechanical work &mdash; renaming, mirroring a config, running a matrix &mdash; does not need the expensive model. The lease that has to read a bad premise and argue back does. Sizing that per lease instead of picking one model for the whole round is most of the cost control there is.</p>
+      </div>
+      <div class="card">
+        <div class="tag">assigned at spawn</div>
+        <h3>Permission to fan out</h3>
+        <p>A lease can be granted the right to spawn <em>its own</em> subagents. The tree is deeper than one level when it needs to be, and the lease decides &mdash; it is closer to the work than the coordinator is.</p>
+        <p>The lease still owns the result. Whatever its subagents produce arrives at the coordinator as that lease's output, under that lease's globs, which keeps the collision guarantee intact no matter how wide it went underneath.</p>
+      </div>
+      <div class="card">
+        <div class="tag">assigned at spawn</div>
+        <h3>A scoped pre-authorisation</h3>
+        <p>Dated, revocable, and naming exactly which otherwise-gated files this lease may touch &mdash; plus a <em>park and report</em> list for things it may not, and a hard-decline list. A worker that has to stop and ask about every gated file is not running in parallel with anything.</p>
+      </div>
+      <div class="card">
+        <div class="tag">not built yet</div>
+        <h3>A control window</h3>
+        <p>The next thing to try: baking a bounded window of direct control into a lease, so it can drive a surface the coordinator would otherwise have to drive on its behalf. The browser-driving lease above is the first case that wants it.</p>
+        <p>Written here as intent, not as something that exists.</p>
+      </div>
+    </div>
   </section>
 
   <section class="sec" id="spine">
@@ -565,7 +603,8 @@
       </div>
       <div class="barit">
         <h4>Work intake</h4>
-        <p>Workers surface findings; they do not file them. Four sessions filing issues independently produces duplicates, inconsistent labels, and no dedup &mdash; and the person who has to triage that is the same person who launched the round. Findings come back as text; the coordinator decides what becomes an item.</p>
+        <p>Workers surface findings; they don't file them. Four sessions filing issues independently produces duplicates, inconsistent labels and no dedup, and the person who inherits that mess is the same person who launched the round. Findings come back as text and the coordinator decides what becomes an item.</p>
+        <p>That triage is itself now a job with a tool behind it rather than something done by hand at the end of a round, which is what closes the loop below.</p>
       </div>
     </div>
 
@@ -587,72 +626,114 @@
     </div>
 
     <p class="note" style="margin-top:1.2rem;"><b>A related rule, learned the same way.</b> Deciding which files a change could possibly affect, twice, from memory &mdash; once by the coordinator and once by a worker &mdash; produced two short lists that were both wrong, and both missed the one that mattered. Enumerating instead of recalling took a single command. <em>Enumerate, don't recall</em> is now the standing form, and it is the same instinct as the rest of this page: prefer the thing that reads real state over the thing that sounds right.</p>
+
+    <h3 style="font-family:var(--serif); font-size:1.45rem; font-weight:600; margin:2.8rem 0 0.5rem;">What centralising the merges actually buys</h3>
+    <p class="secsub">The technical argument for one merger is rebase ordering. The argument that matters more in practice is about <b>where the waiting happens.</b></p>
+
+    <p class="note" style="border-left-color: var(--accent-green);">Run four branches yourself and you are on call for all four. Each one finishes when it finishes, and each one wants you to review it, commit, push, open a PR, wait on checks, merge, then clean up the branch. Four times, at four unpredictable moments, interleaved. The work is trivial and the interruption is not &mdash; you can't leave, because something is always about to need a click.</p>
+    <p class="note" style="margin-top:0.7rem; border-left-color: var(--accent-green);">Routing all of it through the coordinator turns that into <b>one decision at the end</b>. The system absorbs the per-branch bookkeeping; the human shows up once, for the worktree, not once per branch. <em>Click, click, click, click becomes click.</em> That is the actual return on the pattern for a single operator, and it is much larger than the throughput gain &mdash; round 1 skipped it, gated every step on me, and is the round with no usable numbers precisely because I spent it waiting.</p>
+
+    <h3 style="font-family:var(--serif); font-size:1.45rem; font-weight:600; margin:2.8rem 0 0.5rem;">The loop this closes</h3>
+    <p class="secsub">Intake, leases and merges aren't three separate policies. They're one cycle, and the board is both where it starts and where it ends up.</p>
+
+    <div class="stage">
+      <div class="stagehead"><span class="stagenum">1</span><span class="stagename">The coordinator reads the board</span><span class="stagekind">bounded by written rules</span></div>
+      <p>It picks up open items and evaluates them against the standing guardrails: the process SOPs, the decision records, the persistent memory, the repo-specific configuration. That context is what makes a slate of work coherent rather than a list of whatever was open.</p>
+    </div>
+    <div class="stage">
+      <div class="stagehead"><span class="stagenum">2</span><span class="stagename">It builds the team</span><span class="stagekind">one model per lease</span></div>
+      <p>Items get grouped by the write surface they need, globs get intersected, and each lease is sized &mdash; model, fan-out permission, pre-authorisation. Issues are assigned to whichever lease already owns their files, so one lease may carry several unrelated items.</p>
+    </div>
+    <div class="stage">
+      <div class="stagehead"><span class="stagenum">3</span><span class="stagename">Each lease works in its own context</span><span class="stagekind">and evaluates on its own terms</span></div>
+      <p>A lease sees its own surface in far more depth than the coordinator can. It is expected to disagree with the item it was handed if the item is wrong, and it reports back rather than acting outside its globs.</p>
+    </div>
+    <div class="stage">
+      <div class="stagehead"><span class="stagenum">4</span><span class="stagename">The coordinator reconciles what came back</span><span class="stagekind">the expensive step</span></div>
+      <p>This is the part that doesn't parallelise and the part that costs. Several leases report from several different vantage points, and one reader has to hold all of it at once: which findings are the same finding, which contradict, which change what another lease was told, what actually merges and in what order.</p>
+    </div>
+    <div class="stage">
+      <div class="stagehead"><span class="stagenum">5</span><span class="stagename">It writes the board</span><span class="stagekind">deduped, single voice</span></div>
+      <p>Findings become items here and only here, filed by the one participant that saw every lease's output. That's the difference between a board that accumulates four sessions' worth of overlapping noise and one that a human can act on &mdash; and it is why the triage step got its own tooling instead of staying a chore at the end of a round.</p>
+    </div>
+    <div class="stage">
+      <div class="stagehead"><span class="stagenum">6</span><span class="stagename">Which is the input to the next round</span><span class="stagekind">back to step 1</span></div>
+      <p>Either the same coordinator carries on, or a fresh one starts from the board it just wrote. Nothing has to survive in anyone's head between cycles. That's what makes it a loop instead of one very long session.</p>
+    </div>
   </section>
 
   <section class="sec" id="cost">
     <div class="sechead"><span class="secnum">04</span><h2>What three rounds cost</h2><div class="divider"></div></div>
-    <p class="secsub">Cost below is in <b>percentage points of a rolling weekly all-models allowance</b>, and is <b>approximate</b> &mdash; read off a usage panel rather than metered per session. That imprecision is real and is not smoothed over; the finding survives it because the effect is large. A whole round of this consumes single-digit percent of a week.</p>
+    <p class="secsub">Cost here is <b>percentage points of a rolling weekly allowance</b> on a subscription, read off a usage panel. It is approximate and not metered per session. A whole round consumes single-digit percent of a week.</p>
+
+    <p class="note" style="margin-bottom:1.6rem;"><b>Why the unit is a weekly allowance and not dollars.</b> Write-ups of multi-agent setups usually assume metered API billing, where the question is cost per call and parallelism is close to free. This runs on a subscription with a shared weekly ceiling, which changes the shape of the problem: the constraint is not per-call price, it's <em>one pool that every lease and the coordinator draw from at once</em>. That is what makes the coordinator's reconciliation step expensive in a way an API-billed setup would not surface the same way &mdash; and it is why the pattern is worth measuring in the first place rather than just scaled up.</p>
 
     <div class="tablewrap" style="margin-bottom:1.6rem;">
       <table>
-        <thead><tr><th>Round</th><th class="num">Workers</th><th class="num">PRs merged</th><th class="num">Issues closed</th><th class="num">Weekly budget used (%, approx)</th><th class="num">Baseline predicts (%)</th></tr></thead>
+        <thead><tr><th>Round</th><th class="num">Workers</th><th class="num">PRs merged</th><th class="num">Items closed</th><th class="num">Weekly % used</th><th class="num">% per PR</th><th class="num">% per item</th></tr></thead>
         <tbody>
-          <tr><td><b>Round 1</b></td><td class="num">6</td><td class="num">7</td><td class="num"><span class="absent">not tracked</span></td><td class="num">~3</td><td class="num"><span class="absent">defines it</span></td></tr>
-          <tr><td><b>Round 2</b></td><td class="num">3</td><td class="num">3</td><td class="num">6</td><td class="num">~2</td><td class="num"><span class="absent">defines it</span></td></tr>
-          <tr><td><b>Round 3</b></td><td class="num">4</td><td class="num">6</td><td class="num">13</td><td class="num"><b>~6</b></td><td class="num">~2.3</td></tr>
+          <tr><td><b>Round 1</b></td><td class="num">6</td><td class="num">7</td><td class="num"><span class="absent">not tracked</span></td><td class="num">~3</td><td class="num">0.43</td><td class="num"><span class="absent">&mdash;</span></td></tr>
+          <tr><td><b>Round 2</b></td><td class="num">3</td><td class="num">3</td><td class="num">6</td><td class="num">~2</td><td class="num">0.67</td><td class="num">0.33</td></tr>
+          <tr><td><b>Round 3</b></td><td class="num">4</td><td class="num">6</td><td class="num">13</td><td class="num">~6</td><td class="num"><b>1.00</b></td><td class="num"><b>0.46</b></td></tr>
         </tbody>
       </table>
     </div>
 
     <figure class="fig">
-      <div class="figtitle">Figure 2 &middot; round 3 cost roughly 2.5&times; what the first two rounds imply</div>
-      <p class="figlede">The obvious cost model is <b>a fixed coordinator overhead plus a per-worker cost</b>. Two rounds fix both constants exactly &mdash; two equations, two unknowns &mdash; giving a fixed overhead of about <b>1 percentage point</b> and about <b>0.33 points per worker</b>. That baseline fits rounds 1 and 2 perfectly, and it has to, so it proves nothing about them. Round 3 is the test: the baseline says <b>~2.3%</b>, and it came in at <b>~6%</b>. The inputs are good to about one significant figure, so the ratio is worth reading as <em>&ldquo;well over double&rdquo;</em> rather than as a precise multiple &mdash; at &plusmn;0.5 on both anchor rounds the prediction still only ranges 1.8&ndash;2.8.</p>
+      <div class="figtitle">Figure 2 &middot; unit cost, not totals</div>
+      <p class="figlede">Round 3 cost three times round 2. It also produced twice the merged work, so the totals on their own say very little. Dividing by what actually came out is the comparison worth making, and it is a much smaller number than the totals suggest.</p>
 
       <div class="panels">
         <div class="panel">
-          <div class="paneltitle">Weekly budget used, per round &mdash; %</div>
+          <div class="paneltitle">Weekly % used, total</div>
           <svg viewBox="0 0 300 150" role="img" aria-label="Weekly budget used per round: round 1 about 3 percent, round 2 about 2 percent, round 3 about 6 percent." xmlns="http://www.w3.org/2000/svg">
             <line class="ct-ax" x1="60" y1="14" x2="60" y2="132"/>
             <text class="ct-lab" x="52" y="41" text-anchor="end">round 1</text>
-            <rect x="60" y="26" width="100" height="26" rx="4" fill="#1f9fc4"/>
+            <rect x="60" y="26" width="100" height="26" rx="4" fill="#8b949e"/>
             <text class="ct-val" x="168" y="44">~3</text>
             <text class="ct-lab" x="52" y="79" text-anchor="end">round 2</text>
-            <rect x="60" y="64" width="67" height="26" rx="4" fill="#1f9fc4"/>
+            <rect x="60" y="64" width="67" height="26" rx="4" fill="#8b949e"/>
             <text class="ct-val" x="135" y="82">~2</text>
             <text class="ct-lab" x="52" y="117" text-anchor="end">round 3</text>
-            <rect x="60" y="102" width="200" height="26" rx="4" fill="#1f9fc4"/>
+            <rect x="60" y="102" width="200" height="26" rx="4" fill="#8b949e"/>
             <text class="ct-val" x="268" y="120">~6</text>
           </svg>
         </div>
         <div class="panel">
-          <div class="paneltitle">Baseline vs. actual &mdash; %</div>
-          <div class="legend" style="margin-bottom:0.5rem;">
-            <div class="lgi"><span class="lgs" style="background:#c98500"></span>baseline</div>
-            <div class="lgi"><span class="lgs" style="background:#1f9fc4"></span>actual</div>
-          </div>
-          <svg viewBox="0 0 300 160" role="img" aria-label="Baseline versus actual weekly budget used. Rounds 1 and 2 match exactly by construction, at 3 and 2 percent. Round 3 baseline predicts 2.3 percent and actual was about 6 percent." xmlns="http://www.w3.org/2000/svg">
-            <line class="ct-ax" x1="60" y1="10" x2="60" y2="148"/>
-            <text class="ct-lab" x="52" y="37" text-anchor="end">round 1</text>
-            <rect x="60" y="16" width="100" height="14" rx="4" fill="#c98500"/>
-            <text class="ct-val" x="168" y="27">3.0</text>
-            <rect x="60" y="34" width="100" height="14" rx="4" fill="#1f9fc4"/>
-            <text class="ct-val" x="168" y="45">~3</text>
-            <text class="ct-lab" x="52" y="85" text-anchor="end">round 2</text>
-            <rect x="60" y="64" width="67" height="14" rx="4" fill="#c98500"/>
-            <text class="ct-val" x="135" y="75">2.0</text>
-            <rect x="60" y="82" width="67" height="14" rx="4" fill="#1f9fc4"/>
-            <text class="ct-val" x="135" y="93">~2</text>
-            <text class="ct-lab" x="52" y="133" text-anchor="end">round 3</text>
-            <rect x="60" y="112" width="78" height="14" rx="4" fill="#c98500"/>
-            <text class="ct-val" x="146" y="123">2.3</text>
-            <rect x="60" y="130" width="200" height="14" rx="4" fill="#1f9fc4"/>
-            <text class="ct-val" x="268" y="141">~6</text>
+          <div class="paneltitle">% per merged PR</div>
+          <svg viewBox="0 0 300 150" role="img" aria-label="Weekly budget percent per merged pull request: round 1 zero point four three, round 2 zero point six seven, round 3 one point zero zero." xmlns="http://www.w3.org/2000/svg">
+            <line class="ct-ax" x1="60" y1="14" x2="60" y2="132"/>
+            <text class="ct-lab" x="52" y="41" text-anchor="end">round 1</text>
+            <rect x="60" y="26" width="86" height="26" rx="4" fill="#1f9fc4"/>
+            <text class="ct-val" x="154" y="44">0.43</text>
+            <text class="ct-lab" x="52" y="79" text-anchor="end">round 2</text>
+            <rect x="60" y="64" width="133" height="26" rx="4" fill="#1f9fc4"/>
+            <text class="ct-val" x="201" y="82">0.67</text>
+            <text class="ct-lab" x="52" y="117" text-anchor="end">round 3</text>
+            <rect x="60" y="102" width="200" height="26" rx="4" fill="#1f9fc4"/>
+            <text class="ct-val" x="268" y="120">1.00</text>
+          </svg>
+        </div>
+        <div class="panel">
+          <div class="paneltitle">% per item closed</div>
+          <svg viewBox="0 0 300 150" role="img" aria-label="Weekly budget percent per tracked item closed: round 1 not tracked, round 2 zero point three three, round 3 zero point four six." xmlns="http://www.w3.org/2000/svg">
+            <line class="ct-ax" x1="60" y1="14" x2="60" y2="132"/>
+            <text class="ct-lab" x="52" y="41" text-anchor="end">round 1</text>
+            <line class="ct-gr" x1="60" y1="39" x2="100" y2="39" stroke-dasharray="3 3"/>
+            <text class="ct-abs" x="106" y="43">not tracked</text>
+            <text class="ct-lab" x="52" y="79" text-anchor="end">round 2</text>
+            <rect x="60" y="64" width="145" height="26" rx="4" fill="#1f9fc4"/>
+            <text class="ct-val" x="213" y="82">0.33</text>
+            <text class="ct-lab" x="52" y="117" text-anchor="end">round 3</text>
+            <rect x="60" y="102" width="200" height="26" rx="4" fill="#1f9fc4"/>
+            <text class="ct-val" x="268" y="120">0.46</text>
           </svg>
         </div>
       </div>
 
-      <figcaption><b>Rounds 1 and 2 are not evidence of anything</b> &mdash; they define the baseline, so they match it by construction. It is worth being blunt about that, because the tempting version of this chart compares cost <em>per worker</em> (0.5 &rarr; 0.7 &rarr; 1.5 points each) and reads the rise as a finding. It isn't: with a fixed overhead spread over fewer workers, per-worker cost <em>must</em> rise when the count falls 6&rarr;3, whatever else is true. That step is arithmetic, not signal.</figcaption>
-      <figcaption style="border-top:none; padding-top:0.4rem;">Round 3 is the real observation, and it is a large one: <b>roughly 2.5&times; the baseline, on a worker count the baseline handles comfortably</b>. <em>Where that overrun went is not metered.</em> A single weekly reading does not decompose into a coordinator share and a worker share, and nothing in this setup captured the split &mdash; so the honest statement stops at &ldquo;round 3 cost far more than its shape predicts.&rdquo; The coordinator's own account is that it went into adjudication: long approval write-ups, merge verification, judgement calls about what a finding meant. <b>If that reading is right, the marginal worker is cheap and the marginal decision is not</b> &mdash; but it is a hypothesis this instrumentation can neither confirm nor refute, and closing that gap is the first thing the next round should do.</figcaption>
+      <figcaption>Round 2 to round 3: total cost <b>3&times;</b>, output about <b>2&times;</b>, unit cost <b>1.4&ndash;1.5&times;</b> depending on which denominator you use. Most of the headline increase is just more work happening. What's left over is a real rise in what each merged change costs, and across all three rounds that runs <b>0.43 &rarr; 0.67 &rarr; 1.00</b> per PR &mdash; roughly 2.3&times;, in one direction, while the process was getting better at throughput.</figcaption>
+      <figcaption style="border-top:none; padding-top:0.4rem;">Where the extra goes is not metered. One weekly reading doesn't split into a coordinator share and a worker share, and nothing here captured that split. The coordinator's account is that it went into reconciliation &mdash; approval write-ups, merge verification, deciding what a finding meant. That fits the shape of the work and it is still a hypothesis, not a measurement. Round 1's cost is comparable to the others even though its <em>timing</em> isn't, because waiting on a human to click costs wall-clock and not budget.</figcaption>
+      <p class="srcline">totals approximate, read from a usage panel · per-unit figures are those totals divided by merged PRs and closed items</p>
     </figure>
 
     <figure class="fig">
@@ -788,6 +869,8 @@
 
       <figcaption><b>Both halves come with a caveat, and the caveats are the interesting part.</b> The 1.9&times; is an <em>upper bound</em>: it is summed elapsed time minus the idle gaps long enough to detect, so any shorter stall is still counted as work. And it covers only the opening burst &mdash; measured across the whole round the figure collapses to 1.1&times;, which is not a finding about parallelism at all but an artifact of one session being left open overnight and resumed the next day. <b>Elapsed time is not working time, and nothing in the setup distinguishes them.</b> The right-hand curve is explicitly a model: it shows why returns should flatten once added work lands on the one path that cannot be parallelised. Round 1's six workers sit in that flat region &mdash; and round 1 was the round that was hardest to hold together.</figcaption>
       <p class="srcline">left: measured session timestamps, idle gaps &gt;5 min excluded · right: modelled, serial fraction 0.25 assumed to illustrate the shape — not measured.</p>
+
+      <p class="note" style="margin-top:1.2rem;"><b>One more thing sitting in these timings, unquantified.</b> Rounds hit the hosting platform's API rate limit and pause until the allowance renews. It appears to bite one thread at a time rather than the whole round &mdash; the other leases carried on while one waited &mdash; so it probably shows up as a small stall rather than a stop. But <em>probably</em> is doing real work in that sentence. Nothing distinguishes &ldquo;paused on a rate limit&rdquo; from &ldquo;thinking&rdquo; in the data I have, which is one more reason the elapsed-time numbers above are bounds rather than measurements.</p>
     </figure>
   </section>
 
@@ -838,16 +921,16 @@
 
     <p class="secsub" style="margin-top:1.6rem;">The fix turns on a small asymmetry that had to be discovered: <b>a session cannot look up its own id, but it can be found by others under its title.</b> So the address could never be supplied by the coordinator &mdash; it had to be made derivable by the worker. The earlier briefs had been written by a coordinator that was itself reachable by reply, and had never tested the return path from a session spawned the way these were.</p>
 
-    <p class="note" style="margin-top:1.4rem;"><b>The uncomfortable part.</b> That paragraph was reviewed before it was sent, twice, and read as perfectly clear &mdash; because it <em>is</em> clear, to a reader. The defect was invisible from the writing side and observable only in the outcome, and the outcome was silence, which looks like nothing being wrong. That makes it the same class as section 05: <b>a brief that reads fine and does nothing is a plausible green.</b> The standing assumption now is that an unexecuted instruction is under-specified rather than ignored.</p>
+    <p class="note" style="margin-top:1.4rem;"><b>The uncomfortable part.</b> That paragraph was reviewed before it was sent, twice, and read as perfectly clear &mdash; because it <em>is</em> clear, to a reader. The defect was invisible from the writing side and only showed up as an absence, and absences are easy to miss. Same class as section 05: <b>a brief that reads fine and does nothing is a plausible green.</b> The standing assumption now is that an unexecuted instruction is under-specified rather than ignored.</p>
 
-    <p class="secsub" style="margin-top:1.6rem;">The general form, which is the part I would carry into any brief written for a machine: <b>an instruction is real only if it names an observable trigger, a mechanism, and an address the reader can derive.</b> A human who is handed an impossible instruction asks a clarifying question. A worker session does something worse &mdash; it forms a reasonable belief that the channel does not exist, and proceeds without it.</p>
+    <p class="secsub" style="margin-top:1.6rem;">The general form: <b>an instruction is real only if it names an observable trigger, a mechanism, and an address the reader can work out.</b> Hand a human an impossible instruction and they ask a clarifying question. A worker session does something worse. It forms a reasonable belief that the channel doesn't exist, and proceeds without it.</p>
 
     <div class="cas" style="margin-top:1.6rem; border-color: rgba(0,255,159,0.28); border-left-color: var(--accent-green);">
       <div class="ct" style="color: var(--accent-green);">the correction &middot; and who made it</div>
       <h4>The diagnosis was also wrong, and a worker said so</h4>
       <p>The coordinator's first conclusion was that the reply path was <em>structurally impossible</em> &mdash; no sender, therefore no channel. A worker corrected it: <b>&ldquo;There was a channel. I didn't find it. Don't record &lsquo;structurally impossible&rsquo; &mdash; that would fix the playbook in the wrong direction.&rdquo;</b></p>
       <p>It had reached for the tool whose name made it the obvious first guess &mdash; the one that addresses subagents a session spawns itself, not sibling sessions &mdash; been told no such recipient was reachable, and reasonably concluded no path existed. The real defect was narrower and more fixable than the coordinator's version of it, and getting it right mattered: the wrong diagnosis would have produced a workaround instead of a working address.</p>
-      <p>This was not unusual. Across the three rounds, <b>workers corrected the coordinator's premise more often than the reverse</b> &mdash; and the briefs came to say so out loud, granting explicit permission to reject the task's own stated reasoning. In round 3 four workers corrected the premise of their own assignment and two corrected the coordinator's. That is not a failure of the pattern; it is the pattern's error-correction path working, and it is the strongest argument for <em>writing the brief so it can be argued with.</em></p>
+      <p>This was not unusual. Across the three rounds, <b>workers corrected the coordinator's premise more often than the reverse</b> &mdash; which is the ordinary asymmetry between a lead and the person actually in the file, not a scoreboard &mdash; and the briefs came to say so out loud, granting explicit permission to reject the task's own stated reasoning. In round 3 four workers corrected the premise of their own assignment and two corrected the coordinator's. That is not a failure of the pattern; it is the pattern's error-correction path working, and it is the strongest argument for <em>writing the brief so it can be argued with.</em></p>
     </div>
   </section>
 
@@ -895,8 +978,24 @@
     </div>
   </section>
 
+  <section class="sec" id="next">
+    <div class="sechead"><span class="secnum">08</span><h2>Where this goes, if it goes anywhere</h2><div class="divider"></div></div>
+    <p class="secsub">Everything above happened. This part hasn't been tried, and it is written down here as intent so that it can be wrong in public rather than quietly abandoned.</p>
+
+    <div class="stage">
+      <div class="stagehead"><span class="stagenum">?</span><span class="stagename">A coordinator that runs its own next round</span><span class="stagekind">untried</span></div>
+      <p>Step 6 of the loop hands the board to whoever starts the next cycle, and there is no particular reason that has to be a person. A coordinator could finish its round, evaluate its own worktree the same way it evaluates a lease's, pull the next set of non-intersecting items off the board it just wrote, and go again. Come back later to several worktrees staged and waiting rather than one.</p>
+      <p>The obvious failure mode is the one this whole page is about: a cycle that runs clean and produces nothing, repeatedly, with no one reading the output. It would need the stopping rule before it needed the automation.</p>
+    </div>
+    <div class="stage">
+      <div class="stagehead"><span class="stagenum">?</span><span class="stagename">Something above the coordinators</span><span class="stagekind">untried</span></div>
+      <p>Past some number of concurrent coordinators, the merge problem comes back one level up &mdash; several finished worktrees, each internally consistent, that now have to land together in an order nobody has worked out. That is the same problem as section 03 with bigger units, and it presumably wants the same answer: one writer, holding the ordering.</p>
+      <p>Whether that tier is worth building depends entirely on whether the cost shape in section 04 holds at that scale, and there is no reason to assume it does. The reconciliation step is the expensive one, and a tier whose entire job is reconciliation is not obviously a bargain.</p>
+    </div>
+  </section>
+
   <div class="takeaway">
-    <h3>What I would keep, and what I would change</h3>
+    <h3>What I'd keep, and what I'd change</h3>
     <p><b>Keep the lease.</b> Partitioning by write-surface rather than by topic removed an entire category of failure, and the disjointness check that makes it work costs seconds. Keep the serial spine too: the discipline of routing the board, the merges, the shared sinks and the intake through one writer is what stops N parallel sessions from producing N inconsistent versions of the truth.</p>
     <p><b>Change the measurement.</b> The most interesting question &mdash; where the coordinator's effort actually went &mdash; has no data behind it. Cost was read off a usage panel rather than metered per session; per-worker attribution was never aggregated; working time was never separated from elapsed time, which is why the round-level speedup figure had to be thrown out. Three rounds in, <b>the pattern is better understood than it is instrumented</b>, and the next round's first job is to fix that rather than to run wider.</p>
 

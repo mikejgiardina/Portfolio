@@ -525,7 +525,24 @@
 <div class="outro wrap">
   <div class="rule"></div>
   <h2>The waveform did the teaching.</h2>
-  <p>Peaked T waves, the Nernst safety margin, calcium-that-doesn't-lower-potassium, the insulin-needs-dextrose trap, protect-shift-remove, dialysis as the only cure in ESRD — every beat of that is straight from the scholarly article. It was just wired to a monitor that moves.</p>
+  <p>Peaked T waves, the Nernst safety margin, calcium-that-doesn't-lower-potassium, the insulin-needs-dextrose trap, protect-shift-remove, dialysis as the only cure in ESRD — every beat of that traces to the literature at the foot of this page. It was just wired to a monitor that moves.</p>
+
+  <div class="decode" style="border-left-color:#6b7a82; margin-top:22px;">
+    <h3>◇ How the monitor actually works</h3>
+    <p>The ECG on this page is not a video and not a library. It's about 13 KB of hand-written JavaScript drawing to a canvas, and the potassium slider is wired to the morphology rather than to a picture of it.</p>
+    <p>Four waveform archetypes are defined as functions of cycle phase — <span class="mono">wNormal</span>, <span class="mono">wPeaked</span>, <span class="mono">wWide</span>, <span class="mono">wSine</span> — anchored at <span class="mono">K 5.2 / 6.2 / 7.6 / 8.8</span>. Any potassium between two anchors is drawn by interpolating between their two waveforms, so the trace morphs continuously instead of snapping between four fixed images. QRS width is mapped separately, widening from a normal baseline as potassium climbs past roughly 5.4. The strip scrolls through a ring buffer at a fixed sample rate; the vitals ease toward their targets rather than jumping, because a monitor that snaps reads as fake.</p>
+    <p><strong>What the model gets wrong, on purpose and otherwise.</strong> Real hyperkalemic ECG progression is not a clean function of the serum number — rate of rise, calcium, sodium, pH and the individual patient all move it, and people have died with a normal-looking strip at a potassium this page would draw as a sine wave. The morphology here is <em>stylized to teach the sequence</em>, not to predict what any given patient's monitor will show. Treat the ordering as real and the exact mapping as a teaching device.</p>
+  </div>
+
+  <h3 style="font-family:var(--mono); font-size:12px; letter-spacing:0.14em; text-transform:uppercase; color:#6b7a82; margin:26px 0 10px;">References</h3>
+  <ol style="font-size:13px; line-height:1.75; color:#8fa0a8; padding-left:20px;">
+    <li>Lindner G, Burdmann EA, Clase CM, et al. Acute hyperkalemia in the emergency department: a summary from a Kidney Disease: Improving Global Outcomes conference. <em>Eur J Emerg Med.</em> 2020;27(5):329–337.</li>
+    <li>Clase CM, Carrero JJ, Ellison DH, et al. Potassium homeostasis and management of dyskalemia in kidney diseases: conclusions from a KDIGO Controversies Conference. <em>Kidney Int.</em> 2020;97(1):42–61.</li>
+    <li>Panchal AR, Bartos JA, Cabañas JG, et al. Part 3: Adult Basic and Advanced Life Support — 2020 American Heart Association Guidelines for CPR and Emergency Cardiovascular Care. <em>Circulation.</em> 2020;142(16_suppl_2):S366–S468.</li>
+    <li>Montford JR, Linas S. How dangerous is hyperkalemia? <em>J Am Soc Nephrol.</em> 2017;28(11):3155–3165.</li>
+    <li>Sterns RH, Rojas M, Bernstein P, Chennupati S. Ion-exchange resins for the treatment of hyperkalemia: are they safe and effective? <em>J Am Soc Nephrol.</em> 2010;21(5):733–735.</li>
+    <li>Mattu A, Brady WJ, Robinson DA. Electrocardiographic manifestations of hyperkalemia. <em>Am J Emerg Med.</em> 2000;18(6):721–729.</li>
+  </ol>
   <p>A frozen ECG plate shows you one number. This shows you the <em>slope</em> — what the heart does as the potassium climbs, and what your drugs do to pull it back.</p>
 </div>
 
