@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Engineering Case Studies — Michael Giardina</title>
-<meta name="description" content="Three write-ups on the layer around the code: lifecycle-hook automation, turning conventions into enforced checks, and disclosure control for a patent-pending codebase.">
+<meta name="description" content="Four write-ups on the layer around the code: lifecycle-hook automation, turning conventions into enforced checks, disclosure control for a patent-pending codebase, and coordinating parallel AI coding sessions against one shared repository set.">
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Crimson+Pro:wght@400;600&family=Work+Sans:wght@300;500;700&display=swap" rel="stylesheet">
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -160,12 +160,12 @@
 
   <header class="hero">
     <div class="status-bar">
-      <div class="status-item"><span class="status-dot"></span><span>THREE WRITE-UPS &middot; REVISED AS THE SYSTEM CHANGES</span></div>
+      <div class="status-item"><span class="status-dot"></span><span>FOUR WRITE-UPS &middot; REVISED AS THE SYSTEM CHANGES</span></div>
     </div>
     <p class="kicker">Engineering practice</p>
     <h1>The layer around the code.</h1>
     <p class="lede">Most of what keeps a codebase correct isn't in the codebase. It's in what runs automatically, what gets checked rather than remembered, and what is allowed to leave the repository at all.</p>
-    <p class="lede">These are three write-ups on that layer, built for a multi-repository system where <b>AI coding sessions run daily</b> and one person holds the working knowledge. Each one names the incident that produced the rule, and each one documents where it has failed.</p>
+    <p class="lede">These are four write-ups on that layer, built for a multi-repository system where <b>AI coding sessions run daily</b> and one person holds the working knowledge. Each one names the incident that produced the rule, and each one documents where it has failed.</p>
     <p class="context">python simulation engine &middot; typescript / react apps &middot; swift ios app &middot; markdown docs corpus &middot; agent-config repo</p>
   </header>
 
@@ -195,9 +195,17 @@
       <div class="sgo">Read the case study <span class="arr">&rarr;</span></div>
     </a>
 
+    <a class="study" href="../orchestration/">
+      <div class="snum">04 &middot; Orchestration</div>
+      <div class="stitle">One coordinator, several workers</div>
+      <div class="ssub">parallel sessions</div>
+      <p class="sdesc">Three rounds of running AI coding sessions concurrently against one shared repository set. Partition by write-surface rather than by topic; route everything that can't be done twice through a single writer. Includes what it cost, and the defect class that turned up in every round &mdash; a failure that reports success.</p>
+      <div class="sgo">Read the case study <span class="arr">&rarr;</span></div>
+    </a>
+
   </div>
 
-  <p class="closing">They're written to be read in any order, though they run in that one: the first is the layer that <b>runs</b>, the second and third are the layer that <b>decides</b>. Process shape only &mdash; proprietary specifics are generalized or omitted throughout.</p>
+  <p class="closing">They're written to be read in any order, though they run in roughly that one: the first is the layer that <b>runs</b>, the second and third are the layer that <b>decides</b>, and the fourth is what happens when several sessions try to use all three at once. Process shape only &mdash; proprietary specifics are generalized or omitted throughout.</p>
 
   <footer>
     <p>Engineering case studies &middot; developer tooling, process design, and disclosure control.</p>
