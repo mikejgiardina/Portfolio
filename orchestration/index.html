@@ -357,7 +357,7 @@
       <div class="card">
         <div class="tag">the unit</div>
         <h3>A lease is a repo plus globs</h3>
-        <p>Not &ldquo;you own the citation work.&rdquo; A lease is <code>(repository, [path globs])</code> &mdash; a concrete, enumerable set of files a session is permitted to write. Everything outside it is read-only to that session.</p>
+        <p>Not &ldquo;you take auth, you take docs.&rdquo; A lease is <code>(repository, [path globs])</code> &mdash; a concrete, enumerable set of files a session is permitted to write. Everything outside it is read-only to that session.</p>
       </div>
       <div class="card">
         <div class="tag">the check</div>
@@ -425,12 +425,12 @@
         <line class="dg-l" x1="278" y1="76" x2="330" y2="76"/>
         <rect class="dg-box" x="330" y="50" width="180" height="52" rx="4"/>
         <text class="dg-t" x="344" y="72">Worker 1</text>
-        <text class="dg-s" x="344" y="90">a citation-integrity check</text>
+        <text class="dg-s" x="344" y="90">a changelog-coverage gate</text>
         <g color="#8b949e"><path class="dg-l" d="M 510 76 L 596 76" marker-end="url(#ar)"/></g>
         <text class="dg-a" x="524" y="68">writes</text>
         <rect class="dg-box-ser" x="600" y="50" width="300" height="52" rx="4"/>
         <text class="dg-s" x="614" y="72" fill="#c98500">repo-a/</text>
-        <text class="dg-s" x="614" y="88">tools/citations/**  ·  tests/citations/**</text>
+        <text class="dg-s" x="614" y="88">tools/changelog/**  ·  tests/changelog/**</text>
 
         <!-- W2 -->
         <line class="dg-l" x1="278" y1="166" x2="330" y2="166"/>
@@ -506,12 +506,12 @@
 
     C --&gt;|sole writer| SPINE
 
-    C --&gt;|spawn + brief| W1["Worker 1&lt;br/&gt;a citation-integrity check"]
+    C --&gt;|spawn + brief| W1["Worker 1&lt;br/&gt;a changelog-coverage gate"]
     C --&gt;|spawn + brief| W2["Worker 2&lt;br/&gt;a metrics-provenance gate"]
     C --&gt;|spawn + brief| W3["Worker 3&lt;br/&gt;a hook test suite"]
     C --&gt;|spawn + brief| W4["Worker 4&lt;br/&gt;a UI registry cleanup"]
 
-    W1 --&gt;|writes| L1["repo-a/ tools/citations/** · tests/citations/**"]
+    W1 --&gt;|writes| L1["repo-a/ tools/changelog/** · tests/changelog/**"]
     W2 --&gt;|writes| L2["repo-a/ tools/provenance/** · tests/provenance/**"]
     W3 --&gt;|writes| L3["repo-b/ hooks/** · tests/hooks/**"]
     W4 --&gt;|writes| L4["repo-a/ ui/src/registry/**"]
@@ -573,27 +573,27 @@
 
   <section class="sec" id="cost">
     <div class="sechead"><span class="secnum">04</span><h2>What three rounds cost</h2><div class="divider"></div></div>
-    <p class="secsub">Budget consumption is measured against a rolling weekly allowance, in whole points, and is <b>approximate</b> &mdash; it is read off a usage panel rather than metered per session. That imprecision is real and is not smoothed over below; the shape of the finding survives it comfortably, because the effect is large.</p>
+    <p class="secsub">Cost below is in <b>percentage points of a rolling weekly all-models allowance</b>, and is <b>approximate</b> &mdash; read off a usage panel rather than metered per session. That imprecision is real and is not smoothed over; the finding survives it because the effect is large. A whole round of this consumes single-digit percent of a week.</p>
 
     <div class="tablewrap" style="margin-bottom:1.6rem;">
       <table>
-        <thead><tr><th>Round</th><th class="num">Workers</th><th class="num">PRs merged</th><th class="num">Issues closed</th><th class="num">Budget (pts, approx)</th><th class="num">Pts / worker</th></tr></thead>
+        <thead><tr><th>Round</th><th class="num">Workers</th><th class="num">PRs merged</th><th class="num">Issues closed</th><th class="num">Weekly budget used (%, approx)</th><th class="num">Baseline predicts</th></tr></thead>
         <tbody>
-          <tr><td><b>Round 1</b></td><td class="num">6</td><td class="num">7</td><td class="num"><span class="absent">not tracked</span></td><td class="num">~3</td><td class="num">0.5</td></tr>
-          <tr><td><b>Round 2</b></td><td class="num">3</td><td class="num">3</td><td class="num">6</td><td class="num">~2</td><td class="num">0.7</td></tr>
-          <tr><td><b>Round 3</b></td><td class="num">4</td><td class="num">6</td><td class="num">13</td><td class="num">~6</td><td class="num">1.5</td></tr>
+          <tr><td><b>Round 1</b></td><td class="num">6</td><td class="num">7</td><td class="num"><span class="absent">not tracked</span></td><td class="num">~3</td><td class="num"><span class="absent">defines it</span></td></tr>
+          <tr><td><b>Round 2</b></td><td class="num">3</td><td class="num">3</td><td class="num">6</td><td class="num">~2</td><td class="num"><span class="absent">defines it</span></td></tr>
+          <tr><td><b>Round 3</b></td><td class="num">4</td><td class="num">6</td><td class="num">13</td><td class="num"><b>~6</b></td><td class="num">~2.3</td></tr>
         </tbody>
       </table>
     </div>
 
     <figure class="fig">
-      <div class="figtitle">Figure 2 &middot; cost does not track worker count</div>
-      <p class="figlede">Round 3 ran <b>fewer</b> workers than round 1 and cost <b>twice as much</b>. Read the two panels together: the left one is what you would budget for; the right one is what actually drives the bill.</p>
+      <div class="figtitle">Figure 2 &middot; round 3 cost 2.6&times; what the first two rounds imply</div>
+      <p class="figlede">The obvious cost model is <b>a fixed coordinator overhead plus a per-worker cost</b>. Two rounds fix both constants exactly &mdash; two equations, two unknowns &mdash; giving a fixed overhead of about <b>1 percentage point</b> and about <b>0.33 per worker</b>. That baseline fits rounds 1 and 2 perfectly, and it has to, so it proves nothing about them. Round 3 is the test: the baseline says <b>~2.3</b>, and it came in at <b>~6</b>.</p>
 
       <div class="panels">
         <div class="panel">
-          <div class="paneltitle">Budget points per round</div>
-          <svg viewBox="0 0 300 150" role="img" aria-label="Budget points per round: round 1 about 3 points, round 2 about 2 points, round 3 about 6 points." xmlns="http://www.w3.org/2000/svg">
+          <div class="paneltitle">Weekly budget used, per round &mdash; %</div>
+          <svg viewBox="0 0 300 150" role="img" aria-label="Weekly budget used per round: round 1 about 3 percent, round 2 about 2 percent, round 3 about 6 percent." xmlns="http://www.w3.org/2000/svg">
             <line class="ct-ax" x1="60" y1="14" x2="60" y2="132"/>
             <text class="ct-lab" x="52" y="41" text-anchor="end">round 1</text>
             <rect x="60" y="26" width="100" height="26" rx="4" fill="#1f9fc4"/>
@@ -607,23 +607,34 @@
           </svg>
         </div>
         <div class="panel">
-          <div class="paneltitle">Budget points per worker</div>
-          <svg viewBox="0 0 300 150" role="img" aria-label="Budget points per worker: round 1 zero point five, round 2 zero point seven, round 3 one point five — rising steadily even though worker count fell then rose." xmlns="http://www.w3.org/2000/svg">
-            <line class="ct-ax" x1="60" y1="14" x2="60" y2="132"/>
-            <text class="ct-lab" x="52" y="41" text-anchor="end">round 1</text>
-            <rect x="60" y="26" width="67" height="26" rx="4" fill="#c98500"/>
-            <text class="ct-val" x="135" y="44">0.5</text>
-            <text class="ct-lab" x="52" y="79" text-anchor="end">round 2</text>
-            <rect x="60" y="64" width="89" height="26" rx="4" fill="#c98500"/>
-            <text class="ct-val" x="157" y="82">0.7</text>
-            <text class="ct-lab" x="52" y="117" text-anchor="end">round 3</text>
-            <rect x="60" y="102" width="200" height="26" rx="4" fill="#c98500"/>
-            <text class="ct-val" x="268" y="120">1.5</text>
+          <div class="paneltitle">Baseline vs. actual &mdash; %</div>
+          <div class="legend" style="margin-bottom:0.5rem;">
+            <div class="lgi"><span class="lgs" style="background:#c98500"></span>baseline</div>
+            <div class="lgi"><span class="lgs" style="background:#1f9fc4"></span>actual</div>
+          </div>
+          <svg viewBox="0 0 300 160" role="img" aria-label="Baseline versus actual weekly budget used. Rounds 1 and 2 match exactly by construction, at 3 and 2 percent. Round 3 baseline predicts 2.3 percent and actual was about 6 percent." xmlns="http://www.w3.org/2000/svg">
+            <line class="ct-ax" x1="60" y1="10" x2="60" y2="148"/>
+            <text class="ct-lab" x="52" y="37" text-anchor="end">round 1</text>
+            <rect x="60" y="16" width="100" height="14" rx="4" fill="#c98500"/>
+            <text class="ct-val" x="168" y="27">3.0</text>
+            <rect x="60" y="34" width="100" height="14" rx="4" fill="#1f9fc4"/>
+            <text class="ct-val" x="168" y="45">~3</text>
+            <text class="ct-lab" x="52" y="85" text-anchor="end">round 2</text>
+            <rect x="60" y="64" width="67" height="14" rx="4" fill="#c98500"/>
+            <text class="ct-val" x="135" y="75">2.0</text>
+            <rect x="60" y="82" width="67" height="14" rx="4" fill="#1f9fc4"/>
+            <text class="ct-val" x="135" y="93">~2</text>
+            <text class="ct-lab" x="52" y="133" text-anchor="end">round 3</text>
+            <rect x="60" y="112" width="78" height="14" rx="4" fill="#c98500"/>
+            <text class="ct-val" x="146" y="123">2.3</text>
+            <rect x="60" y="130" width="200" height="14" rx="4" fill="#1f9fc4"/>
+            <text class="ct-val" x="268" y="141">~6</text>
           </svg>
         </div>
       </div>
 
-      <figcaption>Worker count went <b>6 &rarr; 3 &rarr; 4</b>. Cost per worker went <b>0.5 &rarr; 0.7 &rarr; 1.5</b>, rising monotonically through both directions of that swing &mdash; so it is not tracking the workers. What rose across the three rounds was the amount of <em>coordinator adjudication</em>: more merge decisions, more review cycles, more judgement calls about what a finding meant. <b>The marginal worker is cheap. The marginal decision is not.</b></figcaption>
+      <figcaption><b>Rounds 1 and 2 are not evidence of anything</b> &mdash; they define the baseline, so they match it by construction. It is worth being blunt about that, because the tempting version of this chart compares cost <em>per worker</em> (0.5 &rarr; 0.7 &rarr; 1.5) and reads the rise as a finding. It isn't: with a fixed overhead spread over fewer workers, per-worker cost <em>must</em> rise when the count falls 6&rarr;3, whatever else is true. That step is arithmetic, not signal.</figcaption>
+      <figcaption style="border-top:none; padding-top:0.4rem;">Round 3 is the real observation, and it is a large one: <b>2.6&times; the baseline, on a worker count the baseline handles comfortably</b>. The overrun was not in the workers. It was coordinator adjudication &mdash; long approval write-ups, merge verification, judgement calls about what a finding meant. <b>The marginal worker is cheap; the marginal decision is not.</b></figcaption>
     </figure>
 
     <figure class="fig">
@@ -708,19 +719,20 @@
 
       <svg viewBox="0 0 620 300" role="img" aria-label="Speedup versus worker count. Without a serial bottleneck speedup rises linearly from one to six. With about a quarter of the round serial, speedup flattens near three and gains little past four workers. Rounds one, two and three are marked at six, three and four workers." xmlns="http://www.w3.org/2000/svg">
         <!-- grid -->
-        <line class="ct-gr" x1="56" y1="230" x2="590" y2="230"/>
-        <line class="ct-gr" x1="56" y1="184" x2="590" y2="184"/>
-        <line class="ct-gr" x1="56" y1="138" x2="590" y2="138"/>
-        <line class="ct-gr" x1="56" y1="92"  x2="590" y2="92"/>
-        <line class="ct-gr" x1="56" y1="46"  x2="590" y2="46"/>
-        <line class="ct-ax" x1="56" y1="24" x2="56" y2="230"/>
+        <line class="ct-gr" x1="56" y1="190" x2="590" y2="190"/>
+        <line class="ct-gr" x1="56" y1="150" x2="590" y2="150"/>
+        <line class="ct-gr" x1="56" y1="110" x2="590" y2="110"/>
+        <line class="ct-gr" x1="56" y1="70"  x2="590" y2="70"/>
+        <line class="ct-gr" x1="56" y1="30"  x2="590" y2="30"/>
+        <line class="ct-ax" x1="56" y1="22" x2="56" y2="230"/>
         <line class="ct-ax" x1="56" y1="230" x2="590" y2="230"/>
 
         <text class="ct-lab" x="48" y="234" text-anchor="end">1&times;</text>
-        <text class="ct-lab" x="48" y="188" text-anchor="end">2&times;</text>
-        <text class="ct-lab" x="48" y="142" text-anchor="end">3&times;</text>
-        <text class="ct-lab" x="48" y="96"  text-anchor="end">4&times;</text>
-        <text class="ct-lab" x="48" y="50"  text-anchor="end">5&times;</text>
+        <text class="ct-lab" x="48" y="194" text-anchor="end">2&times;</text>
+        <text class="ct-lab" x="48" y="154" text-anchor="end">3&times;</text>
+        <text class="ct-lab" x="48" y="114" text-anchor="end">4&times;</text>
+        <text class="ct-lab" x="48" y="74"  text-anchor="end">5&times;</text>
+        <text class="ct-lab" x="48" y="34"  text-anchor="end">6&times;</text>
 
         <text class="ct-lab" x="56"  y="250" text-anchor="middle">1</text>
         <text class="ct-lab" x="163" y="250" text-anchor="middle">2</text>
@@ -730,24 +742,24 @@
         <text class="ct-lab" x="590" y="250" text-anchor="middle">6</text>
         <text class="ct-lab" x="323" y="272" text-anchor="middle">concurrent workers</text>
 
-        <!-- ideal line: speedup = n  -->
-        <polyline class="ct-ln" points="56,230 163,184 270,138 377,92 484,46 590,0"
+        <!-- ideal line: speedup = n ; 1x at y=230, 40px per 1x -->
+        <polyline points="56,230 163,190 270,150 377,110 484,70 590,30"
                   fill="none" stroke="#1f9fc4" stroke-width="2"/>
         <!-- with 25% serial: 1/(0.25 + 0.75/n) -->
         <!-- n=1 →1.00 ; 2→1.60 ; 3→2.00 ; 4→2.29 ; 5→2.50 ; 6→2.67 -->
-        <polyline points="56,230 163,202 270,184 377,171 484,161 590,153"
+        <polyline points="56,230 163,206 270,190 377,179 484,170 590,163"
                   fill="none" stroke="#c98500" stroke-width="2"/>
 
         <!-- round markers on the realistic curve -->
-        <circle cx="270" cy="184" r="5" fill="#c98500" stroke="#151922" stroke-width="2"/>
-        <text class="ct-lab" x="270" y="172" text-anchor="middle">rd 2</text>
-        <circle cx="377" cy="171" r="5" fill="#c98500" stroke="#151922" stroke-width="2"/>
-        <text class="ct-lab" x="377" y="159" text-anchor="middle">rd 3</text>
-        <circle cx="590" cy="153" r="5" fill="#c98500" stroke="#151922" stroke-width="2"/>
-        <text class="ct-lab" x="578" y="141" text-anchor="middle">rd 1</text>
+        <circle cx="270" cy="190" r="5" fill="#c98500" stroke="#151922" stroke-width="2"/>
+        <text class="ct-lab" x="270" y="178" text-anchor="middle">rd 2</text>
+        <circle cx="377" cy="179" r="5" fill="#c98500" stroke="#151922" stroke-width="2"/>
+        <text class="ct-lab" x="377" y="167" text-anchor="middle">rd 3</text>
+        <circle cx="590" cy="163" r="5" fill="#c98500" stroke="#151922" stroke-width="2"/>
+        <text class="ct-lab" x="576" y="153" text-anchor="middle">rd 1</text>
 
-        <text class="ct-val" x="512" y="30" fill="#1f9fc4">no bottleneck</text>
-        <text class="ct-val" x="470" y="146" fill="#c98500">observed regime</text>
+        <text class="ct-val" x="440" y="24" fill="#1f9fc4">no bottleneck</text>
+        <text class="ct-val" x="410" y="206" fill="#c98500">observed regime</text>
       </svg>
         </div>
       </div>
@@ -874,7 +886,7 @@
   <footer>
     <p>Case study &middot; coordinating parallel AI coding sessions against one shared repository set.</p>
     <p>Process shape only. The work these sessions performed is described generically; proprietary specifics are omitted throughout.</p>
-    <p>Budget figures are approximate and read from a usage panel, not metered per session. Figure 4 is an explicit model, not a measurement.</p>
+    <p>Cost figures are percentage points of a rolling weekly all-models allowance &mdash; approximate, read from a usage panel rather than metered per session. Figure 2's baseline is a two-point fit and is exact on rounds 1&ndash;2 by construction. Figure 4's right-hand panel is an explicit model, not a measurement.</p>
     <p>Michael Giardina &middot; <a href="../">portfolio</a> &middot; <a href="https://www.linkedin.com/in/michael-giardina">linkedin.com/in/michael-giardina</a></p>
   </footer>
 
