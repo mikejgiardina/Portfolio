@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Running Sessions in Parallel: Leases, a Serial Spine, and the Plausible Green — Case Study</title>
-<meta name="description" content="Three rounds of an orchestration pattern where one coordinating session runs several worker sessions at once: partitioning by write-surface rather than by topic, routing every serial resource through one writer, and the defect class that kept showing up — a failure that produces a plausible green instead of an error.">
+<meta name="description" content="Five rounds of an orchestration pattern where one coordinating session runs several worker sessions at once: partitioning by write-surface rather than by topic, routing every serial resource through one writer, the defect class that kept showing up — a failure that produces a plausible green instead of an error — and what happened when the cost split was finally measured instead of guessed.">
 <link rel="stylesheet" href="../assets/site.css">
 <script src="../assets/site.js" defer></script>
 </head>
@@ -39,17 +39,17 @@
     <p class="kicker">Workflow design · parallel sessions</p>
     <h1>One coordinator, several workers, and one shared repository.</h1>
     <p class="lede">Running several AI coding sessions at once is easy to start and hard to keep coherent. The obvious partition &mdash; give each session a different <em>subject</em> &mdash; is the one that fails, because unrelated subjects keep landing in the same files. The partition that works is by <b>write-surface</b>: a session is handed a repository and a set of path globs, and the globs are checked to be disjoint <span class="cy">before anything is spawned</span>.</p>
-    <p class="lede">This is a write-up of three rounds of that pattern, run against a multi-repository workspace by one person. It covers what the leases are, which resources deliberately stay serial, what it cost, and the one defect class that showed up in every round.</p>
+    <p class="lede">This is a write-up of five rounds of that pattern, run against a multi-repository workspace. It covers what the leases are, which resources deliberately stay serial, what it cost, and the one defect class that showed up in every round. Round 5 built the instrument the first four were missing, so the cost question that the earlier version of this page left open now has an answer &mdash; and the answer partly contradicts what I expected.</p>
     <p class="context">a coordinating session · N worker sessions · git worktrees · a shared issue tracker · one human approving merges</p>
 
     <div class="stats">
-      <div class="stat"><span class="n">3</span><span class="l">rounds</span></div>
-      <div class="stat"><span class="n">13</span><span class="l">worker sessions</span></div>
-      <div class="stat"><span class="n">16</span><span class="l">pull requests merged</span></div>
-      <div class="stat"><span class="n">19</span><span class="l">issues closed &middot; rounds 2&ndash;3</span></div>
+      <div class="stat"><span class="n">5</span><span class="l">rounds</span></div>
+      <div class="stat"><span class="n">15</span><span class="l">worker sessions</span></div>
+      <div class="stat"><span class="n">19</span><span class="l">PRs merged &middot; lease rounds</span></div>
+      <div class="stat"><span class="n">31%</span><span class="l">coordinator share &middot; at round close, n=1</span></div>
     </div>
 
-    <p class="statnote">The issue count covers rounds 2 and 3. <b>Round 1 has no usable numbers because of how it was run:</b> nearly every step waited on me to approve it, and I came back to approve things whenever I got to it. Those sessions sat idle for most of that round, so its timing and cost don't compare to the two that followed. Taking those gates out is most of what changed between round 1 and round 2.</p>
+    <p class="statnote">Items closed are tracked for rounds 2, 3 and 5. <b>Round 1 has no usable numbers because of how it was run:</b> nearly every step waited on me to approve it, and I came back to approve things whenever I got to it. Those sessions sat idle for most of that round, so its timing and cost don't compare to the two that followed. Taking those gates out is most of what changed between round 1 and round 2.</p>
     <p class="statnote">Nothing here is a product claim. The work itself is described only by shape &mdash; a checker, a gate, a test suite. The coordination is the transferable part.</p>
   </header>
 
@@ -84,6 +84,15 @@
 
     <p class="note" style="margin-top:1.5rem;"><b>Where this leaks.</b> A lease constrains writes. It does nothing about a session <em>reading</em> a file another session is halfway through rewriting, so a worker can build correct work on a premise that's being invalidated underneath it.</p>
     <p class="note" style="margin-top:0.7rem;">Nothing automated catches that. What catches it is the coordinator, reading the diffs as they come back, spotting that two of them disagree about the same assumption, deciding which one is right, and telling the affected lease directly. Scheduling helps as well &mdash; two leases known to sit on either side of a shared assumption go in different rounds. Both of those are conventions rather than checks, and <a href="../enforcement/" style="color:var(--accent-cyan); text-decoration:none; border-bottom:1px solid var(--line)">the sibling write-up on enforcement</a> is blunt about what a convention is worth. This one is on that ledger, unfixed.</p>
+
+    <div class="cas" style="margin-top:1.5rem; border-color: rgba(255,180,84,0.3); border-left-color: var(--accent-amber);">
+      <div class="ct" style="color: var(--accent-amber);">the case where the primitive didn't fit &middot; run anyway</div>
+      <h4>Two sessions, one file, partitioned by intent</h4>
+      <p>This page was itself the test. Two sessions worked on the same file at the same time &mdash; one owning the prose, one owning the visual system &mdash; because the real boundary was <em>what kind of change</em>, and that is not expressible as a path glob. A lease could not describe it.</p>
+      <p>It merged with <b>zero conflicts</b>, and that is not the finding. The partition held because one session sent the other the exact strings to grep for after rebasing, and why each one mattered. Strip those two messages and nothing structural prevents a routine &ldquo;keep mine&rdquo; resolution from restoring a claim that had been removed from a live public page for cause.</p>
+      <p><b>So the honest result is: it would have failed, and was rescued by discretionary out-of-band coordination that the model does not require and cannot enforce.</b> A clean merge here is not evidence the primitive works. It is evidence that two careful participants can compensate for a primitive that doesn't apply &mdash; which is a different and much weaker claim.</p>
+      <p>Worth noting what the round's actual collision turned out to be: not the contested file at all, but a <em>squash race</em> on a branch nobody was contending. Commits pushed after a squash-merge landed on a closed PR and were silently never published. Path leasing does not address that and would not have caught it.</p>
+    </div>
   </section>
 
   <section class="sec" id="topology">
@@ -348,7 +357,7 @@
   </section>
 
   <section class="sec" id="cost">
-    <div class="sechead"><span class="secnum">04</span><h2>What three rounds cost</h2><div class="divider"></div></div>
+    <div class="sechead"><span class="secnum">04</span><h2>What five rounds cost</h2><div class="divider"></div></div>
     <p class="secsub">Cost here is <b>percentage points of a rolling weekly allowance</b> on a subscription, read off a usage panel. It is approximate and not metered per session. A whole round consumes single-digit percent of a week.</p>
 
     <p class="note" style="margin-bottom:1.6rem;"><b>Why the unit is a weekly allowance and not dollars.</b> Write-ups of multi-agent setups usually assume metered API billing, where the question is cost per call and parallelism is close to free. This runs on a subscription with a shared weekly ceiling, which changes the shape of the problem: the constraint is not per-call price, it's <em>one pool that every lease and the coordinator draw from at once</em>. That is what makes the coordinator's reconciliation step expensive in a way an API-billed setup would not surface the same way &mdash; and it is why the pattern is worth measuring in the first place rather than just scaled up.</p>
@@ -359,7 +368,9 @@
         <tbody>
           <tr><td><b>Round 1</b></td><td class="num">6</td><td class="num">7</td><td class="num"><span class="absent">not tracked</span></td><td class="num">~3</td><td class="num">0.43</td><td class="num"><span class="absent">&mdash;</span></td></tr>
           <tr><td><b>Round 2</b></td><td class="num">3</td><td class="num">3</td><td class="num">6</td><td class="num">~2</td><td class="num">0.67</td><td class="num">0.33</td></tr>
-          <tr><td><b>Round 3</b></td><td class="num">4</td><td class="num">6</td><td class="num">13</td><td class="num">~6</td><td class="num"><b>1.00</b></td><td class="num"><b>0.46</b></td></tr>
+          <tr><td><b>Round 3</b></td><td class="num">4</td><td class="num">6</td><td class="num">13</td><td class="num">~6</td><td class="num">1.00</td><td class="num">0.46</td></tr>
+          <tr><td><b>Round 4</b> <span class="absent">not a lease round</span></td><td class="num">0</td><td class="num"><span class="absent">&mdash;</span></td><td class="num"><span class="absent">&mdash;</span></td><td class="num">~5</td><td class="num"><span class="absent">&mdash;</span></td><td class="num"><span class="absent">&mdash;</span></td></tr>
+          <tr><td><b>Round 5</b></td><td class="num">2</td><td class="num">3</td><td class="num">5</td><td class="num">~6</td><td class="num"><b>2.00</b></td><td class="num"><b>1.20</b></td></tr>
         </tbody>
       </table>
     </div>
@@ -371,52 +382,70 @@
       <div class="panels">
         <div class="panel">
           <div class="paneltitle">Weekly % used, total</div>
-          <svg viewBox="0 0 300 150" role="img" aria-label="Weekly budget used per round: round 1 about 3 percent, round 2 about 2 percent, round 3 about 6 percent." xmlns="http://www.w3.org/2000/svg">
-            <line class="ct-ax" x1="60" y1="14" x2="60" y2="132"/>
-            <text class="ct-lab" x="52" y="41" text-anchor="end">round 1</text>
-            <rect x="60" y="26" width="100" height="26" rx="4" fill="#8b949e"/>
-            <text class="ct-val" x="168" y="44">~3</text>
-            <text class="ct-lab" x="52" y="79" text-anchor="end">round 2</text>
-            <rect x="60" y="64" width="67" height="26" rx="4" fill="#8b949e"/>
-            <text class="ct-val" x="135" y="82">~2</text>
-            <text class="ct-lab" x="52" y="117" text-anchor="end">round 3</text>
-            <rect x="60" y="102" width="200" height="26" rx="4" fill="#8b949e"/>
-            <text class="ct-val" x="268" y="120">~6</text>
-          </svg>
+          <svg viewBox="0 0 300 205" role="img" aria-label="Weekly budget used per round: round 1 about 3 percent, round 2 about 2, round 3 about 6, round 4 about 5, round 5 about 6." xmlns="http://www.w3.org/2000/svg">
+            <line class="ct-ax" x1="60" y1="10" x2="60" y2="198"/>
+            <text class="ct-lab" x="52" y="34" text-anchor="end">round 1</text>
+            <rect x="60" y="16" width="100" height="26" rx="4" fill="#8b949e"/>
+            <text class="ct-val" x="168" y="34">~3</text>
+            <text class="ct-lab" x="52" y="72" text-anchor="end">round 2</text>
+            <rect x="60" y="54" width="67" height="26" rx="4" fill="#8b949e"/>
+            <text class="ct-val" x="135" y="72">~2</text>
+            <text class="ct-lab" x="52" y="110" text-anchor="end">round 3</text>
+            <rect x="60" y="92" width="200" height="26" rx="4" fill="#8b949e"/>
+            <text class="ct-val" x="268" y="110">~6</text>
+            <text class="ct-lab" x="52" y="148" text-anchor="end">round 4</text>
+            <rect x="60" y="130" width="167" height="26" rx="4" fill="#8b949e"/>
+            <text class="ct-val" x="235" y="148">~5</text>
+            <text class="ct-lab" x="52" y="186" text-anchor="end">round 5</text>
+            <rect x="60" y="168" width="200" height="26" rx="4" fill="#8b949e"/>
+            <text class="ct-val" x="268" y="186">~6</text>
+            </svg>
         </div>
         <div class="panel">
           <div class="paneltitle">% per merged PR</div>
-          <svg viewBox="0 0 300 150" role="img" aria-label="Weekly budget percent per merged pull request: round 1 zero point four three, round 2 zero point six seven, round 3 one point zero zero." xmlns="http://www.w3.org/2000/svg">
-            <line class="ct-ax" x1="60" y1="14" x2="60" y2="132"/>
-            <text class="ct-lab" x="52" y="41" text-anchor="end">round 1</text>
-            <rect x="60" y="26" width="86" height="26" rx="4" fill="#1f9fc4"/>
-            <text class="ct-val" x="154" y="44">0.43</text>
-            <text class="ct-lab" x="52" y="79" text-anchor="end">round 2</text>
-            <rect x="60" y="64" width="133" height="26" rx="4" fill="#1f9fc4"/>
-            <text class="ct-val" x="201" y="82">0.67</text>
-            <text class="ct-lab" x="52" y="117" text-anchor="end">round 3</text>
-            <rect x="60" y="102" width="200" height="26" rx="4" fill="#1f9fc4"/>
-            <text class="ct-val" x="268" y="120">1.00</text>
-          </svg>
+          <svg viewBox="0 0 300 205" role="img" aria-label="Weekly budget percent per merged pull request: round 1 zero point four three, round 2 zero point six seven, round 3 one point zero zero, round 4 not applicable, round 5 two point zero zero." xmlns="http://www.w3.org/2000/svg">
+            <line class="ct-ax" x1="60" y1="10" x2="60" y2="198"/>
+            <text class="ct-lab" x="52" y="34" text-anchor="end">round 1</text>
+            <rect x="60" y="16" width="43" height="26" rx="4" fill="#1f9fc4"/>
+            <text class="ct-val" x="111" y="34">0.43</text>
+            <text class="ct-lab" x="52" y="72" text-anchor="end">round 2</text>
+            <rect x="60" y="54" width="67" height="26" rx="4" fill="#1f9fc4"/>
+            <text class="ct-val" x="135" y="72">0.67</text>
+            <text class="ct-lab" x="52" y="110" text-anchor="end">round 3</text>
+            <rect x="60" y="92" width="100" height="26" rx="4" fill="#1f9fc4"/>
+            <text class="ct-val" x="168" y="110">1.00</text>
+            <text class="ct-lab" x="52" y="148" text-anchor="end">round 4</text>
+            <line class="ct-gr" x1="60" y1="143" x2="100" y2="143" stroke-dasharray="3 3"/>
+            <text class="ct-abs" x="106" y="147">no leases</text>
+            <text class="ct-lab" x="52" y="186" text-anchor="end">round 5</text>
+            <rect x="60" y="168" width="200" height="26" rx="4" fill="#1f9fc4"/>
+            <text class="ct-val" x="268" y="186">2.00</text>
+            </svg>
         </div>
         <div class="panel">
           <div class="paneltitle">% per item closed</div>
-          <svg viewBox="0 0 300 150" role="img" aria-label="Weekly budget percent per tracked item closed: round 1 not tracked, round 2 zero point three three, round 3 zero point four six." xmlns="http://www.w3.org/2000/svg">
-            <line class="ct-ax" x1="60" y1="14" x2="60" y2="132"/>
-            <text class="ct-lab" x="52" y="41" text-anchor="end">round 1</text>
-            <line class="ct-gr" x1="60" y1="39" x2="100" y2="39" stroke-dasharray="3 3"/>
-            <text class="ct-abs" x="106" y="43">not tracked</text>
-            <text class="ct-lab" x="52" y="79" text-anchor="end">round 2</text>
-            <rect x="60" y="64" width="145" height="26" rx="4" fill="#1f9fc4"/>
-            <text class="ct-val" x="213" y="82">0.33</text>
-            <text class="ct-lab" x="52" y="117" text-anchor="end">round 3</text>
-            <rect x="60" y="102" width="200" height="26" rx="4" fill="#1f9fc4"/>
-            <text class="ct-val" x="268" y="120">0.46</text>
-          </svg>
+          <svg viewBox="0 0 300 205" role="img" aria-label="Weekly budget percent per item closed: round 1 not tracked, round 2 zero point three three, round 3 zero point four six, round 4 not applicable, round 5 one point two zero." xmlns="http://www.w3.org/2000/svg">
+            <line class="ct-ax" x1="60" y1="10" x2="60" y2="198"/>
+            <text class="ct-lab" x="52" y="34" text-anchor="end">round 1</text>
+            <line class="ct-gr" x1="60" y1="29" x2="100" y2="29" stroke-dasharray="3 3"/>
+            <text class="ct-abs" x="106" y="33">not tracked</text>
+            <text class="ct-lab" x="52" y="72" text-anchor="end">round 2</text>
+            <rect x="60" y="54" width="56" height="26" rx="4" fill="#1f9fc4"/>
+            <text class="ct-val" x="124" y="72">0.33</text>
+            <text class="ct-lab" x="52" y="110" text-anchor="end">round 3</text>
+            <rect x="60" y="92" width="77" height="26" rx="4" fill="#1f9fc4"/>
+            <text class="ct-val" x="145" y="110">0.46</text>
+            <text class="ct-lab" x="52" y="148" text-anchor="end">round 4</text>
+            <line class="ct-gr" x1="60" y1="143" x2="100" y2="143" stroke-dasharray="3 3"/>
+            <text class="ct-abs" x="106" y="147">no leases</text>
+            <text class="ct-lab" x="52" y="186" text-anchor="end">round 5</text>
+            <rect x="60" y="168" width="200" height="26" rx="4" fill="#1f9fc4"/>
+            <text class="ct-val" x="268" y="186">1.20</text>
+            </svg>
         </div>
       </div>
 
-      <figcaption>Round 2 to round 3: total cost <b>3&times;</b>, output about <b>2&times;</b>, unit cost <b>1.4&ndash;1.5&times;</b> depending on which denominator you use. Most of the headline increase is just more work happening. What's left over is a real rise in what each merged change costs, and across all three rounds that runs <b>0.43 &rarr; 0.67 &rarr; 1.00</b> per PR &mdash; roughly 2.3&times;, in one direction, while the process was getting better at throughput.</figcaption>
+      <figcaption>Round 2 to round 3: total cost <b>3&times;</b>, output about <b>2&times;</b>, unit cost <b>1.4&ndash;1.5&times;</b> depending on which denominator you use. Most of the headline increase is just more work happening. What's left over is a real rise in what each merged change costs, and across the lease rounds that runs <b>0.43 &rarr; 0.67 &rarr; 1.00 &rarr; 2.00</b> per PR &mdash; one direction, four samples, while the process was getting better at throughput.</figcaption>
       <figcaption style="border-top:none; padding-top:0.4rem;">Where the extra goes is not metered. One weekly reading doesn't split into a coordinator share and a worker share, and nothing here captured that split. The coordinator's account is that it went into reconciliation &mdash; approval write-ups, merge verification, deciding what a finding meant. That fits the shape of the work and it is still a hypothesis, not a measurement. Round 1's cost is comparable to the others even though its <em>timing</em> isn't, because waiting on a human to click costs wall-clock and not budget.</figcaption>
       <p class="srcline">totals approximate, read from a usage panel · per-unit figures are those totals divided by merged PRs and closed items</p>
     </figure>
@@ -428,48 +457,66 @@
       <div class="panels">
         <div class="panel">
           <div class="paneltitle">Worker sessions</div>
-          <svg viewBox="0 0 300 150" role="img" aria-label="Worker sessions per round: six, three, four." xmlns="http://www.w3.org/2000/svg">
-            <line class="ct-ax" x1="60" y1="14" x2="60" y2="132"/>
-            <text class="ct-lab" x="52" y="41" text-anchor="end">round 1</text>
-            <rect x="60" y="26" width="200" height="26" rx="4" fill="#1f9fc4"/>
-            <text class="ct-val" x="268" y="44">6</text>
-            <text class="ct-lab" x="52" y="79" text-anchor="end">round 2</text>
-            <rect x="60" y="64" width="100" height="26" rx="4" fill="#1f9fc4"/>
-            <text class="ct-val" x="168" y="82">3</text>
-            <text class="ct-lab" x="52" y="117" text-anchor="end">round 3</text>
-            <rect x="60" y="102" width="133" height="26" rx="4" fill="#1f9fc4"/>
-            <text class="ct-val" x="201" y="120">4</text>
-          </svg>
+          <svg viewBox="0 0 300 205" role="img" aria-label="Worker sessions per round: six, three, four, zero, two." xmlns="http://www.w3.org/2000/svg">
+            <line class="ct-ax" x1="60" y1="10" x2="60" y2="198"/>
+            <text class="ct-lab" x="52" y="34" text-anchor="end">round 1</text>
+            <rect x="60" y="16" width="200" height="26" rx="4" fill="#1f9fc4"/>
+            <text class="ct-val" x="268" y="34">6</text>
+            <text class="ct-lab" x="52" y="72" text-anchor="end">round 2</text>
+            <rect x="60" y="54" width="100" height="26" rx="4" fill="#1f9fc4"/>
+            <text class="ct-val" x="168" y="72">3</text>
+            <text class="ct-lab" x="52" y="110" text-anchor="end">round 3</text>
+            <rect x="60" y="92" width="133" height="26" rx="4" fill="#1f9fc4"/>
+            <text class="ct-val" x="201" y="110">4</text>
+            <text class="ct-lab" x="52" y="148" text-anchor="end">round 4</text>
+            <line class="ct-gr" x1="60" y1="143" x2="100" y2="143" stroke-dasharray="3 3"/>
+            <text class="ct-abs" x="106" y="147">0</text>
+            <text class="ct-lab" x="52" y="186" text-anchor="end">round 5</text>
+            <rect x="60" y="168" width="67" height="26" rx="4" fill="#1f9fc4"/>
+            <text class="ct-val" x="135" y="186">2</text>
+            </svg>
         </div>
         <div class="panel">
           <div class="paneltitle">Pull requests merged</div>
-          <svg viewBox="0 0 300 150" role="img" aria-label="Pull requests merged per round: seven, three, six." xmlns="http://www.w3.org/2000/svg">
-            <line class="ct-ax" x1="60" y1="14" x2="60" y2="132"/>
-            <text class="ct-lab" x="52" y="41" text-anchor="end">round 1</text>
-            <rect x="60" y="26" width="200" height="26" rx="4" fill="#1f9fc4"/>
-            <text class="ct-val" x="268" y="44">7</text>
-            <text class="ct-lab" x="52" y="79" text-anchor="end">round 2</text>
-            <rect x="60" y="64" width="86" height="26" rx="4" fill="#1f9fc4"/>
-            <text class="ct-val" x="154" y="82">3</text>
-            <text class="ct-lab" x="52" y="117" text-anchor="end">round 3</text>
-            <rect x="60" y="102" width="171" height="26" rx="4" fill="#1f9fc4"/>
-            <text class="ct-val" x="239" y="120">6</text>
-          </svg>
+          <svg viewBox="0 0 300 205" role="img" aria-label="Pull requests merged per lease round: seven, three, six, round four not a lease round, three." xmlns="http://www.w3.org/2000/svg">
+            <line class="ct-ax" x1="60" y1="10" x2="60" y2="198"/>
+            <text class="ct-lab" x="52" y="34" text-anchor="end">round 1</text>
+            <rect x="60" y="16" width="200" height="26" rx="4" fill="#1f9fc4"/>
+            <text class="ct-val" x="268" y="34">7</text>
+            <text class="ct-lab" x="52" y="72" text-anchor="end">round 2</text>
+            <rect x="60" y="54" width="86" height="26" rx="4" fill="#1f9fc4"/>
+            <text class="ct-val" x="154" y="72">3</text>
+            <text class="ct-lab" x="52" y="110" text-anchor="end">round 3</text>
+            <rect x="60" y="92" width="171" height="26" rx="4" fill="#1f9fc4"/>
+            <text class="ct-val" x="239" y="110">6</text>
+            <text class="ct-lab" x="52" y="148" text-anchor="end">round 4</text>
+            <line class="ct-gr" x1="60" y1="143" x2="100" y2="143" stroke-dasharray="3 3"/>
+            <text class="ct-abs" x="106" y="147">not a lease round</text>
+            <text class="ct-lab" x="52" y="186" text-anchor="end">round 5</text>
+            <rect x="60" y="168" width="86" height="26" rx="4" fill="#1f9fc4"/>
+            <text class="ct-val" x="154" y="186">3</text>
+            </svg>
         </div>
         <div class="panel">
           <div class="paneltitle">Tracked items closed</div>
-          <svg viewBox="0 0 300 150" role="img" aria-label="Tracked items closed per round: round 1 not tracked, round 2 six, round 3 thirteen." xmlns="http://www.w3.org/2000/svg">
-            <line class="ct-ax" x1="60" y1="14" x2="60" y2="132"/>
-            <text class="ct-lab" x="52" y="41" text-anchor="end">round 1</text>
-            <line class="ct-gr" x1="60" y1="39" x2="100" y2="39" stroke-dasharray="3 3"/>
-            <text class="ct-abs" x="106" y="43">not tracked</text>
-            <text class="ct-lab" x="52" y="79" text-anchor="end">round 2</text>
-            <rect x="60" y="64" width="92" height="26" rx="4" fill="#1f9fc4"/>
-            <text class="ct-val" x="160" y="82">6</text>
-            <text class="ct-lab" x="52" y="117" text-anchor="end">round 3</text>
-            <rect x="60" y="102" width="200" height="26" rx="4" fill="#1f9fc4"/>
-            <text class="ct-val" x="268" y="120">13</text>
-          </svg>
+          <svg viewBox="0 0 300 205" role="img" aria-label="Tracked items closed per round: round 1 not tracked, round 2 six, round 3 thirteen, round 4 not applicable, round 5 five." xmlns="http://www.w3.org/2000/svg">
+            <line class="ct-ax" x1="60" y1="10" x2="60" y2="198"/>
+            <text class="ct-lab" x="52" y="34" text-anchor="end">round 1</text>
+            <line class="ct-gr" x1="60" y1="29" x2="100" y2="29" stroke-dasharray="3 3"/>
+            <text class="ct-abs" x="106" y="33">not tracked</text>
+            <text class="ct-lab" x="52" y="72" text-anchor="end">round 2</text>
+            <rect x="60" y="54" width="92" height="26" rx="4" fill="#1f9fc4"/>
+            <text class="ct-val" x="160" y="72">6</text>
+            <text class="ct-lab" x="52" y="110" text-anchor="end">round 3</text>
+            <rect x="60" y="92" width="200" height="26" rx="4" fill="#1f9fc4"/>
+            <text class="ct-val" x="268" y="110">13</text>
+            <text class="ct-lab" x="52" y="148" text-anchor="end">round 4</text>
+            <line class="ct-gr" x1="60" y1="143" x2="100" y2="143" stroke-dasharray="3 3"/>
+            <text class="ct-abs" x="106" y="147">no leases</text>
+            <text class="ct-lab" x="52" y="186" text-anchor="end">round 5</text>
+            <rect x="60" y="168" width="77" height="26" rx="4" fill="#1f9fc4"/>
+            <text class="ct-val" x="145" y="186">5</text>
+            </svg>
         </div>
       </div>
 
@@ -555,13 +602,124 @@
       <figcaption><b>Both halves come with a caveat, and the caveats are the interesting part.</b> The 1.9&times; is an <em>upper bound</em>: it is summed elapsed time minus the idle gaps long enough to detect, so any shorter stall is still counted as work. And it covers only the opening burst &mdash; measured across the whole round the figure collapses to 1.1&times;, which is not a finding about parallelism at all but an artifact of one session being left open overnight and resumed the next day. <b>Elapsed time is not working time, and nothing in the setup distinguishes them.</b> The right-hand curve is explicitly a model: it shows why returns should flatten once added work lands on the one path that cannot be parallelised. Round 1's six workers sit in that flat region &mdash; and round 1 was the round that was hardest to hold together.</figcaption>
       <p class="srcline">left: measured session timestamps, idle gaps &gt;5 min excluded · right: modelled, serial fraction 0.25 assumed to illustrate the shape — not measured.</p>
 
+      <p class="note" style="margin-top:1.2rem; border-left-color: var(--accent-red);"><b>And every percentage in the table above is contaminated by an unknown amount.</b> The weekly panel measures the whole machine, not the round &mdash; anything else running in the same window lands in the same number. Round 5 is the only round where that was quantified: the round accounted for <b>6.7%</b> of the output tokens in its window, so the rest of that reading is other work. For rounds 1 through 4 the figure is not just unknown, it is <em>unknowable</em> after the fact.</p>
+      <p class="note" style="margin-top:0.7rem;">There is now direct evidence of the size of that effect. Reconstructing round 3's panel readings from its own transcript gives <b>89 &rarr; 91 &rarr; 93 &rarr; 95 &rarr; 97%</b> &mdash; an <b>8-point</b> swing across a round booked at <b>~6</b>. The missing two points are other work sharing the window. That gap &mdash; roughly two points &mdash; is the contamination made visible for one round. It is a residual of two approximations, not a floor: if the true booking were 6.5, it halves.</p>
+
       <p class="note" style="margin-top:1.2rem;"><b>One more thing sitting in these timings, unquantified.</b> Rounds hit the issue tracker's API rate limit and pause until the allowance renews. It appears to bite one thread at a time rather than the whole round &mdash; the other leases carried on while one waited &mdash; so it probably shows up as a small stall rather than a stop. But <em>probably</em> is doing real work in that sentence. Nothing distinguishes &ldquo;paused on a rate limit&rdquo; from &ldquo;thinking&rdquo; in the data I have, which is one more reason the elapsed-time numbers above are bounds rather than measurements.</p>
     </figure>
+
+    <h3 style="font-family:var(--serif); font-size:1.45rem; font-weight:600; margin:2.8rem 0 0.5rem;">Round 5: the split, finally measured</h3>
+    <p class="secsub">An earlier version of this page ended by saying the coordinator/worker split had no data behind it and that closing the gap was the next round's first job. It got done. Round 5 built the instrument and ran against it, and the result is not what I predicted.</p>
+
+    <div class="tablewrap" style="margin-bottom:1.4rem;">
+      <table>
+        <thead><tr><th>Round 5, by output tokens <span class="absent">&mdash; not convertible to the percentages above; see the instrument note</span></th><th class="num">tokens</th><th class="num">share</th></tr></thead>
+        <tbody>
+          <tr><td><b>Workers</b> &mdash; two leases</td><td class="num">250,637</td><td class="num"><b>69.0%</b></td></tr>
+          <tr><td><b>Coordination</b> &mdash; post-spawn</td><td class="num">112,467</td><td class="num"><b>31.0%</b></td></tr>
+          <tr><td>Supervisor &mdash; pre-spawn, <span class="absent">excluded, not lease-round work</span></td><td class="num">29,752</td><td class="num"><span class="absent">&mdash;</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p class="note" style="border-left-color: var(--accent-red); margin-bottom:1.1rem;"><b>This partly contradicts the hypothesis this page has been carrying.</b> &ldquo;The marginal worker is cheap, the marginal decision is not&rdquo; predicted that coordination would dominate. It doesn't. Coordination is <b>under a third</b> of output. The guess was directionally interesting and quantitatively wrong, and the honest thing is to say so in the same place the guess was made rather than quietly restating it.</p>
+
+    <p class="secsub"><b>What survives, and it is the stronger version:</b> round 4 spawned <em>zero</em> leases &mdash; it was pre-flight, one merge, a contributor PR queue and preparation &mdash; and still cost about <b>5 points</b>. That is the real evidence for expensive coordination, and it is evidence precisely because no worker was running &mdash; though that five-point reading is one of the contaminated ones, so treat it as a direction rather than a quantity. Serial orchestrator work is not part of a lease round, and pooling the two is what made the earlier figures confounded. Round 4 is the strongest datapoint for the hypothesis and it was missing from this page entirely.</p>
+
+    <figure class="fig">
+      <div class="figtitle">Figure 5 &middot; what leases cost the coordinator in context</div>
+      <p class="figlede">Nine timestamped readings of the usage panel were captured across round 5, each tied to a known point in the round &mdash; so a number can be attached to its cause, which a scraper could not do. Four of them carry a context measurement. <b>This is the first time series the pattern has produced;</b> every earlier round has a single end-of-round delta.</p>
+
+      <div class="figscroll mid">
+      <svg viewBox="0 0 620 300" role="img" aria-label="Coordinator context window across round 5. Context grows from about 151 thousand tokens at 18:14 to about 380 thousand at 19:34, roughly linearly, with no visible step at 18:30 when the worker sessions were spawned." xmlns="http://www.w3.org/2000/svg">
+        <line class="ct-gr" x1="56" y1="180" x2="590" y2="180"/>
+        <line class="ct-gr" x1="56" y1="130" x2="590" y2="130"/>
+        <line class="ct-gr" x1="56" y1="80"  x2="590" y2="80"/>
+        <line class="ct-gr" x1="56" y1="30"  x2="590" y2="30"/>
+        <line class="ct-ax" x1="56" y1="22" x2="56" y2="230"/>
+        <line class="ct-ax" x1="56" y1="230" x2="590" y2="230"/>
+
+        <text class="ct-lab" x="48" y="184" text-anchor="end">100k</text>
+        <text class="ct-lab" x="48" y="134" text-anchor="end">200k</text>
+        <text class="ct-lab" x="48" y="84"  text-anchor="end">300k</text>
+        <text class="ct-lab" x="48" y="34"  text-anchor="end">400k</text>
+
+        <text class="ct-lab" x="56"  y="250" text-anchor="middle">18:14</text>
+        <text class="ct-lab" x="163" y="250" text-anchor="middle">18:30</text>
+        <text class="ct-lab" x="436" y="250" text-anchor="middle">19:11</text>
+        <text class="ct-lab" x="590" y="250" text-anchor="middle">19:34</text>
+        <text class="ct-lab" x="323" y="272" text-anchor="middle">orchestrator context window</text>
+
+        <polyline points="56,155 163,125 436,78 590,40" fill="none" stroke="#1f9fc4" stroke-width="2"/>
+        <circle cx="56"  cy="155" r="5" fill="#1f9fc4" stroke="#151922" stroke-width="2"/>
+        <circle cx="163" cy="125" r="5" fill="#c98500" stroke="#151922" stroke-width="2"/>
+        <circle cx="436" cy="78"  r="5" fill="#1f9fc4" stroke="#151922" stroke-width="2"/>
+        <circle cx="590" cy="40"  r="5" fill="#1f9fc4" stroke="#151922" stroke-width="2"/>
+
+        <line class="ct-gr" x1="163" y1="30" x2="163" y2="230" stroke-dasharray="4 4"/>
+        <text class="ct-val" x="172" y="46" fill="#c98500">leases spawned</text>
+        <text class="ct-lab" x="172" y="62">no step here</text>
+        <text class="ct-lab" x="66" y="150">151k</text>
+        <text class="ct-lab" x="540" y="34">380k</text>
+      </svg>
+      </div>
+      <p class="scrollhint">&larr; scroll to pan the chart &rarr;</p>
+
+      <figcaption>Context grew from roughly <b>151k to 380k in 80 minutes</b> &mdash; about 2.9k per minute on average &mdash; and <b>the endpoints are consistent with no step at spawn.</b> Be careful how much that carries: the pre-spawn rate is a single 16-minute interval, and there is no reading between 18:30 and 19:11, so a step inside that 41-minute gap would not be visible here either way. Two workers reporting through the coordinator cost it almost nothing in context.</figcaption>
+      <figcaption style="border-top:none; padding-top:0.4rem;"><b>That is the central architectural claim of the whole approach, and this is the first time it has been measured rather than assumed.</b> It is also n=1, four points, one round, two leases &mdash; a shape consistent with the claim, not a demonstration of it. What would break it is a round where context inflects at spawn, and no round has been run specifically to look for one.</figcaption>
+      <p class="srcline">panel readings captured by hand and timestamped against round events · context values as reported by the client</p>
+    </figure>
+
+    <p class="note" style="margin-top:1.4rem;"><b>Two things wrong with the instrument, stated because they bound everything above.</b> First, tokens and budget percentages are <em>different instruments and were never converted</em> &mdash; the split is in tokens, the round costs are in percentage points, and nothing on this page reconciles them. Second, the tool that produced the split shipped with a bug that biased it <em>toward</em> the hypothesis: its window selected sessions but did not filter messages within them, so pre-round coordinator work counted as coordination. It reported <b>36.0%</b>; the corrected figure is <b>31.0%</b>. A measurement built to test a belief, erring in favour of that belief, is the defect class this page is about &mdash; caught by the person who wrote it, before publication.</p>
+
+    <p class="note" style="margin-top:0.7rem; border-left-color: var(--accent-red);"><b>And the number is still moving.</b> Trying to reconcile a 0.2-point discrepancy in that pre-fix figure turned up something worse than a rounding artifact: the coordinator share <em>rises monotonically after the last merge</em>, because the orchestrator session keeps running &mdash; close-out, retrospective, the conversation with the operator &mdash; while the tool filters neither end of its window.</p>
+    <p class="note" style="margin-top:0.7rem; border-left-color: var(--accent-red);">The same round, measured four times: <b>33.1%</b> mid-round &middot; <b>36.0%</b> after the first lease merged &middot; <b>40.5%</b> during close-out &middot; <b>41.7%</b> later still. Nothing about the round changed. <b>A coordinator share is partly a function of how long the coordinator lingered afterwards</b>, which is exactly backwards, and it means any such figure is meaningless without the instant it was taken.</p>
+    <p class="note" style="margin-top:0.7rem;">So, precisely: <b>31.0% is coordination-only, measured at round completion, immediately after the last merge.</b> That is the defensible snapshot and the reason it is quoted rather than any of the others. It was found because a reviewer asked for a two-tenths discrepancy to be explained &mdash; and the discrepancy was real, and was not where either of us thought it was.</p>
+
+    <h3 style="font-family:var(--serif); font-size:1.45rem; font-weight:600; margin:2.8rem 0 0.5rem;">Is there a standard for any of this?</h3>
+    <p class="secsub">Short answer: no, and it is worth being direct about that rather than dressing a house metric in borrowed authority. Three established frameworks sit nearby, and none of them measures what this page measures.</p>
+
+    <div class="bar">
+      <div class="barit">
+        <h4>DORA &mdash; delivery performance</h4>
+        <p>Four keys: deployment frequency, lead time for changes, change failure rate, time to restore service. From the <em>Accelerate</em> research (Forsgren, Humble, Kim). It is the most widely used measure of delivery performance &mdash; and it measures <b>outcomes, not cost per unit of output</b>. Nothing here reports a DORA metric.</p>
+      </div>
+      <div class="barit">
+        <h4>SPACE &mdash; developer productivity</h4>
+        <p>Satisfaction, Performance, Activity, Communication, Efficiency (Forsgren, Storey, Maddila, Zimmermann, Houck, Butler; <em>ACM Queue</em> 19(1), 2021). Its central argument is that productivity <b>cannot be captured in a single metric</b> and that activity counts mislead.</p>
+        <p><em>The most citable thing in this area argues against the single number people ask for.</em> Worth keeping that irony in view when reading any of the figures above.</p>
+      </div>
+      <div class="barit">
+        <h4>Agentic benchmarks &mdash; cost per resolved instance</h4>
+        <p>SWE-bench and its successors report average cost per instance and an effectiveness-aware cost per <em>resolved</em> instance. That is the closest published analogue to the per-PR figures above &mdash; but it is a reporting convention, not a standard, and it assumes a <b>fixed task distribution.</b> Production work is not that, which is the disanalogy that would break the comparison if it were leaned on.</p>
+      </div>
+    </div>
+
+    <p class="note" style="margin-top:1.4rem;"><b>So the defensible sentence is the narrow one:</b> these specific things were measured, here are the nearest established frameworks, and I am not aware of a standard for what is actually being measured here. No conformance is claimed to any of the three.</p>
+
+    <h3 style="font-family:var(--serif); font-size:1.45rem; font-weight:600; margin:2.8rem 0 0.5rem;">The metric I would actually keep</h3>
+    <p class="secsub"><b>Human decisions required per unit of delivered work.</b> It is counted by the person, not the system, which means the system cannot optimise it by looking better. Round 5:</p>
+
+    <div class="tablewrap" style="margin-bottom:1.2rem;">
+      <table>
+        <thead><tr><th>Round 5 &mdash; what the human did</th><th class="num">count</th><th>Round output <span class="absent">&mdash; parallel list, not a per-row consequence</span></th></tr></thead>
+        <tbody>
+          <tr><td>Operator turns, total</td><td class="num">14</td><td>3 PRs merged, 5 items closed</td></tr>
+          <tr><td>&mdash; of which usage-panel screencaps</td><td class="num">9</td><td>9 lease checkpoints adjudicated</td></tr>
+          <tr><td><b>Genuinely blocking interventions</b></td><td class="num"><b>~5</b></td><td>13 board writes, 5 issues filed</td></tr>
+          <tr><td>&mdash; set the session title <span class="absent">(the agent structurally cannot)</span></td><td class="num">1</td><td>3 public claim corrections</td></tr>
+          <tr><td>&mdash; start chips</td><td class="num">2</td><td>2 gated merges, receipts verified</td></tr>
+          <tr><td>&mdash; tool approvals</td><td class="num">2&ndash;3</td><td>1 canonical-tree divergence resolved</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p class="note" style="border-left-color: var(--accent-green);"><b>What this page will not do is tell you what that replaced.</b> &ldquo;This would have taken a person N hours&rdquo; is a number nobody measured, and inventing it is exactly the failure the cost correction earlier on this page exists to fix. What was <em>required</em> is counted. What it <em>displaced</em> is not, and no amount of it being a good story makes it a measurement.</p>
   </section>
 
   <section class="sec" id="green">
     <div class="sechead"><span class="secnum">05</span><h2>The defect that reports success</h2><div class="divider"></div></div>
-    <p class="secsub">Across all three rounds the same class kept turning up, in unrelated parts of the system, found by workers who were not looking for it: <b>a failure whose symptom is a green result rather than an error</b>. It is the most transferable thing on this page, and it is worth stating as a rule &mdash; <em>a check that cannot fail loudly will eventually pass quietly.</em></p>
+    <p class="secsub">Across every round the same class kept turning up, in unrelated parts of the system, found by workers who were not looking for it: <b>a failure whose symptom is a green result rather than an error</b>. It is the most transferable thing on this page, and it is worth stating as a rule &mdash; <em>a check that cannot fail loudly will eventually pass quietly.</em></p>
 
     <div class="cas">
       <div class="ct">shape one &middot; checked the wrong thing, reported pass</div>
@@ -615,7 +773,7 @@
       <h4>The diagnosis was also wrong, and a worker said so</h4>
       <p>The coordinator's first conclusion was that the reply path was <em>structurally impossible</em> &mdash; no sender, therefore no channel. A worker corrected it: <b>&ldquo;There was a channel. I didn't find it. Don't record &lsquo;structurally impossible&rsquo; &mdash; that would fix the playbook in the wrong direction.&rdquo;</b></p>
       <p>It had reached for the tool whose name made it the obvious first guess &mdash; the one that addresses subagents a session spawns itself, not sibling sessions &mdash; been told no such recipient was reachable, and reasonably concluded no path existed. The real defect was narrower and more fixable than the coordinator's version of it, and getting it right mattered: the wrong diagnosis would have produced a workaround instead of a working address.</p>
-      <p>This was not unusual. Across the three rounds, <b>workers corrected the coordinator's premise more often than the reverse</b> &mdash; which is the ordinary asymmetry between a lead and the person actually in the file, not a scoreboard &mdash; and the briefs came to say so out loud, granting explicit permission to reject the task's own stated reasoning. In round 3 four workers corrected the premise of their own assignment and two corrected the coordinator's. That is not a failure of the pattern; it is the pattern's error-correction path working, and it is the strongest argument for <em>writing the brief so it can be argued with.</em></p>
+      <p>This was not unusual. Across every round, <b>workers corrected the coordinator's premise more often than the reverse</b> &mdash; which is the ordinary asymmetry between a lead and the person actually in the file, not a scoreboard &mdash; and the briefs came to say so out loud, granting explicit permission to reject the task's own stated reasoning. In round 3 four workers corrected the premise of their own assignment and two corrected the coordinator's. That is not a failure of the pattern; it is the pattern's error-correction path working, and it is the strongest argument for <em>writing the brief so it can be argued with.</em></p>
     </div>
   </section>
 
@@ -671,6 +829,7 @@
       <div class="stagehead"><span class="stagenum">?</span><span class="stagename">A coordinator that runs its own next round</span><span class="stagekind">untried</span></div>
       <p>Step 6 of the loop hands the board to whoever starts the next cycle, and there is no particular reason that has to be a person. A coordinator could finish its round, evaluate its own worktree the same way it evaluates a lease's, pull the next set of non-intersecting items off the board it just wrote, and go again. Come back later to several worktrees staged and waiting rather than one.</p>
       <p>The obvious failure mode is the one this whole page is about: a cycle that runs clean and produces nothing, repeatedly, with no one reading the output. It would need the stopping rule before it needed the automation.</p>
+      <p><b>One result from round 5 bears directly on whether this is even worth trying:</b> the coordinator's context grew at the same rate before and after its leases were spawned. If that holds, the ceiling on a self-cycling coordinator is not context pressure, and the interesting constraint is somewhere else.</p>
     </div>
     <div class="stage">
       <div class="stagehead"><span class="stagenum">?</span><span class="stagename">Something above the coordinators</span><span class="stagekind">untried</span></div>
@@ -682,17 +841,17 @@
   <div class="takeaway">
     <h3>What I'd keep, and what I'd change</h3>
     <p><b>Keep the lease.</b> Partitioning by write-surface rather than by topic removed an entire category of failure, and the disjointness check that makes it work costs seconds. Keep the serial spine too: the discipline of routing the board, the merges, the shared sinks and the intake through one writer is what stops N parallel sessions from producing N inconsistent versions of the truth.</p>
-    <p><b>Change the measurement.</b> The most interesting question &mdash; where the coordinator's effort actually went &mdash; has no data behind it. Cost was read off a usage panel rather than metered per session; per-worker attribution was never aggregated; working time was never separated from elapsed time, which is why the round-level speedup figure had to be thrown out. Three rounds in, <b>the pattern is better understood than it is instrumented</b>, and the next round's first job is to fix that rather than to run wider.</p>
+    <p><b>Measure it before believing it.</b> For four rounds the most interesting question &mdash; where the coordinator's effort actually went &mdash; had no data behind it, and this page said so. Round 5 built the instrument. The answer came back <b>31% coordination, 69% workers</b>, which is not what the page had been implying, and the instrument itself shipped with a bug that erred in the belief's favour. <em>Both of those are the finding.</em> The pattern is now instrumented in exactly one place, one time, and everything before it stays contaminated by an amount that cannot be recovered.</p>
 
-    <p><b>Spend the coordinator on the right thing.</b> The correction data and the coordinator's own retrospective point the same way &mdash; the cost figure cannot corroborate it, since it never resolved to a per-session share. Workers corrected the coordinator's premise more often than the reverse, and the coordinator's own retrospective landed on the conclusion that follows from that: <em>its highest-value act is escalating and verifying, not deciding.</em> Its most reliable failure mode was also specific and cheap to fix &mdash; <b>inferring from absence instead of reading</b>. Every instance was one command away from being checked.</p>
-    <p><b>And treat every green as a claim.</b> The recurring finding across all three rounds was not a bug in any component &mdash; it was a check, a test, a merge, and a written instruction that each reported success while doing nothing. <b>The failure that looks like an error gets fixed. The failure that looks like a pass gets built on.</b></p>
+    <p><b>Spend the coordinator on the right thing.</b> The correction data and the coordinator's own retrospective point the same way &mdash; and the cost split does not corroborate it, which is worth stating rather than burying. What does support it is round 4: no leases, still about five points. Workers corrected the coordinator's premise more often than the reverse, and the coordinator's own retrospective landed on the conclusion that follows from that: <em>its highest-value act is escalating and verifying, not deciding.</em> Its most reliable failure mode was also specific and cheap to fix &mdash; <b>inferring from absence instead of reading</b>. Every instance was one command away from being checked.</p>
+    <p><b>And treat every green as a claim.</b> The recurring finding across all five rounds was not a bug in any component &mdash; it was a check, a test, a merge, and a written instruction that each reported success while doing nothing. <b>The failure that looks like an error gets fixed. The failure that looks like a pass gets built on.</b></p>
     <p style="margin-top:1.1rem; padding-top:1.1rem; border-top:1px solid var(--line-soft);">Companion write-ups: <a href="../automation/" style="color:var(--accent-cyan); text-decoration:none; border-bottom:1px solid var(--line)">the lifecycle-hook layer these sessions run inside</a> &middot; <a href="../enforcement/" style="color:var(--accent-cyan); text-decoration:none; border-bottom:1px solid var(--line)">the ledger that tracks which checks actually bite</a> &middot; <a href="../publishing/" style="color:var(--accent-cyan); text-decoration:none; border-bottom:1px solid var(--line)">the disclosure pipeline that gated this page</a>.</p>
   </div>
 
   <footer>
     <p>Case study &middot; coordinating parallel AI coding sessions against one shared repository set.</p>
     <p>Process shape only. The work these sessions performed is described generically; proprietary specifics are omitted throughout.</p>
-    <p>Cost figures are percentage points of a rolling weekly all-models allowance &mdash; approximate, read from a usage panel rather than metered per session. Figure 2's baseline is a two-point fit and is exact on rounds 1&ndash;2 by construction. Figure 4's right-hand panel is an explicit model, not a measurement.</p>
+    <p>Cost figures are percentage points of a rolling weekly all-models allowance &mdash; approximate, read from a usage panel rather than metered per session. Figure 4's right-hand panel is an explicit model, not a measurement.</p>
     <p>Michael Giardina &middot; <a href="../">portfolio</a> &middot; <a href="https://www.linkedin.com/in/michael-giardina">linkedin.com/in/michael-giardina</a></p>
   </footer>
 
