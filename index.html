@@ -4,6 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mike Giardina — Clinical Operations & AI Implementation</title>
+    <meta name="description" content="Emergency nurse (BSN, RN, CEN) building clinical simulation and AI tooling. Four engineering case studies on lifecycle-hook automation, turning conventions into enforced checks, disclosure control, and coordinating parallel AI coding sessions.">
+    <meta property="og:title" content="Mike Giardina — Clinical Operations & AI Implementation">
+    <meta property="og:description" content="Emergency nurse building clinical simulation and AI tooling. Four engineering case studies on the layer around the code.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://mike-giardina.netlify.app/">
+    <meta name="twitter:card" content="summary">
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Crimson+Pro:wght@400;600&family=Work+Sans:wght@300;500;700&display=swap" rel="stylesheet">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -16,6 +22,13 @@
             --text-primary: #e6edf3;
             --text-muted: #8b949e;
             --grid-color: rgba(0, 217, 255, 0.1);
+            /* Was used by .quicknav .qn-sep but never declared here — it came over
+               with the rule from a case-study page, where it IS declared. An
+               undefined var() computes to currentColor, so the separator drew in
+               the wrong colour. Six files each keep their own copy of these
+               tokens; this is what that costs. */
+            --line: rgba(0, 217, 255, 0.18);
+            --line-soft: rgba(139, 148, 158, 0.16);
         }
         body {
             background: var(--primary-bg);
@@ -291,6 +304,23 @@
         @media (max-width: 540px) {
             /* on phones the in-card buttons carry it; a fixed cluster would overlap the hero */
             .quicknav { display: none; }
+        }
+
+        /* Every other page on this site honours this; the front page — the one
+           everybody actually loads — did not. Infinite grid pulse, pulsing dots
+           and a bouncing arrow with no way out is a vestibular problem, not a
+           style preference. Entrance animations resolve to their final state
+           rather than being skipped, so nothing stays invisible. */
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.001ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.001ms !important;
+                scroll-behavior: auto !important;
+            }
+            .grid-bg { animation: none; opacity: 0.35; }
+            .status-dot, .validation-dot { animation: none; }
+            .scroll-arrow { animation: none; }
         }
     </style>
 </head>
@@ -906,21 +936,41 @@
                 }
             });
 
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        entry.target.style.opacity = '1';
-                        entry.target.style.transform = 'translateY(0)';
-                    }
-                });
-            }, { threshold: 0.1 });
+            // Reveal-on-scroll hides each card first and waits for the observer to
+            // put it back. Two ways that ends badly: the reader asked for reduced
+            // motion, or the card never crosses the threshold and stays invisible
+            // forever. So don't hide anything unless we can also guarantee it comes
+            // back — and fall back to "everything visible", never "everything gone".
+            const wantsMotion = !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+            const revealTargets = document.querySelectorAll('.app-card, .timeline-item, .contact-card');
 
-            document.querySelectorAll('.app-card, .timeline-item, .contact-card').forEach(el => {
-                el.style.opacity = '0';
-                el.style.transform = 'translateY(20px)';
-                el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
-                observer.observe(el);
-            });
+            if (wantsMotion && 'IntersectionObserver' in window) {
+                const show = el => {
+                    el.style.opacity = '1';
+                    el.style.transform = 'translateY(0)';
+                };
+                const observer = new IntersectionObserver((entries, obs) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) { show(entry.target); obs.unobserve(entry.target); }
+                    });
+                }, { threshold: 0.1 });
+
+                revealTargets.forEach(el => {
+                    el.style.opacity = '0';
+                    el.style.transform = 'translateY(20px)';
+                    el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+                    observer.observe(el);
+                });
+
+                // Backstop: anything still hidden after load gets shown regardless.
+                // A card that is taller than the viewport, or sits in a container the
+                // observer never scrolls, would otherwise never reach 10% visibility.
+                window.addEventListener('load', () => {
+                    setTimeout(() => revealTargets.forEach(el => {
+                        if (el.style.opacity === '0') show(el);
+                    }), 1200);
+                });
+            }
         });
     </script>
 </body>
