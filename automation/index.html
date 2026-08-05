@@ -229,7 +229,7 @@
     </div>
     <p class="kicker">Developer tooling · workflow automation</p>
     <h1>Giving a multi-repo AI workspace a nervous system.</h1>
-    <p class="lede">A five-repository codebase where <b>AI coding sessions run daily</b> needs guardrails a person can't be relied on to remember. I built a <span class="cy">lifecycle-hook automation layer</span>: small, portable scripts that fire at fixed moments in every session to enforce safety, quality, and workflow &mdash; backed by a command layer for the work you drive by hand, a skill layer of packaged procedures, a scheduled layer for the checks that only fail slowly, and a review layer of specialist agents that audit what the scripts structurally cannot see.</p>
+    <p class="lede">A five-repository codebase where <b>AI coding sessions run daily</b> needs guardrails nobody can be relied on to remember. The answer is a <span class="cy">lifecycle-hook automation layer</span>: small, portable scripts that fire at fixed moments in every session to enforce safety, quality, and workflow &mdash; backed by a command layer for the work you drive by hand, a skill layer of packaged procedures, a scheduled layer for the checks that only fail slowly, and a review layer of specialist agents that audit what the scripts structurally cannot see.</p>
     <p class="context">python simulation engine · typescript / react apps · swift ios app · markdown docs corpus · agent-config repo</p>
 
     <div class="layers">
@@ -266,8 +266,9 @@
       </div>
       <div class="card">
         <div class="tag">portability</div>
-        <h3>One script, every OS</h3>
-        <p>The same hooks run on Windows, macOS, and Linux: no hardcoded drive letters, <code>python3</code>-first resolution, POSIX-only tools, LF endings enforced. They sync to every machine through one config repo.</p>
+        <h3>One script, every machine</h3>
+        <p>The same hooks run on Windows and macOS with no hardcoded drive letters, <code>python3</code>-first resolution, POSIX-only tools and LF endings enforced. They reach every machine through one synced config repo.</p>
+        <p>This is not a hypothetical. The layer runs across <b>two Windows boxes and a Mac</b>, on more than one person's hardware, and a second contributor works inside it. <em>Portability stopped being a design goal the moment someone else's machine had a different drive letter.</em></p>
       </div>
       <div class="card">
         <div class="tag">integrity</div>
@@ -436,7 +437,7 @@
   <div class="takeaway">
     <h3>Why it's built this way</h3>
     <p>An AI coding agent is fast and tireless, but it forgets between sessions and it runs on whatever machine happens to be in front of it. The value of this layer isn't any single script &mdash; it's that the <b>guarantees survive the forgetting</b>: a secret can't be committed, a metric can't drift, two sessions can't silently clobber each other, and a convention no one remembers is still enforced because it was turned into a check.</p>
-    <p>Every design choice trades toward <b>safety-under-degradation</b>: fail open so a broken toolchain never blocks real work, fail closed on the handful of gates where a false pass is unrecoverable, keep the errors even where the block is waived, and make every script portable enough to run identically on three operating systems from one synced config repo.</p>
+    <p>Every design choice trades toward <b>safety-under-degradation</b>: fail open so a broken toolchain never blocks real work, fail closed on the handful of gates where a false pass is unrecoverable, keep the errors even where the block is waived, and make every script portable enough to run identically across every machine in the group from one synced config repo.</p>
     <p style="margin-top:1.1rem; padding-top:1.1rem; border-top:1px solid var(--line-soft);">This page covers the layer that <b>runs</b>. Two companion write-ups cover the layer that <b>decides</b>: <a href="../enforcement/" style="color:var(--accent-cyan); text-decoration:none; border-bottom:1px solid var(--line)">how a written convention becomes an enforced check</a>, and <a href="../publishing/" style="color:var(--accent-cyan); text-decoration:none; border-bottom:1px solid var(--line)">how anything gets published out of a patent-pending codebase</a>.</p>
   </div>
 
