@@ -238,7 +238,11 @@
   /* Wide figures must not shrink their labels into illegibility on a phone.
      Below the min-width they scroll inside their own container instead —
      the page body never scrolls horizontally. Same pattern as .tablewrap. */
-  .figscroll { overflow-x: auto; overscroll-behavior-x: contain; }
+  /* A grid/flex item defaults to min-width:auto, so an svg min-width inside
+     one propagates outward and scrolls the PAGE instead of the container.
+     min-width:0 lets the item shrink and hands the overflow to .figscroll. */
+  .panels > *, .panel, figure.fig { min-width: 0; }
+  .figscroll { overflow-x: auto; overscroll-behavior-x: contain; max-width: 100%; }
   .figscroll > svg { min-width: 860px; }
   .figscroll.mid > svg { min-width: 600px; }
   .figscroll + .scrollhint {
