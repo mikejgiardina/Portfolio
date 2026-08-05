@@ -1,0 +1,917 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Running Sessions in Parallel: Leases, a Serial Spine, and the Plausible Green — Case Study</title>
+<meta name="description" content="Three rounds of an orchestration pattern where one coordinating session runs several worker sessions at once: partitioning by write-surface rather than by topic, routing every serial resource through one writer, and the defect class that kept showing up — a failure that produces a plausible green instead of an error.">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Crimson+Pro:wght@400;600&family=Work+Sans:wght@300;500;700&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --primary-bg: #0a0e14;
+    --secondary-bg: #151922;
+    --raise-bg: #1b212c;
+    --accent-cyan: #00d9ff;
+    --accent-green: #00ff9f;
+    --accent-red: #ff006e;
+    --accent-amber: #ffb454;
+    --text-primary: #e6edf3;
+    --text-muted: #8b949e;
+    --text-dim: #5b636d;
+    --line: rgba(0, 217, 255, 0.18);
+    --line-soft: rgba(139, 148, 158, 0.16);
+    --grid-color: rgba(0, 217, 255, 0.1);
+    --serif: 'Crimson Pro', Georgia, 'Times New Roman', serif;
+    --sans: 'Work Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+    --mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+
+    /* ---- chart tokens ----
+       Series hues are snapped steps of the site accents, validated as a
+       categorical pair against BOTH the dark card surface (#151922) and a
+       white surface: lightness band, chroma floor, CVD separation
+       (worst adjacent dE 20.5 protan), normal-vision floor (25.0), and
+       >=3:1 contrast all pass in both modes. The same two hex values are
+       therefore correct on a dark page, in print, and in a light context —
+       no theme flip is needed for the marks themselves. */
+    --series-1: #1f9fc4;
+    --series-2: #c98500;
+    --chart-surface: #151922;
+    --chart-ink: #e6edf3;
+    --chart-muted: #8b949e;
+    --chart-grid: rgba(139, 148, 158, 0.22);
+    --chart-axis: rgba(139, 148, 158, 0.42);
+    --chart-absent: rgba(139, 148, 158, 0.30);
+  }
+  html { scroll-behavior: smooth; }
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+  body {
+    background: var(--primary-bg);
+    color: var(--text-primary);
+    font-family: var(--sans);
+    line-height: 1.65;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  .grid-bg {
+    position: fixed; inset: 0; z-index: 0; pointer-events: none;
+    background-image:
+      linear-gradient(var(--grid-color) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid-color) 1px, transparent 1px);
+    background-size: 50px 50px;
+    animation: gridPulse 4s ease-in-out infinite;
+  }
+  @keyframes gridPulse { 0%, 100% { opacity: 0.3; } 50% { opacity: 0.55; } }
+  @media (prefers-reduced-motion: reduce) { .grid-bg { animation: none; opacity: 0.35; } }
+
+  .wrap { max-width: 1000px; margin: 0 auto; padding: 0 2rem 6rem; position: relative; z-index: 1; }
+
+  /* ---- top bar ---- */
+  .topbar {
+    position: sticky; top: 0; z-index: 20;
+    background: color-mix(in srgb, var(--primary-bg) 86%, transparent);
+    backdrop-filter: blur(9px);
+    border-bottom: 1px solid var(--line);
+  }
+  .topin {
+    max-width: 1000px; margin: 0 auto; padding: 0.7rem 2rem;
+    display: flex; align-items: center; gap: 1rem;
+  }
+  .mark { font-family: var(--mono); font-size: 0.78rem; color: var(--text-muted); letter-spacing: 0.02em; }
+  .mark b { color: var(--accent-cyan); font-weight: 700; }
+  .topnav { margin-left: auto; display: flex; gap: 0.15rem; align-items: center; flex-wrap: wrap; }
+  .topnav a {
+    font-family: var(--mono); font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.09em;
+    color: var(--text-muted); text-decoration: none; padding: 0.35rem 0.6rem; border-radius: 5px;
+    transition: color 0.15s, background 0.15s;
+  }
+  .topnav a:hover { color: var(--accent-cyan); background: rgba(0, 217, 255, 0.06); }
+  .topnav a.back { color: var(--text-dim); }
+  .topnav a:focus-visible { outline: 2px solid var(--accent-cyan); outline-offset: 2px; }
+
+  /* ---- hero ---- */
+  header.hero { padding: 4.5rem 0 3rem; border-bottom: 1px solid var(--line-soft); }
+  .status-bar {
+    font-family: var(--mono); font-size: 0.72rem; color: var(--accent-green);
+    display: flex; gap: 1.6rem; flex-wrap: wrap; margin-bottom: 1.8rem;
+  }
+  .status-item { display: flex; align-items: center; gap: 0.5rem; letter-spacing: 0.04em; }
+  .status-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--accent-green); animation: pulse 2s ease-in-out infinite; }
+  @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+  @media (prefers-reduced-motion: reduce) { .status-dot { animation: none; } }
+  .kicker { font-family: var(--mono); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.16em; color: var(--accent-cyan); margin-bottom: 1rem; }
+  h1 {
+    font-family: var(--serif); font-weight: 600; font-size: clamp(2.3rem, 5.5vw, 3.9rem);
+    line-height: 1.08; letter-spacing: -0.01em; margin-bottom: 1.1rem; max-width: 18ch;
+    color: var(--text-primary);
+    background: linear-gradient(135deg, var(--text-primary) 0%, var(--accent-cyan) 100%);
+    -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+  }
+  .lede { font-size: clamp(1.05rem, 2vw, 1.22rem); color: var(--text-muted); max-width: 68ch; font-weight: 300; }
+  .lede + .lede { margin-top: 1rem; }
+  .lede b { color: var(--text-primary); font-weight: 500; }
+  .lede .cy { color: var(--accent-cyan); font-weight: 500; }
+  .context { font-family: var(--mono); font-size: 0.8rem; color: var(--text-dim); margin-top: 1.6rem; letter-spacing: 0.01em; }
+
+  .stats { display: flex; flex-wrap: wrap; gap: 1.1rem 2.4rem; margin-top: 2.4rem; font-family: var(--mono); }
+  .stat { display: flex; flex-direction: column; }
+  .stat .n { font-size: 2.3rem; font-weight: 700; color: var(--accent-cyan); line-height: 1; }
+  .stat .l { font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.09em; margin-top: 0.5rem; }
+  .statnote {
+    margin-top: 1.7rem; font-size: 0.85rem; color: var(--text-muted); max-width: 70ch;
+    border-left: 2px solid var(--line); padding-left: 0.9rem;
+  }
+  .statnote + .statnote { margin-top: 0.9rem; }
+  .statnote code { font-family: var(--mono); font-size: 0.82em; color: var(--accent-cyan); background: rgba(0,217,255,0.07); padding: 0.05rem 0.3rem; border-radius: 3px; }
+  .statnote b { color: var(--text-primary); font-weight: 500; }
+
+  /* ---- sections ---- */
+  section.sec { padding-top: 4.5rem; }
+  .sechead { display: flex; align-items: center; gap: 1rem; margin-bottom: 0.7rem; }
+  .secnum { font-family: var(--mono); font-size: 0.9rem; color: var(--accent-cyan); opacity: 0.6; }
+  h2 { font-family: var(--serif); font-weight: 600; font-size: clamp(1.7rem, 4vw, 2.4rem); letter-spacing: -0.01em; }
+  .divider { flex: 1; height: 1px; background: linear-gradient(90deg, var(--accent-cyan) 0%, transparent 100%); margin-left: 1rem; }
+  .secsub { color: var(--text-muted); font-size: 1rem; max-width: 74ch; margin: 0.4rem 0 2rem; }
+  .secsub b { color: var(--text-primary); font-weight: 500; }
+  .secsub em { color: var(--accent-amber); font-style: normal; font-weight: 500; }
+  .secsub code { font-family: var(--mono); font-size: 0.82em; color: var(--accent-cyan); }
+
+  /* ---- principle cards ---- */
+  .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.1rem; }
+  .card {
+    position: relative; background: var(--secondary-bg); border: 1px solid var(--line);
+    padding: 1.4rem 1.5rem; overflow: hidden; transition: transform 0.25s, border-color 0.25s, box-shadow 0.25s;
+  }
+  .card::before {
+    content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 2px;
+    background: linear-gradient(90deg, var(--accent-cyan), var(--accent-green));
+    transform: scaleX(0); transform-origin: left; transition: transform 0.3s ease;
+  }
+  .card:hover { transform: translateY(-4px); border-color: var(--accent-cyan); box-shadow: 0 10px 34px rgba(0, 217, 255, 0.13); }
+  .card:hover::before { transform: scaleX(1); }
+  .card .tag { font-family: var(--mono); font-size: 0.66rem; text-transform: uppercase; letter-spacing: 0.11em; color: var(--accent-green); margin-bottom: 0.7rem; }
+  .card h3 { font-family: var(--serif); font-size: 1.25rem; font-weight: 600; margin-bottom: 0.5rem; color: var(--text-primary); }
+  .card p { font-size: 0.9rem; color: var(--text-muted); }
+  .card p + p { margin-top: 0.5rem; }
+  .card em { color: var(--accent-amber); font-style: normal; font-weight: 500; }
+  .card b { color: var(--text-primary); font-weight: 500; }
+  .card code { font-family: var(--mono); font-size: 0.82em; color: var(--accent-cyan); }
+
+  /* ---- staged blocks ---- */
+  .stage { position: relative; background: var(--secondary-bg); border: 1px solid var(--line-soft); border-left: 2px solid var(--line); padding: 1.15rem 1.3rem; margin-bottom: 0.75rem; transition: border-color 0.18s; }
+  .stage:hover { border-left-color: var(--accent-cyan); }
+  .stagehead { display: flex; align-items: baseline; gap: 0.8rem; flex-wrap: wrap; margin-bottom: 0.45rem; }
+  .stagenum { font-family: var(--mono); font-size: 0.7rem; font-weight: 700; color: var(--accent-cyan); border: 1px solid var(--line); border-radius: 4px; padding: 0.05rem 0.45rem; }
+  .stagename { font-family: var(--serif); font-size: 1.15rem; font-weight: 600; color: var(--text-primary); }
+  .stagekind { margin-left: auto; font-family: var(--mono); font-size: 0.66rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-dim); }
+  .stage p { font-size: 0.9rem; color: var(--text-muted); }
+  .stage p + p { margin-top: 0.55rem; }
+  .stage em { color: var(--accent-amber); font-style: normal; font-weight: 500; }
+  .stage b { color: var(--text-primary); font-weight: 500; }
+  .stage code { font-family: var(--mono); font-size: 0.82em; color: var(--accent-cyan); }
+
+  .note { background: var(--raise-bg); border: 1px solid var(--line-soft); border-left: 2px solid var(--accent-amber); padding: 0.85rem 1.1rem; font-size: 0.88rem; color: var(--text-muted); }
+  .note b { color: var(--text-primary); font-weight: 500; }
+  .note em { color: var(--accent-amber); font-style: normal; font-weight: 500; }
+  .note code { font-family: var(--mono); font-size: 0.82em; color: var(--accent-cyan); }
+
+  /* ---- table ---- */
+  .tablewrap { overflow-x: auto; border: 1px solid var(--line-soft); background: var(--secondary-bg); }
+  table { border-collapse: collapse; width: 100%; min-width: 620px; font-size: 0.87rem; }
+  th { text-align: left; font-family: var(--mono); font-size: 0.66rem; text-transform: uppercase; letter-spacing: 0.09em; color: var(--text-dim); padding: 0.7rem 1rem; background: var(--raise-bg); border-bottom: 1px solid var(--line-soft); font-weight: 700; white-space: nowrap; }
+  td { padding: 0.75rem 1rem; border-bottom: 1px solid var(--line-soft); color: var(--text-muted); vertical-align: top; }
+  td.num { font-family: var(--mono); font-variant-numeric: tabular-nums; text-align: right; white-space: nowrap; }
+  tr:last-child td { border-bottom: none; }
+  tbody tr:hover { background: rgba(0, 217, 255, 0.035); }
+  td b { color: var(--text-primary); font-weight: 500; }
+  td code { font-family: var(--mono); font-size: 0.82em; color: var(--accent-cyan); }
+  .absent { color: var(--text-dim); font-style: italic; }
+
+  /* ---- casualty callout ---- */
+  .cas { background: var(--raise-bg); border: 1px solid rgba(255,0,110,0.28); border-left: 2px solid var(--accent-red); padding: 1.15rem 1.3rem; margin-bottom: 0.9rem; }
+  .cas .ct { font-family: var(--mono); font-size: 0.66rem; text-transform: uppercase; letter-spacing: 0.1em; color: #ff5c9d; margin-bottom: 0.5rem; }
+  .cas h4 { font-family: var(--serif); font-size: 1.15rem; font-weight: 600; color: var(--text-primary); margin-bottom: 0.45rem; }
+  .cas p { font-size: 0.9rem; color: var(--text-muted); }
+  .cas p + p { margin-top: 0.55rem; }
+  .cas b { color: var(--text-primary); font-weight: 500; }
+  .cas em { color: var(--accent-amber); font-style: normal; font-weight: 500; }
+  .cas code { font-family: var(--mono); font-size: 0.82em; color: var(--accent-cyan); }
+
+  /* ---- numbered criteria ---- */
+  .bar { counter-reset: barc; display: grid; gap: 0.7rem; }
+  .barit { position: relative; background: var(--secondary-bg); border: 1px solid var(--line-soft); padding: 1rem 1.2rem 1rem 3.3rem; }
+  .barit::before { counter-increment: barc; content: counter(barc); position: absolute; left: 1.15rem; top: 0.95rem; font-family: var(--mono); font-size: 1.1rem; font-weight: 700; color: var(--accent-cyan); opacity: 0.55; }
+  .barit h4 { font-family: var(--serif); font-size: 1.08rem; font-weight: 600; color: var(--text-primary); margin-bottom: 0.3rem; }
+  .barit p { font-size: 0.88rem; color: var(--text-muted); }
+  .barit p + p { margin-top: 0.45rem; }
+  .barit em { color: var(--accent-amber); font-style: normal; font-weight: 500; }
+  .barit b { color: var(--text-primary); font-weight: 500; }
+  .barit code { font-family: var(--mono); font-size: 0.82em; color: var(--accent-cyan); }
+
+  /* ---- brief diff ---- */
+  .diff { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1rem; }
+  .dcol { background: #06090d; border: 1px solid var(--line-soft); padding: 1.1rem 1.2rem; }
+  .dcol.bad { border-left: 2px solid var(--accent-red); }
+  .dcol.good { border-left: 2px solid var(--accent-green); }
+  .dlab { font-family: var(--mono); font-size: 0.66rem; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.7rem; }
+  .dcol.bad .dlab { color: #ff5c9d; }
+  .dcol.good .dlab { color: var(--accent-green); }
+  .dtext { font-family: var(--mono); font-size: 0.8rem; line-height: 1.75; color: var(--text-muted); }
+  .dtext b { color: var(--text-primary); font-weight: 700; }
+  .dwhy { margin-top: 0.8rem; padding-top: 0.7rem; border-top: 1px solid var(--line-soft); font-size: 0.84rem; color: var(--text-dim); font-family: var(--sans); }
+  .dwhy b { color: var(--text-muted); font-weight: 500; }
+
+  /* ---- figures & charts ---- */
+  figure.fig {
+    background: var(--secondary-bg); border: 1px solid var(--line-soft);
+    padding: 1.4rem 1.5rem 1.2rem; margin: 0 0 1.1rem;
+  }
+  .figtitle { font-family: var(--mono); font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--accent-cyan); margin-bottom: 0.25rem; }
+  .figlede { font-size: 0.88rem; color: var(--text-muted); margin-bottom: 1.2rem; max-width: 72ch; }
+  .figlede b { color: var(--text-primary); font-weight: 500; }
+  figure.fig figcaption { margin-top: 1.1rem; padding-top: 0.9rem; border-top: 1px solid var(--line-soft); font-size: 0.84rem; color: var(--text-muted); max-width: 76ch; }
+  figure.fig figcaption b { color: var(--text-primary); font-weight: 500; }
+  figure.fig figcaption em { color: var(--accent-amber); font-style: normal; font-weight: 500; }
+  .panels { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.4rem 1.8rem; }
+  .panel svg, figure.fig > svg, .figscroll > svg { display: block; width: 100%; height: auto; overflow: visible; }
+  /* Wide figures must not shrink their labels into illegibility on a phone.
+     Below the min-width they scroll inside their own container instead —
+     the page body never scrolls horizontally. Same pattern as .tablewrap. */
+  /* A grid/flex item defaults to min-width:auto, so an svg min-width inside
+     one propagates outward and scrolls the PAGE instead of the container.
+     min-width:0 lets the item shrink and hands the overflow to .figscroll. */
+  .panels > *, .panel, figure.fig { min-width: 0; }
+  .figscroll { overflow-x: auto; overscroll-behavior-x: contain; max-width: 100%; }
+  .figscroll > svg { min-width: 860px; }
+  .figscroll.mid > svg { min-width: 600px; }
+  .figscroll + .scrollhint {
+    font-family: var(--mono); font-size: 0.64rem; color: var(--text-dim);
+    letter-spacing: 0.05em; margin-top: 0.35rem; display: none;
+  }
+  @media (max-width: 900px) { .figscroll + .scrollhint { display: block; } }
+  .paneltitle { font-family: var(--mono); font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); margin-bottom: 0.6rem; }
+  .legend { display: flex; gap: 1.2rem; flex-wrap: wrap; margin-bottom: 1rem; font-family: var(--mono); font-size: 0.7rem; color: var(--text-muted); }
+  .lgi { display: flex; align-items: center; gap: 0.45rem; }
+  .lgs { width: 12px; height: 12px; border-radius: 2px; flex: none; }
+  .srcline { font-family: var(--mono); font-size: 0.68rem; color: var(--text-dim); margin-top: 0.8rem; letter-spacing: 0.02em; }
+
+  /* chart text roles — never the series color */
+  .ct-lab { fill: var(--chart-muted); font-family: var(--mono); font-size: 11px; }
+  .ct-val { fill: var(--chart-ink); font-family: var(--mono); font-size: 12px; font-weight: 700; }
+  .ct-abs { fill: var(--chart-absent); font-family: var(--mono); font-size: 10.5px; font-style: italic; }
+  .ct-ax  { stroke: var(--chart-axis); stroke-width: 1; }
+  .ct-gr  { stroke: var(--chart-grid); stroke-width: 1; }
+
+  /* diagram text roles */
+  .dg-box { fill: var(--secondary-bg); stroke: var(--chart-axis); stroke-width: 1; }
+  .dg-box-hi { fill: rgba(31,159,196,0.10); stroke: var(--series-1); stroke-width: 1.5; }
+  .dg-box-ser { fill: rgba(201,133,0,0.08); stroke: var(--series-2); stroke-width: 1.25; }
+  .dg-t { fill: var(--chart-ink); font-family: var(--sans); font-size: 12.5px; font-weight: 500; }
+  .dg-s { fill: var(--chart-muted); font-family: var(--mono); font-size: 10px; }
+  .dg-a { fill: var(--chart-muted); font-family: var(--mono); font-size: 9.5px; letter-spacing: 0.02em; }
+  .dg-l { stroke: var(--chart-axis); stroke-width: 1.25; fill: none; }
+  .dg-l-hi { stroke: var(--series-1); stroke-width: 1.5; fill: none; }
+  .dg-l-ser { stroke: var(--series-2); stroke-width: 1.5; fill: none; }
+
+  details.src { margin-top: 1rem; border: 1px solid var(--line-soft); background: #06090d; }
+  details.src summary {
+    cursor: pointer; padding: 0.6rem 1rem; font-family: var(--mono); font-size: 0.7rem;
+    text-transform: uppercase; letter-spacing: 0.09em; color: var(--text-dim); list-style: none;
+  }
+  details.src summary::-webkit-details-marker { display: none; }
+  details.src summary::before { content: '+ '; color: var(--accent-cyan); }
+  details.src[open] summary::before { content: '- '; }
+  details.src summary:hover { color: var(--accent-cyan); }
+  details.src pre { padding: 0 1rem 1rem; overflow-x: auto; font-family: var(--mono); font-size: 0.72rem; line-height: 1.7; color: var(--text-muted); }
+
+  /* ---- takeaway ---- */
+  .takeaway { margin-top: 3.2rem; background: linear-gradient(135deg, rgba(0,217,255,0.05), rgba(0,255,159,0.03)); border: 1px solid var(--line); padding: 1.8rem; }
+  .takeaway h3 { font-family: var(--serif); font-size: 1.4rem; font-weight: 600; margin-bottom: 0.7rem; }
+  .takeaway p { color: var(--text-muted); font-size: 0.95rem; max-width: 78ch; }
+  .takeaway p + p { margin-top: 0.7rem; }
+  .takeaway b { color: var(--text-primary); font-weight: 500; }
+
+  footer { margin-top: 3.5rem; padding-top: 1.6rem; border-top: 1px solid var(--line); font-family: var(--mono); font-size: 0.78rem; color: var(--text-dim); }
+  footer p { margin-bottom: 0.4rem; line-height: 1.7; }
+  footer a { color: var(--accent-cyan); text-decoration: none; }
+  footer a:hover { color: var(--accent-green); }
+
+  @media (max-width: 620px) {
+    .wrap, .topin { padding-left: 1.25rem; padding-right: 1.25rem; }
+    figure.fig { padding: 1.1rem 1rem 1rem; }
+  }
+
+  /* Print / forced-light: the figures re-ground onto white. The series hues
+     are validated against a white surface too, so only the chrome flips. */
+  @media print {
+    body { background: #fff; color: #111; }
+    .grid-bg, .topbar { display: none; }
+    figure.fig, .panel {
+      --chart-surface: #ffffff; --chart-ink: #0b0b0b; --chart-muted: #52514e;
+      --chart-grid: #e1e0d9; --chart-axis: #c3c2b7; --chart-absent: #898781;
+      background: #fff; border-color: #ddd;
+    }
+    .dg-box { fill: #fff; }
+    section.sec { padding-top: 2rem; break-inside: avoid; }
+  }
+  @media (forced-colors: active) {
+    .card, .stage, .cas, figure.fig, .dcol { border: 1px solid CanvasText; }
+  }
+</style>
+</head>
+<body>
+<div class="grid-bg"></div>
+
+<div class="topbar">
+  <div class="topin">
+    <span class="mark"><b>orchestrate/</b> · one coordinator, N workers</span>
+    <nav class="topnav">
+      <a href="#leases">Leases</a>
+      <a href="#spine">Serial spine</a>
+      <a href="#cost">Cost</a>
+      <a href="#green">Plausible green</a>
+      <a href="#brief">The brief</a>
+      <a href="../automation/">Hooks →</a>
+      <a href="../enforcement/">Enforcement →</a>
+      <a href="../case-studies/" class="back">← all four</a>
+      <a href="../" class="back">← portfolio</a>
+    </nav>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <header class="hero" id="top">
+    <div class="status-bar">
+      <div class="status-item"><span class="status-dot"></span><span>ENGINEERING CASE STUDY</span></div>
+      <div class="status-item"><span class="status-dot"></span><span>PROCESS &middot; MULTI-SESSION ORCHESTRATION</span></div>
+    </div>
+    <p class="kicker">Workflow design · parallel sessions</p>
+    <h1>One coordinator, several workers, and one shared repository.</h1>
+    <p class="lede">Running several AI coding sessions at once is easy to start and hard to keep coherent. The obvious partition &mdash; give each session a different <em>subject</em> &mdash; is the one that fails, because unrelated subjects keep landing in the same files. The partition that works is by <b>write-surface</b>: a session is handed a repository and a set of path globs, and the globs are checked to be disjoint <span class="cy">before anything is spawned</span>.</p>
+    <p class="lede">This is a write-up of three rounds of that pattern, run against a multi-repository workspace by one person. It covers what the leases are, which resources deliberately stay serial, what it cost, and the one defect class that showed up in every round.</p>
+    <p class="context">a coordinating session · N worker sessions · git worktrees · a shared issue tracker · one human approving merges</p>
+
+    <div class="stats">
+      <div class="stat"><span class="n">3</span><span class="l">rounds</span></div>
+      <div class="stat"><span class="n">13</span><span class="l">worker sessions</span></div>
+      <div class="stat"><span class="n">16</span><span class="l">pull requests merged</span></div>
+      <div class="stat"><span class="n">19</span><span class="l">issues closed &middot; rounds 2&ndash;3</span></div>
+    </div>
+
+    <p class="statnote">The issue figure covers rounds 2 and 3 only. <b>Round 1 did not track it</b> &mdash; which is the first honest thing to say about this pattern: the instrumentation lagged the practice, and several questions asked later in this write-up cannot be answered backwards. Where a number is missing it is shown as missing rather than filled in.</p>
+    <p class="statnote">Nothing here is a product claim. The work these sessions did is described only at the level of <em>shape</em> &mdash; a checker, a gate, a test suite &mdash; because the transferable part is the coordination, not the subject matter.</p>
+  </header>
+
+  <section class="sec" id="leases">
+    <div class="sechead"><span class="secnum">01</span><h2>Lease by write-surface, not by topic</h2><div class="divider"></div></div>
+    <p class="secsub">The failure mode that motivates everything else: two sessions given clearly unrelated jobs, both of which turn out to need the same file. Topic independence does not imply file independence, and you find out at merge time, which is the worst time.</p>
+
+    <div class="cards">
+      <div class="card">
+        <div class="tag">the unit</div>
+        <h3>A lease is a repo plus globs</h3>
+        <p>Not &ldquo;you take auth, you take docs.&rdquo; A lease is <code>(repository, [path globs])</code> &mdash; a concrete, enumerable set of files a session is permitted to write. Everything outside it is read-only to that session.</p>
+      </div>
+      <div class="card">
+        <div class="tag">the check</div>
+        <h3>Disjointness is verified, not assumed</h3>
+        <p>Before any session is spawned, the glob sets are expanded and intersected. A non-empty intersection is a <em>planning error</em>, caught in a few seconds, rather than a merge conflict discovered after both sessions have finished.</p>
+      </div>
+      <div class="card">
+        <div class="tag">the isolation</div>
+        <h3>One worktree per lease</h3>
+        <p>Each session gets its own git worktree and its own branch. The lease is the intent; the worktree is the enforcement. Two sessions physically cannot be editing the same working copy.</p>
+      </div>
+      <div class="card">
+        <div class="tag">the consequence</div>
+        <h3>Topics can overlap freely</h3>
+        <p>Once the partition is by file, two sessions are allowed to be thinking about the same <b>subject</b> &mdash; which happens more than you would expect, and is fine. What they may not do is write the same line.</p>
+      </div>
+    </div>
+
+    <p class="note" style="margin-top:1.5rem;"><b>Where this leaks.</b> A lease constrains writes; it does not constrain <em>reading a file that a neighbour is mid-way through rewriting</em>. A worker can therefore build correct work on a premise that another worker is in the process of invalidating. Nothing in the pattern catches that today &mdash; it is caught, if at all, at review. The mitigation in use is ordering: when two leases are known to sit on either side of a shared assumption, they go in different rounds rather than the same one.</p>
+  </section>
+
+  <section class="sec" id="topology">
+    <div class="sechead"><span class="secnum">02</span><h2>The shape of a round</h2><div class="divider"></div></div>
+    <p class="secsub">Two things are happening at once, and the diagram is worth more than the paragraph because they run in opposite directions. Writes <b>fan out</b> to disjoint surfaces. Everything that cannot be done twice <b>funnels back</b> through a single point.</p>
+
+    <figure class="fig">
+      <div class="figtitle">Figure 1 &middot; orchestration topology</div>
+      <p class="figlede">Each worker writes only inside its own lease, so the write paths never touch. The four resources on the lower left are <b>serial by nature</b> &mdash; two sessions doing them concurrently corrupt each other &mdash; so no worker touches them directly; the coordinator is the only writer.</p>
+
+      <div class="figscroll">
+      <svg viewBox="0 0 920 520" role="img" aria-label="Orchestration topology: a coordinator spawns four worker sessions over a shared rail; each worker writes only to its own disjoint set of path globs, while the board, merges to main, shared file sinks and work intake are written solely by the coordinator." xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+            <path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/>
+          </marker>
+        </defs>
+
+        <!-- column headings -->
+        <text class="dg-a" x="20" y="20">COORDINATOR</text>
+        <text class="dg-a" x="330" y="20">WORKER SESSIONS</text>
+        <text class="dg-a" x="600" y="20">LEASED WRITE SURFACES &#183; DISJOINT</text>
+
+        <!-- coordinator -->
+        <rect class="dg-box-hi" x="20" y="118" width="200" height="74" rx="4"/>
+        <text class="dg-t" x="36" y="146">Coordinating session</text>
+        <text class="dg-s" x="36" y="166">holds the plan</text>
+        <text class="dg-s" x="36" y="181">approves every merge</text>
+
+        <!-- rail -->
+        <line class="dg-l-hi" x1="278" y1="46" x2="278" y2="418"/>
+        <text class="dg-a" x="286" y="42" fill="#1f9fc4">rail</text>
+
+        <!-- coordinator to rail: spawn -->
+        <g color="#1f9fc4">
+          <path class="dg-l-hi" d="M 220 140 L 278 140" marker-end="url(#ar)"/>
+        </g>
+        <text class="dg-a" x="228" y="134">briefs out</text>
+        <!-- rail to coordinator: check-in -->
+        <g color="#1f9fc4">
+          <path class="dg-l-hi" d="M 278 172 L 222 172" marker-end="url(#ar)"/>
+        </g>
+        <text class="dg-a" x="228" y="188">check-ins back</text>
+
+        <!-- workers + leases -->
+        <!-- W1 -->
+        <line class="dg-l" x1="278" y1="76" x2="330" y2="76"/>
+        <rect class="dg-box" x="330" y="50" width="180" height="52" rx="4"/>
+        <text class="dg-t" x="344" y="72">Worker 1</text>
+        <text class="dg-s" x="344" y="90">a changelog-coverage gate</text>
+        <g color="#8b949e"><path class="dg-l" d="M 510 76 L 596 76" marker-end="url(#ar)"/></g>
+        <text class="dg-a" x="524" y="68">writes</text>
+        <rect class="dg-box-ser" x="600" y="50" width="300" height="52" rx="4"/>
+        <text class="dg-s" x="614" y="72" fill="#c98500">repo-a/</text>
+        <text class="dg-s" x="614" y="88">tools/changelog/**  ·  tests/changelog/**</text>
+
+        <!-- W2 -->
+        <line class="dg-l" x1="278" y1="166" x2="330" y2="166"/>
+        <rect class="dg-box" x="330" y="140" width="180" height="52" rx="4"/>
+        <text class="dg-t" x="344" y="162">Worker 2</text>
+        <text class="dg-s" x="344" y="180">a metrics-provenance gate</text>
+        <g color="#8b949e"><path class="dg-l" d="M 510 166 L 596 166" marker-end="url(#ar)"/></g>
+        <text class="dg-a" x="524" y="158">writes</text>
+        <rect class="dg-box-ser" x="600" y="140" width="300" height="52" rx="4"/>
+        <text class="dg-s" x="614" y="162" fill="#c98500">repo-a/</text>
+        <text class="dg-s" x="614" y="178">tools/provenance/**  ·  tests/provenance/**</text>
+
+        <!-- W3 -->
+        <line class="dg-l" x1="278" y1="256" x2="330" y2="256"/>
+        <rect class="dg-box" x="330" y="230" width="180" height="52" rx="4"/>
+        <text class="dg-t" x="344" y="252">Worker 3</text>
+        <text class="dg-s" x="344" y="270">a hook test suite</text>
+        <g color="#8b949e"><path class="dg-l" d="M 510 256 L 596 256" marker-end="url(#ar)"/></g>
+        <text class="dg-a" x="524" y="248">writes</text>
+        <rect class="dg-box-ser" x="600" y="230" width="300" height="52" rx="4"/>
+        <text class="dg-s" x="614" y="252" fill="#c98500">repo-b/</text>
+        <text class="dg-s" x="614" y="268">hooks/**  ·  tests/hooks/**</text>
+
+        <!-- W4 -->
+        <line class="dg-l" x1="278" y1="346" x2="330" y2="346"/>
+        <rect class="dg-box" x="330" y="320" width="180" height="52" rx="4"/>
+        <text class="dg-t" x="344" y="342">Worker 4</text>
+        <text class="dg-s" x="344" y="360">a UI registry cleanup</text>
+        <g color="#8b949e"><path class="dg-l" d="M 510 346 L 596 346" marker-end="url(#ar)"/></g>
+        <text class="dg-a" x="524" y="338">writes</text>
+        <rect class="dg-box-ser" x="600" y="320" width="300" height="52" rx="4"/>
+        <text class="dg-s" x="614" y="342" fill="#c98500">repo-a/</text>
+        <text class="dg-s" x="614" y="358">ui/src/registry/**</text>
+
+        <!-- disjointness bracket -->
+        <path class="dg-l-ser" d="M 908 50 L 916 50 L 916 372 L 908 372"/>
+        <text class="dg-a" x="600" y="394" fill="#c98500">glob sets are intersected before spawn —</text>
+        <text class="dg-a" x="600" y="408" fill="#c98500">a non-empty intersection is a planning error</text>
+
+        <!-- serial spine -->
+        <line class="ct-gr" x1="20" y1="228" x2="240" y2="228"/>
+        <g color="#1f9fc4">
+          <path class="dg-l-hi" d="M 120 192 L 120 252" marker-end="url(#ar)"/>
+        </g>
+        <text class="dg-a" x="130" y="222">sole writer</text>
+        <rect class="dg-box-hi" x="20" y="256" width="200" height="162" rx="4"/>
+        <text class="dg-a" x="36" y="278" fill="#1f9fc4">SERIAL SPINE</text>
+        <text class="dg-s" x="36" y="302">the tracking board</text>
+        <text class="dg-s" x="36" y="324">merges to main</text>
+        <text class="dg-s" x="36" y="346">shared file sinks</text>
+        <text class="dg-s" x="36" y="368">work intake / new issues</text>
+        <text class="dg-s" x="36" y="398" fill="#8b949e">no worker writes these</text>
+
+        <!-- footnote line -->
+        <line class="ct-gr" x1="20" y1="452" x2="900" y2="452"/>
+        <text class="dg-a" x="20" y="474">Writes fan out and never intersect.  Everything that cannot be done twice funnels back through one writer.</text>
+        <text class="dg-a" x="20" y="494">The coordinator is the bottleneck by design — and section 03 is about what that bottleneck costs.</text>
+      </svg>
+      </div>
+      <p class="scrollhint">&larr; scroll to pan the diagram &rarr;</p>
+
+      <figcaption><b>The asymmetry is the whole design.</b> Adding a worker adds a parallel write path and costs almost nothing. Adding a worker also adds traffic to the single return rail &mdash; and that side does not parallelise. <em>The bottleneck is not the machine, it is the one writer.</em></figcaption>
+
+      <details class="src">
+        <summary>diagram source (mermaid)</summary>
+<pre>flowchart LR
+    C["Coordinating session&lt;br/&gt;holds the plan · approves every merge"]
+
+    subgraph SPINE["Serial spine — coordinator is sole writer"]
+      B1["the tracking board"]
+      B2["merges to main"]
+      B3["shared file sinks"]
+      B4["work intake / new issues"]
+    end
+
+    C --&gt;|sole writer| SPINE
+
+    C --&gt;|spawn + brief| W1["Worker 1&lt;br/&gt;a changelog-coverage gate"]
+    C --&gt;|spawn + brief| W2["Worker 2&lt;br/&gt;a metrics-provenance gate"]
+    C --&gt;|spawn + brief| W3["Worker 3&lt;br/&gt;a hook test suite"]
+    C --&gt;|spawn + brief| W4["Worker 4&lt;br/&gt;a UI registry cleanup"]
+
+    W1 --&gt;|writes| L1["repo-a/ tools/changelog/** · tests/changelog/**"]
+    W2 --&gt;|writes| L2["repo-a/ tools/provenance/** · tests/provenance/**"]
+    W3 --&gt;|writes| L3["repo-b/ hooks/** · tests/hooks/**"]
+    W4 --&gt;|writes| L4["repo-a/ ui/src/registry/**"]
+
+    W1 --&gt;|check-in · merge request| C
+    W2 --&gt;|check-in · merge request| C
+    W3 --&gt;|check-in · merge request| C
+    W4 --&gt;|check-in · merge request| C
+
+    %% leases L1..L4 are intersected before spawn; a non-empty
+    %% intersection is a planning error, not a merge conflict
+</pre>
+      </details>
+    </figure>
+  </section>
+
+  <section class="sec" id="spine">
+    <div class="sechead"><span class="secnum">03</span><h2>Centralise the serial resources</h2><div class="divider"></div></div>
+    <p class="secsub">Some resources cannot be written by two sessions at once without one of them losing. The rule is not &ldquo;coordinate carefully&rdquo; &mdash; it is <b>route them through one writer and let everything else run free</b>. Four qualify.</p>
+
+    <div class="bar">
+      <div class="barit">
+        <h4>The tracking board</h4>
+        <p>Two sessions updating the same board produce last-write-wins, silently. Workers report status <em>to the coordinator</em>; the coordinator writes the board. The cost is a round-trip; the benefit is that the board is never wrong.</p>
+      </div>
+      <div class="barit">
+        <h4>Merges to the default branch</h4>
+        <p>Serial for the ordinary reason &mdash; each merge changes what the next one is rebasing onto. Also serial for a second reason specific to this workspace: <b>the default branch of one repository publishes on merge</b>, so a merge there is an irreversible outward-facing act and gets a human in the loop.</p>
+      </div>
+      <div class="barit">
+        <h4>Shared file sinks</h4>
+        <p>The handful of files that legitimately every worker wants to append to &mdash; a changelog, a metrics file, an index. These are precisely the files a topic-based partition collides on. Leasing them to <em>nobody</em> and having the coordinator write them is simpler than any locking scheme.</p>
+      </div>
+      <div class="barit">
+        <h4>Work intake</h4>
+        <p>Workers surface findings; they do not file them. Four sessions filing issues independently produces duplicates, inconsistent labels, and no dedup &mdash; and the person who has to triage that is the same person who launched the round. Findings come back as text; the coordinator decides what becomes an item.</p>
+      </div>
+    </div>
+
+    <p class="note" style="margin-top:1.5rem;"><b>The test for whether something belongs on this list</b> is not &ldquo;is it shared&rdquo; &mdash; almost everything is shared. It is: <em>if two sessions did this simultaneously, would the loser know?</em> A merge conflict is loud and therefore safe to leave distributed. A board overwrite is silent, so it gets centralised. That test is the same one that produces section 05.</p>
+
+    <div class="cards" style="margin-top:1.5rem;">
+      <div class="card">
+        <div class="tag">holding the line</div>
+        <h3>&ldquo;Holding receipts is not the same as owning the sink&rdquo;</h3>
+        <p>One worker finished holding better information than the coordinator about a batch of pending merges &mdash; the ordering, the evidence, all of it &mdash; and was <b>offered</b> the merges. It declined, in those words.</p>
+        <p>It was right. The value of a single writer is that it is <em>unconditional</em>; an exception granted to whoever currently seems best-informed is not a rule, and the next round has no way to know the exception was ever made.</p>
+      </div>
+      <div class="card">
+        <div class="tag">the coordinator's own failure</div>
+        <h3>Touching a lease's tree mid-run</h3>
+        <p>The coordinator applied an update to a shared file while a worker's test matrix was still running against it. Nothing errored. But there was <b>no way to tell whether the run had read the file before or after the change</b>, so the result was uninterpretable and had to be discarded.</p>
+        <p>The rule that came out of it is one line: <em>if you must touch a lease's tree, tell it first.</em> The single-writer discipline binds the coordinator too, and this is the case where it forgot.</p>
+      </div>
+    </div>
+
+    <p class="note" style="margin-top:1.2rem;"><b>A related rule, learned the same way.</b> Deciding which files a change could possibly affect, twice, from memory &mdash; once by the coordinator and once by a worker &mdash; produced two short lists that were both wrong, and both missed the one that mattered. Enumerating instead of recalling took a single command. <em>Enumerate, don't recall</em> is now the standing form, and it is the same instinct as the rest of this page: prefer the thing that reads real state over the thing that sounds right.</p>
+  </section>
+
+  <section class="sec" id="cost">
+    <div class="sechead"><span class="secnum">04</span><h2>What three rounds cost</h2><div class="divider"></div></div>
+    <p class="secsub">Cost below is in <b>percentage points of a rolling weekly all-models allowance</b>, and is <b>approximate</b> &mdash; read off a usage panel rather than metered per session. That imprecision is real and is not smoothed over; the finding survives it because the effect is large. A whole round of this consumes single-digit percent of a week.</p>
+
+    <div class="tablewrap" style="margin-bottom:1.6rem;">
+      <table>
+        <thead><tr><th>Round</th><th class="num">Workers</th><th class="num">PRs merged</th><th class="num">Issues closed</th><th class="num">Weekly budget used (%, approx)</th><th class="num">Baseline predicts (%)</th></tr></thead>
+        <tbody>
+          <tr><td><b>Round 1</b></td><td class="num">6</td><td class="num">7</td><td class="num"><span class="absent">not tracked</span></td><td class="num">~3</td><td class="num"><span class="absent">defines it</span></td></tr>
+          <tr><td><b>Round 2</b></td><td class="num">3</td><td class="num">3</td><td class="num">6</td><td class="num">~2</td><td class="num"><span class="absent">defines it</span></td></tr>
+          <tr><td><b>Round 3</b></td><td class="num">4</td><td class="num">6</td><td class="num">13</td><td class="num"><b>~6</b></td><td class="num">~2.3</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <figure class="fig">
+      <div class="figtitle">Figure 2 &middot; round 3 cost roughly 2.5&times; what the first two rounds imply</div>
+      <p class="figlede">The obvious cost model is <b>a fixed coordinator overhead plus a per-worker cost</b>. Two rounds fix both constants exactly &mdash; two equations, two unknowns &mdash; giving a fixed overhead of about <b>1 percentage point</b> and about <b>0.33 points per worker</b>. That baseline fits rounds 1 and 2 perfectly, and it has to, so it proves nothing about them. Round 3 is the test: the baseline says <b>~2.3%</b>, and it came in at <b>~6%</b>. The inputs are good to about one significant figure, so the ratio is worth reading as <em>&ldquo;well over double&rdquo;</em> rather than as a precise multiple &mdash; at &plusmn;0.5 on both anchor rounds the prediction still only ranges 1.8&ndash;2.8.</p>
+
+      <div class="panels">
+        <div class="panel">
+          <div class="paneltitle">Weekly budget used, per round &mdash; %</div>
+          <svg viewBox="0 0 300 150" role="img" aria-label="Weekly budget used per round: round 1 about 3 percent, round 2 about 2 percent, round 3 about 6 percent." xmlns="http://www.w3.org/2000/svg">
+            <line class="ct-ax" x1="60" y1="14" x2="60" y2="132"/>
+            <text class="ct-lab" x="52" y="41" text-anchor="end">round 1</text>
+            <rect x="60" y="26" width="100" height="26" rx="4" fill="#1f9fc4"/>
+            <text class="ct-val" x="168" y="44">~3</text>
+            <text class="ct-lab" x="52" y="79" text-anchor="end">round 2</text>
+            <rect x="60" y="64" width="67" height="26" rx="4" fill="#1f9fc4"/>
+            <text class="ct-val" x="135" y="82">~2</text>
+            <text class="ct-lab" x="52" y="117" text-anchor="end">round 3</text>
+            <rect x="60" y="102" width="200" height="26" rx="4" fill="#1f9fc4"/>
+            <text class="ct-val" x="268" y="120">~6</text>
+          </svg>
+        </div>
+        <div class="panel">
+          <div class="paneltitle">Baseline vs. actual &mdash; %</div>
+          <div class="legend" style="margin-bottom:0.5rem;">
+            <div class="lgi"><span class="lgs" style="background:#c98500"></span>baseline</div>
+            <div class="lgi"><span class="lgs" style="background:#1f9fc4"></span>actual</div>
+          </div>
+          <svg viewBox="0 0 300 160" role="img" aria-label="Baseline versus actual weekly budget used. Rounds 1 and 2 match exactly by construction, at 3 and 2 percent. Round 3 baseline predicts 2.3 percent and actual was about 6 percent." xmlns="http://www.w3.org/2000/svg">
+            <line class="ct-ax" x1="60" y1="10" x2="60" y2="148"/>
+            <text class="ct-lab" x="52" y="37" text-anchor="end">round 1</text>
+            <rect x="60" y="16" width="100" height="14" rx="4" fill="#c98500"/>
+            <text class="ct-val" x="168" y="27">3.0</text>
+            <rect x="60" y="34" width="100" height="14" rx="4" fill="#1f9fc4"/>
+            <text class="ct-val" x="168" y="45">~3</text>
+            <text class="ct-lab" x="52" y="85" text-anchor="end">round 2</text>
+            <rect x="60" y="64" width="67" height="14" rx="4" fill="#c98500"/>
+            <text class="ct-val" x="135" y="75">2.0</text>
+            <rect x="60" y="82" width="67" height="14" rx="4" fill="#1f9fc4"/>
+            <text class="ct-val" x="135" y="93">~2</text>
+            <text class="ct-lab" x="52" y="133" text-anchor="end">round 3</text>
+            <rect x="60" y="112" width="78" height="14" rx="4" fill="#c98500"/>
+            <text class="ct-val" x="146" y="123">2.3</text>
+            <rect x="60" y="130" width="200" height="14" rx="4" fill="#1f9fc4"/>
+            <text class="ct-val" x="268" y="141">~6</text>
+          </svg>
+        </div>
+      </div>
+
+      <figcaption><b>Rounds 1 and 2 are not evidence of anything</b> &mdash; they define the baseline, so they match it by construction. It is worth being blunt about that, because the tempting version of this chart compares cost <em>per worker</em> (0.5 &rarr; 0.7 &rarr; 1.5 points each) and reads the rise as a finding. It isn't: with a fixed overhead spread over fewer workers, per-worker cost <em>must</em> rise when the count falls 6&rarr;3, whatever else is true. That step is arithmetic, not signal.</figcaption>
+      <figcaption style="border-top:none; padding-top:0.4rem;">Round 3 is the real observation, and it is a large one: <b>roughly 2.5&times; the baseline, on a worker count the baseline handles comfortably</b>. <em>Where that overrun went is not metered.</em> A single weekly reading does not decompose into a coordinator share and a worker share, and nothing in this setup captured the split &mdash; so the honest statement stops at &ldquo;round 3 cost far more than its shape predicts.&rdquo; The coordinator's own account is that it went into adjudication: long approval write-ups, merge verification, judgement calls about what a finding meant. <b>If that reading is right, the marginal worker is cheap and the marginal decision is not</b> &mdash; but it is a hypothesis this instrumentation can neither confirm nor refute, and closing that gap is the first thing the next round should do.</figcaption>
+    </figure>
+
+    <figure class="fig">
+      <div class="figtitle">Figure 3 &middot; output per round</div>
+      <p class="figlede">Round 3 produced the most merged work and by far the most closed items, on four workers. The panel on the right also records the round where the measurement did not exist.</p>
+
+      <div class="panels">
+        <div class="panel">
+          <div class="paneltitle">Worker sessions</div>
+          <svg viewBox="0 0 300 150" role="img" aria-label="Worker sessions per round: six, three, four." xmlns="http://www.w3.org/2000/svg">
+            <line class="ct-ax" x1="60" y1="14" x2="60" y2="132"/>
+            <text class="ct-lab" x="52" y="41" text-anchor="end">round 1</text>
+            <rect x="60" y="26" width="200" height="26" rx="4" fill="#1f9fc4"/>
+            <text class="ct-val" x="268" y="44">6</text>
+            <text class="ct-lab" x="52" y="79" text-anchor="end">round 2</text>
+            <rect x="60" y="64" width="100" height="26" rx="4" fill="#1f9fc4"/>
+            <text class="ct-val" x="168" y="82">3</text>
+            <text class="ct-lab" x="52" y="117" text-anchor="end">round 3</text>
+            <rect x="60" y="102" width="133" height="26" rx="4" fill="#1f9fc4"/>
+            <text class="ct-val" x="201" y="120">4</text>
+          </svg>
+        </div>
+        <div class="panel">
+          <div class="paneltitle">Pull requests merged</div>
+          <svg viewBox="0 0 300 150" role="img" aria-label="Pull requests merged per round: seven, three, six." xmlns="http://www.w3.org/2000/svg">
+            <line class="ct-ax" x1="60" y1="14" x2="60" y2="132"/>
+            <text class="ct-lab" x="52" y="41" text-anchor="end">round 1</text>
+            <rect x="60" y="26" width="200" height="26" rx="4" fill="#1f9fc4"/>
+            <text class="ct-val" x="268" y="44">7</text>
+            <text class="ct-lab" x="52" y="79" text-anchor="end">round 2</text>
+            <rect x="60" y="64" width="86" height="26" rx="4" fill="#1f9fc4"/>
+            <text class="ct-val" x="154" y="82">3</text>
+            <text class="ct-lab" x="52" y="117" text-anchor="end">round 3</text>
+            <rect x="60" y="102" width="171" height="26" rx="4" fill="#1f9fc4"/>
+            <text class="ct-val" x="239" y="120">6</text>
+          </svg>
+        </div>
+        <div class="panel">
+          <div class="paneltitle">Tracked items closed</div>
+          <svg viewBox="0 0 300 150" role="img" aria-label="Tracked items closed per round: round 1 not tracked, round 2 six, round 3 thirteen." xmlns="http://www.w3.org/2000/svg">
+            <line class="ct-ax" x1="60" y1="14" x2="60" y2="132"/>
+            <text class="ct-lab" x="52" y="41" text-anchor="end">round 1</text>
+            <line class="ct-gr" x1="60" y1="39" x2="100" y2="39" stroke-dasharray="3 3"/>
+            <text class="ct-abs" x="106" y="43">not tracked</text>
+            <text class="ct-lab" x="52" y="79" text-anchor="end">round 2</text>
+            <rect x="60" y="64" width="92" height="26" rx="4" fill="#1f9fc4"/>
+            <text class="ct-val" x="160" y="82">6</text>
+            <text class="ct-lab" x="52" y="117" text-anchor="end">round 3</text>
+            <rect x="60" y="102" width="200" height="26" rx="4" fill="#1f9fc4"/>
+            <text class="ct-val" x="268" y="120">13</text>
+          </svg>
+        </div>
+      </div>
+
+      <figcaption>The dashed slot is deliberate. Round 1 closed items &mdash; nobody counted them, so the honest render is <em>absent</em>, not zero. A zero bar there would have read as &ldquo;round 1 closed nothing,&rdquo; which is false and would have made the trend look steeper than it is.</figcaption>
+    </figure>
+
+    <figure class="fig">
+      <div class="figtitle">Figure 4 &middot; the parallelism gain, and its ceiling</div>
+      <p class="figlede">Round 3's four workers were spawned within <b>5.5 seconds</b> of each other, so the fan-out is real and measurable. Over the initial burst &mdash; before any session was paused &mdash; they consumed roughly <b>291 minutes of working time in 152 minutes of wall-clock</b>. The panel on the right is why that number does not keep growing with worker count.</p>
+
+      <div style="display:grid; gap:2rem; margin-bottom:1.6rem;">
+        <div class="panel">
+          <div class="paneltitle">Round 3 opening burst &mdash; minutes &middot; measured</div>
+          <div class="figscroll mid">
+          <svg viewBox="0 0 620 150" role="img" aria-label="Round 3 initial burst: summed worker working time about 291 minutes, actual elapsed wall-clock 152 minutes — a speedup of roughly 1.9 times." xmlns="http://www.w3.org/2000/svg">
+            <line class="ct-ax" x1="170" y1="14" x2="170" y2="104"/>
+            <text class="ct-lab" x="160" y="44" text-anchor="end">summed worker time</text>
+            <rect x="170" y="26" width="370" height="28" rx="4" fill="#c98500"/>
+            <text class="ct-val" x="552" y="45">291</text>
+            <text class="ct-lab" x="160" y="92" text-anchor="end">actual wall-clock</text>
+            <rect x="170" y="74" width="193" height="28" rx="4" fill="#1f9fc4"/>
+            <text class="ct-val" x="375" y="93">152</text>
+            <text class="ct-val" x="170" y="134" fill="#1f9fc4">≈ 1.9× &mdash; and this is an upper bound</text>
+          </svg>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="paneltitle">Why the gain flattens &mdash; modelled, not measured</div>
+          <div class="legend" style="margin-bottom:0.5rem;">
+            <div class="lgi"><span class="lgs" style="background:#1f9fc4"></span>if the serial spine were free</div>
+            <div class="lgi"><span class="lgs" style="background:#c98500"></span>with a ~25% serial spine</div>
+          </div>
+
+      <div class="figscroll mid">
+      <svg viewBox="0 0 620 300" role="img" aria-label="Speedup versus worker count. Without a serial bottleneck speedup rises linearly from one to six. With about a quarter of the round serial, speedup flattens near three and gains little past four workers. Rounds one, two and three are marked at six, three and four workers." xmlns="http://www.w3.org/2000/svg">
+        <!-- grid -->
+        <line class="ct-gr" x1="56" y1="190" x2="590" y2="190"/>
+        <line class="ct-gr" x1="56" y1="150" x2="590" y2="150"/>
+        <line class="ct-gr" x1="56" y1="110" x2="590" y2="110"/>
+        <line class="ct-gr" x1="56" y1="70"  x2="590" y2="70"/>
+        <line class="ct-gr" x1="56" y1="30"  x2="590" y2="30"/>
+        <line class="ct-ax" x1="56" y1="22" x2="56" y2="230"/>
+        <line class="ct-ax" x1="56" y1="230" x2="590" y2="230"/>
+
+        <text class="ct-lab" x="48" y="234" text-anchor="end">1&times;</text>
+        <text class="ct-lab" x="48" y="194" text-anchor="end">2&times;</text>
+        <text class="ct-lab" x="48" y="154" text-anchor="end">3&times;</text>
+        <text class="ct-lab" x="48" y="114" text-anchor="end">4&times;</text>
+        <text class="ct-lab" x="48" y="74"  text-anchor="end">5&times;</text>
+        <text class="ct-lab" x="48" y="34"  text-anchor="end">6&times;</text>
+
+        <text class="ct-lab" x="56"  y="250" text-anchor="middle">1</text>
+        <text class="ct-lab" x="163" y="250" text-anchor="middle">2</text>
+        <text class="ct-lab" x="270" y="250" text-anchor="middle">3</text>
+        <text class="ct-lab" x="377" y="250" text-anchor="middle">4</text>
+        <text class="ct-lab" x="484" y="250" text-anchor="middle">5</text>
+        <text class="ct-lab" x="590" y="250" text-anchor="middle">6</text>
+        <text class="ct-lab" x="323" y="272" text-anchor="middle">concurrent workers</text>
+
+        <!-- ideal line: speedup = n ; 1x at y=230, 40px per 1x -->
+        <polyline points="56,230 163,190 270,150 377,110 484,70 590,30"
+                  fill="none" stroke="#1f9fc4" stroke-width="2"/>
+        <!-- with 25% serial: 1/(0.25 + 0.75/n) -->
+        <!-- n=1 →1.00 ; 2→1.60 ; 3→2.00 ; 4→2.29 ; 5→2.50 ; 6→2.67 -->
+        <polyline points="56,230 163,206 270,190 377,179 484,170 590,163"
+                  fill="none" stroke="#c98500" stroke-width="2"/>
+
+        <!-- round markers on the realistic curve -->
+        <circle cx="270" cy="190" r="5" fill="#c98500" stroke="#151922" stroke-width="2"/>
+        <text class="ct-lab" x="270" y="178" text-anchor="middle">rd 2</text>
+        <circle cx="377" cy="179" r="5" fill="#c98500" stroke="#151922" stroke-width="2"/>
+        <text class="ct-lab" x="377" y="167" text-anchor="middle">rd 3</text>
+        <circle cx="590" cy="163" r="5" fill="#c98500" stroke="#151922" stroke-width="2"/>
+        <text class="ct-lab" x="576" y="153" text-anchor="middle">rd 1</text>
+
+        <text class="ct-val" x="440" y="24" fill="#1f9fc4">no bottleneck</text>
+        <text class="ct-val" x="410" y="206" fill="#c98500">observed regime</text>
+      </svg>
+      </div>
+        </div>
+      </div>
+
+      <figcaption><b>Both halves come with a caveat, and the caveats are the interesting part.</b> The 1.9&times; is an <em>upper bound</em>: it is summed elapsed time minus the idle gaps long enough to detect, so any shorter stall is still counted as work. And it covers only the opening burst &mdash; measured across the whole round the figure collapses to 1.1&times;, which is not a finding about parallelism at all but an artifact of one session being left open overnight and resumed the next day. <b>Elapsed time is not working time, and nothing in the setup distinguishes them.</b> The right-hand curve is explicitly a model: it shows why returns should flatten once added work lands on the one path that cannot be parallelised. Round 1's six workers sit in that flat region &mdash; and round 1 was the round that was hardest to hold together.</figcaption>
+      <p class="srcline">left: measured session timestamps, idle gaps &gt;5 min excluded · right: modelled, serial fraction 0.25 assumed to illustrate the shape — not measured.</p>
+    </figure>
+  </section>
+
+  <section class="sec" id="green">
+    <div class="sechead"><span class="secnum">05</span><h2>The defect that reports success</h2><div class="divider"></div></div>
+    <p class="secsub">Across all three rounds the same class kept turning up, in unrelated parts of the system, found by workers who were not looking for it: <b>a failure whose symptom is a green result rather than an error</b>. It is the most transferable thing on this page, and it is worth stating as a rule &mdash; <em>a check that cannot fail loudly will eventually pass quietly.</em></p>
+
+    <div class="cas">
+      <div class="ct">shape one &middot; checked the wrong thing, reported pass</div>
+      <h4>The gate that scanned a directory nothing was in</h4>
+      <p>A gate ran its scan from a working directory that was not the one being changed. It found no problems there, because there was nothing there. It reported pass, correctly and uselessly, for every run.</p>
+      <p>Nothing about the output distinguished &ldquo;scanned and clean&rdquo; from &ldquo;scanned an empty place.&rdquo; <b>Both are the same green.</b> The general fix is to make a check assert that it examined a non-zero amount of something, and fail if it did not.</p>
+    </div>
+
+    <div class="cas">
+      <div class="ct">shape two &middot; passed because the input was empty</div>
+      <h4>The test whose fixture never arrived</h4>
+      <p>A test asserted that a bad input produces no output. It passed. It would also have passed if the tool under test had never run at all &mdash; and that is what was happening, because the fixture resolved to nothing.</p>
+      <p>An assertion of <em>absence</em> is satisfied perfectly by a test that never executed. The counter-measure is structural rather than clever: <b>every &ldquo;stays quiet&rdquo; case is paired with a &ldquo;makes noise&rdquo; case over the same wiring</b>. If the noisy twin is silent too, the harness is dead, and now you can tell.</p>
+    </div>
+
+    <div class="cas">
+      <div class="ct">shape three &middot; read as done, did nothing</div>
+      <h4>The merge that appeared to close three items and closed none</h4>
+      <p>A pull request body listed the items it resolved using a shorthand that reads naturally to a person and matches nothing at all to the platform parsing it. The PR merged. The summary read as though three items had been closed. Three items stayed open, and nobody looked again, because the message said they were handled.</p>
+      <p>This one is the purest instance of the class: <b>no component failed</b>. The merge succeeded, the text was accurate English, and the outcome was silently nothing. It was caught later by a sweep that reconciles merged pull requests against the items they claimed to close &mdash; which exists now precisely because reading the PR body was not enough.</p>
+    </div>
+
+    <p class="note" style="margin-top:1.4rem; border-left-color: var(--accent-green);"><b>Why an orchestration round is unusually good at finding these.</b> A worker arrives with no memory of why anything was built and no stake in it being correct. It reads a check the way a stranger does, and a stranger is the only reader who notices that a pass proves nothing. The same blindness that makes a session useless for judgement calls &mdash; no context &mdash; is what makes it <em>excellent</em> at this specific job. Three of the rounds' most useful findings came from a worker declining to believe a green.</p>
+  </section>
+
+  <section class="sec" id="brief">
+    <div class="sechead"><span class="secnum">06</span><h2>The instruction that reads fine and cannot be executed</h2><div class="divider"></div></div>
+    <p class="secsub">Rounds 1 and 2 asked every worker to check in at fixed points. Across both rounds, <b>the number of check-ins received was zero.</b> Round 3 asked four workers for the same thing and <b>all four complied, unprompted.</b> Same coordinator, same model, same brief structure. The difference was one paragraph.</p>
+
+    <div class="diff">
+      <div class="dcol bad">
+        <div class="dlab">rounds 1&ndash;2 &mdash; 0 check-ins received</div>
+        <p class="dtext">&ldquo;<b>Reply to the sender of this message</b> for all checkpoints &mdash; <b>do not ask for a session id.</b>&rdquo;</p>
+        <p class="dwhy"><b>Why it cannot be run.</b> The brief is delivered as the worker's <em>opening prompt</em>. There is no sender. The instruction names an affordance that does not exist in the situation it is describing &mdash; and the second clause forbids the one route that does work. It is not vague; it is precise about the wrong thing.</p>
+      </div>
+      <div class="dcol good">
+        <div class="dlab">round 3 &mdash; 4 of 4 checked in</div>
+        <p class="dtext">&ldquo;To reach me, use the <b>cross-session message tool</b>. Find my session id by <b>listing sessions</b> &mdash; I am the one <b>titled &lt;coordinator&gt;</b>. Your brief arrived as your opening prompt, so <b>there is no sender to reply to.</b>&rdquo;</p>
+        <p class="dwhy"><b>Why it runs.</b> It names the mechanism, gives a way to <em>derive</em> the address rather than assuming one, and pre-empts the wrong inference explicitly. It is the same request; it is now executable.</p>
+      </div>
+    </div>
+
+    <p class="secsub" style="margin-top:1.6rem;">The fix turns on a small asymmetry that had to be discovered: <b>a session cannot look up its own id, but it can be found by others under its title.</b> So the address could never be supplied by the coordinator &mdash; it had to be made derivable by the worker. The earlier briefs had been written by a coordinator that was itself reachable by reply, and had never tested the return path from a session spawned the way these were.</p>
+
+    <p class="note" style="margin-top:1.4rem;"><b>The uncomfortable part.</b> That paragraph was reviewed before it was sent, twice, and read as perfectly clear &mdash; because it <em>is</em> clear, to a reader. The defect was invisible from the writing side and observable only in the outcome, and the outcome was silence, which looks like nothing being wrong. That makes it the same class as section 05: <b>a brief that reads fine and does nothing is a plausible green.</b> The standing assumption now is that an unexecuted instruction is under-specified rather than ignored.</p>
+
+    <p class="secsub" style="margin-top:1.6rem;">The general form, which is the part I would carry into any brief written for a machine: <b>an instruction is real only if it names an observable trigger, a mechanism, and an address the reader can derive.</b> A human who is handed an impossible instruction asks a clarifying question. A worker session does something worse &mdash; it forms a reasonable belief that the channel does not exist, and proceeds without it.</p>
+
+    <div class="cas" style="margin-top:1.6rem; border-color: rgba(0,255,159,0.28); border-left-color: var(--accent-green);">
+      <div class="ct" style="color: var(--accent-green);">the correction &middot; and who made it</div>
+      <h4>The diagnosis was also wrong, and a worker said so</h4>
+      <p>The coordinator's first conclusion was that the reply path was <em>structurally impossible</em> &mdash; no sender, therefore no channel. A worker corrected it: <b>&ldquo;There was a channel. I didn't find it. Don't record &lsquo;structurally impossible&rsquo; &mdash; that would fix the playbook in the wrong direction.&rdquo;</b></p>
+      <p>It had reached for the tool whose name made it the obvious first guess &mdash; the one that addresses subagents a session spawns itself, not sibling sessions &mdash; been told no such recipient was reachable, and reasonably concluded no path existed. The real defect was narrower and more fixable than the coordinator's version of it, and getting it right mattered: the wrong diagnosis would have produced a workaround instead of a working address.</p>
+      <p>This was not unusual. Across the three rounds, <b>workers corrected the coordinator's premise more often than the reverse</b> &mdash; and the briefs came to say so out loud, granting explicit permission to reject the task's own stated reasoning. In round 3 four workers corrected the premise of their own assignment and two corrected the coordinator's. That is not a failure of the pattern; it is the pattern's error-correction path working, and it is the strongest argument for <em>writing the brief so it can be argued with.</em></p>
+    </div>
+  </section>
+
+  <section class="sec" id="bursts">
+    <div class="sechead"><span class="secnum">07</span><h2>Blind spots emit a burst, then go quiet</h2><div class="divider"></div></div>
+    <p class="secsub">A worker pointed at an area that has never been checked comes back with a pile of findings. The instinct is to read that as a pile of problems. It is usually <b>one unlit area</b>, and the pile is what a first light looks like.</p>
+
+    <div class="cards">
+      <div class="card">
+        <div class="tag">the pattern</div>
+        <h3>Burst, then silence</h3>
+        <p>The first pass over an unmeasured surface returns a cluster of related findings. The second pass over the same surface returns very little. Nothing was fixed in between except the surface being <b>observable</b>.</p>
+      </div>
+      <div class="card">
+        <div class="tag">the inference</div>
+        <h3>Count areas, not items</h3>
+        <p>A cluster of findings that share a root is one item of information, not N. Treating them as N inflates the apparent problem and, worse, produces N tracked tickets that all close for the same reason.</p>
+      </div>
+      <div class="card">
+        <div class="tag">the consequence</div>
+        <h3>This is why it converges</h3>
+        <p>If findings were independent, each round would uncover as many as the last and the backlog would grow forever. Because they cluster by unlit area, and areas are finite, successive rounds return less. <em>The pattern terminates.</em></p>
+      </div>
+      <div class="card">
+        <div class="tag">the caution</div>
+        <h3>A quiet surface is ambiguous</h3>
+        <p>Silence means the area is clean <b>or</b> that the thing looking at it is broken. That is section 05 again, one level up &mdash; so a quiet result is only trusted from a checker that has been shown to go red on a known-bad input.</p>
+      </div>
+    </div>
+
+    <p class="secsub" style="margin-top:1.8rem;">Which sets up the last rule, and the one that saves the most work over time.</p>
+
+    <div class="stage">
+      <div class="stagehead"><span class="stagenum">&rarr;</span><span class="stagename">Prefer the enforcing check over fixing N instances</span><span class="stagekind">the leverage rule</span></div>
+      <p>Given a burst of related findings, there are two responses: fix each one, or build the check that makes the whole class impossible. The second is almost always right, and the reason is what happens to each afterwards.</p>
+      <p><b>A tracked item accumulates forever.</b> It sits in a backlog, gets re-read at every triage, gets re-prioritised, and costs attention every time someone scans the list &mdash; whether or not it is ever done. <b>A check self-exits.</b> Once it is green and wired to run automatically, it stops needing to be thought about at all; it has removed itself from the attention budget while continuing to do the work.</p>
+      <p>So the preferred output of a worker is not a list of corrections. It is <em>one check, plus the corrections it forced</em> &mdash; and a demonstration that the check goes red without them.</p>
+    </div>
+
+    <div class="stage">
+      <div class="stagehead"><span class="stagenum">&rarr;</span><span class="stagename">Assert the state, don't pattern-match the intent</span><span class="stagekind">the design that came out of it</span></div>
+      <p>The best example came from the merge that closed nothing. The assignment specified a check that would scan pull-request text before merge and warn on the malformed shorthand. The worker <b>refused the specified design</b> and built the opposite: a check that runs <em>after</em> the merge and compares the items the text claimed to close against the items actually closed.</p>
+      <p>Its reasoning is the durable part &mdash; <em>&ldquo;a matcher guesses intent, an assertion reads real state, and only one of those has a false-positive class.&rdquo;</em> The evidence backed it: run against several hundred historical merges, the naive matcher produced <b>12 hits of which 3 were real</b>. Among the false positives were a match that read a closure out of a heading which explicitly said the item stays open, and a match on a sentence written specifically to say the opposite. Meanwhile the state assertion caught <b>three distinct malformed shapes without being told any of them existed</b>, because it never had to know what a closing phrase looks like.</p>
+      <p>The rule this produced applies well beyond merges: <b>a warning that cries wolf gets muted within a week, and then the real one is invisible too.</b> A noisy check is not a partial win over no check &mdash; past some false-positive rate it is <em>worse</em> than nothing, because it trains the reader to ignore the channel.</p>
+    </div>
+  </section>
+
+  <div class="takeaway">
+    <h3>What I would keep, and what I would change</h3>
+    <p><b>Keep the lease.</b> Partitioning by write-surface rather than by topic removed an entire category of failure, and the disjointness check that makes it work costs seconds. Keep the serial spine too: the discipline of routing the board, the merges, the shared sinks and the intake through one writer is what stops N parallel sessions from producing N inconsistent versions of the truth.</p>
+    <p><b>Change the measurement.</b> The most interesting question &mdash; where the coordinator's effort actually went &mdash; has no data behind it. Cost was read off a usage panel rather than metered per session; per-worker attribution was never aggregated; working time was never separated from elapsed time, which is why the round-level speedup figure had to be thrown out. Three rounds in, <b>the pattern is better understood than it is instrumented</b>, and the next round's first job is to fix that rather than to run wider.</p>
+
+    <p><b>Spend the coordinator on the right thing.</b> The correction data and the coordinator's own retrospective point the same way &mdash; the cost figure cannot corroborate it, since it never resolved to a per-session share. Workers corrected the coordinator's premise more often than the reverse, and the coordinator's own retrospective landed on the conclusion that follows from that: <em>its highest-value act is escalating and verifying, not deciding.</em> Its most reliable failure mode was also specific and cheap to fix &mdash; <b>inferring from absence instead of reading</b>. Every instance was one command away from being checked.</p>
+    <p><b>And treat every green as a claim.</b> The recurring finding across all three rounds was not a bug in any component &mdash; it was a check, a test, a merge, and a written instruction that each reported success while doing nothing. <b>The failure that looks like an error gets fixed. The failure that looks like a pass gets built on.</b></p>
+    <p style="margin-top:1.1rem; padding-top:1.1rem; border-top:1px solid var(--line-soft);">Companion write-ups: <a href="../automation/" style="color:var(--accent-cyan); text-decoration:none; border-bottom:1px solid var(--line)">the lifecycle-hook layer these sessions run inside</a> &middot; <a href="../enforcement/" style="color:var(--accent-cyan); text-decoration:none; border-bottom:1px solid var(--line)">the ledger that tracks which checks actually bite</a> &middot; <a href="../publishing/" style="color:var(--accent-cyan); text-decoration:none; border-bottom:1px solid var(--line)">the disclosure pipeline that gated this page</a>.</p>
+  </div>
+
+  <footer>
+    <p>Case study &middot; coordinating parallel AI coding sessions against one shared repository set.</p>
+    <p>Process shape only. The work these sessions performed is described generically; proprietary specifics are omitted throughout.</p>
+    <p>Cost figures are percentage points of a rolling weekly all-models allowance &mdash; approximate, read from a usage panel rather than metered per session. Figure 2's baseline is a two-point fit and is exact on rounds 1&ndash;2 by construction. Figure 4's right-hand panel is an explicit model, not a measurement.</p>
+    <p>Michael Giardina &middot; <a href="../">portfolio</a> &middot; <a href="https://www.linkedin.com/in/michael-giardina">linkedin.com/in/michael-giardina</a></p>
+  </footer>
+
+</div>
+</body>
+</html>
