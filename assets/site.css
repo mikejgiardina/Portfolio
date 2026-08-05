@@ -1,0 +1,1122 @@
+/* ==========================================================================
+   mike-giardina.netlify.app — shared design system
+   --------------------------------------------------------------------------
+   One stylesheet for all six pages. Before this, each page carried its own
+   copy of the tokens and component CSS; --accent-cyan was declared six times
+   and .grid-bg / .status-dot / .topbar / the pulse keyframes were pasted into
+   every file. That duplication produced the --line bug on index.html,
+   where a rule arrived from a case-study page without the token it depended
+   on and silently computed to currentColor.
+
+   Direction: "Crisp" — white cards on a cool blue-grey ground, soft two-layer
+   shadows, 13px radii, blue accent, soft-tinted state colours. Adapted from
+   the SimClaude2 mockups-crisp system so the portfolio and the product work
+   read as the same hand.
+
+   Themes: light is the base; dark is DESIGNED, not inverted — the blue lifts
+   to stay legible on a dark ground, the state tints become deep washes rather
+   than pale ones, and the shadow gets heavier because a soft shadow vanishes
+   on dark. prefers-color-scheme drives it; [data-theme] on <html> forces it
+   either way.
+
+   Contrast: every foreground/background pair that actually occurs is verified
+   at 4.5:1 for text and 3:1 for boundaries, in BOTH themes. The old
+   --text-dim (#5b636d on #0a0e14) was 2.9:1 — below AA, and used for small
+   text. It is now an alias onto a compliant ink.
+
+   Fonts: self-hosted variable woff2, 75 KB total, no CDN and no build step.
+
+   Dependency-free. No CDN. Static deploy.
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. FONTS — self-hosted, variable, latin subset
+   IBM Plex Sans .......... SIL Open Font License 1.1 (IBM)
+   JetBrains Mono ......... SIL Open Font License 1.1 (JetBrains)
+   -------------------------------------------------------------------------- */
+@font-face{
+  font-family:'IBM Plex Sans';
+  src:url('fonts/ibm-plex-sans-var-latin.woff2') format('woff2');
+  font-weight:300 600; font-style:normal; font-display:swap;
+}
+@font-face{
+  font-family:'JetBrains Mono';
+  src:url('fonts/jetbrains-mono-var-latin.woff2') format('woff2');
+  font-weight:400 700; font-style:normal; font-display:swap;
+}
+
+/* --------------------------------------------------------------------------
+   2. TOKENS
+   Legacy names (--primary-bg, --accent-cyan, --text-dim …) are kept as
+   aliases because inline SVG chrome and a few inline styles in the markup
+   still reference them. Aliasing rather than renaming means the markup needs
+   no edits, and every legacy name now resolves to a contrast-verified value.
+   -------------------------------------------------------------------------- */
+:root{
+  color-scheme:light;
+
+  /* grounds */
+  --bg:#E8EDF3;
+  --card:#FFFFFF;
+  --card-2:#F6F9FC;
+  --card-head:linear-gradient(135deg,#F3F7FC,#EEF2F7);
+
+  /* rules & edges */
+  --line:#E3E9F1;          /* structural hairline */
+  --line-soft:#EEF2F7;     /* softer, inside components */
+  --edge:#768496;          /* interactive border — 3.24:1 on bg */
+
+  /* ink */
+  --ink:#1E293B;           /* 12.4:1 on bg */
+  --ink-2:#475569;         /*  6.4:1 on bg */
+  --ink-3:#5B6B80;         /*  4.6:1 on bg */
+
+  /* accent — deep blue is TEXT, brighter blue is fills/bars (non-text) */
+  --accent:#1D4ED8;        /* 5.7:1 on bg */
+  --accent-fill:#2563EB;
+  --accent-soft:#EEF4FF;
+  --accent-line:#CFE0FB;
+
+  /* state — each colour is used on its own tint, never bare on the page */
+  --red:#B32B2B;   --red-bg:#FDECEC;   --red-line:#F2C4C4;
+  --amber:#7A5F0F; --amber-bg:#FDF6E1; --amber-line:#EFDA9E;
+  --cyan:#12637B;  --cyan-bg:#E7F6FB;  --cyan-line:#B4E2EF;
+  --green:#2F6139; --green-bg:#EDF6EF; --green-line:#C2E0C7;
+
+  /* elevation */
+  --shadow:0 1px 2px rgba(16,24,40,.05), 0 2px 6px rgba(16,24,40,.07);
+  --shadow-lg:0 6px 24px rgba(16,24,40,.12);
+
+  /* geometry */
+  --r:13px; --r-sm:9px; --r-xs:5px;
+
+  /* type */
+  --sans:'IBM Plex Sans',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  --mono:'JetBrains Mono',ui-monospace,'SF Mono',Menlo,Consolas,monospace;
+  --serif:var(--sans);     /* the serif is retired; alias kept for safety */
+
+  /* motion */
+  --ease:cubic-bezier(.22,.61,.36,1);
+  --t:.18s;
+
+  /* layout */
+  --rail-w:13.5rem;
+  --prose:72ch;
+  --marg:22rem;
+  --page:1400px;
+
+  /* ---- chart tokens ----
+     The two series hues were validated in orchestration/ as a categorical
+     pair against BOTH a dark card and a white surface — lightness band,
+     chroma floor, CVD separation, and >=3:1 contrast pass in both. So they
+     survive this theme change untouched — only the chrome around them
+     needed re-picking. */
+  --series-1:#1F7FA0;
+  --series-2:#A86E00;
+  --chart-surface:var(--card);
+  --chart-ink:var(--ink);
+  --chart-muted:var(--ink-3);
+  --chart-grid:rgba(30,41,59,.12);
+  --chart-axis:rgba(30,41,59,.32);
+  --chart-absent:rgba(30,41,59,.38);
+
+  /* ---- legacy aliases — referenced by inline SVG chrome in the markup ---- */
+  --primary-bg:var(--bg);
+  --secondary-bg:var(--card);
+  --raise-bg:var(--card-2);
+  --text-primary:var(--ink);
+  --text-muted:var(--ink-2);
+  --text-dim:var(--ink-3);        /* was #5b636d @ 2.9:1 — now AA */
+  --accent-cyan:var(--accent);
+  --accent-green:var(--green);
+  --accent-red:var(--red);
+  --accent-amber:var(--amber);
+  --grid-color:transparent;
+}
+
+/* ---- dark: re-picked against a dark ground, not inverted ---- */
+@media (prefers-color-scheme:dark){
+  :root{
+    color-scheme:dark;
+    --bg:#0F141B; --card:#161D26; --card-2:#1B232E;
+    --card-head:linear-gradient(135deg,#1B232E,#161D26);
+    --line:#263140; --line-soft:#1E2733; --edge:#66768A;
+    --ink:#E7EDF4; --ink-2:#A9B7C6; --ink-3:#8C9BAC;
+    --accent:#6FA8FA; --accent-fill:#3B82F6;
+    --accent-soft:rgba(59,130,246,.13); --accent-line:rgba(111,168,250,.34);
+    --red:#F0837E;   --red-bg:#2A1618;  --red-line:rgba(240,131,126,.30);
+    --amber:#E0B252; --amber-bg:#271F12; --amber-line:rgba(224,178,82,.30);
+    --cyan:#5CC5E0;  --cyan-bg:#122229;  --cyan-line:rgba(92,197,224,.30);
+    --green:#6FC182; --green-bg:#14241A; --green-line:rgba(111,193,130,.30);
+    --shadow:0 1px 2px rgba(0,0,0,.40), 0 2px 8px rgba(0,0,0,.34);
+    --shadow-lg:0 8px 28px rgba(0,0,0,.50);
+    --series-1:#4FB6D6; --series-2:#D9A43C;
+    --chart-grid:rgba(231,237,244,.13);
+    --chart-axis:rgba(231,237,244,.34);
+    --chart-absent:rgba(231,237,244,.40);
+  }
+}
+
+/* ---- explicit override wins over the media query in both directions ---- */
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --bg:#0F141B; --card:#161D26; --card-2:#1B232E;
+  --card-head:linear-gradient(135deg,#1B232E,#161D26);
+  --line:#263140; --line-soft:#1E2733; --edge:#66768A;
+  --ink:#E7EDF4; --ink-2:#A9B7C6; --ink-3:#8C9BAC;
+  --accent:#6FA8FA; --accent-fill:#3B82F6;
+  --accent-soft:rgba(59,130,246,.13); --accent-line:rgba(111,168,250,.34);
+  --red:#F0837E;   --red-bg:#2A1618;  --red-line:rgba(240,131,126,.30);
+  --amber:#E0B252; --amber-bg:#271F12; --amber-line:rgba(224,178,82,.30);
+  --cyan:#5CC5E0;  --cyan-bg:#122229;  --cyan-line:rgba(92,197,224,.30);
+  --green:#6FC182; --green-bg:#14241A; --green-line:rgba(111,193,130,.30);
+  --shadow:0 1px 2px rgba(0,0,0,.40), 0 2px 8px rgba(0,0,0,.34);
+  --shadow-lg:0 8px 28px rgba(0,0,0,.50);
+  --series-1:#4FB6D6; --series-2:#D9A43C;
+  --chart-grid:rgba(231,237,244,.13);
+  --chart-axis:rgba(231,237,244,.34);
+  --chart-absent:rgba(231,237,244,.40);
+}
+:root[data-theme="light"]{
+  color-scheme:light;
+  --bg:#E8EDF3; --card:#FFFFFF; --card-2:#F6F9FC;
+  --card-head:linear-gradient(135deg,#F3F7FC,#EEF2F7);
+  --line:#E3E9F1; --line-soft:#EEF2F7; --edge:#768496;
+  --ink:#1E293B; --ink-2:#475569; --ink-3:#5B6B80;
+  --accent:#1D4ED8; --accent-fill:#2563EB;
+  --accent-soft:#EEF4FF; --accent-line:#CFE0FB;
+  --red:#B32B2B;   --red-bg:#FDECEC;   --red-line:#F2C4C4;
+  --amber:#7A5F0F; --amber-bg:#FDF6E1; --amber-line:#EFDA9E;
+  --cyan:#12637B;  --cyan-bg:#E7F6FB;  --cyan-line:#B4E2EF;
+  --green:#2F6139; --green-bg:#EDF6EF; --green-line:#C2E0C7;
+  --shadow:0 1px 2px rgba(16,24,40,.05), 0 2px 6px rgba(16,24,40,.07);
+  --shadow-lg:0 6px 24px rgba(16,24,40,.12);
+  --series-1:#1F7FA0; --series-2:#A86E00;
+  --chart-grid:rgba(30,41,59,.12);
+  --chart-axis:rgba(30,41,59,.32);
+  --chart-absent:rgba(30,41,59,.38);
+}
+
+/* --------------------------------------------------------------------------
+   3. BASE
+   -------------------------------------------------------------------------- */
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{
+  background:var(--bg); color:var(--ink);
+  font-family:var(--sans); font-size:15.5px; line-height:1.62;
+  overflow-x:hidden; -webkit-font-smoothing:antialiased;
+  text-rendering:optimizeLegibility; min-height:100vh;
+}
+a{color:var(--accent)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:2px}
+::selection{background:var(--accent-soft);color:var(--ink)}
+code,kbd,samp,pre{font-family:var(--mono)}
+img,svg{max-width:100%}
+
+/* The animated pulsing grid belonged to the old neon theme. The element is
+   still in every page's markup; retiring it here keeps the markup untouched. */
+.grid-bg{display:none}
+
+/* --------------------------------------------------------------------------
+   4. LAYOUT
+   Two nested grids. The outer one is rail | content. The inner one lives on
+   each section, because the sections ARE the outer grid's items — a figure
+   nested inside a section cannot span tracks declared on .wrap.
+   Prose holds ~72ch; figures, tables and card grids take the margin.
+   -------------------------------------------------------------------------- */
+.wrap,.container{
+  max-width:var(--page); margin:0 auto; padding:0 2rem 5rem;
+  position:relative; z-index:1;
+}
+.rail{display:none}
+
+@media (min-width:1180px){
+  .wrap:has(.rail){
+    display:grid;
+    grid-template-columns:var(--rail-w) minmax(0,1fr);
+    column-gap:3rem;
+  }
+  .wrap:has(.rail) > :not(.rail){grid-column:2}
+  .rail{
+    display:block; grid-column:1; grid-row:1/-1; align-self:start;
+    position:sticky; top:4.4rem; padding-top:4.4rem;
+  }
+  /* inner grid — declared on every section-like block of BOTH page shapes:
+     the case-study pages (.wrap > section.sec) and index.html
+     (.container > section.section). */
+  header.hero,section.sec,.wrap > footer,
+  .container > header,.container > section.section{
+    display:grid;
+    grid-template-columns:minmax(0,var(--prose)) minmax(0,var(--marg));
+    column-gap:2.6rem;
+  }
+  header.hero > *,section.sec > *,.wrap > footer > *,
+  .container > header > *,.container > section.section > *{grid-column:1}
+
+  /* Wide by class OR by kind. Promoting by kind means no markup edits: every
+     one of these is already a direct child of its section on every page. */
+  header.hero > .wide,.wrap > footer > .wide,
+  header.hero > .stats,
+  section.sec > .wide,
+  section.sec > figure.fig,
+  section.sec > .tablewrap,
+  section.sec > .cards,
+  section.sec > .panels,
+  section.sec > .verdict,
+  section.sec > .diff,
+  section.sec > .lane,
+  section.sec > .cmdgroup,
+  section.sec > .skills,
+  section.sec > .legend,
+  .container > header > .hero-stats,
+  .container > header > .status-bar,
+  .container > section.section > .apps-grid,
+  .container > section.section > .contact-grid{grid-column:1/-1}
+}
+
+/* --------------------------------------------------------------------------
+   5. CHROME — top bar, rail, quicknav
+   -------------------------------------------------------------------------- */
+.topbar{
+  position:sticky; top:0; z-index:40;
+  background:color-mix(in srgb,var(--bg) 86%,transparent);
+  backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--line);
+}
+.topin{
+  max-width:var(--page); margin:0 auto; padding:.6rem 2rem;
+  display:flex; align-items:center; gap:1rem;
+}
+.mark{font-family:var(--mono);font-size:.76rem;color:var(--ink-2)}
+.mark b{color:var(--accent);font-weight:700}
+.topnav{margin-left:auto;display:flex;gap:.12rem;align-items:center;flex-wrap:wrap}
+.topnav a{
+  font-family:var(--mono); font-size:.68rem; text-transform:uppercase;
+  letter-spacing:.08em; color:var(--ink-3); text-decoration:none;
+  padding:.36rem .6rem; border-radius:var(--r-sm);
+  transition:color var(--t),background var(--t);
+}
+.topnav a:hover{color:var(--accent);background:var(--accent-soft)}
+.topnav a.back{color:var(--ink-3)}
+
+/* rail — the reference's activity sidebar, translated to a document.
+   Built from the page's own section headings by site.js, so it stays in
+   sync with the copy and adds no authored text of its own. */
+.rail ol{list-style:none;display:flex;flex-direction:column;gap:1px}
+.rail a{
+  display:flex; gap:.6rem; align-items:baseline;
+  padding:.48rem .7rem; border-radius:var(--r-sm);
+  font-size:.8rem; color:var(--ink-3); text-decoration:none;
+  border:1px solid transparent; position:relative;
+  transition:background var(--t),color var(--t);
+}
+.rail a .rn{font-family:var(--mono);font-size:.68rem;color:var(--ink-3);flex:none}
+.rail a:hover{background:var(--card-2);color:var(--ink-2)}
+.rail li.on a{
+  background:var(--card); border-color:var(--line); color:var(--accent);
+  font-weight:500; box-shadow:var(--shadow);
+}
+.rail li.on a::before{
+  content:''; position:absolute; left:0; top:8px; bottom:8px; width:3px;
+  border-radius:99px; background:var(--accent-fill);
+}
+.rail li.on .rn{color:var(--accent)}
+
+/* quicknav (index.html) */
+.quicknav{
+  position:fixed; top:.9rem; right:1.1rem; z-index:60;
+  display:flex; align-items:center; gap:.4rem;
+  flex-wrap:wrap; justify-content:flex-end; max-width:66vw;
+}
+.quicknav a{
+  font-family:var(--mono); font-size:.7rem; font-weight:700; letter-spacing:.02em;
+  text-decoration:none; white-space:nowrap; padding:.36rem .65rem;
+  border-radius:var(--r-sm); color:var(--accent); border:1px solid var(--line);
+  background:color-mix(in srgb,var(--card) 88%,transparent);
+  backdrop-filter:blur(8px); box-shadow:var(--shadow);
+  transition:background var(--t),color var(--t),border-color var(--t),transform var(--t);
+}
+.quicknav a:hover{background:var(--accent-fill);color:#fff;border-color:var(--accent-fill);transform:translateY(-1px)}
+.quicknav a.qn-study{color:var(--green);border-color:var(--green-line);background:var(--green-bg)}
+.quicknav a.qn-study:hover{background:var(--green);color:var(--bg);border-color:var(--green)}
+.quicknav a.qn-hub{background:var(--accent-soft);color:var(--accent);border-color:var(--accent-line)}
+.quicknav .qn-sep{
+  font-family:var(--mono); font-size:.62rem; font-weight:700;
+  text-transform:uppercase; letter-spacing:.1em; color:var(--ink-3);
+  padding:.15rem .15rem .15rem .55rem; margin-left:.1rem;
+  border-left:1px solid var(--line);
+}
+@media (max-width:900px){
+  .quicknav{top:.5rem;right:.5rem;gap:.28rem;max-width:92vw}
+  .quicknav a{font-size:.6rem;padding:.28rem .48rem}
+  .quicknav .qn-sep{font-size:.55rem;padding-left:.4rem}
+}
+@media (max-width:540px){ .quicknav{display:none} }
+
+/* --------------------------------------------------------------------------
+   6. HERO
+   -------------------------------------------------------------------------- */
+/* index.html's <header> carries no class. It also used to be min-height:100vh,
+   which pushed every piece of real content below the fold — the same wasted
+   viewport this redesign is fixing, just vertically. It is a normal block now. */
+header.hero,.container > header{padding:3.4rem 0 2.4rem}
+.status-bar{
+  font-family:var(--mono); font-size:.7rem; letter-spacing:.05em;
+  display:flex; gap:.6rem; flex-wrap:wrap; margin-bottom:1.4rem;
+}
+.status-item{
+  display:inline-flex; align-items:center; gap:.5rem;
+  color:var(--green); background:var(--green-bg);
+  border:1px solid var(--green-line); padding:.24rem .7rem; border-radius:99px;
+}
+.status-dot,.validation-dot{
+  width:6px;height:6px;border-radius:99px;background:var(--green);flex:none;
+}
+.kicker{
+  font-family:var(--mono); font-size:.72rem; text-transform:uppercase;
+  letter-spacing:.16em; color:var(--accent); margin-bottom:.8rem;
+}
+h1{
+  font-size:clamp(2.1rem,4.6vw,3.1rem); font-weight:600; line-height:1.08;
+  letter-spacing:-.026em; margin-bottom:1rem; text-wrap:balance;
+  max-width:22ch; color:var(--ink);
+}
+.lede,.hero-statement{
+  font-size:clamp(1rem,1.5vw,1.12rem); color:var(--ink-2);
+  max-width:var(--prose); font-weight:400;
+}
+.lede+.lede{margin-top:.85rem}
+.lede b,.hero-statement b{color:var(--ink);font-weight:500}
+.lede .cy{color:var(--accent);font-weight:500}
+.context{font-family:var(--mono);font-size:.74rem;color:var(--ink-3);margin-top:1.5rem}
+.subtitle{
+  font-size:clamp(1rem,2vw,1.25rem); color:var(--ink-2);
+  margin-bottom:1.2rem; font-weight:400; max-width:var(--prose);
+}
+
+/* stat tiles */
+.stats,.hero-stats{
+  display:grid; grid-template-columns:repeat(auto-fit,minmax(148px,1fr));
+  gap:1px; margin-top:1.9rem; background:var(--line);
+  border:1px solid var(--line); border-radius:var(--r);
+  overflow:hidden; box-shadow:var(--shadow);
+}
+.stat{background:var(--card);padding:1rem 1.15rem;display:flex;flex-direction:column}
+.stat .n,.stat-value{
+  font-family:var(--mono); font-size:1.9rem; font-weight:700; color:var(--ink);
+  line-height:1; font-variant-numeric:tabular-nums; letter-spacing:-.02em;
+}
+.stat .l,.stat-label{
+  font-size:.72rem; color:var(--ink-3); text-transform:uppercase;
+  letter-spacing:.08em; margin-top:.5rem; font-weight:500;
+}
+.statnote{
+  margin-top:1.3rem; font-size:.87rem; color:var(--ink-2);
+  max-width:var(--prose); border-left:2px solid var(--accent-line);
+  padding-left:.9rem;
+}
+.statnote+.statnote{margin-top:.8rem}
+.statnote b{color:var(--ink);font-weight:500}
+.statnote code{
+  font-family:var(--mono); font-size:.84em; color:var(--accent);
+  background:var(--accent-soft); padding:.05rem .3rem; border-radius:var(--r-xs);
+}
+
+/* --------------------------------------------------------------------------
+   7. SECTIONS
+   -------------------------------------------------------------------------- */
+section.sec,.section{padding-top:3.4rem;scroll-margin-top:4.2rem}
+.sechead,.section-header{
+  display:flex; align-items:baseline; gap:.85rem; margin-bottom:.5rem;
+}
+.secnum,.section-number{
+  font-family:var(--mono); font-size:.78rem; font-weight:700; color:var(--accent);
+}
+h2,.section-title{
+  font-size:clamp(1.45rem,2.8vw,1.9rem); font-weight:600;
+  letter-spacing:-.022em; text-wrap:balance; color:var(--ink);
+}
+.divider,.section-divider{
+  flex:1; height:1px; background:var(--line); margin-left:.4rem;
+  transform-origin:left;
+}
+.secsub,.section-intro{
+  color:var(--ink-2); max-width:var(--prose); margin:.4rem 0 1.7rem;
+  font-size:.98rem;
+}
+.secsub b,.section-intro b{color:var(--ink);font-weight:500}
+.secsub em{color:var(--amber);font-style:normal;font-weight:500}
+.secsub code{font-family:var(--mono);font-size:.84em;color:var(--accent)}
+
+/* --------------------------------------------------------------------------
+   8. CARD GRIDS — balanced by child count
+   auto-fit is the fallback. Above the breakpoints the column count is pinned
+   so the remainder is never one: four cards give 2x2 or 4-across, never 3+1.
+   -------------------------------------------------------------------------- */
+.cards,.studies,.skills,.apps-grid,.contact-grid,.panels{
+  display:grid; gap:1rem;
+  grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+}
+
+/* .apps-grid is the one grid that mixes full-width flagship cards with normal
+   ones, so a child-count rule reads it wrong: "4 children" is really one
+   flagship plus three cards, and a 4-column track leaves a hole.
+   The two grids hold 3 and 6 normal cards, so only 1 or 3 columns divide both
+   cleanly — two columns would orphan the 3-card grid. They are content-rich
+   product cards, so full width below the 3-column breakpoint reads fine. */
+.apps-grid{gap:1.1rem;grid-template-columns:1fr}
+@media (min-width:900px){ .apps-grid{grid-template-columns:repeat(3,1fr)} }
+
+/* .contact-grid has the same problem for the same reason: it carries a
+   full-row correction card, so "7 children" is really 6 tiles plus a spanner
+   and a child-count rule reads it wrong — auto-fit gave four columns for six
+   tiles. The two grids hold 6 and 3 tiles, so three columns divides both
+   cleanly; below that they stack rather than take two, because three tiles in
+   two columns is the orphan again. Removed from the generic count rules
+   below so it is never governed by two systems at once. */
+.contact-grid{grid-template-columns:1fr}
+@media (min-width:900px){ .contact-grid{grid-template-columns:repeat(3,1fr)} }
+/* The column count is chosen so the remainder is NEVER one — no orphan on the
+   last row at any width. auto-fit above stays as the fallback for counts not
+   enumerated here; the enumerated ones are the counts these pages actually
+   use (2, 3, 4, 6) plus their near neighbours.
+
+   count | <640 | 640-819 | 820-1239 | >=1240
+     2   |  1   |    2    |    2     |   2
+     3   |  1   |    1    |    3     |   3
+     4   |  1   |    2    |    2     |   4
+     5   |  1   |    1    |    1     |   5
+     6   |  1   |    2    |    3     |   3
+     8   |  1   |    2    |    2     |   4
+     9   |  1   |    1    |    3     |   3
+
+   Three cards in two columns is the tablet version of the same 3+1 bug, so at
+   640-819 the odd counts stack instead. */
+@media (max-width:639px){
+  .cards,.studies,.skills,.contact-grid,.panels{grid-template-columns:1fr}
+}
+@media (min-width:640px) and (max-width:819px){
+  .cards:has(>:nth-child(3):last-child),
+  .cards:has(>:nth-child(5):last-child),
+  .cards:has(>:nth-child(9):last-child),
+  .studies:has(>:nth-child(3):last-child),
+  .studies:has(>:nth-child(5):last-child),
+  .skills:has(>:nth-child(3):last-child),
+  .skills:has(>:nth-child(5):last-child),
+  .skills:has(>:nth-child(9):last-child),
+
+  .cards:has(>:nth-child(2):last-child),
+  .cards:has(>:nth-child(4):last-child),
+  .cards:has(>:nth-child(6):last-child),
+  .cards:has(>:nth-child(8):last-child),
+  .studies:has(>:nth-child(2):last-child),
+  .studies:has(>:nth-child(4):last-child),
+  .studies:has(>:nth-child(6):last-child),
+  .skills:has(>:nth-child(2):last-child),
+  .skills:has(>:nth-child(4):last-child),
+  .skills:has(>:nth-child(6):last-child),
+  .skills:has(>:nth-child(8):last-child),
+}
+@media (min-width:820px){
+  .cards:has(>:nth-child(5):last-child),
+  .studies:has(>:nth-child(5):last-child),
+  .skills:has(>:nth-child(5):last-child){grid-template-columns:1fr}
+
+  .cards:has(>:nth-child(2):last-child),
+  .cards:has(>:nth-child(4):last-child),
+  .cards:has(>:nth-child(8):last-child),
+  .studies:has(>:nth-child(2):last-child),
+  .studies:has(>:nth-child(4):last-child),
+  .skills:has(>:nth-child(2):last-child),
+  .skills:has(>:nth-child(4):last-child),
+  .skills:has(>:nth-child(8):last-child),
+
+  .cards:has(>:nth-child(3):last-child),
+  .cards:has(>:nth-child(6):last-child),
+  .cards:has(>:nth-child(9):last-child),
+  .studies:has(>:nth-child(3):last-child),
+  .studies:has(>:nth-child(6):last-child),
+  .skills:has(>:nth-child(3):last-child),
+  .skills:has(>:nth-child(6):last-child),
+  .skills:has(>:nth-child(9):last-child),
+}
+@media (min-width:1240px){
+  .cards:has(>:nth-child(4):last-child),
+  .cards:has(>:nth-child(8):last-child),
+  .studies:has(>:nth-child(4):last-child),
+  .skills:has(>:nth-child(4):last-child),
+  .skills:has(>:nth-child(8):last-child){grid-template-columns:repeat(4,1fr)}
+  .cards:has(>:nth-child(5):last-child),
+  .studies:has(>:nth-child(5):last-child){grid-template-columns:repeat(5,1fr)}
+}
+
+/* --------------------------------------------------------------------------
+   9. CARDS
+   -------------------------------------------------------------------------- */
+.card,.contact-card,.skill,.app-card{
+  background:var(--card); border:1px solid var(--line); border-radius:var(--r);
+  box-shadow:var(--shadow); padding:1.2rem 1.3rem 1.3rem;
+  display:flex; flex-direction:column; position:relative;
+  transition:transform var(--t) var(--ease),border-color var(--t),box-shadow var(--t);
+}
+.card:hover,.contact-card:hover,.skill:hover,.app-card:hover{
+  transform:translateY(-2px); border-color:var(--edge); box-shadow:var(--shadow-lg);
+}
+.card .tag,.skill h4{
+  font-family:var(--mono); font-size:.64rem; text-transform:uppercase;
+  letter-spacing:.11em; color:var(--accent); margin-bottom:.6rem; font-weight:500;
+}
+.card h3{font-size:1.05rem;font-weight:600;margin-bottom:.35rem;letter-spacing:-.012em;color:var(--ink)}
+.card p,.skill p{font-size:.9rem;color:var(--ink-2)}
+.card p+p{margin-top:.5rem}
+.card b,.skill b{color:var(--ink);font-weight:500}
+.card em{color:var(--amber);font-style:normal;font-weight:500}
+.card code{font-family:var(--mono);font-size:.84em;color:var(--accent)}
+
+/* destination card — the gradient header strip is reserved for things you
+   can actually click through to, so it reads as a signal not a decoration */
+a.study{
+  display:flex; flex-direction:column; background:var(--card);
+  border:1px solid var(--line); border-radius:var(--r); box-shadow:var(--shadow);
+  overflow:hidden; text-decoration:none; color:inherit;
+  transition:transform var(--t) var(--ease),border-color var(--t),box-shadow var(--t);
+}
+a.study:hover{transform:translateY(-2px);border-color:var(--edge);box-shadow:var(--shadow-lg)}
+a.study:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+.snum{
+  display:flex; align-items:center; gap:.5rem;
+  padding:.72rem 1.1rem; border-bottom:1px solid var(--line);
+  background:var(--card-head); font-family:var(--mono); font-size:.66rem;
+  text-transform:uppercase; letter-spacing:.1em; color:var(--accent); font-weight:700;
+}
+.stitle{
+  font-size:1.05rem; font-weight:600; letter-spacing:-.014em; color:var(--ink);
+  padding:.95rem 1.1rem 0; margin-bottom:.2rem;
+}
+.ssub{
+  font-family:var(--mono); font-size:.68rem; color:var(--ink-3);
+  padding:0 1.1rem; margin-bottom:.55rem; letter-spacing:.02em;
+}
+.sdesc{font-size:.89rem;color:var(--ink-2);padding:0 1.1rem;flex:1}
+.sgo{
+  font-family:var(--mono); font-size:.68rem; font-weight:700; letter-spacing:.08em;
+  text-transform:uppercase; color:var(--accent);
+  padding:.9rem 1.1rem 1.1rem; display:flex; align-items:center; gap:.45rem;
+}
+.sgo .arr{transition:transform .2s var(--ease)}
+a.study:hover .sgo{color:var(--accent-fill)}
+a.study:hover .sgo .arr{transform:translateX(4px)}
+
+/* --------------------------------------------------------------------------
+   10. index.html — product / project cards
+   -------------------------------------------------------------------------- */
+.app-card.flagship{grid-column:1/-1;border-color:var(--accent-line)}
+.flagship-inner{display:grid;grid-template-columns:1fr 1fr;gap:1.6rem}
+.app-number{
+  font-family:var(--mono); font-size:.64rem; text-transform:uppercase;
+  letter-spacing:.11em; color:var(--accent); margin-bottom:.5rem; font-weight:500;
+}
+.app-title{font-size:1.15rem;font-weight:600;margin-bottom:.15rem;letter-spacing:-.015em;color:var(--ink)}
+.app-subtitle{
+  font-family:var(--mono); font-size:.72rem; color:var(--ink-3);
+  margin-bottom:.75rem; font-style:normal;
+}
+.app-problem{
+  background:var(--red-bg); border:1px solid var(--red-line);
+  border-left:3px solid var(--red); border-radius:var(--r-sm);
+  padding:.6rem .85rem; margin-bottom:.9rem; font-size:.86rem;
+  color:var(--ink-2); line-height:1.5;
+}
+.app-problem-label{
+  font-family:var(--mono); font-size:.62rem; color:var(--red);
+  text-transform:uppercase; letter-spacing:.09em; display:block; margin-bottom:.22rem;
+  font-weight:700;
+}
+.app-description{color:var(--ink-2);line-height:1.6;font-size:.92rem}
+.app-features{list-style:none;margin-top:.9rem;display:flex;flex-direction:column;gap:.4rem}
+.app-features li{
+  font-size:.85rem; color:var(--ink-2); padding-left:1.15rem; position:relative;
+}
+.app-features li::before{
+  content:''; position:absolute; left:.15rem; top:.6em; width:5px; height:5px;
+  border-radius:99px; background:var(--accent-fill);
+}
+.app-card-footer{margin-top:auto;padding-top:1rem}
+.tech-badge{
+  display:inline-block; font-family:var(--mono); font-size:.68rem; font-weight:500;
+  padding:.2rem .6rem; background:var(--card-2); border:1px solid var(--line);
+  color:var(--ink-2); border-radius:99px; margin:.3rem .3rem 0 0;
+}
+/* cursor is stated rather than inherited: the old base rule said
+   cursor:default, which made a reviewer conclude these buttons were dead even
+   though every instance is a real link overriding it inline. */
+.launch-btn{
+  cursor:pointer;
+  display:inline-flex; align-items:center; gap:.45rem;
+  font-family:var(--mono); font-size:.7rem; font-weight:700;
+  letter-spacing:.05em; padding:.5rem .95rem; margin-top:.7rem;
+  background:var(--card); border:1px solid var(--line); border-radius:var(--r-sm);
+  color:var(--accent); text-decoration:none; box-shadow:var(--shadow);
+  transition:border-color var(--t),transform var(--t),box-shadow var(--t);
+}
+a.launch-btn:hover{border-color:var(--edge);transform:translateY(-1px);box-shadow:var(--shadow-lg)}
+.validation-badge{
+  display:inline-flex; align-items:center; gap:.45rem;
+  font-family:var(--mono); font-size:.68rem; font-weight:700;
+  padding:.3rem .7rem; border-radius:99px; margin-top:.9rem;
+  background:var(--green-bg); border:1px solid var(--green-line); color:var(--green);
+}
+.highlight{color:var(--accent);font-weight:500}
+.highlight-cyan{color:var(--accent);font-weight:500}
+
+/* timeline */
+.timeline{position:relative;padding-left:2.2rem}
+.timeline::before{
+  content:''; position:absolute; left:5px; top:.4rem; bottom:.4rem; width:2px;
+  background:var(--line); border-radius:99px;
+}
+.timeline-item{position:relative;margin-bottom:2.2rem;max-width:var(--prose)}
+.timeline-dot{
+  position:absolute; left:-2.2rem; top:.42rem; width:12px; height:12px;
+  border-radius:99px; background:var(--card); border:2px solid var(--accent-fill);
+  box-shadow:0 0 0 3px var(--bg);
+}
+.timeline-label{
+  font-family:var(--mono); font-size:.7rem; color:var(--accent);
+  text-transform:uppercase; letter-spacing:.09em; margin-bottom:.35rem; font-weight:500;
+}
+.timeline-title{font-size:1.1rem;font-weight:600;margin-bottom:.4rem;color:var(--ink)}
+.timeline-description{color:var(--ink-2);line-height:1.65;font-size:.94rem}
+
+/* contact */
+.contact-title{
+  font-family:var(--mono); font-size:.66rem; color:var(--accent);
+  margin-bottom:.45rem; text-transform:uppercase; letter-spacing:.1em; font-weight:700;
+}
+.contact-value{font-size:.94rem;color:var(--ink-2);line-height:1.6;overflow-wrap:anywhere}
+.contact-value a{color:var(--accent);text-decoration:none}
+.contact-value a:hover{text-decoration:underline}
+
+/* An inline style in the markup still names 'Work Sans' — a face this site no
+   longer loads, so it was silently falling back to the generic sans and
+   rendering that one paragraph in a different typeface from every other. The
+   rest of that inline rule (letter-spacing, text-transform) is vestigial too:
+   it was overriding an older .contact-value that set them. Neutralised here
+   rather than by editing the markup; the copy session holds that lease. */
+.contact-card .contact-value{font-family:var(--sans) !important}
+
+/* A .contact-card spanning the full row is a note ABOUT the cards above it,
+   not another tile in the row. It arrives carrying an inline
+   border-left-color, which only reads against a border wide enough to see —
+   the crisp card has a 1px border on all four sides, so the spanning variant
+   gets a real left rule and a stepped-back ground. The inline colour still
+   wins, so the accent stays whatever the markup asks for. */
+.contact-grid > .contact-card[style*="grid-column"]{
+  border-left-width:3px;
+  background:var(--card-2);
+}
+
+.scroll-indicator{
+  display:flex; flex-direction:column; align-items:flex-start; gap:.45rem;
+  font-family:var(--mono); font-size:.68rem; letter-spacing:.14em;
+  color:var(--ink-3); margin-top:2.4rem;
+}
+.scroll-arrow{
+  width:9px; height:9px; border-bottom:1.5px solid var(--accent);
+  border-right:1.5px solid var(--accent); transform:rotate(45deg);
+}
+
+/* --------------------------------------------------------------------------
+   11. STAGED BLOCKS, NOTES, CALLOUTS
+   -------------------------------------------------------------------------- */
+.stage{
+  background:var(--card); border:1px solid var(--line);
+  border-left:3px solid var(--accent-line); border-radius:var(--r-sm);
+  padding:.95rem 1.1rem; margin-bottom:.6rem; box-shadow:var(--shadow);
+  transition:border-left-color var(--t);
+}
+.stage:hover{border-left-color:var(--accent-fill)}
+.stagehead{display:flex;align-items:baseline;gap:.7rem;flex-wrap:wrap;margin-bottom:.35rem}
+.stagenum{
+  font-family:var(--mono); font-size:.68rem; font-weight:700; color:var(--accent);
+  border:1px solid var(--accent-line); background:var(--accent-soft);
+  border-radius:var(--r-xs); padding:.04rem .45rem;
+}
+.stagename{font-weight:600;font-size:1rem;color:var(--ink)}
+.stagekind{
+  margin-left:auto; font-family:var(--mono); font-size:.64rem;
+  text-transform:uppercase; letter-spacing:.08em; color:var(--ink-3);
+}
+.stage p{font-size:.9rem;color:var(--ink-2)}
+.stage p+p{margin-top:.5rem}
+.stage b{color:var(--ink);font-weight:500}
+.stage em{color:var(--amber);font-style:normal;font-weight:500}
+.stage code{font-family:var(--mono);font-size:.84em;color:var(--accent)}
+
+.note{
+  background:var(--amber-bg); border:1px solid var(--amber-line);
+  border-radius:var(--r-sm); padding:.8rem 1rem; font-size:.89rem;
+  color:var(--ink-2); max-width:var(--prose);
+}
+.note b{color:var(--ink);font-weight:500}
+.note em{color:var(--amber);font-style:normal;font-weight:600}
+.note code{font-family:var(--mono);font-size:.84em;color:var(--accent)}
+
+/* casualty callout — something that went wrong */
+.cas{
+  background:var(--red-bg); border:1px solid var(--red-line);
+  border-left:3px solid var(--red); border-radius:var(--r-sm);
+  padding:1rem 1.15rem; margin-bottom:.7rem; max-width:var(--prose);
+}
+.cas .ct{
+  font-family:var(--mono); font-size:.64rem; text-transform:uppercase;
+  letter-spacing:.1em; color:var(--red); margin-bottom:.4rem; font-weight:700;
+}
+.cas h4{font-size:1rem;font-weight:600;color:var(--ink);margin-bottom:.35rem}
+.cas p{font-size:.9rem;color:var(--ink-2)}
+.cas p+p{margin-top:.5rem}
+.cas b{color:var(--ink);font-weight:500}
+.cas em{color:var(--amber);font-style:normal;font-weight:500}
+.cas code{font-family:var(--mono);font-size:.84em;color:var(--accent)}
+
+/* numbered criteria */
+.bar{counter-reset:barc;display:grid;gap:.6rem;max-width:var(--prose)}
+.barit{
+  position:relative; background:var(--card); border:1px solid var(--line);
+  border-radius:var(--r-sm); box-shadow:var(--shadow);
+  padding:.9rem 1.1rem .9rem 3rem;
+}
+.barit::before{
+  counter-increment:barc; content:counter(barc);
+  position:absolute; left:1.05rem; top:.85rem;
+  font-family:var(--mono); font-size:1rem; font-weight:700; color:var(--accent);
+}
+.barit h4{font-size:1rem;font-weight:600;color:var(--ink);margin-bottom:.25rem}
+.barit p{font-size:.88rem;color:var(--ink-2)}
+.barit p+p{margin-top:.4rem}
+.barit b{color:var(--ink);font-weight:500}
+.barit em{color:var(--amber);font-style:normal;font-weight:500}
+.barit code{font-family:var(--mono);font-size:.84em;color:var(--accent)}
+
+/* before / after columns */
+.diff{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:1rem}
+.dcol{
+  background:var(--card); border:1px solid var(--line); border-radius:var(--r);
+  box-shadow:var(--shadow); padding:1rem 1.15rem;
+}
+.dcol.bad{border-left:3px solid var(--red)}
+.dcol.good{border-left:3px solid var(--green)}
+.dlab{
+  font-family:var(--mono); font-size:.64rem; text-transform:uppercase;
+  letter-spacing:.1em; margin-bottom:.6rem; font-weight:700;
+}
+.dcol.bad .dlab{color:var(--red)}
+.dcol.good .dlab{color:var(--green)}
+.dtext{font-family:var(--mono);font-size:.79rem;line-height:1.75;color:var(--ink-2)}
+.dtext b{color:var(--ink);font-weight:700}
+.dwhy{
+  margin-top:.75rem; padding-top:.65rem; border-top:1px solid var(--line-soft);
+  font-size:.84rem; color:var(--ink-3); font-family:var(--sans);
+}
+.dwhy b{color:var(--ink-2);font-weight:500}
+
+/* --------------------------------------------------------------------------
+   12. CHIPS / PILLS
+   -------------------------------------------------------------------------- */
+.chip,.st,.rchip{
+  display:inline-flex; align-items:center; gap:.3rem;
+  font-family:var(--mono); font-size:.64rem; font-weight:700;
+  padding:.14rem .55rem; border-radius:99px; border:1px solid;
+  white-space:nowrap; letter-spacing:.02em;
+}
+.c-block,.st-n{color:var(--red);background:var(--red-bg);border-color:var(--red-line)}
+.c-cond,.st-h{color:var(--amber);background:var(--amber-bg);border-color:var(--amber-line)}
+.c-loud,.st-e{color:var(--green);background:var(--green-bg);border-color:var(--green-line)}
+.c-ctx{color:var(--accent);background:var(--accent-soft);border-color:var(--accent-line)}
+.c-adv{color:var(--ink-3);background:var(--card-2);border-color:var(--line)}
+.wonly{
+  font-family:var(--mono); font-size:.6rem; color:var(--ink-3);
+  text-transform:uppercase; letter-spacing:.06em; margin-left:.35rem;
+}
+
+/* --------------------------------------------------------------------------
+   13. automation/ — event lanes, command groups
+   -------------------------------------------------------------------------- */
+.legend{display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:1.2rem}
+.lane{
+  background:var(--card); border:1px solid var(--line); border-radius:var(--r);
+  box-shadow:var(--shadow); margin-bottom:.8rem; overflow:hidden;
+}
+.lh{
+  display:flex; align-items:baseline; gap:.75rem; flex-wrap:wrap;
+  padding:.7rem 1rem; background:var(--card-2); border-bottom:1px solid var(--line);
+}
+.lh .ev{font-family:var(--mono);font-size:.86rem;font-weight:700;color:var(--accent)}
+.lh .when{font-size:.8rem;color:var(--ink-3)}
+.lh .match{
+  margin-left:auto; font-family:var(--mono); font-size:.66rem; color:var(--ink-3);
+  border:1px solid var(--line); border-radius:var(--r-xs); padding:.04rem .5rem;
+}
+.row{
+  display:flex; align-items:center; gap:.85rem; padding:.6rem 1rem;
+  border-top:1px solid var(--line-soft); border-left:2px solid transparent;
+  transition:background var(--t),border-color var(--t);
+}
+.row:first-child{border-top:none}
+.row:hover{background:var(--card-2);border-left-color:var(--accent-fill)}
+.rname{font-family:var(--mono);font-size:.8rem;font-weight:700;color:var(--ink);min-width:180px}
+.rdesc{font-size:.86rem;color:var(--ink-2);flex:1;min-width:200px}
+.rchip{margin-left:auto}
+
+.cmdgroup{margin-bottom:1.6rem}
+.cmdgh{
+  font-family:var(--mono); font-size:.7rem; text-transform:uppercase;
+  letter-spacing:.1em; color:var(--ink-3); margin-bottom:.7rem;
+  padding-bottom:.45rem; border-bottom:1px solid var(--line);
+}
+.cmd{
+  background:var(--card); border:1px solid var(--line);
+  border-left:3px solid var(--accent-line); border-radius:var(--r-sm);
+  padding:.7rem 1rem; margin-bottom:.5rem; box-shadow:var(--shadow);
+  transition:border-left-color var(--t),transform var(--t);
+}
+.cmd:hover{border-left-color:var(--accent-fill);transform:translateX(2px)}
+.cmdname{font-family:var(--mono);font-size:.87rem;font-weight:700;color:var(--accent)}
+.cmdbody{font-size:.87rem;color:var(--ink-2);margin-top:.2rem}
+.cmdbody b{color:var(--ink);font-weight:500}
+
+.layers{display:grid;gap:.6rem}
+.layer{
+  background:var(--card); border:1px solid var(--line); border-radius:var(--r-sm);
+  box-shadow:var(--shadow); padding:.85rem 1.05rem;
+}
+.layer .k{font-family:var(--mono);font-size:.8rem;font-weight:700;color:var(--accent)}
+.layer .d{font-size:.87rem;color:var(--ink-2);margin-top:.2rem}
+
+/* --------------------------------------------------------------------------
+   14. TABLES
+   -------------------------------------------------------------------------- */
+.tablewrap{
+  overflow-x:auto; background:var(--card); border:1px solid var(--line);
+  border-radius:var(--r); box-shadow:var(--shadow);
+}
+table{border-collapse:collapse;width:100%;min-width:580px;font-size:.89rem}
+th{
+  text-align:left; font-family:var(--mono); font-size:.64rem;
+  text-transform:uppercase; letter-spacing:.09em; color:var(--ink-3);
+  font-weight:700; padding:.7rem 1rem; background:var(--card-2);
+  border-bottom:1px solid var(--line); white-space:nowrap;
+}
+td{
+  padding:.7rem 1rem; border-bottom:1px solid var(--line-soft);
+  color:var(--ink-2); vertical-align:top; font-variant-numeric:tabular-nums;
+}
+tr:last-child td{border-bottom:none}
+tbody tr:hover td{background:var(--card-2)}
+td.num{font-family:var(--mono);text-align:right;white-space:nowrap}
+td b{color:var(--ink);font-weight:600}
+td code{font-family:var(--mono);font-size:.84em;color:var(--accent)}
+.absent{color:var(--ink-3);font-style:italic}
+
+/* --------------------------------------------------------------------------
+   15. FIGURES & CHARTS
+   -------------------------------------------------------------------------- */
+figure.fig{
+  background:var(--card); border:1px solid var(--line); border-radius:var(--r);
+  box-shadow:var(--shadow); padding:1.3rem 1.4rem 1.1rem; margin:0 0 1rem;
+}
+.figtitle{
+  font-family:var(--mono); font-size:.68rem; text-transform:uppercase;
+  letter-spacing:.11em; color:var(--accent); margin-bottom:.25rem; font-weight:500;
+}
+.figlede{font-size:.88rem;color:var(--ink-2);margin-bottom:1.1rem;max-width:74ch}
+.figlede b{color:var(--ink);font-weight:500}
+figure.fig figcaption{
+  margin-top:1rem; padding-top:.85rem; border-top:1px solid var(--line-soft);
+  font-size:.85rem; color:var(--ink-2); max-width:78ch;
+}
+figure.fig figcaption b{color:var(--ink);font-weight:500}
+figure.fig figcaption em{color:var(--amber);font-style:normal;font-weight:500}
+
+.panels{gap:1.3rem 1.6rem}
+.panel svg,figure.fig > svg,.figscroll > svg{
+  display:block; width:100%; height:auto; overflow:visible;
+}
+/* A grid/flex item defaults to min-width:auto, so an svg min-width inside one
+   propagates outward and scrolls the PAGE instead of the container.
+   min-width:0 lets the item shrink and hands the overflow to .figscroll. */
+.panels > *,.panel,figure.fig{min-width:0}
+.figscroll{overflow-x:auto;overscroll-behavior-x:contain;max-width:100%}
+.figscroll > svg{min-width:860px}
+.figscroll.mid > svg{min-width:600px}
+.figscroll + .scrollhint{
+  font-family:var(--mono); font-size:.64rem; color:var(--ink-3);
+  letter-spacing:.04em; margin-top:.35rem; display:none;
+}
+@media (max-width:900px){ .figscroll + .scrollhint{display:block} }
+.paneltitle{
+  font-family:var(--mono); font-size:.66rem; text-transform:uppercase;
+  letter-spacing:.08em; color:var(--ink-3); margin-bottom:.55rem;
+}
+.lgi{display:flex;align-items:center;gap:.45rem;font-family:var(--mono);font-size:.7rem;color:var(--ink-2)}
+.lgs{width:12px;height:12px;border-radius:3px;flex:none}
+.srcline{font-family:var(--mono);font-size:.66rem;color:var(--ink-3);margin-top:.7rem}
+
+/* chart text roles — never the series colour */
+.ct-lab{fill:var(--chart-muted);font-family:var(--mono);font-size:11px}
+.ct-val{fill:var(--chart-ink);font-family:var(--mono);font-size:12px;font-weight:700}
+.ct-abs{fill:var(--chart-absent);font-family:var(--mono);font-size:10.5px;font-style:italic}
+.ct-ax{stroke:var(--chart-axis);stroke-width:1}
+.ct-gr{stroke:var(--chart-grid);stroke-width:1}
+
+/* diagram roles */
+.dg-box{fill:var(--card-2);stroke:var(--chart-axis);stroke-width:1}
+.dg-box-hi{fill:color-mix(in srgb,var(--series-1) 12%,transparent);stroke:var(--series-1);stroke-width:1.5}
+.dg-box-ser{fill:color-mix(in srgb,var(--series-2) 10%,transparent);stroke:var(--series-2);stroke-width:1.25}
+.dg-t{fill:var(--chart-ink);font-family:var(--sans);font-size:12.5px;font-weight:500}
+.dg-s{fill:var(--chart-muted);font-family:var(--mono);font-size:10px}
+.dg-a{fill:var(--chart-muted);font-family:var(--mono);font-size:9.5px;letter-spacing:.02em}
+.dg-l{stroke:var(--chart-axis);stroke-width:1.25;fill:none}
+.dg-l-hi{stroke:var(--series-1);stroke-width:1.5;fill:none}
+.dg-l-ser{stroke:var(--series-2);stroke-width:1.5;fill:none}
+
+/* --------------------------------------------------------------------------
+   16. CODE / DISCLOSURE
+   -------------------------------------------------------------------------- */
+details.src{
+  margin-top:.9rem; border:1px solid var(--line); border-radius:var(--r-sm);
+  background:var(--card-2); overflow:hidden;
+}
+details.src summary{
+  cursor:pointer; padding:.55rem 1rem; font-family:var(--mono); font-size:.68rem;
+  text-transform:uppercase; letter-spacing:.09em; color:var(--ink-3); list-style:none;
+}
+details.src summary::-webkit-details-marker{display:none}
+details.src summary::before{content:'+ ';color:var(--accent);font-weight:700}
+details.src[open] summary::before{content:'\2212 '}
+details.src summary:hover{color:var(--accent)}
+details.src pre{
+  padding:0 1rem 1rem; overflow-x:auto; font-family:var(--mono);
+  font-size:.72rem; line-height:1.7; color:var(--ink-2);
+}
+
+.verdict{
+  background:var(--card-2); border:1px solid var(--line); border-radius:var(--r);
+  padding:1.1rem 1.25rem; overflow-x:auto;
+}
+.verdict pre{font-family:var(--mono);font-size:.78rem;line-height:1.85;color:var(--ink-2);white-space:pre}
+.verdict .vk{color:var(--accent);font-weight:700}
+.verdict .vb{color:var(--red);font-weight:700}
+.verdict .vg{color:var(--green)}
+.verdict .vd{color:var(--ink-3)}
+
+/* --------------------------------------------------------------------------
+   17. TAKEAWAY & FOOTER
+   -------------------------------------------------------------------------- */
+.takeaway{
+  margin-top:2.4rem; background:var(--accent-soft);
+  border:1px solid var(--accent-line); border-radius:var(--r);
+  padding:1.4rem 1.6rem;
+}
+.takeaway h3{font-size:1.15rem;font-weight:600;margin-bottom:.5rem;letter-spacing:-.015em;color:var(--ink)}
+.takeaway p{color:var(--ink-2);max-width:76ch;font-size:.94rem}
+.takeaway p+p{margin-top:.6rem}
+.takeaway b{color:var(--ink);font-weight:500}
+
+.closing{
+  margin-top:2.6rem; padding-top:1.4rem; border-top:1px solid var(--line);
+  font-size:.92rem; color:var(--ink-2); max-width:76ch;
+}
+.closing b{color:var(--ink);font-weight:500}
+
+footer{
+  margin-top:2.8rem; padding:1.3rem 0 0; border-top:1px solid var(--line);
+  font-family:var(--mono); font-size:.75rem; color:var(--ink-3);
+}
+footer p{margin-bottom:.35rem;line-height:1.7}
+footer a{color:var(--accent);text-decoration:none}
+footer a:hover{text-decoration:underline}
+body > footer{max-width:var(--page);margin-left:auto;margin-right:auto;padding:1.3rem 2rem 3rem}
+
+/* --------------------------------------------------------------------------
+   18. MOTION
+   Every entrance state is armed ONLY under .js-motion, which site.js adds
+   when JS is running and prefers-reduced-motion is not set. Without JS, or
+   with reduced motion, content is already in its final visible state, so
+   nothing is ever hidden by CSS that only JS can put back.
+   Nothing here animates a property that triggers layout.
+   -------------------------------------------------------------------------- */
+.js-motion .rise{
+  opacity:0; transform:translateY(12px);
+  transition:opacity .5s var(--ease),transform .5s var(--ease);
+}
+.js-motion .rise.in{opacity:1;transform:none}
+
+.js-motion .divider,.js-motion .section-divider{
+  transform:scaleX(0); transition:transform .7s var(--ease);
+}
+.js-motion .sec.in .divider,.js-motion .section.in .section-divider{transform:scaleX(1)}
+
+/* Figure reveal: the card fades up, then the chart inside wipes in just
+   behind it. .reveal is put on the figure's own <svg> by site.js, so this
+   works on the existing figures without touching their markup. Keyed off the
+   figure rather than the section, so a page with several figures reveals each
+   one as it is reached. */
+.js-motion .fig .reveal{
+  clip-path:inset(0 100% 0 0);
+  transition:clip-path .75s var(--ease) .12s;
+}
+.js-motion .fig.in .reveal{clip-path:inset(0 0 0 0)}
+
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  *,*::before,*::after{
+    animation-duration:.001ms!important;
+    animation-iteration-count:1!important;
+    transition-duration:.001ms!important;
+    scroll-behavior:auto!important;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   19. RESPONSIVE
+   -------------------------------------------------------------------------- */
+@media (max-width:900px){
+  .flagship-inner{grid-template-columns:1fr;gap:1.2rem}
+}
+@media (max-width:620px){
+  body{font-size:15px}
+  .wrap,.container,.topin,body > footer{padding-left:1.1rem;padding-right:1.1rem}
+  header.hero{padding-top:2.4rem}
+  figure.fig{padding:1rem 1rem .9rem}
+  .rname,.rdesc{min-width:0}
+  .row{flex-wrap:wrap;gap:.25rem .85rem}
+  .rchip,.lh .match{margin-left:0}
+  .timeline{padding-left:1.6rem}
+  .timeline-dot{left:-1.6rem}
+}
+
+/* --------------------------------------------------------------------------
+   20. PRINT & FORCED COLOURS
+   -------------------------------------------------------------------------- */
+@media print{
+  :root{
+    --bg:#fff; --card:#fff; --card-2:#fff; --ink:#111; --ink-2:#333; --ink-3:#555;
+    --line:#ddd; --line-soft:#eee; --shadow:none; --shadow-lg:none;
+    --series-1:#1F7FA0; --series-2:#A86E00;
+  }
+  body{background:#fff;color:#111}
+  .topbar,.quicknav,.rail,.scroll-indicator{display:none}
+  .card,.app-card,figure.fig,.tablewrap,.stage,.lane,a.study{
+    box-shadow:none; border:1px solid #ddd; break-inside:avoid;
+  }
+  section.sec,.section{padding-top:1.6rem;break-inside:avoid}
+  a[href^="http"]::after{content:' (' attr(href) ')';font-size:.75em;color:#555}
+}
+@media (forced-colors:active){
+  .card,.app-card,.stage,.cas,figure.fig,.dcol,a.study,.lane,.tablewrap,.barit{
+    border:1px solid CanvasText;
+  }
+  .rail li.on a{border:1px solid CanvasText}
+}
