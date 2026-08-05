@@ -91,7 +91,10 @@
                 The Kymora product line: the physiological engine, the simulators built on it, and the iOS application that runs a Core ML surrogate of it on-device.
             </p>
             <p class="section-intro" style="margin-top:-1.6rem; font-size:0.92rem; border-left:2px solid rgba(255,180,84,0.4); padding-left:0.9rem;">
-                <strong style="color:var(--text-primary); font-weight:500;">Read this before the cards.</strong> Everything below is pre-1.0 and none of it is deployed against real patient data. Where something is open to click, it is linked — the interactive clinical cases and the engineering write-ups are live and running right now. Where there is no link, the work exists but you can't verify it from here, and you should weight it accordingly. Nothing on this page is shipped, launched, or in production, and no clinical or regulatory claim is made for any of it.
+                <strong style="color:var(--text-primary); font-weight:500;">Read this before the cards.</strong> Everything below is pre-1.0 and none of it is deployed against real patient data. Two maturity tiers are mixed here on purpose: the <strong style="color:var(--text-primary); font-weight:500;">Kymora line</strong> — the engine and what runs on it — sits between 0.5 and 1.0, while everything under the <strong style="color:var(--text-primary); font-weight:500;">clinical apps</strong> heading is a working prototype. Where a card says <em>concept</em>, that means the boundary described is a design constraint rather than a shipped behaviour, and the card says so.
+            </p>
+            <p class="section-intro" style="margin-top:-1.2rem; font-size:0.92rem; border-left:2px solid rgba(139,148,158,0.3); padding-left:0.9rem;">
+                Where something is open to click, it is linked — the interactive clinical cases and the engineering write-ups are live right now. Where there is no link, that is deliberate rather than incomplete: these touch clinical decision-making, several carry unfiled IP, and a public demo of a pre-1.0 clinical tool is a liability before it is a portfolio piece. You can't verify those from here and you should weight them accordingly.
             </p>
 
             <div class="apps-grid">
@@ -288,7 +291,7 @@
                         <div>
                             <div class="app-problem">
                                 <span class="app-problem-label">Engineering Problem</span>
-                                A solo founder-engineer running daily AI coding sessions across several repositories has two exposures nobody else will catch: conventions that hold only while someone remembers them, and patentable mechanism sitting one paragraph away from every public draft.
+                                A small team running daily AI coding sessions across several repositories has two exposures nobody else will catch: conventions that hold only while someone remembers them, and patentable mechanism sitting one paragraph away from every public draft. The layer that catches them has to work on everyone's machine, not just the one it was written on.
                             </div>
                             <p class="app-description">
                                 Four write-ups on the layer around the code. A <strong>lifecycle-hook layer</strong> that makes safety automatic; a <strong>register and ledger</strong> that convert remembered conventions into checks that go red; a <strong>staged pipeline</strong> that controls what leaves a patent-pending repo; and an <strong>orchestration pattern</strong> for running several coding sessions at once without them colliding. Each one documents where it has failed.
@@ -394,9 +397,9 @@
                     </p>
                     <ul class="app-features">
                         <li>Multi-modal analysis: EKG, MRI, clinical imagery</li>
-                        <li>Suggests ICD-10/CPT candidates for a coder to accept or reject — never assigns a billable code</li>
-                        <li>Identifier detection against the 18 HIPAA Safe Harbor categories, run locally</li>
-                        <li>Browser File System Access API for local-first storage</li>
+                        <li>Extracts ICD-10/CPT candidates from document context, flagged for coder review — it never assigns a billable code</li>
+                        <li>Dataset nutrition label per collection: completeness, author and category distribution, a privacy-risk heuristic</li>
+                        <li>OMOP and CDISC SDTM mapping · File System Access API for local-first storage</li>
                     </ul>
                     <div class="app-card-footer">
                         <div>
@@ -404,7 +407,7 @@
                             <span class="tech-badge">Gemini AI</span>
                             <span class="tech-badge">Local-First</span>
                         </div>
-                        <p style="font-size:0.78rem; color:var(--text-muted); margin-top:0.6rem; line-height:1.5;">Development project. Not deployed against real patient data, and no compliance posture is claimed — HIPAA obligations attach to a covered entity or business associate, not to software.</p>
+                        <p style="font-size:0.78rem; color:var(--text-muted); margin-top:0.6rem; line-height:1.5;">Prototype. Built and tested against synthetic data only, never real patient data. It does no de-identification and claims no compliance posture — HIPAA obligations attach to a covered entity or business associate, not to software.</p>
                     </div>
                 </div>
 
@@ -452,7 +455,7 @@
                     <ul class="app-features">
                         <li>Acuity-aware alert prioritization</li>
                         <li>Configurable escalation pathways</li>
-                        <li>Reorders and groups by context — no alert is withheld from the clinician</li>
+                        <li>Designed to reorder and group by context, never to withhold an alert from the clinician</li>
                         <li>Integration-ready alert routing</li>
                     </ul>
                     <div class="app-card-footer">
@@ -461,7 +464,7 @@
                             <span class="tech-badge">TypeScript</span>
                             <span class="tech-badge">Tailwind</span>
                         </div>
-                        <p style="font-size:0.78rem; color:var(--text-muted); margin-top:0.6rem; line-height:1.5;">Prioritisation only. Suppressing a clinical alarm is a safety-critical function with its own standards (IEC 60601-1-8) and a different regulatory posture, so this reorders and never silences.</p>
+                        <p style="font-size:0.78rem; color:var(--text-muted); margin-top:0.6rem; line-height:1.5;">Concept stage — the prioritisation-only boundary is a design constraint, not yet a shipped behaviour. It matters because suppressing a clinical alarm is a safety-critical function with its own standards (IEC 60601-1-8) and a different regulatory posture entirely.</p>
                     </div>
                 </div>
 
@@ -590,7 +593,7 @@
                 </div>
                 <div class="contact-card">
                     <div class="contact-title">Regulatory Literacy</div>
-                    <p class="contact-value">HIPAA Safe Harbor identifiers · local-first data handling · FHIR/DICOM · CE content standards · knows where the device line sits</p>
+                    <p class="contact-value">HIPAA de-identification standards (Safe Harbor / Expert Determination) · local-first data handling · FHIR/DICOM · CE content standards · knows where the device line sits</p>
                 </div>
             </div>
         </section>
