@@ -183,7 +183,7 @@
             padding: 0.6rem 1.2rem; margin-top: 1rem;
             background: rgba(0, 217, 255, 0.1); border: 1px solid var(--accent-cyan);
             color: var(--accent-cyan); text-decoration: none;
-            cursor: default;
+            cursor: pointer;
         }
         .timeline { position: relative; padding-left: 3rem; }
         .timeline::before {
@@ -355,14 +355,14 @@
             </div>
 
             <h1>Mike Giardina</h1>
-            <p class="subtitle">Clinical Operations & AI Implementation &nbsp;·&nbsp; ED Supervisor &nbsp;·&nbsp; Clinical Educator &nbsp;·&nbsp; RN, BSN, CEN</p>
+            <p class="subtitle">Forward Deployed Engineer &nbsp;·&nbsp; Clinical AI &nbsp;·&nbsp; ED Supervisor &nbsp;·&nbsp; RN, BSN, CEN</p>
 
             <p class="hero-statement">
-                19 years in Level 1 Trauma and Critical Care — now building
-                <span class="highlight">AI-powered clinical tools</span> at the intersection of
-                bedside experience and production software. I design and ship applications that solve
-                problems I lived every shift: cognitive overload from EHR systems, training that doesn't
-                match real patients, and communication gaps between departments.
+                19 years in a Level 1 trauma ED, Epic ASAP module clinical lead, ATCN course director —
+                now building <span class="highlight">clinical AI tooling</span> and the systems that keep it honest.
+                I write the software, and I have also stood in the room where a health system decides how the
+                workflow actually gets configured. The failure I care most about isn't a bug: it's shipping
+                something technically correct that nobody can use at 3am.
             </p>
 
             <div class="hero-stats">
@@ -399,6 +399,9 @@
             </div>
             <p class="section-intro">
                 The Kymora product line: the physiological engine, the simulators built on it, and the iOS application that runs a Core ML surrogate of it on-device.
+            </p>
+            <p class="section-intro" style="margin-top:-1.6rem; font-size:0.92rem; border-left:2px solid rgba(255,180,84,0.4); padding-left:0.9rem;">
+                <strong style="color:var(--text-primary); font-weight:500;">Read this before the cards.</strong> Everything below is pre-1.0 and none of it is deployed against real patient data. Where something is open to click, it is linked — the interactive clinical cases and the engineering write-ups are live and running right now. Where there is no link, the work exists but you can't verify it from here, and you should weight it accordingly. Nothing on this page is shipped, launched, or in production, and no clinical or regulatory claim is made for any of it.
             </p>
 
             <div class="apps-grid">
@@ -525,6 +528,7 @@
                             <span class="tech-badge">HealthKit</span>
                             <span class="tech-badge">Core ML</span>
                         </div>
+                        <p style="font-size:0.78rem; color:var(--text-muted); margin-top:0.6rem; line-height:1.5;">Organisation and context only — it does not calculate a dose, recommend a change, or interpret a biometric as a clinical finding. Any of those would put a consumer app on the wrong side of the FDA device line.</p>
                         <span style="display:inline-block; margin-top:1rem; font-family:'JetBrains Mono',monospace; font-size:0.75rem; color:var(--text-muted); letter-spacing:0.08em;">In active development</span>
                     </div>
                 </div>
@@ -645,9 +649,9 @@
                     <ul class="app-features">
                         <li>Adaptive personas tuned to clinical acuity level</li>
                         <li>Semantic intent classification and routing</li>
-                        <li>High-confidence thresholds for critical interventions</li>
+                        <li>Declines rather than guesses near critical interventions, and routes to the policy source instead</li>
                         <li>State-specific scope of practice integration</li>
-                        <li>RAG-enabled policy guardrails</li>
+                        <li>RAG-enabled policy guardrails, with the source shown so a clinician can check the basis</li>
                     </ul>
                     <div class="app-card-footer">
                         <div>
@@ -655,6 +659,7 @@
                             <span class="tech-badge">TypeScript</span>
                             <span class="tech-badge">Multi-Model AI</span>
                         </div>
+                        <p style="font-size:0.78rem; color:var(--text-muted); margin-top:0.6rem; line-height:1.5;">Built to sit outside the FDA device line under the 21st Century Cures Act §3060 clinical-decision-support criteria: it surfaces existing policy with its source visible for independent review, and does not drive time-critical decisions. A tool that recommended an intervention a clinician could not independently verify would be on the other side of that line.</p>
                     </div>
                 </div>
 
@@ -689,26 +694,27 @@
                 <div class="app-card">
                     <div class="app-number">PROJECT_03</div>
                     <h3 class="app-title">Emergent Media Manager</h3>
-                    <p class="app-subtitle">HIPAA-Aware Medical Data Layer</p>
+                    <p class="app-subtitle">Local-First Medical Data Layer</p>
                     <div class="app-problem">
                         <span class="app-problem-label">Clinical Problem</span>
                         Unstructured medical data — EKGs, imaging, documents — lives in silos, arrives in inconsistent formats, and requires manual review to extract actionable clinical meaning.
                     </div>
                     <p class="app-description">
-                        Multi-modal ingestion pipeline that converts raw clinical media into structured, coded, searchable knowledge — with PHI protection built into the local-first architecture.
+                        Multi-modal ingestion pipeline that converts raw clinical media into structured, searchable knowledge. Files stay on the local device by default rather than being uploaded to a server.
                     </p>
                     <ul class="app-features">
                         <li>Multi-modal analysis: EKG, MRI, clinical imagery</li>
-                        <li>Auto-coding with ICD-10/CPT classification</li>
-                        <li>Local PHI detection and de-identification</li>
-                        <li>Browser FS Access for local-first, HIPAA-conscious storage</li>
+                        <li>Suggests ICD-10/CPT candidates for a coder to accept or reject — never assigns a billable code</li>
+                        <li>Identifier detection against the 18 HIPAA Safe Harbor categories, run locally</li>
+                        <li>Browser File System Access API for local-first storage</li>
                     </ul>
                     <div class="app-card-footer">
                         <div>
                             <span class="tech-badge">React</span>
                             <span class="tech-badge">Gemini AI</span>
-                            <span class="tech-badge">HIPAA-Ready</span>
+                            <span class="tech-badge">Local-First</span>
                         </div>
+                        <p style="font-size:0.78rem; color:var(--text-muted); margin-top:0.6rem; line-height:1.5;">Development project. Not deployed against real patient data, and no compliance posture is claimed — HIPAA obligations attach to a covered entity or business associate, not to software.</p>
                     </div>
                 </div>
 
@@ -722,13 +728,13 @@
                         Nurse educators spend hours writing CE content, simulation scenarios, and policy-aligned materials that could be generated in minutes with the right clinical context layer.
                     </div>
                     <p class="app-description">
-                        Automation engine that generates ANCC-aligned CE articles, simulation scenarios, and evidence-based content — with simulated peer review and multi-disciplinary validation.
+                        Drafting engine for CE-style articles, simulation scenarios and literature-referenced content, structured to the format nurse educators work in. Everything it produces is a draft for a human reviewer.
                     </p>
                     <ul class="app-features">
-                        <li>ANCC-accredited style article generation</li>
+                        <li>Drafts articles in the structure ANCC-accredited providers use — the accreditation belongs to the provider, not to this</li>
                         <li>Simulation scenario drafting from case inputs</li>
-                        <li>Simulated peer review via validation layers</li>
-                        <li>Evidence-based content compilation and citation</li>
+                        <li>Automated consistency and citation checks before human review — not peer review</li>
+                        <li>Literature compilation with references carried through</li>
                     </ul>
                     <div class="app-card-footer">
                         <div>
@@ -756,7 +762,7 @@
                     <ul class="app-features">
                         <li>Acuity-aware alert prioritization</li>
                         <li>Configurable escalation pathways</li>
-                        <li>Noise reduction via contextual filtering</li>
+                        <li>Reorders and groups by context — no alert is withheld from the clinician</li>
                         <li>Integration-ready alert routing</li>
                     </ul>
                     <div class="app-card-footer">
@@ -765,6 +771,7 @@
                             <span class="tech-badge">TypeScript</span>
                             <span class="tech-badge">Tailwind</span>
                         </div>
+                        <p style="font-size:0.78rem; color:var(--text-muted); margin-top:0.6rem; line-height:1.5;">Prioritisation only. Suppressing a clinical alarm is a safety-critical function with its own standards (IEC 60601-1-8) and a different regulatory posture, so this reorders and never silences.</p>
                     </div>
                 </div>
 
@@ -888,8 +895,8 @@
                     <p class="contact-value">React 19 · TypeScript · Vite · Tailwind · XState · Canvas/WebGL</p>
                 </div>
                 <div class="contact-card">
-                    <div class="contact-title">Compliance Focus</div>
-                    <p class="contact-value">HIPAA-conscious architecture · PHI detection & de-identification · FHIR/DICOM awareness · ANCC CE standards</p>
+                    <div class="contact-title">Regulatory Literacy</div>
+                    <p class="contact-value">HIPAA Safe Harbor identifiers · local-first data handling · FHIR/DICOM · CE content standards · knows where the device line sits</p>
                 </div>
             </div>
         </section>
