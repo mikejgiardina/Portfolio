@@ -234,7 +234,18 @@
   figure.fig figcaption b { color: var(--text-primary); font-weight: 500; }
   figure.fig figcaption em { color: var(--accent-amber); font-style: normal; font-weight: 500; }
   .panels { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.4rem 1.8rem; }
-  .panel svg, figure.fig > svg { display: block; width: 100%; height: auto; overflow: visible; }
+  .panel svg, figure.fig > svg, .figscroll > svg { display: block; width: 100%; height: auto; overflow: visible; }
+  /* Wide figures must not shrink their labels into illegibility on a phone.
+     Below the min-width they scroll inside their own container instead —
+     the page body never scrolls horizontally. Same pattern as .tablewrap. */
+  .figscroll { overflow-x: auto; overscroll-behavior-x: contain; }
+  .figscroll > svg { min-width: 860px; }
+  .figscroll.mid > svg { min-width: 600px; }
+  .figscroll + .scrollhint {
+    font-family: var(--mono); font-size: 0.64rem; color: var(--text-dim);
+    letter-spacing: 0.05em; margin-top: 0.35rem; display: none;
+  }
+  @media (max-width: 900px) { .figscroll + .scrollhint { display: block; } }
   .paneltitle { font-family: var(--mono); font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); margin-bottom: 0.6rem; }
   .legend { display: flex; gap: 1.2rem; flex-wrap: wrap; margin-bottom: 1rem; font-family: var(--mono); font-size: 0.7rem; color: var(--text-muted); }
   .lgi { display: flex; align-items: center; gap: 0.45rem; }
@@ -387,6 +398,7 @@
       <div class="figtitle">Figure 1 &middot; orchestration topology</div>
       <p class="figlede">Each worker writes only inside its own lease, so the write paths never touch. The four resources on the lower left are <b>serial by nature</b> &mdash; two sessions doing them concurrently corrupt each other &mdash; so no worker touches them directly; the coordinator is the only writer.</p>
 
+      <div class="figscroll">
       <svg viewBox="0 0 920 520" role="img" aria-label="Orchestration topology: a coordinator spawns four worker sessions over a shared rail; each worker writes only to its own disjoint set of path globs, while the board, merges to main, shared file sinks and work intake are written solely by the coordinator." xmlns="http://www.w3.org/2000/svg">
         <defs>
           <marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
@@ -489,6 +501,8 @@
         <text class="dg-a" x="20" y="474">Writes fan out and never intersect.  Everything that cannot be done twice funnels back through one writer.</text>
         <text class="dg-a" x="20" y="494">The coordinator is the bottleneck by design — and section 03 is about what that bottleneck costs.</text>
       </svg>
+      </div>
+      <p class="scrollhint">&larr; scroll to pan the diagram &rarr;</p>
 
       <figcaption><b>The asymmetry is the whole design.</b> Adding a worker adds a parallel write path and costs almost nothing. Adding a worker also adds traffic to the single return rail &mdash; and that side does not parallelise. <em>The bottleneck is not the machine, it is the one writer.</em></figcaption>
 
@@ -699,6 +713,7 @@
       <div style="display:grid; gap:2rem; margin-bottom:1.6rem;">
         <div class="panel">
           <div class="paneltitle">Round 3 opening burst &mdash; minutes &middot; measured</div>
+          <div class="figscroll mid">
           <svg viewBox="0 0 620 150" role="img" aria-label="Round 3 initial burst: summed worker working time about 291 minutes, actual elapsed wall-clock 152 minutes — a speedup of roughly 1.9 times." xmlns="http://www.w3.org/2000/svg">
             <line class="ct-ax" x1="170" y1="14" x2="170" y2="104"/>
             <text class="ct-lab" x="160" y="44" text-anchor="end">summed worker time</text>
@@ -709,6 +724,7 @@
             <text class="ct-val" x="375" y="93">152</text>
             <text class="ct-val" x="170" y="134" fill="#1f9fc4">≈ 1.9× &mdash; and this is an upper bound</text>
           </svg>
+          </div>
         </div>
         <div class="panel">
           <div class="paneltitle">Why the gain flattens &mdash; modelled, not measured</div>
@@ -717,6 +733,7 @@
             <div class="lgi"><span class="lgs" style="background:#c98500"></span>with a ~25% serial spine</div>
           </div>
 
+      <div class="figscroll mid">
       <svg viewBox="0 0 620 300" role="img" aria-label="Speedup versus worker count. Without a serial bottleneck speedup rises linearly from one to six. With about a quarter of the round serial, speedup flattens near three and gains little past four workers. Rounds one, two and three are marked at six, three and four workers." xmlns="http://www.w3.org/2000/svg">
         <!-- grid -->
         <line class="ct-gr" x1="56" y1="190" x2="590" y2="190"/>
@@ -761,6 +778,7 @@
         <text class="ct-val" x="440" y="24" fill="#1f9fc4">no bottleneck</text>
         <text class="ct-val" x="410" y="206" fill="#c98500">observed regime</text>
       </svg>
+      </div>
         </div>
       </div>
 
