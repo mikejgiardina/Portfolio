@@ -64,11 +64,13 @@
       <div class="snum">04 &middot; Orchestration</div>
       <div class="stitle">One coordinator, several workers</div>
       <div class="ssub">parallel sessions</div>
-      <p class="sdesc">Five rounds of running AI coding sessions concurrently against one shared repository set. Partition by write-surface rather than by topic; route everything that can't be done twice through a single writer. Includes what it cost once the split was finally measured &mdash; which contradicted the guess &mdash; and the defect class that turned up in every round.</p>
+      <p class="sdesc">Six rounds of running AI coding sessions concurrently against one shared repository set. Partition by write-surface rather than by topic; route everything that can't be done twice through a single writer. Includes what it cost once the split was finally measured &mdash; which contradicted the guess &mdash; and the defect class that turned up in every round.</p>
       <div class="sgo">Read the case study <span class="arr">&rarr;</span></div>
     </a>
 
   </div>
+
+  <p class="closing" style="margin-bottom:1rem;"><b>The code behind the first two is open.</b> <a href="https://github.com/mikejgiardina/hook-discipline" target="_blank" rel="noopener noreferrer">github.com/mikejgiardina/hook-discipline</a> &mdash; the hooks, the three-state exit contract, and the paired fire-and-control suite, Apache-2.0. And if you would rather read a <b>clinical product</b> than a process write-up, <a href="../trauma-tracker/">Trauma Tracker</a> is a real-time ED trauma registrar, public and running.</p>
 
   <p class="closing">They're written to be read in any order, though they run in roughly that one: the first is the layer that <b>runs</b>, the second and third are the layer that <b>decides</b>, and the fourth is what happens when several sessions try to use all three at once. Process shape only &mdash; proprietary specifics are generalized or omitted throughout.</p>
 
