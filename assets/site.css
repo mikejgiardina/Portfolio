@@ -1131,4 +1131,8 @@ body > footer{max-width:var(--page);margin-left:auto;margin-right:auto;padding:1
 }
 .theme-toggle:hover{color:var(--accent,#1f9fc4);border-color:var(--accent,#1f9fc4)}
 .theme-toggle:focus-visible{outline:2px solid var(--accent,#1f9fc4);outline-offset:2px}
-@media (max-width:540px){.theme-toggle{display:none}}
+/* Deliberately NOT hidden on mobile. It inherits its host's visibility:
+   on the case-study pages the topnav is visible at every width, so the
+   toggle is too. On the front page it sits inside .quicknav, which is
+   already hidden below 540px by its own rule. Hiding it globally would
+   have left phone readers with no way to reach a theme that ships. */
