@@ -7,7 +7,7 @@
 <meta name="description" content="Key-man risk reduction as an engineering problem: classifying every process discipline as enforced, narrated, or hybrid; a four-part bar for what counts as enforced; three ledgers tracking the conversion; and the checks that turned out not to fire at all.">
 <link rel="stylesheet" href="../assets/site.css">
 <script src="../assets/site.js" defer></script>
-<script>try{var t=localStorage.getItem("mg-theme");if(t)document.documentElement.setAttribute("data-theme",t);}catch(e){}</script>
+<script>try{var t=localStorage.getItem("mg-theme");if(t==="dark"||t==="light")document.documentElement.setAttribute("data-theme",t);}catch(e){}</script>
 </head>
 <body>
 <div class="grid-bg"></div>
@@ -186,7 +186,7 @@
     <div class="cas" style="border-color: rgba(255,180,84,0.3); border-left-color: var(--accent-amber);">
       <div class="ct" style="color: var(--accent-amber);">casualty four &middot; the opposite failure, and it is worse in one way</div>
       <h4>A guard that fired on a clean tree</h4>
-      <p>Every casualty above is a check that stayed quiet when it should have spoken. This one is the mirror image. A line-ending guard reported that <b>all nineteen scripts contained a carriage return</b> &mdash; in a tree that contained none.</p>
+      <p>Every casualty above is a check that stayed quiet when it should have spoken. This one is the mirror image. A line-ending guard reported that <b>every script in the tree contained a carriage return</b> &mdash; in a tree that contained none.</p>
       <p>The cause is a platform-specific quirk of the tool doing the matching: in recursive list-only mode it named every file as matching, while asking the same tool to print the matching <em>lines</em> in any one of those files returned nothing. Two invocations of one utility, disagreeing about the same file, on one platform only.</p>
       <p><b>A guard that fires on a clean tree is uninformative in exactly the way a guard that never fires is uninformative</b> &mdash; and it is worse in one respect, because it actively teaches its reader to ignore the channel. That is the same alert-fatigue argument that governs which of these hooks are allowed to block, arriving from the other direction.</p>
     </div>
