@@ -189,3 +189,65 @@
       });
   });
 })();
+
+/* ---------------------------------------------------------------------------
+   Theme toggle.
+
+   The stylesheet already ships BOTH themes: light is the base, dark is a
+   designed variant driven by prefers-color-scheme, and :root[data-theme]
+   forces either one. What was missing was anything to set that attribute --
+   so the light theme existed, was fully styled, and was unreachable to
+   anyone whose OS was set to dark.
+
+   Applied before paint via the inline bootstrap in each page's <head>, so a
+   stored preference does not flash the wrong theme on load.
+   -------------------------------------------------------------------------- */
+(function () {
+  "use strict";
+  var root = document.documentElement;
+  var KEY = "mg-theme";
+
+  function systemTheme() {
+    return window.matchMedia &&
+           window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+  }
+  function current() {
+    return root.getAttribute("data-theme") || systemTheme();
+  }
+  function apply(t) {
+    root.setAttribute("data-theme", t);
+    try { localStorage.setItem(KEY, t); } catch (e) {}
+    var b = document.querySelector(".theme-toggle");
+    if (b) {
+      b.setAttribute("aria-pressed", String(t === "dark"));
+      b.setAttribute("title", t === "dark" ? "Switch to light" : "Switch to dark");
+      b.textContent = t === "dark" ? "◑ light" : "◐ dark";
+    }
+  }
+
+  document.addEventListener("DOMContentLoaded", function () {
+    var host = document.querySelector(".topnav") || document.querySelector(".quicknav");
+    if (!host) return;
+    var btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "theme-toggle";
+    btn.setAttribute("aria-pressed", String(current() === "dark"));
+    host.appendChild(btn);
+    btn.addEventListener("click", function () {
+      apply(current() === "dark" ? "light" : "dark");
+    });
+    apply(current());
+  });
+
+  // Follow the OS only while the reader has expressed no preference of their own.
+  if (window.matchMedia) {
+    var mq = window.matchMedia("(prefers-color-scheme: dark)");
+    var onChange = function () {
+      var stored = null;
+      try { stored = localStorage.getItem(KEY); } catch (e) {}
+      if (!stored) apply(systemTheme());
+    };
+    if (mq.addEventListener) mq.addEventListener("change", onChange);
+    else if (mq.addListener) mq.addListener(onChange);
+  }
+})();

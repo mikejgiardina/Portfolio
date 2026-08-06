@@ -7,6 +7,7 @@
 <meta name="description" content="Key-man risk reduction as an engineering problem: classifying every process discipline as enforced, narrated, or hybrid; a four-part bar for what counts as enforced; three ledgers tracking the conversion; and the checks that turned out not to fire at all.">
 <link rel="stylesheet" href="../assets/site.css">
 <script src="../assets/site.js" defer></script>
+<script>try{var t=localStorage.getItem("mg-theme");if(t==="dark"||t==="light")document.documentElement.setAttribute("data-theme",t);}catch(e){}</script>
 </head>
 <body>
 <div class="grid-bg"></div>
@@ -180,6 +181,22 @@
       <p>The first run of one of those files came back twelve passing, twelve failing. The twelve passes were every <em>&ldquo;no write occurred&rdquo;</em> case &mdash; and they passed because the stubbed-out command was never reached at all: the test harness had been talking to the live production board the entire time. It was recording real successes as proof that nothing had happened. <b>Only the paired control caught it</b>, because the assertion that something is absent is satisfied perfectly by a test that never ran.</p>
       <p>The cause was a platform detail with no relationship to the check being tested: the native process launcher appends one specific extension to an extensionless command name and ignores the rest, so both forms of the stub were skipped and the real tool resolved instead. <b>The verification layer had exactly the property it was built to detect in the layer beneath it</b> &mdash; and it caught its own author twice in one sitting, on malformed fixtures that produced clean exits and zero output, indistinguishable from a hook that was genuinely dead.</p>
       <p>Which is now the standing rule for the suite: <em>every fire case is paired with a control.</em> Most of these hooks are advisory, so silence is their success case &mdash; and an all-quiet suite is also precisely what a dead hook produces. Without the control, a green run is not evidence of anything.</p>
+    </div>
+
+    <div class="cas" style="border-color: rgba(255,180,84,0.3); border-left-color: var(--accent-amber);">
+      <div class="ct" style="color: var(--accent-amber);">casualty four &middot; the opposite failure, and it is worse in one way</div>
+      <h4>A guard that fired on a clean tree</h4>
+      <p>Every casualty above is a check that stayed quiet when it should have spoken. This one is the mirror image. A line-ending guard reported that <b>every script in the tree contained a carriage return</b> &mdash; in a tree that contained none.</p>
+      <p>The cause is a platform-specific quirk of the tool doing the matching: in recursive list-only mode it named every file as matching, while asking the same tool to print the matching <em>lines</em> in any one of those files returned nothing. Two invocations of one utility, disagreeing about the same file, on one platform only.</p>
+      <p><b>A guard that fires on a clean tree is uninformative in exactly the way a guard that never fires is uninformative</b> &mdash; and it is worse in one respect, because it actively teaches its reader to ignore the channel. That is the same alert-fatigue argument that governs which of these hooks are allowed to block, arriving from the other direction.</p>
+    </div>
+
+    <div class="cas" style="border-color: rgba(0,255,159,0.28); border-left-color: var(--accent-green);">
+      <div class="ct" style="color: var(--accent-green);">the counter-example &middot; an assertion added for no reason, which paid immediately</div>
+      <h4>Six failures all pointing away from the fault</h4>
+      <p>An assertion was added to a fixture defensively &mdash; not to catch a known defect, just because the value it checked had never been checked. It earned its place on the next run.</p>
+      <p>Six assertions across three unrelated blocks were failing, all of them reporting that a hook had stopped warning. Every one pointed at the hook. <b>The new assertion collapsed all six into a single fatal error naming the file that was never written and the interpreter that failed to write it.</b></p>
+      <p>The six were not wrong. They were downstream, and downstream failures describe the symptom in the vocabulary of wherever they happen to sit. The useful assertion is the one closest to the thing that actually broke &mdash; and you generally cannot know in advance which one that is, which is the argument for adding it when you have no reason to.</p>
     </div>
 
     <p class="secsub" style="margin-top:1.6rem;">That sweep found five further defects. None was fixed in the same pass, because changing a hook's behavior sits behind a confirmation gate that adding a test deliberately does not &mdash; so each was filed instead, and carried as a <b>self-converting known-gap test</b>: an assertion of the <em>current, wrong</em> behavior that goes red the moment someone fixes it, with the instruction to convert it and close the item written into the failure message. A defect you've decided not to fix yet is still worth pinning down, and this keeps the backlog honest without letting the suite lie about what's working.</p>
