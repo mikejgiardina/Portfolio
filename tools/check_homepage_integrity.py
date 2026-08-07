@@ -46,6 +46,10 @@ NUMBERS = {"one": 1, "two": 2, "three": 3, "four": 4, "five": 5, "six": 6,
 # and a check people learn to ignore is worse than no check.
 COUNT_NOUN = r"(?:case stud(?:y|ies)|write-ups?)"
 
+# Directories that hold a redirect stub rather than a real page. They have no
+# audience and therefore need no social card.
+REDIRECT_DIRS = {"page2", "page3"}
+
 
 def fail(msg: str) -> int:
     print(f"  VIOLATION  {msg}")
@@ -113,6 +117,21 @@ def check() -> int:
     if nums and sorted(nums) != list(range(1, len(nums) + 1)):
         bad |= fail(f"hub card numbering is not 1..{len(nums)}: {nums}")
 
+    # 4. every page carries a social card, and the card it names exists on disk.
+    #    Until 2026-08-07 exactly one page had an og:image, so every shared link
+    #    rendered as a bare card. A page shipping without one is invisible in the
+    #    same silent way an orphaned page is -- it looks fine until someone
+    #    shares it, which is exactly when you cannot fix it.
+    for p in [HOME] + [q for q in sorted(ROOT.glob("*/index.html"))
+                       if q.parent.name not in REDIRECT_DIRS] + sorted(ROOT.glob("story/*/index.html")):
+        rel = p.relative_to(ROOT).as_posix()
+        s = p.read_text(encoding="utf-8")
+        m = re.search(r'<meta property="og:image" content="[^"]*/assets/og/([^"]+)"', s)
+        if not m:
+            bad |= fail(f"{rel} has no og:image -- it will share as a bare card")
+        elif not (ROOT / "assets" / "og" / m.group(1)).is_file():
+            bad |= fail(f"{rel} names assets/og/{m.group(1)}, which does not exist")
+
     print("FAILED" if bad else
           "CLEAN -- every case study is linked from the homepage and every stated count agrees")
     return 1 if bad else 0
@@ -135,6 +154,10 @@ CONTROLS = [
      [("ALL FIVE OPEN NOW", "ALL FOUR OPEN NOW")], 1),
     ("story-case badge left stale",
      [("THREE CASES, OPEN NOW", "FOUR CASES, OPEN NOW")], 1),
+    ("a page shipped without a social card",
+     [('<meta property="og:image" content="https://mike-giardina.netlify.app/assets/og/home.png">', "")], 1),
+    ("a social card named but missing from disk",
+     [("/assets/og/home.png", "/assets/og/does-not-exist.png")], 1),
 ]
 
 
