@@ -4,9 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mike Giardina — Clinical AI Evaluation & Forward Deployed Engineering</title>
-    <meta name="description" content="Emergency nurse (BSN, RN, CEN) building clinical simulation and AI tooling. Four engineering case studies on lifecycle-hook automation, turning conventions into enforced checks, disclosure control, and coordinating parallel AI coding sessions.">
+    <meta name="description" content="Emergency nurse (BSN, RN, CEN) building clinical simulation and AI tooling. Five engineering case studies on lifecycle-hook automation, turning conventions into enforced checks, disclosure control, coordinating parallel AI coding sessions, and measuring whether an AI review pipeline over a clinical corpus was reporting what it appeared to report.">
     <meta property="og:title" content="Mike Giardina — Clinical AI Evaluation & Forward Deployed Engineering">
-    <meta property="og:description" content="Emergency nurse building clinical simulation and AI tooling. Four engineering case studies on the layer around the code.">
+    <meta property="og:description" content="Emergency nurse building clinical simulation and AI tooling. Five engineering case studies on the layer around the code.">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://mike-giardina.netlify.app/">
     <meta name="twitter:card" content="summary">
@@ -24,6 +24,7 @@
         <a class="qn-study" href="enforcement/">Enforcement</a>
         <a class="qn-study" href="publishing/">Publishing</a>
         <a class="qn-study" href="orchestration/">Orchestration</a>
+        <a class="qn-study" href="clinical-review/">Clinical Review</a>
         <span class="qn-sep">Clinical</span>
         <a class="qn-study" href="trauma-tracker/">Trauma Tracker</a>
         <a href="https://erinfo.netlify.app" target="_blank" rel="noopener noreferrer">ER Articles</a>
@@ -97,7 +98,7 @@
                 <strong style="color:var(--text-primary); font-weight:500;">Read this before the cards.</strong> Everything below is pre-1.0 and none of it is deployed against real patient data. Two maturity tiers are mixed here on purpose: the <strong style="color:var(--text-primary); font-weight:500;">Kymora line</strong> — the engine and what runs on it — sits between 0.5 and 1.0, while everything under the <strong style="color:var(--text-primary); font-weight:500;">clinical apps</strong> heading is a working prototype. Where a card says <em>concept</em>, that means the boundary described is a design constraint rather than a shipped behaviour, and the card says so.
             </p>
             <p class="section-intro" style="margin-top:-1.2rem; font-size:0.92rem; border-left:2px solid rgba(139,148,158,0.3); padding-left:0.9rem;">
-                Where something is open to click, it is linked — the interactive clinical cases and the engineering write-ups are live right now. Where there is no link, that is deliberate rather than incomplete: these touch clinical decision-making, several carry unfiled IP, and a public demo of a pre-1.0 clinical tool is a liability before it is a portfolio piece. You can't verify those from here and you should weight them accordingly.
+                Where something is open to click, it is linked — the interactive clinical cases and the engineering write-ups are live right now. Where there is only a recorded walkthrough, that is the deliberate middle setting: you can watch the tool run without a pre-1.0 clinical instrument being put in front of the public. And where there is no link at all, that too is deliberate rather than incomplete — these touch clinical decision-making and several carry unfiled IP. You can't independently verify those from here and you should weight them accordingly.
             </p>
 
             <div class="apps-grid">
@@ -285,11 +286,11 @@
                     </div>
                 </div>
 
-                <!-- Engineering Practice — Flagship series (LIVE, four case studies) -->
+                <!-- Engineering Practice — Flagship series (LIVE, five case studies) -->
                 <div class="app-card flagship">
-                    <div class="app-number">ENGINEERING PRACTICE · LIVE · FOUR CASE STUDIES</div>
+                    <div class="app-number">ENGINEERING PRACTICE · LIVE · FIVE CASE STUDIES</div>
                     <h3 class="app-title">How the Work Gets Built Safely</h3>
-                    <p class="app-subtitle">Automation, Enforcement, Disclosure Control, and Parallel Sessions Across a Multi-Repo Codebase</p>
+                    <p class="app-subtitle">Automation, Enforcement, Disclosure Control, Parallel Sessions, and Clinical Evaluation Across a Multi-Repo Codebase</p>
                     <div class="flagship-inner">
                         <div>
                             <div class="app-problem">
@@ -297,9 +298,9 @@
                                 A small team running daily AI coding sessions across several repositories has two exposures nobody else will catch: conventions that hold only while someone remembers them, and patentable mechanism sitting one paragraph away from every public draft. The layer that catches them has to work on everyone's machine, not just the one it was written on.
                             </div>
                             <p class="app-description">
-                                Four write-ups on the layer around the code. A <strong>lifecycle-hook layer</strong> that makes safety automatic; a <strong>register and ledger</strong> that convert remembered conventions into checks that go red; a <strong>staged pipeline</strong> that controls what leaves a patent-pending repo; and an <strong>orchestration pattern</strong> for running several coding sessions at once without them colliding. Each one documents where it has failed.
+                                Five write-ups on the layer around the code. A <strong>lifecycle-hook layer</strong> that makes safety automatic; a <strong>register and ledger</strong> that convert remembered conventions into checks that go red; a <strong>staged pipeline</strong> that controls what leaves a patent-pending repo; an <strong>orchestration pattern</strong> for running several coding sessions at once without them colliding; and a <strong>measured evaluation</strong> of whether an AI review pipeline over a clinical corpus was reporting what it appeared to report. Each one documents where it has failed.
                             </p>
-                            <div class="validation-badge"><span class="validation-dot"></span>LIVE · ALL FOUR OPEN NOW</div>
+                            <div class="validation-badge"><span class="validation-dot"></span>LIVE · ALL FIVE OPEN NOW</div>
                         </div>
                         <div>
                             <ul class="app-features">
@@ -324,6 +325,7 @@
                                     <a href="enforcement/" class="launch-btn" style="text-decoration:none; cursor:pointer;">NARRATED → ENFORCED →</a>
                                     <a href="publishing/" class="launch-btn" style="text-decoration:none; cursor:pointer;">PUBLISHING SAFELY →</a>
                                     <a href="orchestration/" class="launch-btn" style="text-decoration:none; cursor:pointer;">PARALLEL SESSIONS →</a>
+                                    <a href="clinical-review/" class="launch-btn" style="text-decoration:none; cursor:pointer;">EVALUATING THE EVALUATOR →</a>
                                 </div>
                             </div>
                         </div>
@@ -350,6 +352,9 @@
                         <li>RAG-enabled policy guardrails, with the source shown so a clinician can check the basis</li>
                     </ul>
                     <div class="app-card-footer">
+                        <div style="margin-bottom:0.7rem;">
+                            <a href="https://www.youtube.com/watch?v=Skud3a7kawA&amp;t=2s" target="_blank" rel="noopener noreferrer" class="launch-btn" style="text-decoration:none; cursor:pointer;">WATCH THE DEMO →</a>
+                        </div>
                         <div>
                             <span class="tech-badge">React</span>
                             <span class="tech-badge">TypeScript</span>
