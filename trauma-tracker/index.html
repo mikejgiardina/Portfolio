@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Trauma Tracker — A Real-Time ED Trauma Registrar</title>
+<meta name="description" content="A real-time emergency-department trauma registrar: from a live trauma-bay transcript, specialised agents extract and timestamp values as they are spoken, compute scores deterministically, gate charges on the documentation each code requires, and compose a signable nursing narrative as the resuscitation runs. Synthetic data only, no PHI.">
+<meta property="og:title" content="Trauma Tracker — A Real-Time ED Trauma Registrar">
+<meta property="og:description" content="The documentation, quality-measure and billing work a trauma team cannot touch while they are saving a life — done as it happens, delivered at disposition. Synthetic data only.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mike-giardina.netlify.app/trauma-tracker/">
+<meta name="twitter:card" content="summary">
+<link rel="stylesheet" href="../assets/site.css">
+<script src="../assets/site.js" defer></script>
+<script>try{var t=localStorage.getItem("mg-theme");if(t==="dark"||t==="light")document.documentElement.setAttribute("data-theme",t);}catch(e){}</script>
+</head>
+<body>
+<div class="grid-bg"></div>
+
+<div class="topbar">
+  <div class="topin">
+    <span class="mark"><b>trauma-tracker/</b> · real-time ED registrar</span>
+    <nav class="topnav">
+      <a href="#what">What it does</a>
+      <a href="#agents">The agents</a>
+      <a href="#output">The report</a>
+      <a href="#provenance">Provenance</a>
+      <a href="https://traumatrackerv2.netlify.app" target="_blank" rel="noopener noreferrer">Live demo &rarr;</a>
+      <a href="../case-studies/" class="back">&larr; case studies</a>
+      <a href="../" class="back">&larr; portfolio</a>
+    </nav>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <header class="hero" id="top">
+    <div class="status-bar">
+      <div class="status-item"><span class="status-dot"></span><span>CLINICAL PRODUCT &middot; LIVE DEMO</span></div>
+      <div class="status-item"><span class="status-dot"></span><span>SYNTHETIC DATA ONLY &middot; NO PHI</span></div>
+      <div class="status-item caution"><span class="status-dot"></span><span>NOT A MEDICAL DEVICE</span></div>
+    </div>
+    <p class="kicker">Clinical product &middot; agentic documentation</p>
+    <h1>A real-time ED trauma registrar.</h1>
+    <p class="lede">While a trauma resuscitation is happening, it does the <b>documentation, quality-measure and billing work the team cannot touch</b> while they are saving a life &mdash; then produces the deliverable at disposition.</p>
+    <p class="lede">Everything else on this site is about the layer <em>around</em> the code. This one is a clinical product, it is open, and you can run it.</p>
+    <p class="context">react &middot; multi-agent &middot; four capture sources &middot; MIT &middot; synthetic data only</p>
+
+    <div class="stats" style="margin-top:2rem;">
+      <div class="stat"><span class="n" style="font-size:1.15rem; line-height:1.6;"><a href="https://traumatrackerv2.netlify.app" target="_blank" rel="noopener noreferrer" style="color:var(--accent-cyan); text-decoration:none; border-bottom:1px solid var(--line)">Live demo &rarr;</a></span><span class="l">runs in the browser</span></div>
+      <div class="stat"><span class="n" style="font-size:1.15rem; line-height:1.6;"><a href="https://github.com/mikejgiardina/trauma-tracker-public" target="_blank" rel="noopener noreferrer" style="color:var(--accent-cyan); text-decoration:none; border-bottom:1px solid var(--line)">Repository &rarr;</a></span><span class="l">public &middot; MIT</span></div>
+    </div>
+
+    <p class="statnote" style="margin-top:1.8rem;"><b>Synthetic data only. No PHI, by design.</b> Nothing in this project has touched a real patient record, and the capture paths are built on the assumption that it never will without a different set of controls than a portfolio project can carry.</p>
+  </header>
+
+  <section class="sec" id="what">
+    <div class="sechead"><span class="secnum">01</span><h2>The problem it is actually solving</h2><div class="divider"></div></div>
+    <p class="secsub">A trauma resuscitation generates an enormous amount of documentable fact in a very short window, and every person in the room is busy. The record gets reconstructed afterwards, from memory, by someone who was also doing the resuscitation &mdash; which is where timestamps drift, quality measures get missed, and charges go unsupported.</p>
+
+    <div class="cards">
+      <div class="card">
+        <div class="tag">the window</div>
+        <h3>Nobody can document during a resus</h3>
+        <p>The team is doing the work. Whatever is written afterwards is a reconstruction, and reconstructions lose exactly the thing that matters most here &mdash; <em>when</em> something happened relative to everything else.</p>
+      </div>
+      <div class="card">
+        <div class="tag">the consequence</div>
+        <h3>Three separate deliverables, one source</h3>
+        <p>The nursing narrative, the accreditation clocks, and the charge capture all draw on the same events. Reconstructed separately, they disagree &mdash; and a disagreement between them is the thing an auditor finds.</p>
+      </div>
+      <div class="card">
+        <div class="tag">the approach</div>
+        <h3>Decide and produce, don't display</h3>
+        <p>The agents do not surface a dashboard for someone to interpret later. They extract, compute, determine and compose <em>as the resuscitation runs</em>, so the deliverable exists at disposition rather than starting then.</p>
+      </div>
+      <div class="card">
+        <div class="tag">the honesty rule</div>
+        <h3>Gaps ride through to the report</h3>
+        <p>Unresolved prompts are not dropped and not guessed. They travel with the record and appear in the output as <b>documented gaps</b> &mdash; which is the only version of this that is safe to put in front of a clinician.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec" id="agents">
+    <div class="sechead"><span class="secnum">02</span><h2>What the agents do</h2><div class="divider"></div></div>
+    <p class="secsub">From a live trauma-bay transcript, each one owns a decision rather than a view.</p>
+
+    <div class="bar">
+      <div class="barit">
+        <h4>Extraction, timestamped as spoken</h4>
+        <p>Values and interventions are pulled out as they are said and stamped at that moment &mdash; not at the moment someone gets around to charting them. The ordering <em>is</em> the clinical record in a resuscitation.</p>
+      </div>
+      <div class="barit">
+        <h4>Scores computed deterministically</h4>
+        <p>Shock Index, RTS and GCS are calculated from the extracted values as the patient changes, using published coding tables. <em>Deterministic, not inferred</em> &mdash; a score a model guessed at is not a score anyone can defend.</p>
+      </div>
+      <div class="barit">
+        <h4>Charges gated on their own documentation</h4>
+        <p>A charge fires only when the documentation that code requires is actually present. This is the inverse of the usual failure: rather than billing and hoping the record supports it, the record is what permits the charge to exist at all.</p>
+      </div>
+      <div class="barit">
+        <h4>Clocks and activation, with the evidence cited</h4>
+        <p>Accreditation clocks run and the trauma-activation determination is made against explicit criteria &mdash; and the determination carries the evidence it was made on, so a reviewer can check the reasoning rather than the conclusion.</p>
+      </div>
+      <div class="barit">
+        <h4>A narrative composed one sentence per event</h4>
+        <p>The signable nursing narrative is written as the resus runs, a sentence at a time, in step with what actually happened. Not summarised at the end from a pile of fields.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec" id="output">
+    <div class="sechead"><span class="secnum">03</span><h2>What comes out</h2><div class="divider"></div></div>
+    <p class="secsub">A multi-page report at disposition, in four parts.</p>
+
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Section</th><th>What it carries</th></tr></thead>
+        <tbody>
+          <tr><td><b>Nursing narrative</b></td><td>Signable, composed during the resuscitation rather than after it.</td></tr>
+          <tr><td><b>Charge &amp; compliance</b></td><td>Only charges whose required documentation is present, with the documentation attached.</td></tr>
+          <tr><td><b>Activation determination</b></td><td>The criteria applied, the evidence cited, and the resulting determination.</td></tr>
+          <tr><td><b>Post-case debrief</b></td><td>Surfaces only what is genuinely worth passing on &mdash; not a transcript dump.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p class="note" style="margin-top:1.4rem;"><b>And the gaps.</b> Anything the system asked about and did not get an answer to appears in the report as an unresolved prompt. A documentation tool that quietly fills its own gaps is worse than one that leaves them visible &mdash; the same argument the <a href="../enforcement/" style="color:var(--accent-cyan); text-decoration:none; border-bottom:1px solid var(--line)">enforcement write-up</a> makes about checks that report success without having run.</p>
+  </section>
+
+  <section class="sec" id="provenance">
+    <div class="sechead"><span class="secnum">04</span><h2>Where this came from, precisely</h2><div class="divider"></div></div>
+    <p class="secsub">The concept was first built at the <b>Abridge &times; Anthropic &times; Lightspeed agentic-AI hackathon</b> in July 2026. The distinction below matters and is stated rather than left to inference.</p>
+
+    <div class="stage">
+      <div class="stagehead"><span class="stagenum">1</span><span class="stagename">The submission</span><span class="stagekind">separate &middot; archived &middot; frozen</span></div>
+      <p>The hackathon submission is a <b>different repository</b> &mdash; <a href="https://github.com/mikejgiardina/ttprod" target="_blank" rel="noopener noreferrer">ttprod</a>, archived and frozen exactly as submitted. The event ran under a <em>new-work-only</em> rule with judge-visible commit timestamps, and that repository is what the judges saw. It is named here rather than alluded to, because a provenance claim you cannot check is not a provenance claim.</p>
+    </div>
+
+    <div class="stage">
+      <div class="stagehead"><span class="stagenum">2</span><span class="stagename">This build</span><span class="stagekind">public &middot; MIT &middot; started after the event</span></div>
+      <p><b>This is not that repository.</b> It was started within a couple of days of the event, and its commit history is public if you want the exact instants. This is where the concept became functional: production model-call plumbing, the full agent set, and four capture sources. <em>What the submission sketched, this runs.</em></p>
+    </div>
+
+    <p class="note" style="margin-top:1.4rem; border-left-color: var(--accent-amber);"><b>On the sponsor names.</b> Naming the event is factual attribution and nothing more. No sponsor has seen, reviewed, validated or endorsed this repository &mdash; they saw a different, earlier, frozen one, under competition rules. The difference is worth being exact about, because the loose version of that sentence would be a claim nobody made.</p>
+
+    <div class="takeaway">
+      <h3>How it was built</h3>
+      <p>Same as everything else here: <b>I specified the clinical behaviour, directed the agents that implemented it, and own whether the output is right</b> &mdash; which for this project means whether a charge fires when it should not, whether a clock starts on the wrong event, and whether a narrative sentence describes what actually happened. I did not type the implementation and do not claim to.</p>
+      <p>The clinical judgement is the part that is mine and the part that is hard to hire: knowing that a score has to be deterministic to be defensible, that a charge must be gated on its own documentation rather than asserted alongside it, and that an unanswered prompt has to survive into the report instead of being resolved away.</p>
+      <p style="margin-top:1.1rem; padding-top:1.1rem; border-top:1px solid var(--line-soft);"><a href="https://github.com/mikejgiardina/trauma-tracker-public" target="_blank" rel="noopener noreferrer" style="color:var(--accent-cyan); text-decoration:none; border-bottom:1px solid var(--line)">Repository</a> &middot; <a href="https://traumatrackerv2.netlify.app" target="_blank" rel="noopener noreferrer" style="color:var(--accent-cyan); text-decoration:none; border-bottom:1px solid var(--line)">Live demo</a> &middot; MIT &middot; <a href="../case-studies/" style="color:var(--accent-cyan); text-decoration:none; border-bottom:1px solid var(--line)">the engineering write-ups</a></p>
+    </div>
+  </section>
+
+  <footer>
+    <p>Trauma Tracker &middot; real-time ED trauma registrar &middot; synthetic data only, no PHI.</p>
+    <p>Not a medical device and not deployed against real patient data. Scores, charges and criteria illustrate the referenced standards and are not a substitute for institutional protocol or clinical judgement.</p>
+    <p>Michael Giardina &middot; <a href="../">portfolio</a> &middot; <a href="https://github.com/mikejgiardina">github.com/mikejgiardina</a> &middot; <a href="https://www.linkedin.com/in/michael-giardina">linkedin.com/in/michael-giardina</a></p>
+  </footer>
+
+</div>
+</body>
+</html>

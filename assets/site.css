@@ -258,6 +258,10 @@ img,svg{max-width:100%}
      one of these is already a direct child of its section on every page. */
   header.hero > .wide,.wrap > footer > .wide,
   header.hero > .stats,
+  /* `.container > header > .status-bar` was already promoted below; the
+     `header.hero` variant was not, so its badges were confined to the narrow
+     text column and wrapped as soon as a third one appeared. */
+  header.hero > .status-bar,
   section.sec > .wide,
   section.sec > figure.fig,
   section.sec > .tablewrap,
@@ -370,9 +374,16 @@ header.hero,.container > header{padding:3.4rem 0 2.4rem}
   color:var(--green); background:var(--green-bg);
   border:1px solid var(--green-line); padding:.24rem .7rem; border-radius:99px;
 }
+/* A caveat that belongs in the status row rather than below the fold. Green
+   reads as an affirmative claim, so a limit stated in green is a limit nobody
+   registers — the caution variant is the whole point of putting it up here. */
+.status-item.caution{
+  color:var(--amber); background:var(--amber-bg); border-color:var(--amber-line);
+}
 .status-dot,.validation-dot{
   width:6px;height:6px;border-radius:99px;background:var(--green);flex:none;
 }
+.status-item.caution .status-dot{background:var(--amber)}
 .kicker{
   font-family:var(--mono); font-size:.72rem; text-transform:uppercase;
   letter-spacing:.16em; color:var(--accent); margin-bottom:.8rem;
