@@ -3,10 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reviewing Clinical Content with Two AI Reviewers — and Measuring Whether They Agree for the Right Reason</title>
-<meta name="description" content="A clinical-education review pipeline: two AI reviewer personas, findings correlated by quoted-span overlap, and the measurement that showed 95% of its own blockers were an artifact of missing source material — plus the case where agreement between reviewers promoted a false positive to the highest-confidence bucket.">
-<meta property="og:title" content="Two AI Reviewers, and Measuring Whether They Agree for the Right Reason">
-<meta property="og:description" content="Agreement between two reviewers is only evidence when their failure modes are independent. Here is the run where they were not, how it was measured, and what the gate does now.">
+<title>Two AI Reviewers, and What Happened When I Measured Them — Clinical Review Pipeline</title>
+<meta name="description" content="A clinical-education review pipeline: two AI reviewer personas, findings correlated by quoted-span overlap, and what measurement found — a shared blind spot that agreement promoted to top confidence, a blocker count dominated by missing source material, and a gate that checked the wrong thing. 16 real clinical defects were caught and fixed.">
+<meta property="og:title" content="Two AI Reviewers, and What Happened When I Measured Them">
+<meta property="og:description" content="Agreement between two reviewers is only evidence when their failure modes are independent. On one run they were not — and sixteen real clinical defects were sitting behind a gate that looked green.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://mike-giardina.netlify.app/clinical-review/">
 <meta name="twitter:card" content="summary">
@@ -23,7 +23,7 @@
     <nav class="topnav">
       <a href="#shape">The pipeline</a>
       <a href="#agree">Agreement</a>
-      <a href="#artifact">The artifact</a>
+      <a href="#artifact">The blockers</a>
       <a href="#gate">The gate</a>
       <a href="../case-studies/" class="back">&larr; case studies</a>
       <a href="../" class="back">&larr; portfolio</a>
@@ -36,32 +36,32 @@
   <header class="hero" id="top">
     <div class="status-bar">
       <div class="status-item"><span class="status-dot"></span><span>CLINICAL AI EVALUATION</span></div>
-      <div class="status-item"><span class="status-dot"></span><span>MEASURED, NOT ASSERTED</span></div>
+      <div class="status-item"><span class="status-dot"></span><span>MEASURED AGAINST A LIVE CORPUS</span></div>
       <div class="status-item caution"><span class="status-dot"></span><span>INTERNAL TOOLING &middot; NOT PUBLIC</span></div>
     </div>
     <p class="kicker">Clinical evaluation &middot; LLM-as-judge</p>
     <h1>Two reviewers agreed. That was the problem.</h1>
     <p class="lede">A review pipeline for clinical education content runs <b>two AI reviewer personas</b> over every article and keeps only what both of them independently flag. The intersection is the quality signal. This is the write-up of what happened when I measured whether that signal was real.</p>
-    <p class="lede">It was not, in a specific and instructive way: <b>the two reviewers made the same mistake on the same sentence</b>, and agreement promoted the error into the highest-confidence bucket available.</p>
-    <p class="context">Everything below is measured against a live corpus of 93 published clinical articles, not a benchmark. The numbers are from the pipeline's own run output.</p>
+    <p class="lede">It was not. <b>The two reviewers made the same mistake on the same sentence</b>, and agreement promoted that error into the highest-confidence bucket available.</p>
+    <p class="context">Every number below is from the pipeline's own run output over a live clinical-education corpus, not a benchmark &mdash; and the bases differ by section, so each is labelled where it appears. The finding rates in <b>03</b> come from a 79-article review set; the gate counts in <b>04</b> are corpus-wide over 93 published articles.</p>
   </header>
 
   <section class="sec" id="shape">
-    <div class="sechead"><span class="secnum">01</span><h2>The shape of the thing</h2><div class="divider"></div></div>
-    <p class="secsub">Roughly 8,400 lines of Python across the pipeline. The review layer is the part worth describing.</p>
+    <div class="sechead"><span class="secnum">01</span><h2>How a review actually runs</h2><div class="divider"></div></div>
+    <p class="secsub">Roughly 8,400 lines of Python across the whole pipeline. The review layer is the part worth describing.</p>
 
     <div class="cards">
       <div class="card">
-        <h3>Two personas, not two samples</h3>
-        <p>Reviewer A is a <em>board-certified emergency physician</em>. Reviewer B is a <em>pillar-matched specialist</em> — the specialty the article's subject actually belongs to. They are different prompts with different expertise, run independently, because two samples from one persona measure temperature and nothing else.</p>
+        <h3>Two personas with different expertise</h3>
+        <p>Reviewer A is a <em>board-certified emergency physician</em>. Reviewer B is a <em>pillar-matched specialist</em> — the specialty the article's subject actually belongs to. They are different prompts with different expertise, run independently. Two samples from one persona would measure temperature and little else.</p>
       </div>
       <div class="card">
         <h3>Each reads two documents</h3>
         <p>The informal peer-educator article, and its paired <em>scholarly companion</em> — the formal version carrying the reference list. The companion is never published. It exists so a reviewer can check whether a claim in the article is actually supported by the source it rests on.</p>
       </div>
       <div class="card">
-        <h3>Findings are structured, not prose</h3>
-        <p>Severity (<code>blocker</code> / <code>major</code> / <code>minor</code>), a category, and &mdash; load-bearing &mdash; <b>a verbatim quote of the span being flagged</b>. The quote is what makes two independent reviews comparable at all.</p>
+        <h3>Every finding carries a verbatim quote</h3>
+        <p>Severity (<code>blocker</code> / <code>major</code> / <code>minor</code>), a category, and <b>a verbatim quote of the span being flagged</b>. The quote is what makes two independent reviews comparable at all.</p>
       </div>
       <div class="card">
         <h3>Correlation is deterministic</h3>
@@ -73,8 +73,8 @@
   </section>
 
   <section class="sec" id="agree">
-    <div class="sechead"><span class="secnum">02</span><h2>Agreement is only evidence when the failures are independent</h2><div class="divider"></div></div>
-    <p class="secsub">This is the finding I would keep if I could only keep one.</p>
+    <div class="sechead"><span class="secnum">02</span><h2>When agreement stops being evidence</h2><div class="divider"></div></div>
+    <p class="secsub">Of everything measurement turned up, this is the one that changed how the output gets read.</p>
 
     <p>The scholarly companions contain <b>errata notes</b> &mdash; passages that quote an earlier version of a claim and then explain why it was wrong and what replaced it. The structure is <em>"the article originally framed X as &hellip; This is incorrect."</em></p>
 
@@ -90,8 +90,8 @@
   </section>
 
   <section class="sec" id="artifact">
-    <div class="sechead"><span class="secnum">03</span><h2>95% of the blockers were a data-availability artifact</h2><div class="divider"></div></div>
-    <p class="secsub">The second thing measurement found, and the reason a raw finding count is not a quality metric.</p>
+    <div class="sechead"><span class="secnum">03</span><h2>What 227 blockers were actually reporting</h2><div class="divider"></div></div>
+    <p class="secsub">Why a raw finding count says very little about content quality.</p>
 
     <p><b>227 of 238 blockers</b> carried the same category: a claim in the article not supported by the companion's references. That reads as a content-quality crisis. It was not. <b>69% of all agreed findings explicitly stated the scholarly companion had not been provided.</b></p>
 
@@ -107,7 +107,9 @@
 
     <p><b>3.2&times; more citation blockers when the reviewer had nothing to check against.</b> That is the model reporting <em>"I cannot verify this"</em> and the pipeline recording it as <em>"this is wrong."</em> Two different statements, one output field.</p>
 
-    <p class="note" style="border-left-color: var(--accent-amber);"><b>The actionable form of 181 findings is one line item.</b> Not 181 citation edits &mdash; <em>44 published articles have no scholarly companion in their source packet.</em> Fixing the corpus fixes the findings. Working the findings individually would have burned weeks producing edits to text that was never shown to be wrong.</p>
+    <p class="note" style="border-left-color: var(--accent-amber);"><b>The actionable form of 181 findings is one line item:</b> <em>44 published articles have no scholarly companion in their source packet.</em> Fixing the corpus fixes the findings. Working through them individually would have burned weeks producing edits to text nobody had shown was wrong.</p>
+
+    <p class="note"><b>Where these particular numbers come from.</b> This section is a 79-article review set measured across two runs about ten weeks apart, against a corpus that stood at 88 published articles at the time. Pooling those runs was itself a mistake &mdash; the older findings were written against text a voice pass had since rewritten, so they describe articles that no longer exist in that form. The rates above hold within that set and are quoted for the mechanism they expose, not as a current corpus measurement. The gate counts in <b>04</b> are a different and current base.</p>
   </section>
 
   <section class="sec" id="gate">
@@ -121,14 +123,14 @@
     <div class="cards">
       <div class="card">
         <h3>Reasons have a floor</h3>
-        <p>The last three statuses need a reason of at least 20 characters. <code>"n/a"</code> and <code>"wontfix"</code> are rejected outright &mdash; a disposition field that accepts a shrug is a disposition field that will receive one.</p>
+        <p>The last three statuses need a reason of at least 20 characters, which is enough to rule out <code>"n/a"</code> and <code>"wontfix"</code>. A disposition field that accepts a shrug will receive one.</p>
       </div>
       <div class="card">
         <h3>Deferral has an expiry</h3>
         <p><code>deferred</code> requires a review-by date and blocks once it passes. <b>An open-ended deferral is not available.</b> One deferral bucket had sat untouched across multiple sessions and turned out to be real defects that nothing was ever going to force back into view.</p>
       </div>
       <div class="card">
-        <h3>The conditional was measured, not guessed</h3>
+        <h3>The conditional came out of measurement</h3>
         <p>Citation findings gate <em>only</em> when the article actually has a companion. Excluding the category outright was the obvious move and it was wrong: the worst defect in a recent batch &mdash; a misstated figure that moved a number toward urgency &mdash; was categorised exactly that way, on an article that <em>did</em> have a companion.</p>
       </div>
       <div class="card">
@@ -138,16 +140,24 @@
     </div>
 
     <div class="verdict">
-      <div class="dlab">blast radius &mdash; measured, and deliberately not silenced</div>
-      <p class="dtext">Turning the fix on moved the gate from <b>4 blocked</b> to <b>71 blocked, of 93 published articles</b>.</p>
-      <p class="dwhy">Nothing was auto-exempted to make that number smaller. 71 articles genuinely carry an undisposed gating finding, and that was true the day before the fix as well &mdash; the difference is that it is now visible and blocking. <b>A gate that reports a comfortable number on the day you tighten it has been tuned to report a comfortable number.</b> The honest version of tightening a check is that the backlog it reveals is the backlog you already had.</p>
+      <div class="dlab">blast radius, and what was under it</div>
+      <p class="dtext">Turning the fix on moved the gate from <b>4 blocked</b> to <b>71 of 93</b>. Nothing was auto-exempted to soften that. Those 71 articles carried an undisposed gating finding the day before the fix too &mdash; tightening the check only made it visible.</p>
+      <p class="dwhy">A gate that reports a comfortable number on the day you tighten it has been tuned to report a comfortable number. The backlog a check reveals is the backlog you already had.</p>
+    </div>
+
+    <p>Working it took six passes and produced a disposition for all <b>180</b> gating findings: <b>131 not applicable</b> (a companion-citation gap, or an objection that was preference rather than defect), <b>42 fixed</b>, <b>7 rejected</b> because applying the finding would itself have introduced an error.</p>
+
+    <div class="verdict">
+      <div class="dlab">what was actually in there</div>
+      <p class="dtext"><b>16 real clinical defects, found and corrected.</b> The gate closed back to <b>4 of 93</b>, and the four that remain are pre-existing prose-fidelity holds with nothing clinical in them.</p>
+      <p class="dwhy">The defects were not stylistic. Several were dosing: a benzodiazepine underdose for status epilepticus, on an article whose own corpus-mate had the right number and therefore contradicted it; a neonatal dextrose dose carried over from the infant range; a pediatric bradycardia instruction that had dropped both of its qualifying conditions; an eclampsia article with no magnesium regimen in it at all. One was a guideline attributed to a trial whose primary endpoints were negative. <b>This is the part that justifies the rest of the page</b> &mdash; not that the reviewers were right often, but that a system nobody had checked was still hiding sixteen of these, and the only reason they surfaced is that someone went and measured it.</p>
     </div>
   </section>
 
   <section class="sec" id="close">
-    <div class="sechead"><span class="secnum">05</span><h2>What this is evidence of</h2><div class="divider"></div></div>
+    <div class="sechead"><span class="secnum">05</span><h2>What this shows</h2><div class="divider"></div></div>
     <div class="context">
-      <p><b>Not that the pipeline is good.</b> The findings above are all ways it was wrong, found by measuring it rather than by trusting it. The claim I would make is narrower and I think more useful: <b>an evaluation system that has never been evaluated is a source of confidence, not a source of information</b>, and the difference does not show up until someone checks.</p>
+      <p><b>Not that the pipeline is good.</b> The findings above are all ways it was wrong, found by measuring it rather than by trusting it. The claim I would make is narrower and I think more useful: <b>an evaluation system nobody has evaluated supplies confidence rather than information</b>, and the difference does not show up until someone checks.</p>
       <p>Each of the three findings has the same shape. Agreement looked like confirmation and was partly shared blindness. A blocker count looked like content quality and was mostly missing source material. A green gate looked like resolution and was only attendance. In every case the instrument was reporting something adjacent to the thing it was believed to report, and in every case the failure was in the flattering direction.</p>
       <p>The clinical judgement is the part that is mine: knowing that <em>"I cannot verify this"</em> and <em>"this is incorrect"</em> must not share an output field when the reader is a clinician, that an errata note is not an error, and that a deferral without a date is a decision to never look again. <b>I specified the behaviour and directed the agents that implemented it. I did not type the implementation and do not claim to.</b></p>
       <p style="margin-top:1.1rem; padding-top:1.1rem; border-top:1px solid var(--line-soft);">Companion write-ups: <a href="../enforcement/" style="color:var(--accent-cyan); text-decoration:none; border-bottom:1px solid var(--line)">checks that report success without having run</a> &middot; <a href="../publishing/" style="color:var(--accent-cyan); text-decoration:none; border-bottom:1px solid var(--line)">the disclosure pipeline</a> &middot; <a href="../case-studies/" style="color:var(--accent-cyan); text-decoration:none; border-bottom:1px solid var(--line)">all case studies</a></p>
