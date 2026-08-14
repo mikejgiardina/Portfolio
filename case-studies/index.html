@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Engineering Case Studies — Michael Giardina</title>
-<meta name="description" content="Four write-ups on the layer around the code: lifecycle-hook automation, turning conventions into enforced checks, disclosure control for a patent-pending codebase, and coordinating parallel AI coding sessions against one shared repository set.">
+<meta name="description" content="Five write-ups on the layer around the code: lifecycle-hook automation, turning conventions into enforced checks, disclosure control for a patent-pending codebase, measuring whether an AI review pipeline over a clinical corpus was reporting what it appeared to report, and coordinating parallel AI coding sessions against one shared repository set.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://mike-giardina.netlify.app/case-studies/">
 <meta property="og:title" content="Engineering case studies — five write-ups on the layer around the code">
@@ -34,12 +34,12 @@
 
   <header class="hero">
     <div class="status-bar">
-      <div class="status-item"><span class="status-dot"></span><span>FOUR WRITE-UPS &middot; REVISED AS THE SYSTEM CHANGES</span></div>
+      <div class="status-item"><span class="status-dot"></span><span>FIVE WRITE-UPS &middot; REVISED AS THE SYSTEM CHANGES</span></div>
     </div>
     <p class="kicker">Engineering practice</p>
     <h1>The layer around the code.</h1>
     <p class="lede">Most of what keeps a codebase correct isn't in the codebase. It's in what runs automatically, what gets checked rather than remembered, and what is allowed to leave the repository at all.</p>
-    <p class="lede">These are four write-ups on that layer, built for a multi-repository system where <b>AI coding sessions run daily</b> across several machines and more than one contributor, and where most of the working knowledge still sits with one person. Each one names the incident that produced the rule, and each one documents where it has failed.</p>
+    <p class="lede">These are five write-ups on that layer, built for a multi-repository system where <b>AI coding sessions run daily</b> across several machines and more than one contributor, and where most of the working knowledge still sits with one person. Each one names the incident that produced the rule, and each one documents where it has failed.</p>
     <p class="context">python simulation engine &middot; typescript / react apps &middot; swift ios app &middot; markdown docs corpus &middot; agent-config repo</p>
   </header>
 
@@ -89,7 +89,7 @@
 
   <p class="closing" style="margin-bottom:1rem;"><b>The code behind the first two is open.</b> <a href="https://github.com/mikejgiardina/hook-discipline" target="_blank" rel="noopener noreferrer">github.com/mikejgiardina/hook-discipline</a> &mdash; the hooks, the three-state exit contract, and the paired fire-and-control suite, Apache-2.0. And if you would rather read a <b>clinical product</b> than a process write-up, <a href="../trauma-tracker/">Trauma Tracker</a> is a real-time ED trauma registrar, public and running.</p>
 
-  <p class="closing">They're written to be read in any order, though they run in roughly that one: the first is the layer that <b>runs</b>, the second and third are the layer that <b>decides</b>, and the fourth is what happens when several sessions try to use all three at once. Process shape only &mdash; proprietary specifics are generalized or omitted throughout.</p>
+  <p class="closing">They're written to be read in any order, though they run in roughly that one: the first is the layer that <b>runs</b>, the second and third are the layer that <b>decides</b>, the fourth asks whether any of it was actually working, and the fifth is what happens when several sessions use all of it at once. Process shape only &mdash; proprietary specifics are generalized or omitted throughout.</p>
 
   <footer>
     <p>Engineering case studies &middot; developer tooling, process design, and disclosure control.</p>
