@@ -69,7 +69,7 @@
     <div class="sechead"><span class="secnum">01</span><h2>Lease by write-surface, not by topic</h2><div class="divider"></div></div>
     <p class="secsub">The failure mode that motivates everything else: two sessions given clearly unrelated jobs, both of which turn out to need the same file. Topic independence does not imply file independence, and you find out at merge time.</p>
 
-    <p class="note" style="margin-bottom:1.6rem;"><b>To be clear about what is and isn't new here:</b> partitioning work by file ownership is old. Locking schemes, <code>CODEOWNERS</code>, monorepo ownership boundaries and branch policies have all been about this for decades, and none of it was invented for this project. What's specific to the AI-session case is that <em>the workers can't negotiate.</em> Two engineers who both need the same file end up talking to each other, usually before either has finished. Two sessions don't. They both just write it, and the first anyone hears about it is the merge.</p>
+    <p class="note" style="margin-bottom:1.6rem;"><b>None of this is new.</b> Locking schemes, <code>CODEOWNERS</code>, monorepo ownership boundaries and branch policies have partitioned work by file ownership for decades. What is specific to the AI-session case is that <em>the workers can't negotiate.</em> Two engineers who both need the same file talk to each other, usually before either has finished. Two sessions don't. They both write it, and the merge is the first anyone hears about it.</p>
 
     <div class="cards">
       <div class="card">
@@ -100,10 +100,10 @@
     <div class="cas" style="margin-top:1.5rem; border-color: rgba(255,180,84,0.3); border-left-color: var(--accent-amber);">
       <div class="ct" style="color: var(--accent-amber);">the case where the primitive didn't fit &middot; run anyway</div>
       <h4>Two sessions, one file, partitioned by intent</h4>
-      <p>This page was itself the test. Two sessions worked on the same file at the same time &mdash; one owning the prose, one owning the visual system &mdash; because the real boundary was <em>what kind of change</em>, and that is not expressible as a path glob. A lease could not describe it.</p>
-      <p>It merged with <b>zero conflicts</b>, and that is not the finding. The partition held because one session sent the other the exact strings to grep for after rebasing, and why each one mattered. Strip those two messages and nothing structural prevents a routine &ldquo;keep mine&rdquo; resolution from restoring a claim that had been removed from a live public page for cause.</p>
-      <p><b>So the honest result is: it would have failed, and was rescued by discretionary out-of-band coordination that the model does not require and cannot enforce.</b> A clean merge here is not evidence the primitive works. It is evidence that two careful participants can compensate for a primitive that doesn't apply &mdash; which is a different and much weaker claim.</p>
-      <p>Worth noting what the round's actual collision turned out to be: not the contested file at all, but a <em>squash race</em> on a branch nobody was contending. Commits pushed after a squash-merge landed on a closed PR and were silently never published. Path leasing does not address that and would not have caught it.</p>
+      <p>This page was the test. Two sessions worked on the same file at the same time &mdash; one owning the prose, one owning the visual system &mdash; because the boundary was <em>what kind of change</em>, which is not expressible as a path glob. A lease could not describe it.</p>
+      <p>It merged with <b>zero conflicts</b>. That is not the finding. The partition held because one session sent the other the exact strings to grep for after rebasing, and why each one mattered. Without those two messages, a routine &ldquo;keep mine&rdquo; resolution restores a claim that had been removed from a live public page for cause.</p>
+      <p><b>It would have failed. It was rescued by out-of-band coordination that the model does not require and cannot enforce.</b> The clean merge is evidence that two careful participants can compensate for a primitive that doesn't apply. It is not evidence the primitive works.</p>
+      <p>The round's actual collision was not the contested file. It was a <em>squash race</em> on a branch nobody was contending: commits pushed after a squash-merge landed on a closed PR and were silently never published. Path leasing does not address that and would not have caught it.</p>
     </div>
   </section>
 
@@ -270,7 +270,7 @@
         <p>The intent is that the planning layer sizes each lease to a model: mechanical work &mdash; renaming, mirroring a config, running a matrix &mdash; does not need the expensive one, and the lease that has to read a bad premise and argue back does.</p>
         <p><b>An earlier version of this card said that is what happens. Round 6 measured it and it is not.</b> Every thread ran on the top tier &mdash; <em>measured</em> for round 6, and <em>inferred</em> for rounds 1&ndash;5 from the fact that nothing ever set a tier. Two separate reasons, and only one of them is anyone's fault: <em>the spawn call has no model parameter at all</em>, so a coordinator structurally cannot set a lease's model when it creates it. What a lease <em>can</em> select is the model for the subagents it spawns itself &mdash; and round 3 measured those sidechains at <b>28% of worker output</b>, ranging 0&ndash;50% by lease. That half was available the whole time and nobody used it, because the brief said &ldquo;spawn subagents freely&rdquo; and never said &ldquo;tier them.&rdquo;</p>
         <p><b>The fix stops at the model, and the reason is worth stating.</b> There are three ways to start work here and they expose different controls: the lease-spawn call exposes <em>neither</em> model nor reasoning effort, the subagent call exposes <em>model only</em>, and per-call effort exists solely on a heavier orchestration primitive. So &ldquo;also turn the effort down&rdquo; is not a brief change &mdash; it means adopting that primitive, which is a larger commitment than the saving justifies. Effort stays a session-level setting; model tiering is the part that is actually reachable.</p>
-        <p>The general form is the one worth keeping: <em>an unspecified subagent inherits the most expensive setting available, which is a default nobody chose.</em> Same shape as everything else here &mdash; the failure is a silent inherited default rather than a wrong decision.</p>
+        <p>The general form: <em>an unspecified subagent inherits the most expensive setting available, which is a default nobody chose.</em> Same shape as everything else here &mdash; the failure is a silent inherited default rather than a wrong decision.</p>
         <p>Left on the page in corrected form rather than quietly rewritten, because <em>the gap between the design and the measurement is the more useful artifact.</em></p>
       </div>
       <div class="card">
@@ -658,7 +658,7 @@
       </table>
     </div>
 
-    <p class="note" style="border-left-color: var(--accent-red); margin-bottom:1.1rem;"><b>This partly contradicts the hypothesis this page has been carrying.</b> &ldquo;The marginal worker is cheap, the marginal decision is not&rdquo; predicted that coordination would dominate. It doesn't. Coordination is <b>under a third</b> of output. The guess was directionally interesting and quantitatively wrong, and the honest thing is to say so in the same place the guess was made rather than quietly restating it.</p>
+    <p class="note" style="border-left-color: var(--accent-red); margin-bottom:1.1rem;"><b>This partly contradicts the hypothesis this page has been carrying.</b> &ldquo;The marginal worker is cheap, the marginal decision is not&rdquo; predicted that coordination would dominate. It doesn't. Coordination is <b>under a third</b> of output. The guess was directionally interesting and quantitatively wrong, and it is corrected in the same place it was made.</p>
 
     <p class="secsub"><b>What survives, and it is the stronger version:</b> round 4 spawned <em>zero</em> leases &mdash; it was pre-flight, one merge, a contributor PR queue and preparation &mdash; and still cost about <b>5 points</b>. That is the real evidence for expensive coordination, and it is evidence precisely because no worker was running &mdash; though that five-point reading is one of the contaminated ones, so treat it as a direction rather than a quantity. Serial orchestrator work is not part of a lease round, and pooling the two is what made the earlier figures confounded. Round 4 is the strongest datapoint for the hypothesis and it was missing from this page entirely.</p>
 
@@ -701,7 +701,7 @@
       </div>
       <p class="scrollhint">&larr; scroll to pan the chart &rarr;</p>
 
-      <figcaption>Context grew from roughly <b>151k to 380k in 80 minutes</b> &mdash; about 2.9k per minute on average &mdash; and <b>the endpoints are consistent with no step at spawn.</b> Be careful how much that carries: the pre-spawn rate is a single 16-minute interval, and there is no reading between 18:30 and 19:11, so a step inside that 41-minute gap would not be visible here either way. Two workers reporting through the coordinator cost it almost nothing in context.</figcaption>
+      <figcaption>Context grew from roughly <b>151k to 380k in 80 minutes</b> &mdash; about 2.9k per minute on average &mdash; and <b>the endpoints are consistent with no step at spawn.</b> The pre-spawn rate is a single 16-minute interval, and there is no reading between 18:30 and 19:11, so a step inside that 41-minute gap would not be visible here either way. Two workers reporting through the coordinator cost it almost nothing in context.</figcaption>
       <figcaption style="border-top:none; padding-top:0.4rem;"><b>That is the central architectural claim of the whole approach, and this is the first time it has been measured rather than assumed.</b> It is also n=1, four points, one round, two leases &mdash; a shape consistent with the claim, not a demonstration of it. What would break it is a round where context inflects at spawn, and no round has been run specifically to look for one.</figcaption>
       <p class="srcline">panel readings captured by hand and timestamped against round events · context values as reported by the client</p>
     </figure>
@@ -723,7 +723,7 @@
       <p class="dwhy"><b>Measured: 25.9%, with no post-hoc subtraction.</b> Round 6 did not avoid the exclusion &mdash; it <em>moved</em> it, from arithmetic applied afterwards to a session boundary drawn before any data existed, which is what takes it out of the measurer's hands. 75,194 coordinator output tokens against 290,191 total, window stated, 310 transcripts indexed. The disconfirming outcome was written down in advance and was survivable, which is the only thing that makes the confirming outcome worth anything.</p>
     </div>
 
-    <p class="note" style="border-left-color: var(--accent-amber);"><b>Correction: the instrument that produced 25.9% was wrong, and both figures stay published.</b> The tool selected <em>sessions</em> by the round's time window but never filtered <em>messages</em> inside a selected session. For a lease that is harmless &mdash; its session begins when its chip does. For the coordinator it is not: that session predates the round and outlives it, so pre-flight and post-close work were both being counted as coordination. Re-measured on the corrected instrument, round 6 is <b>20.9%</b> and round 5 is <b>33.4%</b>. The prediction above still holds, and holds more cleanly than when it was written &mdash; but it is worth being exact that it now rests on a different measurement than the one originally quoted.</p>
+    <p class="note" style="border-left-color: var(--accent-amber);"><b>Correction: the instrument that produced 25.9% was wrong, and both figures stay published.</b> The tool selected <em>sessions</em> by the round's time window but never filtered <em>messages</em> inside a selected session. For a lease that is harmless &mdash; its session begins when its chip does. For the coordinator it is not: that session predates the round and outlives it, so pre-flight and post-close work were both being counted as coordination. Re-measured on the corrected instrument, round 6 is <b>20.9%</b> and round 5 is <b>33.4%</b>. The prediction above still holds, and holds more cleanly than when it was written &mdash; on a different measurement than the one originally quoted.</p>
 
     <p class="note"><b>The correction has no direction, and that is the whole point.</b> Round 6 moves down 5.0 points; round 5 moves <em>up</em> 2.4. A fix that only ever shrank the number would be a discount, and a discount that flatters the person applying it is not a finding. What the fix actually buys is that the number stops depending on when you look: re-run on the same round 6 data an evening later, the uncorrected tool reported <b>50.3%</b> &mdash; a drift of <b>24.4 points from elapsed time alone</b>, on a figure that was never touched. The re-measurement was run by an independent session rather than by the coordinator whose predecessor's number it was moving, because the correction ran in the direction that flattered it.</p>
 
@@ -793,7 +793,7 @@
     <p class="note" style="margin-top:0.7rem;"><b>Round 13 is running as this is written</b> and has no row yet. Its predictions are already registered.</p>
 
     <h3 style="font-family:var(--serif); font-size:1.45rem; font-weight:600; margin:2.8rem 0 0.5rem;">Is there a standard for any of this?</h3>
-    <p class="secsub">Short answer: no, and it is worth being direct about that rather than dressing a house metric in borrowed authority. Three established frameworks sit nearby, and none of them measures what this page measures.</p>
+    <p class="secsub">Short answer: no. What follows is a house metric, not a standard. Three established frameworks sit nearby, and none of them measures what this page measures.</p>
 
     <div class="bar">
       <div class="barit">
@@ -803,7 +803,7 @@
       <div class="barit">
         <h4>SPACE &mdash; developer productivity</h4>
         <p>Satisfaction, Performance, Activity, Communication, Efficiency (Forsgren, Storey, Maddila, Zimmermann, Houck, Butler; <em>ACM Queue</em> 19(1), 2021). Its central argument is that productivity <b>cannot be captured in a single metric</b> and that activity counts mislead.</p>
-        <p><em>The most citable thing in this area argues against the single number people ask for.</em> Worth keeping that irony in view when reading any of the figures above.</p>
+        <p><em>The most citable thing in this area argues against the single number people ask for.</em> That applies to every figure on this page.</p>
       </div>
       <div class="barit">
         <h4>Agentic benchmarks &mdash; cost per resolved instance</h4>
@@ -837,7 +837,7 @@
 
   <section class="sec" id="green">
     <div class="sechead"><span class="secnum">05</span><h2>The defect that reports success</h2><div class="divider"></div></div>
-    <p class="secsub">Across every round the same class kept turning up, in unrelated parts of the system, found by workers who were not looking for it: <b>a failure whose symptom is a green result rather than an error</b>. It is the most transferable thing on this page, and it is worth stating as a rule &mdash; <em>a check that cannot fail loudly will eventually pass quietly.</em></p>
+    <p class="secsub">Across every round the same class kept turning up, in unrelated parts of the system, found by workers who were not looking for it: <b>a failure whose symptom is a green result rather than an error</b>. It is the most transferable thing on this page. As a rule: <em>a check that cannot fail loudly will eventually pass quietly.</em></p>
 
     <div class="cas">
       <div class="ct">shape one &middot; checked the wrong thing, reported pass</div>
