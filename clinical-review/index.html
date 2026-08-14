@@ -52,7 +52,7 @@
 
   <section class="sec" id="shape">
     <div class="sechead"><span class="secnum">01</span><h2>How a review actually runs</h2><div class="divider"></div></div>
-    <p class="secsub">Roughly 8,400 lines of Python across the whole pipeline. The review layer is the part worth describing.</p>
+    <p class="secsub">Roughly 8,400 lines of Python across the whole pipeline. The review layer is what this page is about.</p>
 
     <div class="cards">
       <div class="card">
@@ -154,14 +154,14 @@
     <div class="verdict">
       <div class="dlab">what was actually in there</div>
       <p class="dtext"><b>16 real clinical defects, found and corrected.</b> The gate closed back to <b>4 of 93</b>, and the four that remain are pre-existing prose-fidelity holds with nothing clinical in them.</p>
-      <p class="dwhy">The defects were not stylistic. Several were dosing: a benzodiazepine underdose for status epilepticus, on an article whose own corpus-mate had the right number and therefore contradicted it; a neonatal dextrose dose carried over from the infant range; a pediatric bradycardia instruction that had dropped both of its qualifying conditions; an eclampsia article with no magnesium regimen in it at all. One was a guideline attributed to a trial whose primary endpoints were negative. <b>This is the part that justifies the rest of the page</b> &mdash; not that the reviewers were right often, but that a system nobody had checked was still hiding sixteen of these, and the only reason they surfaced is that someone went and measured it.</p>
+      <p class="dwhy">The defects were not stylistic. Several were dosing: a benzodiazepine underdose for status epilepticus, on an article whose own corpus-mate had the right number and therefore contradicted it; a neonatal dextrose dose carried over from the infant range; a pediatric bradycardia instruction that had dropped both of its qualifying conditions; an eclampsia article with no magnesium regimen in it at all. One was a guideline attributed to a trial whose primary endpoints were negative. <b>Not that the reviewers were right often</b> &mdash; a system nobody had checked was still hiding sixteen of these, and they surfaced only because someone went and measured it.</p>
     </div>
   </section>
 
   <section class="sec" id="close">
     <div class="sechead"><span class="secnum">05</span><h2>What this shows</h2><div class="divider"></div></div>
     <div class="context">
-      <p><b>Not that the pipeline is good.</b> The findings above are all ways it was wrong, found by measuring it rather than by trusting it. The claim I would make is narrower and I think more useful: <b>an evaluation system nobody has evaluated supplies confidence rather than information</b>, and the difference does not show up until someone checks.</p>
+      <p><b>Not that the pipeline is good.</b> The findings above are all ways it was wrong, found by measuring it rather than by trusting it. The narrower claim: <b>an evaluation system nobody has evaluated supplies confidence rather than information</b>, and the difference does not show up until someone checks.</p>
       <p>Each of the three findings has the same shape. Agreement looked like confirmation and was partly shared blindness. A blocker count looked like content quality and was mostly missing source material. A green gate looked like resolution and was only attendance. In every case the instrument was reporting something adjacent to the thing it was believed to report, and in every case the failure was in the flattering direction.</p>
       <p>The clinical judgment is the part that is mine: knowing that <em>"I cannot verify this"</em> and <em>"this is incorrect"</em> must not share an output field when the reader is a clinician, that an errata note is not an error, and that a deferral without a date is a decision to never look again. <b>I specified the behavior and directed the agents that implemented it. I did not type the implementation and do not claim to.</b></p>
       <p style="margin-top:1.1rem; padding-top:1.1rem; border-top:1px solid var(--line-soft);">Companion write-ups: <a href="../enforcement/" style="color:var(--accent-cyan); text-decoration:none; border-bottom:1px solid var(--line)">checks that report success without having run</a> &middot; <a href="../publishing/" style="color:var(--accent-cyan); text-decoration:none; border-bottom:1px solid var(--line)">the disclosure pipeline</a> &middot; <a href="../case-studies/" style="color:var(--accent-cyan); text-decoration:none; border-bottom:1px solid var(--line)">all case studies</a></p>
