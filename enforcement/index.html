@@ -181,7 +181,7 @@
       <p>That one failed to <em>warn</em>; this one silently <em>allowed</em>. It was wired but never registered in either artifact, so it read as neither enforced nor tracked. The rewrite inverted its posture: any commit-shaped command it cannot evaluate &mdash; interpreter missing, interpreter crashing, target unresolved &mdash; now denies. Then it was re-tested twice: once against crafted inputs, once live through the real wiring, including a simulated broken toolchain that the old version waved through.</p>
     </div>
 
-    <p class="secsub" style="margin-top:1.6rem;">Two softer findings landed in the same pass, both &ldquo;the map said enforced, the territory disagreed&rdquo;: one check was a <em>reminder</em> mislabelled as a gate (the rule it supposedly enforced was narrated all along), and another was present on disk but never wired to any event, so it had never once run. Neither was a fail-open, but both were corrected in the register, because an overclaimed check is a lie about coverage even when the code is fine.</p>
+    <p class="secsub" style="margin-top:1.6rem;">Two softer findings landed in the same pass, both &ldquo;the map said enforced, the territory disagreed&rdquo;: one check was a <em>reminder</em> mislabeled as a gate (the rule it supposedly enforced was narrated all along), and another was present on disk but never wired to any event, so it had never once run. Neither was a fail-open, but both were corrected in the register, because an overclaimed check is a lie about coverage even when the code is fine.</p>
 
     <div class="cas">
       <div class="ct">casualty three · the verifier had the bug</div>

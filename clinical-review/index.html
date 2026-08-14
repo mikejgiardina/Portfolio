@@ -47,7 +47,7 @@
     <h1>Two reviewers agreed. That was the problem.</h1>
     <p class="lede">A review pipeline for clinical education content runs <b>two AI reviewer personas</b> over every article and keeps only what both of them independently flag. The intersection is the quality signal. This is the write-up of what happened when I measured whether that signal was real.</p>
     <p class="lede">It was not. <b>The two reviewers made the same mistake on the same sentence</b>, and agreement promoted that error into the highest-confidence bucket available.</p>
-    <p class="context">Every number below is from the pipeline's own run output over a live clinical-education corpus, not a benchmark &mdash; and the bases differ by section, so each is labelled where it appears. The finding rates in <b>03</b> come from a 79-article review set; the gate counts in <b>04</b> are corpus-wide over 93 published articles.</p>
+    <p class="context">Every number below is from the pipeline's own run output over a live clinical-education corpus, not a benchmark &mdash; and the bases differ by section, so each is labeled where it appears. The finding rates in <b>03</b> come from a 79-article review set; the gate counts in <b>04</b> are corpus-wide over 93 published articles.</p>
   </header>
 
   <section class="sec" id="shape">
@@ -163,14 +163,14 @@
     <div class="context">
       <p><b>Not that the pipeline is good.</b> The findings above are all ways it was wrong, found by measuring it rather than by trusting it. The claim I would make is narrower and I think more useful: <b>an evaluation system nobody has evaluated supplies confidence rather than information</b>, and the difference does not show up until someone checks.</p>
       <p>Each of the three findings has the same shape. Agreement looked like confirmation and was partly shared blindness. A blocker count looked like content quality and was mostly missing source material. A green gate looked like resolution and was only attendance. In every case the instrument was reporting something adjacent to the thing it was believed to report, and in every case the failure was in the flattering direction.</p>
-      <p>The clinical judgement is the part that is mine: knowing that <em>"I cannot verify this"</em> and <em>"this is incorrect"</em> must not share an output field when the reader is a clinician, that an errata note is not an error, and that a deferral without a date is a decision to never look again. <b>I specified the behavior and directed the agents that implemented it. I did not type the implementation and do not claim to.</b></p>
+      <p>The clinical judgment is the part that is mine: knowing that <em>"I cannot verify this"</em> and <em>"this is incorrect"</em> must not share an output field when the reader is a clinician, that an errata note is not an error, and that a deferral without a date is a decision to never look again. <b>I specified the behavior and directed the agents that implemented it. I did not type the implementation and do not claim to.</b></p>
       <p style="margin-top:1.1rem; padding-top:1.1rem; border-top:1px solid var(--line-soft);">Companion write-ups: <a href="../enforcement/" style="color:var(--accent-cyan); text-decoration:none; border-bottom:1px solid var(--line)">checks that report success without having run</a> &middot; <a href="../publishing/" style="color:var(--accent-cyan); text-decoration:none; border-bottom:1px solid var(--line)">the disclosure pipeline</a> &middot; <a href="../case-studies/" style="color:var(--accent-cyan); text-decoration:none; border-bottom:1px solid var(--line)">all case studies</a></p>
     </div>
   </section>
 
   <footer>
     <p>Clinical review pipeline &middot; internal tooling for a clinical-education corpus &middot; no patient data of any kind.</p>
-    <p>Findings, counts and rates are from the pipeline's own run output over a corpus of published educational articles. Reviewer personas are AI models prompted to review; they are not clinicians and their output is not clinical advice. Nothing here is a substitute for institutional protocol or clinical judgement.</p>
+    <p>Findings, counts and rates are from the pipeline's own run output over a corpus of published educational articles. Reviewer personas are AI models prompted to review; they are not clinicians and their output is not clinical advice. Nothing here is a substitute for institutional protocol or clinical judgment.</p>
     <p>Michael Giardina &middot; <a href="../">portfolio</a> &middot; <a href="https://github.com/mikejgiardina">github.com/mikejgiardina</a> &middot; <a href="https://www.linkedin.com/in/michael-giardina">linkedin.com/in/michael-giardina</a></p>
   </footer>
 
