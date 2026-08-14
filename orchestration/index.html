@@ -757,6 +757,97 @@
 
     <p class="note" style="margin-top:0.7rem; border-left-color: var(--accent-red);"><b>The PR counts undercount, in one direction, every round.</b> They are window-scoped: work that lands after the round's end timestamp is not in them, and that reliably includes the pull request carrying the round's own ledger row. Round 12 additionally excludes five commits pushed straight to a master branch with no PR and three direct pushes to a repository that is not PR-gated, and those three pushes were that round's actual user-visible deliverable. The rule was left alone mid-series rather than fixed, because changing the denominator would have broken comparability with every earlier round. Named in each row instead.</p>
 
+    <figure class="fig">
+      <div class="figtitle">Figure 6 &middot; the second instrument, rounds 7&ndash;12</div>
+      <p class="figlede">A separate chart on purpose. Figures 2 and 3 are percentage points off a hand-read usage panel; these are output tokens from the transcripts. The two are not convertible, so plotting rounds 7&ndash;12 onto the earlier figures would compose two instruments on one axis, which is the thing this page forbids. The dashed lines are the thresholds registered <em>before</em> each round ran.</p>
+
+      <div class="panels">
+        <div class="panel">
+          <div class="paneltitle">Coordinator share of output</div>
+          <svg viewBox="0 0 300 210" role="img" aria-label="Coordinator share by round: round 7 not measured, round 8 37.5 percent, round 9 unmeasurable, round 10 43.9 percent, round 11 42.0 percent, round 12 55.3 percent, against a registered bar of 42 percent." xmlns="http://www.w3.org/2000/svg">
+            <line class="ct-ax" x1="60" y1="10" x2="60" y2="200"/>
+            <line class="ct-gr" x1="197" y1="10" x2="197" y2="200" stroke-dasharray="4 4"/>
+            <text class="ct-lab" x="52" y="32" text-anchor="end">round 7</text>
+            <line class="ct-gr" x1="60" y1="27" x2="96" y2="27" stroke-dasharray="3 3"/>
+            <text class="ct-abs" x="102" y="31">not measured</text>
+            <text class="ct-lab" x="52" y="64" text-anchor="end">round 8</text>
+            <rect x="60" y="48" width="123" height="22" rx="4" fill="#1f9fc4"/>
+            <text class="ct-val" x="191" y="64">37.5%</text>
+            <text class="ct-lab" x="52" y="96" text-anchor="end">round 9</text>
+            <line class="ct-gr" x1="60" y1="91" x2="96" y2="91" stroke-dasharray="3 3"/>
+            <text class="ct-abs" x="102" y="95">unmeasurable</text>
+            <text class="ct-lab" x="52" y="128" text-anchor="end">round 10</text>
+            <rect x="60" y="112" width="143" height="22" rx="4" fill="#1f9fc4"/>
+            <text class="ct-val" x="211" y="128">43.9%</text>
+            <text class="ct-lab" x="52" y="160" text-anchor="end">round 11</text>
+            <rect x="60" y="144" width="137" height="22" rx="4" fill="#1f9fc4"/>
+            <text class="ct-val" x="205" y="160">42.0%</text>
+            <text class="ct-lab" x="52" y="192" text-anchor="end">round 12</text>
+            <rect x="60" y="176" width="181" height="22" rx="4" fill="#c98500"/>
+            <text class="ct-val" x="249" y="192">55.3%</text>
+          </svg>
+          <p class="srcline" style="margin-top:.4rem">dashed line: the 42.0% bar, held for round 13</p>
+        </div>
+
+        <div class="panel">
+          <div class="paneltitle">Orchestrator output per merged PR</div>
+          <svg viewBox="0 0 300 210" role="img" aria-label="Orchestrator output tokens per merged pull request: round 7 not measured, round 8 21,208, round 9 79,894, round 10 31,413, round 11 42,166, round 12 44,089, against a registered bar of 50,000." xmlns="http://www.w3.org/2000/svg">
+            <line class="ct-ax" x1="60" y1="10" x2="60" y2="200"/>
+            <line class="ct-gr" x1="183" y1="10" x2="183" y2="200" stroke-dasharray="4 4"/>
+            <text class="ct-lab" x="52" y="32" text-anchor="end">round 7</text>
+            <line class="ct-gr" x1="60" y1="27" x2="96" y2="27" stroke-dasharray="3 3"/>
+            <text class="ct-abs" x="102" y="31">not measured</text>
+            <text class="ct-lab" x="52" y="64" text-anchor="end">round 8</text>
+            <rect x="60" y="48" width="52" height="22" rx="4" fill="#1f9fc4"/>
+            <text class="ct-val" x="120" y="64">21,208</text>
+            <text class="ct-lab" x="52" y="96" text-anchor="end">round 9</text>
+            <rect x="60" y="80" width="196" height="22" rx="4" fill="#c98500"/>
+            <text class="ct-val" x="264" y="96">79,894</text>
+            <text class="ct-lab" x="52" y="128" text-anchor="end">round 10</text>
+            <rect x="60" y="112" width="77" height="22" rx="4" fill="#1f9fc4"/>
+            <text class="ct-val" x="145" y="128">31,413</text>
+            <text class="ct-lab" x="52" y="160" text-anchor="end">round 11</text>
+            <rect x="60" y="144" width="103" height="22" rx="4" fill="#1f9fc4"/>
+            <text class="ct-val" x="171" y="160">42,166</text>
+            <text class="ct-lab" x="52" y="192" text-anchor="end">round 12</text>
+            <rect x="60" y="176" width="108" height="22" rx="4" fill="#1f9fc4"/>
+            <text class="ct-val" x="176" y="192">44,089</text>
+          </svg>
+          <p class="srcline" style="margin-top:.4rem">dashed line: the 50,000 bar, unchanged for five rounds</p>
+        </div>
+
+        <div class="panel">
+          <div class="paneltitle">Pull requests merged</div>
+          <svg viewBox="0 0 300 210" role="img" aria-label="Pull requests merged per round: four, eight, six, ten, seven, six." xmlns="http://www.w3.org/2000/svg">
+            <line class="ct-ax" x1="60" y1="10" x2="60" y2="200"/>
+            <text class="ct-lab" x="52" y="32" text-anchor="end">round 7</text>
+            <rect x="60" y="16" width="78" height="22" rx="4" fill="#1f9fc4"/>
+            <text class="ct-val" x="146" y="32">4</text>
+            <text class="ct-lab" x="52" y="64" text-anchor="end">round 8</text>
+            <rect x="60" y="48" width="157" height="22" rx="4" fill="#1f9fc4"/>
+            <text class="ct-val" x="225" y="64">8</text>
+            <text class="ct-lab" x="52" y="96" text-anchor="end">round 9</text>
+            <rect x="60" y="80" width="118" height="22" rx="4" fill="#1f9fc4"/>
+            <text class="ct-val" x="186" y="96">6</text>
+            <text class="ct-lab" x="52" y="128" text-anchor="end">round 10</text>
+            <rect x="60" y="112" width="196" height="22" rx="4" fill="#1f9fc4"/>
+            <text class="ct-val" x="264" y="128">10</text>
+            <text class="ct-lab" x="52" y="160" text-anchor="end">round 11</text>
+            <rect x="60" y="144" width="137" height="22" rx="4" fill="#1f9fc4"/>
+            <text class="ct-val" x="205" y="160">7</text>
+            <text class="ct-lab" x="52" y="192" text-anchor="end">round 12</text>
+            <rect x="60" y="176" width="118" height="22" rx="4" fill="#1f9fc4"/>
+            <text class="ct-val" x="186" y="192">6</text>
+          </svg>
+          <p class="srcline" style="margin-top:.4rem">a known undercount, in one direction, every round</p>
+        </div>
+      </div>
+
+      <figcaption>The amber bars are the two disconfirmations. Round 9 missed the unit-cost bar by 3.8&times; because its workers were spawned in a form the instrument could not see, so its denominator was wrong rather than its coordinator being expensive. Round 12 missed the share bar by 13.3 points because the coordinator spent the round writing production code and running deploys, which is neither coordination nor correction and which the script cannot distinguish from either.</figcaption>
+      <figcaption style="border-top:none; padding-top:0.4rem;"><b>Neither bar was moved afterward.</b> Round 13 still carries 42.0% and 50,000. A bar re-based onto the round that missed it would launder the miss and break the only comparable line the series has, which is the whole reason these two figures read as a series at all.</figcaption>
+      <p class="srcline">output tokens deduped by message id, parent plus subagent sidechains, message-windowed &middot; every figure quoted with the instant it was measured</p>
+    </figure>
+
     <h4 style="font-family:var(--serif); font-size:1.15rem; font-weight:600; margin:2rem 0 0.5rem;">What actually changed: the prediction survives its own misses</h4>
     <p class="secsub">Round 6 registered one prediction before the round existed. Every round from 9 onward registers a set of them, in the manifest, before the first worker is spawned &mdash; along with what would disconfirm each one. The scoreboard is not flattering:</p>
 
