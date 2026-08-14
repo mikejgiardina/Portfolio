@@ -221,7 +221,7 @@
       </div>
       <p class="scrollhint">&larr; scroll to pan the diagram &rarr;</p>
 
-      <figcaption>Adding a worker adds a parallel write path, which costs almost nothing. It also adds traffic to the return rail, which doesn't parallelise at all. The bottleneck isn't compute. It's the single writer, and specifically two jobs that writer holds: <b>validating what comes back</b>, and <b>keeping the combined context of every lease in one head</b>. Neither gets easier with more workers.</figcaption>
+      <figcaption>Adding a worker adds a parallel write path, which costs almost nothing. It also adds traffic to the return rail, which doesn't parallelize at all. The bottleneck isn't compute. It's the single writer, and specifically two jobs that writer holds: <b>validating what comes back</b>, and <b>keeping the combined context of every lease in one head</b>. Neither gets easier with more workers.</figcaption>
 
       <p class="srcline">one box per worker; the model assignment this diagram implies is the claim corrected below</p>
 
@@ -278,7 +278,7 @@
       </div>
       <div class="card">
         <div class="tag">assigned at spawn</div>
-        <h3>A scoped pre-authorisation</h3>
+        <h3>A scoped pre-authorization</h3>
         <p>Dated, revocable, and naming exactly which otherwise-gated files this lease may touch &mdash; plus a <em>park and report</em> list for things it may not, and a hard-decline list. A worker that has to stop and ask about every gated file is not running in parallel with anything.</p>
       </div>
       <div class="card">
@@ -297,7 +297,7 @@
   </section>
 
   <section class="sec" id="spine">
-    <div class="sechead"><span class="secnum">03</span><h2>Centralise the serial resources</h2><div class="divider"></div></div>
+    <div class="sechead"><span class="secnum">03</span><h2>Centralize the serial resources</h2><div class="divider"></div></div>
     <p class="secsub">Some resources cannot be written by two sessions at once without one of them losing. The rule is not &ldquo;coordinate carefully&rdquo; &mdash; it is <b>route them through one writer and let everything else run free</b>. Four qualify.</p>
 
     <div class="bar">
@@ -339,7 +339,7 @@
 
     <p class="note" style="margin-top:1.2rem;"><b>A related rule, learned the same way.</b> Deciding which files a change could possibly affect, twice, from memory &mdash; once by the coordinator and once by a worker &mdash; produced two short lists that were both wrong, and both missed the one that mattered. Enumerating instead of recalling took a single command. <em>Enumerate, don't recall</em> is now the standing form, and it is the same instinct as the rest of this page: prefer the thing that reads real state over the thing that sounds right.</p>
 
-    <h3 style="font-family:var(--serif); font-size:1.45rem; font-weight:600; margin:2.8rem 0 0.5rem;">What centralising the merges actually buys</h3>
+    <h3 style="font-family:var(--serif); font-size:1.45rem; font-weight:600; margin:2.8rem 0 0.5rem;">What centralizing the merges actually buys</h3>
     <p class="secsub">The technical argument for one merger is rebase ordering. The argument that matters more in practice is about <b>where the waiting happens.</b></p>
 
     <p class="note" style="border-left-color: var(--accent-green);">Run four branches yourself and you are on call for all four. Each one finishes when it finishes, and each one wants you to review it, commit, push, open a PR, wait on checks, merge, then clean up the branch. Four times, at four unpredictable moments, interleaved. The work is trivial and the interruption is not &mdash; you can't leave, because something is always about to need a click.</p>
@@ -353,8 +353,8 @@
       <p>It picks up open items and evaluates them against the standing guardrails: the process SOPs, the decision records, the persistent memory, the repo-specific configuration. That context is what makes a slate of work coherent rather than a list of whatever was open.</p>
     </div>
     <div class="stage">
-      <div class="stagehead"><span class="stagenum">2</span><span class="stagename">It builds the team</span><span class="stagekind">globs, fan-out, pre-authorisation</span></div>
-      <p>Items get grouped by the write surface they need, globs get intersected, and each lease is sized &mdash; fan-out permission, pre-authorisation, and <em>intended</em> model tier, which the correction above explains is not actually settable at spawn. Issues are assigned to whichever lease already owns their files, so one lease may carry several unrelated items.</p>
+      <div class="stagehead"><span class="stagenum">2</span><span class="stagename">It builds the team</span><span class="stagekind">globs, fan-out, pre-authorization</span></div>
+      <p>Items get grouped by the write surface they need, globs get intersected, and each lease is sized &mdash; fan-out permission, pre-authorization, and <em>intended</em> model tier, which the correction above explains is not actually settable at spawn. Issues are assigned to whichever lease already owns their files, so one lease may carry several unrelated items.</p>
     </div>
     <div class="stage">
       <div class="stagehead"><span class="stagenum">3</span><span class="stagename">Each lease works in its own context</span><span class="stagekind">and evaluates on its own terms</span></div>
@@ -362,7 +362,7 @@
     </div>
     <div class="stage">
       <div class="stagehead"><span class="stagenum">4</span><span class="stagename">The coordinator reconciles what came back</span><span class="stagekind">the expensive step</span></div>
-      <p>This is the part that doesn't parallelise and the part that costs. Several leases report from several different vantage points, and one reader has to hold all of it at once: which findings are the same finding, which contradict, which change what another lease was told, what actually merges and in what order.</p>
+      <p>This is the part that doesn't parallelize and the part that costs. Several leases report from several different vantage points, and one reader has to hold all of it at once: which findings are the same finding, which contradict, which change what another lease was told, what actually merges and in what order.</p>
     </div>
     <div class="stage">
       <div class="stagehead"><span class="stagenum">5</span><span class="stagename">It writes the board</span><span class="stagekind">deduped, single voice</span></div>
@@ -638,7 +638,7 @@
         </div>
       </div>
 
-      <figcaption><b>Both halves come with a caveat, and the caveats are the interesting part.</b> The 1.9&times; is an <em>upper bound</em>: it is summed elapsed time minus the idle gaps long enough to detect, so any shorter stall is still counted as work. And it covers only the opening burst &mdash; measured across the whole round the figure collapses to 1.1&times;, which is not a finding about parallelism at all but an artifact of one session being left open overnight and resumed the next day. <b>Elapsed time is not working time, and nothing in the setup distinguishes them.</b> The right-hand curve is explicitly a model: it shows why returns should flatten once added work lands on the one path that cannot be parallelised. Round 1's six workers sit in that flat region &mdash; and round 1 was the round that was hardest to hold together.</figcaption>
+      <figcaption><b>Both halves come with a caveat, and the caveats are the interesting part.</b> The 1.9&times; is an <em>upper bound</em>: it is summed elapsed time minus the idle gaps long enough to detect, so any shorter stall is still counted as work. And it covers only the opening burst &mdash; measured across the whole round the figure collapses to 1.1&times;, which is not a finding about parallelism at all but an artifact of one session being left open overnight and resumed the next day. <b>Elapsed time is not working time, and nothing in the setup distinguishes them.</b> The right-hand curve is explicitly a model: it shows why returns should flatten once added work lands on the one path that cannot be parallelized. Round 1's six workers sit in that flat region &mdash; and round 1 was the round that was hardest to hold together.</figcaption>
       <p class="srcline">left: measured session timestamps, idle gaps &gt;5 min excluded · right: modelled, serial fraction 0.25 assumed to illustrate the shape — not measured.</p>
 
       <p class="note" style="margin-top:1.2rem; border-left-color: var(--accent-red);"><b>And every percentage in the table above is contaminated by an unknown amount.</b> The weekly panel measures the whole machine, not the round &mdash; anything else running in the same window lands in the same number. Round 5 was the first round where that was quantified, by a different method than round 6 used: the round accounted for <b>6.7%</b> of the output tokens in its window, so the rest of that reading is other work. For rounds 1 through 4 the figure is not just unknown, it is <em>unknowable</em> after the fact.</p>
