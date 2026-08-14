@@ -56,7 +56,7 @@
 
   <section class="sec" id="problem">
     <div class="sechead"><span class="secnum">01</span><h2>Why a checklist wasn't enough</h2><div class="divider"></div></div>
-    <p class="secsub">The naive version of this is a pre-send checklist. I have one, and it's stage five &mdash; but on its own it fails for a specific structural reason.</p>
+    <p class="secsub">The naive version of this is a pre-send checklist. I have one, and it's stage five, but on its own it fails for a specific structural reason.</p>
     <div class="cards">
       <div class="card">
         <div class="tag">asymmetry</div>
@@ -71,7 +71,7 @@
       <div class="card">
         <div class="tag">the actual failure mode</div>
         <h3>A quiet check reads as coverage</h3>
-        <p>The write-time scanner reports nothing when a file is clean &mdash; and nothing when it never examined the file at all. Those two outcomes are <em>indistinguishable from the author's chair</em>, which is how a gap survives for months.</p>
+        <p>The write-time scanner reports nothing when a file is clean, and nothing when it never examined the file at all. Those two outcomes are <em>indistinguishable from the author's chair</em>, which is how a gap survives for months.</p>
       </div>
       <div class="card">
         <div class="tag">bias</div>
@@ -87,7 +87,7 @@
 
     <div class="stage">
       <div class="stagehead"><span class="stagenum">01</span><span class="stagename">The registries</span><span class="stagekind">single source of truth</span></div>
-      <p>One versioned file holds every proprietary term, each paired with a <b>replacement hint</b> &mdash; not just &ldquo;don't say this&rdquo; but &ldquo;say this instead.&rdquo; Nothing downstream hardcodes a term; every later stage reads it at run time, so adding one term propagates to the scanner, the scrubber, and the reviewer at once.</p>
+      <p>One versioned file holds every proprietary term, each paired with a <b>replacement hint</b>, not just &ldquo;don't say this&rdquo; but &ldquo;say this instead.&rdquo; Nothing downstream hardcodes a term; every later stage reads it at run time, so adding one term propagates to the scanner, the scrubber, and the reviewer at once.</p>
       <p>The replacement hints carry a rule: a rewrite must <em>preserve the claim</em>, dropping only to the next-lowest useful specificity. Sanitizing a capability into vagueness is a different failure &mdash; it protects the IP by making the work sound like nothing.</p>
       <p>A second registry was added later and answers a different question: not <em>what</em> is protected but <b>where publishing actually happens</b> &mdash; the destinations where a push is itself the act of publishing. It's a hand-kept list, which is a weakness, so it carries an explicit bias rule: <em>when unsure whether a destination belongs, add it.</em> A false inclusion costs one extra scan. A false exclusion is a permanent disclosure. Splitting <em>what</em> from <em>where</em> is what let the later stages stop guessing either one from a file path.</p>
     </div>
@@ -186,7 +186,7 @@
   files read · sections skipped and why · <span class="vg">whether the automated
   scan would have caught each blocker on its own</span></pre>
     </div>
-    <p class="secsub" style="margin-top:1.4rem;">Every review reports <b>which findings the automated stage would have missed</b> &mdash; so the pipeline measures its own front end continuously, from real artifacts rather than from a test fixture. A review that keeps reporting &ldquo;the scanner would have caught this&rdquo; means the human stages are wasting effort. A review reporting the opposite is telling me exactly where the next check belongs.</p>
+    <p class="secsub" style="margin-top:1.4rem;">Every review reports <b>which findings the automated stage would have missed</b>, so the pipeline measures its own front end continuously, from real artifacts rather than from a test fixture. A review that keeps reporting &ldquo;the scanner would have caught this&rdquo; means the human stages are wasting effort. A review reporting the opposite is telling me exactly where the next check belongs.</p>
     <p class="secsub">Two anti-softening rules ride alongside it: a blocker is never downgraded to a revision because a deadline is close (say it's a blocker, let the human override on the record), and a sampled read caps the verdict at <em>revise</em> &mdash; clear requires having read the whole thing.</p>
   </section>
 
@@ -205,9 +205,9 @@
     <div class="cas">
       <div class="ct">failure &middot; found july 2026 &middot; third instance</div>
       <h4>The same miss, on this page</h4>
-      <p>Two permanent, search-indexed case-study pages &mdash; <b>including the one you are reading</b> &mdash; were drafted in a directory the filter had never been told about. Same silent shape as the packet above: the scanner ran, matched no path, exited clean. It was caught only because the review stage was run by hand.</p>
-      <p>Three instances of one bug in two months, each &ldquo;fixed&rdquo; by adding another pattern, is no longer a bug. It's the design. <em>Whether something will be published is not a property of its path</em> &mdash; so a hand-maintained list of paths will keep missing new public surfaces as fast as they are created, and keep missing them <b>silently</b>, which is the part that matters.</p>
-      <p>That produced stage six. The automated check now hangs off the <b>push</b> rather than the path, which takes path matching off the critical path entirely. The filter stays as an early warning; it is no longer the thing standing between a draft and the public. Its remaining gaps became a latency problem &mdash; you find out later &mdash; instead of a silent-hole problem.</p>
+      <p>Two permanent, search-indexed case-study pages (<b>including the one you are reading</b>) were drafted in a directory the filter had never been told about. Same silent shape as the packet above: the scanner ran, matched no path, exited clean. It was caught only because the review stage was run by hand.</p>
+      <p>Three instances of one bug in two months, each &ldquo;fixed&rdquo; by adding another pattern, is no longer a bug. It's the design. <em>Whether something will be published is not a property of its path</em>, so a hand-maintained list of paths will keep missing new public surfaces as fast as they are created, and keep missing them <b>silently</b>, which is the part that matters.</p>
+      <p>That produced stage six. The automated check now hangs off the <b>push</b> rather than the path, which takes path matching off the critical path entirely. The filter stays as an early warning; it is no longer the thing standing between a draft and the public. Its remaining gaps became a latency problem (you find out later) instead of a silent-hole problem.</p>
     </div>
 
     <div class="cas">
@@ -221,8 +221,8 @@
     <div class="cas">
       <div class="ct">failure &middot; found june 2026 &middot; underneath all three</div>
       <h4>Enforced on the map, dead on the machine &mdash; the whole time</h4>
-      <p>Underneath all three of the above, the same scanner was a complete no-op for an unrelated reason: it read the edited file's path from an environment variable the runtime doesn't set, so the path came back empty and it bailed on its first line. Its warning also went to a stream the wiring discarded. Two independent bugs, stacked, both silent. It was found by accident, while editing a neighbouring hook &mdash; not by any check &mdash; while the process register listed the discipline as <b>enforced</b>.</p>
-      <p><b>And the fix for it didn't work either.</b> The diagnosis was right &mdash; wrong variable &mdash; and the correction substituted a <em>second</em> variable that was equally imaginary. Same empty path, same exit on line one, now with a commit message saying it was fixed. The hook stayed dead for another seven weeks.</p>
+      <p>Underneath all three of the above, the same scanner was a complete no-op for an unrelated reason: it read the edited file's path from an environment variable the runtime doesn't set, so the path came back empty and it bailed on its first line. Its warning also went to a stream the wiring discarded. Two independent bugs, stacked, both silent. It was found by accident, while editing a neighbouring hook (not by any check) while the process register listed the discipline as <b>enforced</b>.</p>
+      <p><b>And the fix for it didn't work either.</b> The diagnosis was right (wrong variable) and the correction substituted a <em>second</em> variable that was equally imaginary. Same empty path, same exit on line one, now with a commit message saying it was fixed. The hook stayed dead for another seven weeks.</p>
       <p>Which reframes the three failures above: <b>every one of those path fixes was applied to a scanner that could not run at all.</b> Each was reasoned about carefully, tested by reading, and landed against a hook that was going to exit on line one no matter what the filter said. The scoping was never the reason nothing was being caught. It only looked like the reason, because scoping is what you can see by reading the script &mdash; and a dead hook and a correctly-scoped clean one produce byte-identical output.</p>
       <p>This is what produced the standing rule now applied to every gate in the workspace: <em>a check that exists is not a check that bites &mdash; and a fix that reads correctly is not a fix.</em> Both close only by feeding the thing a known-bad input and watching it go red. That rule, and the ledger tracking it, is <a href="../enforcement/" style="color:var(--accent-cyan); text-decoration:none; border-bottom:1px solid var(--line)">its own write-up</a>.</p>
     </div>
@@ -230,9 +230,9 @@
     <div class="cas" style="border-color: rgba(255,180,84,0.28); border-left-color: var(--accent-amber);">
       <div class="ct" style="color: var(--accent-amber);">open gap · tracked, not fixed</div>
       <h4>The paraphrase hole</h4>
-      <p>The registry catches a proprietary term written literally. It does not catch the same mechanism described in plain English by someone who understands it &mdash; and <b>architecture described accurately enough to reimplement is a disclosure regardless of vocabulary</b>.</p>
+      <p>The registry catches a proprietary term written literally. It does not catch the same mechanism described in plain English by someone who understands it, and <b>architecture described accurately enough to reimplement is a disclosure regardless of vocabulary</b>.</p>
       <p>So the discipline is enforced at the literal layer and narrated at the paraphrase layer. It sits on the conversion backlog with a named target: a fuzzy pattern family per protected term, failing on near-matches under outward-facing paths.</p>
-      <p>It is not fixed. It's <em>ranked</em> &mdash; the highest-leverage item still open &mdash; and covered in the interim by the two human-read stages.</p>
+      <p>It is not fixed. It's <em>ranked</em> (the highest-leverage item still open) and covered in the interim by the two human-read stages.</p>
     </div>
   </section>
 

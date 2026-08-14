@@ -82,7 +82,7 @@
       <div class="card">
         <div class="tag">philosophy</div>
         <h3>Narrated &rarr; enforced</h3>
-        <p>A convention written in a doc gets forgotten. Wherever a rule can be expressed as a check, it becomes one &mdash; so the guarantee holds even when no one remembers it, and self-clears the moment the check goes green.</p>
+        <p>A convention written in a doc gets forgotten. Wherever a rule can be expressed as a check, it becomes one, so the guarantee holds even when no one remembers it, and self-clears the moment the check goes green.</p>
       </div>
       <div class="card">
         <div class="tag">portability</div>
@@ -98,7 +98,7 @@
       <div class="card">
         <div class="tag">concurrency</div>
         <h3>Multi-writer safety</h3>
-        <p>Several writers &mdash; human teammates or AI sessions &mdash; share one multi-repo workspace. Git worktrees, a branch-per-task convention, and a live-session registry keep two of them from editing the same sub-repo and committing onto each other's branches &mdash; a real failure this layer was built to prevent. The coordination rides on shared git conventions, so it holds for teammates who have never touched an AI tool.</p>
+        <p>Several writers (human teammates or AI sessions) share one multi-repo workspace. Git worktrees, a branch-per-task convention, and a live-session registry keep two of them from editing the same sub-repo and committing onto each other's branches &mdash; a real failure this layer was built to prevent. The coordination rides on shared git conventions, so it holds for teammates who have never touched an AI tool.</p>
       </div>
     </div>
   </section>
@@ -142,7 +142,7 @@
       <div class="row"><span class="rname">Manifest check</span><span class="rdesc">confirms the module manifest matches the source files actually on disk</span><span class="chip c-adv rchip">advisory</span></div>
     </div>
 
-    <div class="note" style="margin: -0.2rem 0 1.4rem;"><b>Where the repo-identity guard came from.</b> A repository had been transferred between owners, which leaves a redirect behind. An archive command typed against the <em>old</em> name silently followed that redirect and archived the canonical repository instead &mdash; the one being kept. The check that catches it is a single API call asking whether the name you typed still equals its own canonical name; if it doesn't resolve, or resolves to something else, the destructive verb is denied. Nearly every gate on this page exists because something like that happened once.</div>
+    <div class="note" style="margin: -0.2rem 0 1.4rem;"><b>Where the repo-identity guard came from.</b> A repository had been transferred between owners, which leaves a redirect behind. An archive command typed against the <em>old</em> name silently followed that redirect and archived the canonical repository instead, the one being kept. The check that catches it is a single API call asking whether the name you typed still equals its own canonical name; if it doesn't resolve, or resolves to something else, the destructive verb is denied. Nearly every gate on this page exists because something like that happened once.</div>
 
     <div class="note" style="margin: -0.2rem 0 1.4rem;"><b>Why the newest gates all guard something that isn't a file.</b> The original guards protect a working tree: is it dirty, is another session in it. Then several sessions started running at once, and the collisions moved to resources a working-tree guard structurally cannot see &mdash; a remote branch being merged with no checkout, a shared project board with no repository at all, a work item two threads both decided to pick up. Each was quiet under every existing guard, and each cost real duplicated work before it got one of its own. <em>The unit of contention was never the file.</em></div>
 
@@ -218,7 +218,7 @@
 
   <section class="sec" id="scheduled">
     <div class="sechead"><span class="secnum">05</span><h2>The scheduled layer</h2><div class="divider"></div></div>
-    <p class="secsub">Everything above fires on an event: you typed something, or the session started. That covers every failure with a moment attached to it &mdash; and none of the ones that accumulate. So a small set of sweeps runs on a calendar instead.</p>
+    <p class="secsub">Everything above fires on an event: you typed something, or the session started. That covers every failure with a moment attached to it, and none of the ones that accumulate. So a small set of sweeps runs on a calendar instead.</p>
     <div class="skills">
       <div class="skill">
         <h4>weekly automation audit</h4>

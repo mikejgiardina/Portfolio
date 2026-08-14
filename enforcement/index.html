@@ -48,7 +48,7 @@
     </div>
     <p class="kicker">Process design · governance</p>
     <h1>Turning conventions into checks that outlive the author.</h1>
-    <p class="lede">A process document that only works because the person who wrote it keeps re-reading it isn't risk mitigation &mdash; <b>it's a journal.</b> A process enforced by a failing check survives that person leaving. So I sorted every discipline this workspace runs on into those two piles on purpose, and built a scoreboard for <span class="cy">moving items from one pile to the other</span>. When the scoreboard shrinks, key-man risk shrinks &mdash; measurably, not rhetorically.</p>
+    <p class="lede">A process document that only works because the person who wrote it keeps re-reading it isn't risk mitigation, <b>it's a journal.</b> A process enforced by a failing check survives that person leaving. So I sorted every discipline this workspace runs on into those two piles on purpose, and built a scoreboard for <span class="cy">moving items from one pile to the other</span>. When the scoreboard shrinks, key-man risk shrinks &mdash; measurably, not rhetorically.</p>
     <p class="context">solo founder-engineer · a decision-record corpus · a set of living process documents</p>
 
     <p class="statnote">Two artifacts do the work. A <b>register</b> maps every discipline and classifies it. A <b>ledger</b> tracks the conversion work and verifies that the ones already claimed as enforced actually fire. The register is the map; the ledger is the scoreboard. They're separate because a backlog buried inside a reference document stops being a backlog.</p>
@@ -98,7 +98,7 @@
           <tr>
             <td><span class="st st-h">HYBRID</span></td>
             <td>Part is checked; part rides on a human reading the prose.</td>
-            <td><b>Partly</b> &mdash; the narrated half doesn't.</td>
+            <td><b>Partly</b>, the narrated half doesn't.</td>
           </tr>
           <tr>
             <td><span class="st st-n">NARRATED</span></td>
@@ -125,7 +125,7 @@
       </div>
       <div class="barit">
         <h4>It runs automatically</h4>
-        <p>A CI gate, a session lifecycle hook, or a pre-publish step &mdash; not &ldquo;remember to run it.&rdquo; A check that depends on being remembered has the same failure mode as the convention it replaced.</p>
+        <p>A CI gate, a session lifecycle hook, or a pre-publish step, not &ldquo;remember to run it.&rdquo; A check that depends on being remembered has the same failure mode as the convention it replaced.</p>
       </div>
       <div class="barit">
         <h4>Its failure message points at the fix</h4>
@@ -157,7 +157,7 @@
       <p>Writing them down as permanently unenforceable stops effort being spent trying, and keeps the ledger from carrying items that will never close.</p>
     </div>
 
-    <p class="note" style="margin-top:1.5rem;"><b>Open gap: the map drifted.</b> The ledger gets touched every time a check moves, so it stays current by construction. The register doesn't &mdash; nothing forces a visit &mdash; and it fell roughly two months behind the layer it classifies while that layer was being worked on heavily. It now <em>understates</em> coverage, which is the benign direction and is not the point: the artifact whose job is tracking drift drifted, and nothing noticed. The fix isn't diligence, it's the same move as everywhere else on this page &mdash; a check asserting the map is not more than N days behind the scoreboard. Until that exists, this is a narrated rule about a document full of narrated rules.</p>
+    <p class="note" style="margin-top:1.5rem;"><b>Open gap: the map drifted.</b> The ledger gets touched every time a check moves, so it stays current by construction. The register doesn't (nothing forces a visit) and it fell roughly two months behind the layer it classifies while that layer was being worked on heavily. It now <em>understates</em> coverage, which is the benign direction and is not the point: the artifact whose job is tracking drift drifted, and nothing noticed. The fix isn't diligence, it's the same move as everywhere else on this page &mdash; a check asserting the map is not more than N days behind the scoreboard. Until that exists, this is a narrated rule about a document full of narrated rules.</p>
   </section>
 
   <section class="sec" id="casualties">
@@ -169,7 +169,7 @@
       <h4>The scanner that examined nothing</h4>
       <p>A protective scanner read the path of the edited file from environment variables the runtime no longer provided. The path came back empty, so it exited on its first line &mdash; every run, silently. Its warning was also written to a stream the wiring discarded, so even when it did have something to say, nobody heard it. <b>Two independent bugs, stacked, both quiet.</b></p>
       <p>The register had it as enforced. It was found <em>by accident</em>, while a neighbouring script was being edited &mdash; not by any check.</p>
-      <p><b>The fix was also wrong, and that took seven more weeks to notice.</b> The diagnosis was right &mdash; the variable didn't exist &mdash; and the correction reached for a second variable that didn't exist either. Identical symptom, now with a commit message claiming it was resolved. Everything built on top of that scanner in the interim was built on nothing. <em>A fix verified by reading is not verified.</em></p>
+      <p><b>The fix was also wrong, and that took seven more weeks to notice.</b> The diagnosis was right (the variable didn't exist) and the correction reached for a second variable that didn't exist either. Identical symptom, now with a commit message claiming it was resolved. Everything built on top of that scanner in the interim was built on nothing. <em>A fix verified by reading is not verified.</em></p>
     </div>
 
     <div class="cas">
@@ -187,7 +187,7 @@
       <div class="ct">casualty three · the verifier had the bug</div>
       <h4>A suite where every passing test proved nothing</h4>
       <p>Both casualties above were found by luck, so the queue stopped being walked by hand and started being walked by a regression suite &mdash; a test file per hook, each one asserting the hook fires on a known-bad input <em>and</em> stays quiet on a control.</p>
-      <p>The first run of one of those files came back twelve passing, twelve failing. The twelve passes were every <em>&ldquo;no write occurred&rdquo;</em> case &mdash; and they passed because the stubbed-out command was never reached at all: the test harness had been talking to the live production board the entire time. It was recording real successes as proof that nothing had happened. <b>Only the paired control caught it</b>, because the assertion that something is absent is satisfied perfectly by a test that never ran.</p>
+      <p>The first run of one of those files came back twelve passing, twelve failing. The twelve passes were every <em>&ldquo;no write occurred&rdquo;</em> case, and they passed because the stubbed-out command was never reached at all: the test harness had been talking to the live production board the entire time. It was recording real successes as proof that nothing had happened. <b>Only the paired control caught it</b>, because the assertion that something is absent is satisfied perfectly by a test that never ran.</p>
       <p>The cause was a platform detail with no relationship to the check being tested: the native process launcher appends one specific extension to an extensionless command name and ignores the rest, so both forms of the stub were skipped and the real tool resolved instead. <b>The verification layer had exactly the property it was built to detect in the layer beneath it</b> &mdash; and it caught its own author twice in one sitting, on malformed fixtures that produced clean exits and zero output, indistinguishable from a hook that was genuinely dead.</p>
       <p>Which is now the standing rule for the suite: <em>every fire case is paired with a control.</em> Most of these hooks are advisory, so silence is their success case &mdash; and an all-quiet suite is also precisely what a dead hook produces. Without the control, a green run is not evidence of anything.</p>
     </div>
@@ -197,7 +197,7 @@
       <h4>A guard that fired on a clean tree</h4>
       <p>Every casualty above is a check that stayed quiet when it should have spoken. This one is the mirror image. A line-ending guard reported that <b>every script in the tree contained a carriage return</b> &mdash; in a tree that contained none.</p>
       <p>The cause is a platform-specific quirk of the tool doing the matching: in recursive list-only mode it named every file as matching, while asking the same tool to print the matching <em>lines</em> in any one of those files returned nothing. Two invocations of one utility, disagreeing about the same file, on one platform only.</p>
-      <p><b>A guard that fires on a clean tree is uninformative in exactly the way a guard that never fires is uninformative</b> &mdash; and it is worse in one respect, because it actively teaches its reader to ignore the channel. That is the same alert-fatigue argument that governs which of these hooks are allowed to block, arriving from the other direction.</p>
+      <p><b>A guard that fires on a clean tree is uninformative in exactly the way a guard that never fires is uninformative</b>, and it is worse in one respect, because it actively teaches its reader to ignore the channel. That is the same alert-fatigue argument that governs which of these hooks are allowed to block, arriving from the other direction.</p>
     </div>
 
     <div class="cas" style="border-color: rgba(0,255,159,0.28); border-left-color: var(--accent-green);">
@@ -205,20 +205,20 @@
       <h4>Six failures all pointing away from the fault</h4>
       <p>An assertion was added to a fixture defensively &mdash; not to catch a known defect, just because the value it checked had never been checked. It earned its place on the next run.</p>
       <p>Six assertions across three unrelated blocks were failing, all of them reporting that a hook had stopped warning. Every one pointed at the hook. <b>The new assertion collapsed all six into a single fatal error naming the file that was never written and the interpreter that failed to write it.</b></p>
-      <p>The six were not wrong. They were downstream, and downstream failures describe the symptom in the vocabulary of wherever they happen to sit. The useful assertion is the one closest to the thing that actually broke &mdash; and you generally cannot know in advance which one that is, which is the argument for adding it when you have no reason to.</p>
+      <p>The six were not wrong. They were downstream, and downstream failures describe the symptom in the vocabulary of wherever they happen to sit. The useful assertion is the one closest to the thing that actually broke, and you generally cannot know in advance which one that is, which is the argument for adding it when you have no reason to.</p>
     </div>
 
-    <p class="secsub" style="margin-top:1.6rem;">That sweep found five further defects. None was fixed in the same pass, because changing a hook's behavior sits behind a confirmation gate that adding a test deliberately does not &mdash; so each was filed instead, and carried as a <b>self-converting known-gap test</b>: an assertion of the <em>current, wrong</em> behavior that goes red the moment someone fixes it, with the instruction to convert it and close the item written into the failure message. A defect you've decided not to fix yet is still worth pinning down, and this keeps the backlog honest without letting the suite lie about what's working.</p>
+    <p class="secsub" style="margin-top:1.6rem;">That sweep found five further defects. None was fixed in the same pass, because changing a hook's behavior sits behind a confirmation gate that adding a test deliberately does not, so each was filed instead, and carried as a <b>self-converting known-gap test</b>: an assertion of the <em>current, wrong</em> behavior that goes red the moment someone fixes it, with the instruction to convert it and close the item written into the failure message. A defect you've decided not to fix yet is still worth pinning down, and this keeps the backlog honest without letting the suite lie about what's working.</p>
 
     <p class="note" style="margin-top:1.5rem; border-left-color: var(--accent-green);"><b>The rule that came out of it.</b> A wired hook is not a tracked check, a tracked check is not a biting one, and a passing test is not a check that ran &mdash; <b>each gap closes only from the outside, by something that assumes the layer beneath it is lying.</b> The corollary is scheduling: the first two casualties were caught reactively, by luck. The proactive complement is deliberately <em>not</em> a one-session sprint &mdash; a few rows driven to bite-tested per session, reviewed at every release, plus a recurring sweep that files what it finds where the work actually is. The queue's job is to keep the residual visible in the meantime, and it says out loud which proofs are still owed.</p>
   </section>
 
   <div class="takeaway">
     <h3>Why a solo founder builds this</h3>
-    <p>Because the risk that matters isn't a bug. It's that the working knowledge of how a multi-repository system stays correct lives in one person's head, and every convention that survives only by being remembered is a piece of that exposure. <b>Converting a remembered rule into a red check is the only move that reduces it permanently</b> &mdash; and unlike documentation, it can be counted.</p>
+    <p>Because the risk that matters isn't a bug. It's that the working knowledge of how a multi-repository system stays correct lives in one person's head, and every convention that survives only by being remembered is a piece of that exposure. <b>Converting a remembered rule into a red check is the only move that reduces it permanently</b>, and unlike documentation, it can be counted.</p>
     <p>Which is why the ledger is a separate artifact rather than a section. <b>Ledger A shrinking, and Ledger B graduating to bite-tested, is the literal measure of how much of this operating layer now survives the author leaving.</b> It's the only process metric here that can go the wrong way and show it.</p>
     <p style="margin-top:1.1rem; padding-top:1.1rem; border-top:1px solid var(--line-soft);">Companion write-ups: <a href="../automation/" style="color:var(--accent-cyan); text-decoration:none; border-bottom:1px solid var(--line)">the lifecycle-hook layer these checks run in</a> &middot; <a href="../publishing/" style="color:var(--accent-cyan); text-decoration:none; border-bottom:1px solid var(--line)">the disclosure-control pipeline for anything published</a>.</p>
-    <p style="margin-top:1.1rem; padding-top:1.1rem; border-top:1px solid var(--line-soft);"><b>The code is open.</b> The hooks and the suite described here live at <a href="https://github.com/mikejgiardina/hook-discipline" target="_blank" rel="noopener noreferrer" style="color:var(--accent-cyan); text-decoration:none; border-bottom:1px solid var(--line)">github.com/mikejgiardina/hook-discipline</a> &mdash; Apache-2.0, and it went through the same disclosure review as this page.</p>
+    <p style="margin-top:1.1rem; padding-top:1.1rem; border-top:1px solid var(--line-soft);"><b>The code is open.</b> The hooks and the suite described here live at <a href="https://github.com/mikejgiardina/hook-discipline" target="_blank" rel="noopener noreferrer" style="color:var(--accent-cyan); text-decoration:none; border-bottom:1px solid var(--line)">github.com/mikejgiardina/hook-discipline</a>, Apache-2.0, and it went through the same disclosure review as this page.</p>
   </div>
 
   <footer>
