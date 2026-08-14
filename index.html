@@ -99,7 +99,7 @@
                 The Kymora product line: the physiological engine, the simulators built on it, and the iOS application that runs a Core ML surrogate of it on-device.
             </p>
             <p class="section-intro" style="margin-top:-1.6rem; font-size:0.92rem; border-left:2px solid rgba(255,180,84,0.4); padding-left:0.9rem;">
-                <strong style="color:var(--text-primary); font-weight:500;">Read this before the cards.</strong> Everything below is pre-1.0 and none of it is deployed against real patient data. Two maturity tiers are mixed here on purpose: the <strong style="color:var(--text-primary); font-weight:500;">Kymora line</strong> — the engine and what runs on it — sits between 0.5 and 1.0, while everything under the <strong style="color:var(--text-primary); font-weight:500;">clinical apps</strong> heading is a working prototype. Where a card says <em>concept</em>, that means the boundary described is a design constraint rather than a shipped behaviour, and the card says so.
+                <strong style="color:var(--text-primary); font-weight:500;">Read this before the cards.</strong> Everything below is pre-1.0 and none of it is deployed against real patient data. Two maturity tiers are mixed here on purpose: the <strong style="color:var(--text-primary); font-weight:500;">Kymora line</strong> — the engine and what runs on it — sits between 0.5 and 1.0, while everything under the <strong style="color:var(--text-primary); font-weight:500;">clinical apps</strong> heading is a working prototype. Where a card says <em>concept</em>, that means the boundary described is a design constraint rather than a shipped behavior, and the card says so.
             </p>
             <p class="section-intro" style="margin-top:-1.2rem; font-size:0.92rem; border-left:2px solid rgba(139,148,158,0.3); padding-left:0.9rem;">
                 Where something is open to click, it is linked — the interactive clinical cases and the engineering write-ups are live right now. Where there is only a recorded walkthrough, that is the deliberate middle setting: you can watch the tool run without a pre-1.0 clinical instrument being put in front of the public. And where there is no link at all, that too is deliberate rather than incomplete — these touch clinical decision-making and several carry unfiled IP. You can't independently verify those from here and you should weight them accordingly.
@@ -229,8 +229,8 @@
                             <span class="tech-badge">HealthKit</span>
                             <span class="tech-badge">Core ML</span>
                         </div>
-                        <p style="font-size:0.78rem; color:var(--text-muted); margin-top:0.6rem; line-height:1.5;">Organisation and context only — it does not calculate a dose, recommend a change, or interpret a biometric as a clinical finding. Any of those would put a consumer app on the wrong side of the FDA device line.</p>
                         <span style="display:inline-block; margin-top:1rem; font-family:'JetBrains Mono',monospace; font-size:0.75rem; color:var(--text-muted); letter-spacing:0.08em;">In active development</span>
+                        <p style="font-size:0.78rem; color:var(--text-muted); margin-top:0.6rem; line-height:1.5;">Organization and context only — no dosing, no recommendations, no interpretation of biometrics.</p>
                     </div>
                 </div>
 
@@ -364,7 +364,7 @@
                             <span class="tech-badge">TypeScript</span>
                             <span class="tech-badge">Multi-Model AI</span>
                         </div>
-                        <p style="font-size:0.78rem; color:var(--text-muted); margin-top:0.6rem; line-height:1.5;">Built to sit outside the FDA device line under the 21st Century Cures Act §3060 clinical-decision-support criteria: it surfaces existing policy with its source visible for independent review, and does not drive time-critical decisions. A tool that recommended an intervention a clinician could not independently verify would be on the other side of that line.</p>
+                        <p style="font-size:0.78rem; color:var(--text-muted); margin-top:0.6rem; line-height:1.5;">Surfaces existing policy with the source shown. It does not recommend interventions or drive time-critical decisions.</p>
                     </div>
                 </div>
 
@@ -420,7 +420,7 @@
                             <span class="tech-badge">Gemini AI</span>
                             <span class="tech-badge">Local-First</span>
                         </div>
-                        <p style="font-size:0.78rem; color:var(--text-muted); margin-top:0.6rem; line-height:1.5;">Prototype, built and tested against synthetic data only. Be precise about what the guard is: it <em>detects and blocks</em>, it does not de-identify, and five patterns touch five of the eighteen Safe Harbor identifier categories — useful as a fail-closed egress control, not a compliance claim. HIPAA obligations attach to a covered entity or business associate, not to software.</p>
+                        <p style="font-size:0.78rem; color:var(--text-muted); margin-top:0.6rem; line-height:1.5;">Prototype, synthetic data only. The egress guard detects and blocks; it does not de-identify. Not a compliance claim.</p>
                     </div>
                 </div>
 
@@ -437,7 +437,7 @@
                         Drafting engine for CE-style articles, simulation scenarios and literature-referenced content, structured to the format nurse educators work in. Everything it produces is a draft for a human reviewer.
                     </p>
                     <ul class="app-features">
-                        <li>Drafts articles in the structure ANCC-accredited providers use — the accreditation belongs to the provider, not to this</li>
+                        <li>Drafts articles in the structure ANCC-accredited providers use — not an accreditation claim</li>
                         <li>Simulation scenario drafting from case inputs</li>
                         <li>Automated consistency and citation checks before human review — not peer review</li>
                         <li>Literature compilation with references carried through</li>
@@ -477,7 +477,7 @@
                             <span class="tech-badge">TypeScript</span>
                             <span class="tech-badge">Tailwind</span>
                         </div>
-                        <p style="font-size:0.78rem; color:var(--text-muted); margin-top:0.6rem; line-height:1.5;">Concept stage — the prioritisation-only boundary is a design constraint, not yet a shipped behaviour. It matters because suppressing a clinical alarm is a safety-critical function with its own standards (IEC 60601-1-8) and a different regulatory posture entirely.</p>
+                        <p style="font-size:0.78rem; color:var(--text-muted); margin-top:0.6rem; line-height:1.5;">Concept stage. Prioritization only — it reorders alerts and never silences one.</p>
                     </div>
                 </div>
 
@@ -602,7 +602,7 @@
                 </div>
                 <div class="contact-card" style="grid-column:1/-1; border-left-color:var(--accent-green);">
                     <div class="contact-title">How to read those two cards</div>
-                    <p class="contact-value" style="font-family:'Work Sans',sans-serif; letter-spacing:0; text-transform:none; line-height:1.6;">Those are the stacks these applications run on, not a claim that I write in them. I architect the systems, specify the behaviour, direct the AI sessions that implement it, and own whether the output is correct — clinically and structurally. That last part is the actual job and it's what the engineering write-ups are about. I'd rather say this plainly than let a stack list imply something it shouldn't.</p>
+                    <p class="contact-value" style="font-family:'Work Sans',sans-serif; letter-spacing:0; text-transform:none; line-height:1.6;">Those are the stacks these applications run on, not a claim that I write in them. I architect the systems, specify the behavior, direct the AI sessions that implement it, and own whether the output is correct — clinically and structurally. That last part is the actual job and it's what the engineering write-ups are about. I'd rather say this plainly than let a stack list imply something it shouldn't.</p>
                 </div>
                 <div class="contact-card">
                     <div class="contact-title">Regulatory Literacy</div>
