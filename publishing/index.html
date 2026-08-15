@@ -237,7 +237,7 @@
   </section>
 
   <div class="takeaway">
-    <h3>What this is really a case study in</h3>
+    <h3>Layering controls against named blind spots</h3>
     <p>Not IP paranoia &mdash; <b>layering controls against known blind spots, and knowing which blind spot each layer covers.</b> Every stage here was added because the stage before it failed in a way I could name. The human stages exist because literal matching cannot catch paraphrase. The newest automated stage exists because the oldest one was scoped by file path, and it took four separate misses to accept that <em>path is the wrong thing to key on</em> &mdash; then a fifth to notice the two stages had been reading different lists.</p>
     <p>The through-line is the same one that runs through the rest of this workspace: <b>a check that fails quietly is worse than no check</b>, because it reads as coverage you don't have. The answer isn't more scripts. It's pairing every automated gate with a reader whose job is to assume the gate didn't run &mdash; and writing down what it missed, every time, so the next check is chosen from evidence instead of instinct.</p>
     <p style="margin-top:1.1rem; padding-top:1.1rem; border-top:1px solid var(--line-soft);">Companion write-ups: <a href="../automation/" style="color:var(--accent-cyan); text-decoration:none; border-bottom:1px solid var(--line)">the lifecycle-hook layer this pipeline runs on</a> · <a href="../enforcement/" style="color:var(--accent-cyan); text-decoration:none; border-bottom:1px solid var(--line)">how a written convention becomes an enforced check</a>.</p>
