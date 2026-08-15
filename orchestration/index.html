@@ -285,8 +285,7 @@
         <div class="tag">not built yet</div>
         <h3>A control window</h3>
         <p>The next thing to try: baking a bounded window of direct control into a lease, so it can drive a surface the coordinator would otherwise have to drive on its behalf. The browser-driving lease above is the first case that wants it.</p>
-        <p>Written here as intent, not as something that exists.</p>
-      </div>
+        </div>
     </div>
 
     <p class="note" style="margin-top:1.4rem; border-left-color: var(--accent-amber);"><b>Correction to the first card. An earlier version said the model tiering is what happens; round 6 measured it and it is not.</b> Every thread ran on the top tier &mdash; <em>measured</em> for round 6, and <em>inferred</em> for rounds 1&ndash;5 from the fact that nothing ever set a tier. Two separate reasons, and only one of them is anyone's fault: <em>the spawn call has no model parameter at all</em>, so a coordinator structurally cannot set a lease's model when it creates it. What a lease <em>can</em> select is the model for the subagents it spawns itself, and round 3 measured those sidechains at <b>28% of worker output</b>, ranging 0&ndash;50% by lease. That half was available the whole time and nobody used it, because the brief said &ldquo;spawn subagents freely&rdquo; and never said &ldquo;tier them.&rdquo;</p>
@@ -730,7 +729,7 @@
 
     <p class="note"><b>The correction has no direction, and that is the whole point.</b> Round 6 moves down 5.0 points; round 5 moves <em>up</em> 2.4. A fix that only ever shrank the number would be a discount, and a discount that flatters the person applying it is not a finding. What the fix actually buys is that the number stops depending on when you look: re-run on the same round 6 data an evening later, the uncorrected tool reported <b>50.3%</b> &mdash; a drift of <b>24.4 points from elapsed time alone</b>, on a figure that was never touched. The re-measurement was run by an independent session rather than by the coordinator whose predecessor's number it was moving, because the correction ran in the direction that flattered it.</p>
 
-    <p class="note" style="border-left-color: var(--accent-amber);"><b>Two caveats, reported here rather than left for a reader to find.</b> This is the figure <em>at round completion</em>, not over the session's lifetime &mdash; post-close work (relays, the next round's setup, teardown) falls outside the window and would raise it. And the coordinator's cache reads finished at 22.7M against round 5's 34M, which is consistent with the split's second predicted effect but <em>was not part of the registered prediction</em>, so it is an observation and not a result.</p>
+    <p class="note" style="border-left-color: var(--accent-amber);"><b>Two caveats.</b> This is the figure <em>at round completion</em>, not over the session's lifetime &mdash; post-close work (relays, the next round's setup, teardown) falls outside the window and would raise it. And the coordinator's cache reads finished at 22.7M against round 5's 34M, which is consistent with the split's second predicted effect but <em>was not part of the registered prediction</em>, so it is an observation and not a result.</p>
 
     <p class="note" style="margin-top:0.7rem;"><b>The weekly panel says about four points for this round</b> (26% &rarr; 30%). That is one significant figure from a different instrument than the token counts, and the two are <em>not</em> converted into each other anywhere on this page. Doing that arithmetic is how a number acquires a precision neither source has.</p>
 
