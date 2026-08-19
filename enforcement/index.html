@@ -238,7 +238,7 @@
     <div class="cas">
       <div class="ct">casualty eight &middot; correct, reviewed, and unreachable</div>
       <h4>Tests that nothing ever ran</h4>
-      <p>A body of tests existed, was correct, and had been reviewed. No continuous-integration job, no script and no scheduled task invoked them, for months. The single nominal entry point was configured in watch mode, so it never exits and therefore never yields a pass or a fail.</p>
+      <p>A body of tests existed, was correct, and had been reviewed. No continuous-integration job, no script and no scheduled task invoked them for <b>135 days</b>. The repository's entire history contains <b>zero</b> commits touching the CI configuration that so much as name the test runner, across the only three workflow files ever added, and the first test file postdates the CI configuration by seven days. The gap was there from the moment the tests arrived. The single nominal entry point was configured in watch mode, so it never exits and therefore never yields a pass or a fail.</p>
       <p><b>Existing, correct and unreachable is indistinguishable from absent</b>, and it costs more, because the code is there to be pointed at. The same shape appears one layer up in any permanently red suite: a set of known failures nobody has pinned means the next new failure arrives invisible, inside noise the team has already trained itself to skip.</p>
     </div>
 
