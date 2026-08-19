@@ -168,7 +168,7 @@
       <div class="ct">casualty one · failed to warn</div>
       <h4>The scanner that examined nothing</h4>
       <p>A protective scanner read the path of the edited file from environment variables the runtime no longer provided. The path came back empty, so it exited on its first line &mdash; every run, silently. Its warning was also written to a stream the wiring discarded, so even when it did have something to say, nobody heard it. <b>Two independent bugs, stacked, both quiet.</b></p>
-      <p>The register had it as enforced. It was found <em>by accident</em>, while a neighbouring script was being edited &mdash; not by any check.</p>
+      <p>The register had it as enforced. It was found <em>by accident</em>, while a neighboring script was being edited &mdash; not by any check.</p>
       <p><b>The fix was also wrong, and that took seven more weeks to notice.</b> The diagnosis was right (the variable didn't exist) and the correction reached for a second variable that didn't exist either. Identical symptom, now with a commit message claiming it was resolved. Everything built on top of that scanner in the interim was built on nothing. <em>A fix verified by reading is not verified.</em></p>
     </div>
 
@@ -211,6 +211,38 @@
     <p class="secsub" style="margin-top:1.6rem;">That sweep found five further defects. None was fixed in the same pass, because changing a hook's behavior sits behind a confirmation gate that adding a test deliberately does not, so each was filed instead, and carried as a <b>self-converting known-gap test</b>: an assertion of the <em>current, wrong</em> behavior that goes red the moment someone fixes it, with the instruction to convert it and close the item written into the failure message. A defect you've decided not to fix yet is still worth pinning down, and this keeps the backlog honest without letting the suite lie about what's working.</p>
 
     <p class="note" style="margin-top:1.5rem; border-left-color: var(--accent-green);"><b>The rule that came out of it.</b> A wired hook is not a tracked check, a tracked check is not a biting one, and a passing test is not a check that ran &mdash; <b>each gap closes only from the outside, by something that assumes the layer beneath it is lying.</b> The corollary is scheduling: the first two casualties were caught reactively, by luck. The proactive complement is deliberately <em>not</em> a one-session sprint &mdash; a few rows driven to bite-tested per session, reviewed at every release, plus a recurring sweep that files what it finds where the work actually is. The queue's job is to keep the residual visible in the meantime, and it says out loud which proofs are still owed.</p>
+
+    <p class="secsub" style="margin-top:2rem;"><b>A later sweep found the same shape in four new places.</b> None is a variant of the casualties above. Each is a distinct mechanism arriving at one outcome, which is the argument for treating the class as structural rather than as a run of bad luck.</p>
+
+    <div class="cas">
+      <div class="ct">casualty five &middot; the detector was indistinguishable from what it detects</div>
+      <h4>A leak scanner that flagged itself</h4>
+      <p>A scanner reads build output for identifiers that must never ship. The scanner is compiled into the bundle it inspects, so the artifact contains one copy of every string being searched for, placed there by the search. A gate that matches on presence flags the detector as the leak and blocks every legitimate deploy.</p>
+      <p><b>The block looks like a correct security decision</b>, which is what makes it expensive. A refusal to publish reads as the control working, so the natural response is to trust it and go hunting for a leak that is not there. The fix is to count rather than match: one occurrence is the detector describing itself, more than one is a leak.</p>
+    </div>
+
+    <div class="cas">
+      <div class="ct">casualty six &middot; it discarded the match because it found one</div>
+      <h4>A matcher whose fixtures could not reach its bug</h4>
+      <p>The same scanner piped file contents into a matcher that exits the moment it finds a hit. On any input larger than the operating system's pipe buffer, the write end takes a broken-pipe signal, the pipeline reports that signal as its status, and the caller reads it as <em>no match</em>. <b>A term that was present returned absent</b>, and only for inputs large enough to matter.</p>
+      <p>Every fixture in its test suite was a few dozen bytes. The suite could not reach the failure at any point in its life, and passed continuously while failing to. <em>A guard whose tests are all smaller than its failure threshold is untested rather than tested.</em></p>
+    </div>
+
+    <div class="cas">
+      <div class="ct">casualty seven &middot; the tests proved the logic, never the wiring</div>
+      <h4>Testing what a guard does, not whether it runs</h4>
+      <p>Every test in the layer invoked its hook directly. Direct invocation is the one method that cannot detect a hook which never fires, because it supplies by hand the very thing whose absence is the defect. The suite could stay green in perpetuity while nothing was wired to anything.</p>
+      <p>One check had already filed this against itself, in writing, and the report sat unread at low priority until the failure it predicted arrived. <b>The remedy is to measure delivery from an artifact the harness writes, never from a script the test calls.</b> Evidence produced by the same hand that would be missing is not evidence.</p>
+    </div>
+
+    <div class="cas">
+      <div class="ct">casualty eight &middot; correct, reviewed, and unreachable</div>
+      <h4>Tests that nothing ever ran</h4>
+      <p>A body of tests existed, was correct, and had been reviewed. No continuous-integration job, no script and no scheduled task invoked them, for months. The single nominal entry point was configured in watch mode, so it never exits and therefore never yields a pass or a fail.</p>
+      <p><b>Existing, correct and unreachable is indistinguishable from absent</b>, and it costs more, because the code is there to be pointed at. The same shape appears one layer up in any permanently red suite: a set of known failures nobody has pinned means the next new failure arrives invisible, inside noise the team has already trained itself to skip.</p>
+    </div>
+
+    <p class="note" style="margin-top:1.5rem; border-left-color: var(--accent-amber);"><b>What the second sweep changes.</b> The first set could be read as one bad quarter. These four are different mechanisms: a self-referential detector, a signal-handling artifact, a test method, an unreachable entry point. They produce one outcome. <b>The consistent property is not the bug, it is that each was green while broken</b>, which is the only reason any of them survived long enough to be found.</p>
   </section>
 
   <div class="takeaway">
