@@ -1147,3 +1147,77 @@ body > footer{max-width:var(--page);margin-left:auto;margin-right:auto;padding:1
    toggle is too. On the front page it sits inside .quicknav, which is
    already hidden below 540px by its own rule. Hiding it globally would
    have left phone readers with no way to reach a theme that ships. */
+
+/* ============================================================
+   READING RHYTHM  (added for orchestration/, safe elsewhere:
+   all-new class names, nothing existing is redefined)
+
+   Why this exists: that page had 40 `.note` blocks and no
+   body-prose style at all, so every paragraph became a bordered
+   amber box and six places stacked 3-5 of them directly on each
+   other. A callout that never stops being a callout is just a
+   wall. `.pr` is the default voice; `.note` goes back to being
+   the exception.
+   ============================================================ */
+
+.pr{
+  max-width:var(--prose); color:var(--ink-2);
+  font-size:.95rem; line-height:1.72; margin:1.05rem 0;
+}
+.pr:first-child{margin-top:0}
+.pr b{color:var(--ink);font-weight:600}
+.pr em{color:var(--amber);font-style:normal;font-weight:500}
+.pr code{font-family:var(--mono);font-size:.84em;color:var(--accent)}
+.pr a{color:var(--accent);text-decoration:none;border-bottom:1px solid var(--line)}
+
+/* opening paragraph of a run — slightly larger, sets the level */
+.pr.lead{font-size:1.02rem;line-height:1.68;color:var(--ink-2)}
+
+/* a single sentence that carries a section — breaks a run of boxes
+   without adding another box */
+.pull{
+  max-width:var(--prose); margin:1.7rem 0;
+  padding:.1rem 0 .1rem 1.15rem;
+  border-left:2px solid var(--accent);
+  font-size:1.1rem; line-height:1.55; color:var(--ink);
+  font-weight:500; letter-spacing:-.005em;
+}
+.pull em{color:var(--amber);font-style:normal;font-weight:600}
+.pull b{color:var(--ink);font-weight:700}
+.pull .src{
+  display:block; margin-top:.5rem; font-family:var(--mono);
+  font-size:.68rem; letter-spacing:.08em; text-transform:uppercase;
+  color:var(--ink-3); font-weight:500;
+}
+
+/* the number a paragraph is about, pulled out of the paragraph */
+.keyfig{
+  display:grid; grid-template-columns:auto 1fr; gap:0 1.4rem;
+  align-items:center; max-width:var(--prose);
+  margin:1.6rem 0; padding:1.05rem 1.25rem;
+  background:var(--card); border:1px solid var(--line);
+  border-left:3px solid var(--accent); border-radius:var(--r-sm);
+}
+.keyfig .kn{
+  font-family:var(--mono); font-size:2.1rem; font-weight:700;
+  color:var(--ink); line-height:1; font-variant-numeric:tabular-nums;
+  letter-spacing:-.03em; white-space:nowrap;
+}
+.keyfig .kt{font-size:.9rem;line-height:1.55;color:var(--ink-2)}
+.keyfig .kt b{color:var(--ink);font-weight:600}
+.keyfig .kt em{color:var(--amber);font-style:normal;font-weight:600}
+.keyfig .kl{
+  grid-column:1/-1; margin-top:.75rem; padding-top:.7rem;
+  border-top:1px solid var(--line-soft);
+  font-family:var(--mono); font-size:.68rem; letter-spacing:.07em;
+  text-transform:uppercase; color:var(--ink-3);
+}
+.keyfig.miss{border-left-color:var(--red)}
+.keyfig.miss .kn{color:var(--red)}
+.keyfig.hold{border-left-color:var(--green)}
+
+@media (max-width:640px){
+  .keyfig{grid-template-columns:1fr;gap:.55rem}
+  .keyfig .kn{font-size:1.8rem}
+  .pull{font-size:1.02rem}
+}
