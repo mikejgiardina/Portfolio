@@ -130,7 +130,6 @@
                                 <li>Evidence-based pharmacokinetic library</li>
                                 <li>Clinical scoring: SOFA, qSOFA, NEWS2, GCS</li>
                                 <li>Core ML surrogate export for on-device inference</li>
-                                <li>Patent pending</li>
                             </ul>
                             <div class="app-card-footer">
                                 <div>
@@ -190,7 +189,7 @@
                     </p>
                     <ul class="app-features">
                         <li>Dynamic vitals with physiological drift engine</li>
-                        <li>Canvas-based ECG with QRS morphology and arrhythmia simulation</li>
+                        <li>Canvas ECG on the engine-backed build. The publicly reachable build drives rate only &mdash; no rhythm library, no morphology change</li>
                         <li>AI-driven case evolution based on clinical decisions</li>
                         <li>Interactive procedures with SBAR generation</li>
                         <li>Sound alerts and keyboard shortcuts for rapid input</li>
@@ -233,7 +232,6 @@
                         </div>
                         <span style="display:inline-block; margin-top:1rem; font-family:'JetBrains Mono',monospace; font-size:0.75rem; color:var(--text-muted); letter-spacing:0.08em;">Scaffolded · development deferred</span>
                         <p style="font-size:0.78rem; color:var(--text-muted); margin-top:0.6rem; line-height:1.5;">Organization and context only — no dosing, no recommendations, no interpretation of biometrics.</p>
-                        <p style="font-size:0.78rem; color:var(--text-muted); margin-top:0.5rem; line-height:1.5;">The app is scaffolded and the surrogate export pipeline works. Shipping it needs Apple Developer Program enrollment, which is on hold pending the company&#39;s legal setup, so it was deferred in August 2026 in favour of the model-credibility work. Deferred, not cancelled, and the repository shows the pause rather than hiding it.</p>
                     </div>
                 </div>
 
@@ -394,7 +392,7 @@
                         A clinical copilot that adapts to acuity context and routes by semantic intent, with scope-of-practice guardrails built from published state frameworks. The guardrails are implemented and demonstrable; whether they hold against a determined user is untested.
                     </p>
                     <ul class="app-features">
-                        <li>Adaptive personas tuned to clinical acuity level</li>
+                        <li>Adaptive personas tuned to clinical discipline rather than to an acuity tier</li>
                         <li>Semantic intent classification and routing</li>
                         <li>Declines rather than guesses near critical interventions, and routes to the policy source instead</li>
                         <li>State-specific scope of practice integration</li>
@@ -416,11 +414,11 @@
                 <!-- The four prototypes that carry no link, collapsed deliberately -->
                 <div class="app-card">
                     <div class="app-number">ALSO BUILT &middot; PROTOTYPES, NOT LINKED</div>
-                    <h3 class="app-title">Four more, described rather than shown</h3>
-                    <p class="app-subtitle">Each solves something watched breaking at the bedside. None is far enough along to put in front of you.</p>
+                    <h3 class="app-title">Four more, not linked</h3>
+                    <p class="app-subtitle">Each came out of something watched breaking at the bedside. None is finished enough to hand you.</p>
                     <div class="app-problem">
-                        <span class="app-problem-label">Why they are listed and not linked</span>
-                        These touch clinical decision-making and are working prototypes at best. Describing one honestly is worth more than a link to something half-finished, and you cannot verify any of it from here, so weight it accordingly.
+                        <span class="app-problem-label">Why there is nothing to click</span>
+                        They touch clinical decision-making and none is past prototype. You cannot verify any of it from here; weight it accordingly.
                     </div>
                     <ul class="app-features">
                         <li><strong>UnitScheduler Pro</strong> &mdash; reads historical schedules and surfaces the coverage pattern a static grid hides. <strong>Advisory only: a coverage suggestion is a draft for the charge nurse and never an assignment.</strong> Whether it changes an outcome is unmeasured.</li>
