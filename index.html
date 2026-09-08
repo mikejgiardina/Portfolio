@@ -222,7 +222,7 @@
                         <li>HealthKit integration for biometric context</li>
                         <li>Core ML surrogate exported from the physiological engine</li>
                         <li>Local-first: on-device computation, privacy-preserving</li>
-                        <li>Medication scanning, organization, and reminders</li>
+                        <li>Medication list organization and reminders, entered by label or barcode — no visual pill identification, which is ruled out by design</li>
                     </ul>
                     <div class="app-card-footer">
                         <div>
@@ -231,8 +231,9 @@
                             <span class="tech-badge">HealthKit</span>
                             <span class="tech-badge">Core ML</span>
                         </div>
-                        <span style="display:inline-block; margin-top:1rem; font-family:'JetBrains Mono',monospace; font-size:0.75rem; color:var(--text-muted); letter-spacing:0.08em;">In active development</span>
+                        <span style="display:inline-block; margin-top:1rem; font-family:'JetBrains Mono',monospace; font-size:0.75rem; color:var(--text-muted); letter-spacing:0.08em;">Scaffolded · development deferred</span>
                         <p style="font-size:0.78rem; color:var(--text-muted); margin-top:0.6rem; line-height:1.5;">Organization and context only — no dosing, no recommendations, no interpretation of biometrics.</p>
+                        <p style="font-size:0.78rem; color:var(--text-muted); margin-top:0.5rem; line-height:1.5;">The app is scaffolded and the surrogate export pipeline works. Shipping it needs Apple Developer Program enrollment, which is on hold pending the company&#39;s legal setup, so it was deferred in August 2026 in favour of the model-credibility work. Deferred, not cancelled, and the repository shows the pause rather than hiding it.</p>
                     </div>
                 </div>
 
@@ -247,7 +248,7 @@
                 <div class="section-divider"></div>
             </div>
             <p class="section-intro">
-                The wider Trimergent Tech project portfolio — tooling built around bedside problems observed across emergency and critical care. Each is a discrete architectural demonstration rather than a fully productized release.
+                The wider Trimergent Tech project portfolio: tooling built around bedside problems observed across emergency and critical care. Each is a discrete architectural demonstration rather than a fully productized release.
             </p>
 
             <div class="apps-grid">
@@ -405,7 +406,7 @@
                     <p class="app-subtitle">Local-First Medical Data Layer</p>
                     <div class="app-problem">
                         <span class="app-problem-label">Clinical Problem</span>
-                        Unstructured medical data — EKGs, imaging, documents — lives in silos, arrives in inconsistent formats, and requires manual review to extract actionable clinical meaning.
+                        A patient arrives with an outside EKG on paper, a CD of imaging, and a discharge summary as a scanned PDF. All three carry clinical meaning, none of it is queryable, and turning one into the other is done by a person reading them at the bedside.
                     </div>
                     <p class="app-description">
                         Multi-modal ingestion pipeline that converts raw clinical media into structured, searchable knowledge. Files stay on the local device by default rather than being uploaded to a server.
@@ -463,7 +464,7 @@
                     <p class="app-subtitle">Clinical Alerting System</p>
                     <div class="app-problem">
                         <span class="app-problem-label">Clinical Problem</span>
-                        Critical alerts are buried in EHR noise. Alarm fatigue is real — clinicians miss what matters because everything is flagged with equal urgency.
+                        Alert burden is not primarily a volume problem, it is a ranking problem: an EHR that flags a potassium of 6.8 and a routine dietary consult with the same visual weight has already spent the clinician's attention before the important one arrives.
                     </div>
                     <p class="app-description">
                         Intelligent clinical alerting that prioritizes by acuity context and reduces noise, surfacing only the alerts that require immediate clinical action.
@@ -545,9 +546,10 @@
                     <div class="timeline-label">2025</div>
                     <h3 class="timeline-title">From Workflow Design to AI Implementation</h3>
                     <p class="timeline-description">
-                        Founded <span class="highlight">Trimergent Tech LLC</span> and began translating clinical workflow knowledge into production software.
-                        Built a full ecosystem of healthcare AI applications — clinical decision support, patient simulation,
-                        scheduling, alerting, and education tools — with a unified architecture, cross-app data flows, and local-first privacy design.
+                        Founded <span class="highlight">Trimergent Tech LLC</span> and started building the workflow knowledge into software instead of describing it.
+                        Eight applications came out of that year: clinical decision support, patient simulation, scheduling, alerting and
+                        education tooling, sharing one architecture and a local-first data posture. They are working prototypes, not shipped
+                        products, and the disclosure note above says which is which.
                         <br><br>
                         The design decisions behind the tools —
                         the acuity-adaptive interfaces, the scope-of-practice guardrails, the physiological accuracy —

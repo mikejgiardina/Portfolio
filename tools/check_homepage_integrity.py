@@ -11,6 +11,12 @@ Both halves exist because both halves failed, on the same day, in the same file:
   * The homepage then said "FOUR CASE STUDIES", "Four write-ups" and "ALL FOUR
     OPEN NOW" above five launch buttons. Enumerating the stale spots by reading
     found four of seven; a scripted pass found the rest.
+  * Then this check itself failed the same way. It ranged over index.html and the
+    hub, said CLEAN, and did not look at the case studies' own navigation -- where
+    four pages still carried "all four" over a hub that said five, and
+    clinical-review was linked from no sibling at all. Rule 5 closes that. A check
+    named for integrity that inspects two of seven pages is the defect these case
+    studies are about, committed by the tool that checks for it.
 
 The case-studies hub is the register of what a case study IS. Adding one there is
 what makes it required on the homepage, so this check needs no hand-kept list --
@@ -132,8 +138,33 @@ def check() -> int:
         elif not (ROOT / "assets" / "og" / m.group(1)).is_file():
             bad |= fail(f"{rel} names assets/og/{m.group(1)}, which does not exist")
 
+    # 5. the case studies must reach each other, not only the homepage and the hub.
+    #    Rules 1 and 2 range over index.html and the hub. They said CLEAN on a day
+    #    when four of the five pages carried a "all four" back-link over a hub that
+    #    said five, and clinical-review was linked from no sibling at all -- it had
+    #    been added to the hub and the homepage and to nothing else. A reader who
+    #    arrives on a case study from search never sees either surface this check
+    #    was looking at. The check was narrower than the claim in its own name.
+    for s_name in studies:
+        page = (ROOT / s_name / "index.html").read_text(encoding="utf-8")
+        nav = page.split("</nav>")[0]
+
+        missing = [o for o in studies
+                   if o != s_name and f'href="../{o}/"' not in nav]
+        if missing:
+            bad |= fail(f"{s_name}/ does not link to {', '.join(missing)} -- "
+                        f"a reader landing here cannot reach every sibling")
+
+        # the back-link states a count out loud, and it goes stale exactly the way
+        # the homepage's badges do
+        for m in re.finditer(r"all\s+([A-Za-z]+)\b", nav, re.I):
+            if NUMBERS.get(m.group(1).lower()) not in (None, n):
+                bad |= fail(f'{s_name}/ back-link says "all {m.group(1)}" '
+                            f"where {n} is correct")
+
     print("FAILED" if bad else
-          "CLEAN -- every case study is linked from the homepage and every stated count agrees")
+          "CLEAN -- every case study is linked from the homepage, the studies reach "
+          "each other, and every stated count agrees")
     return 1 if bad else 0
 
 
@@ -160,6 +191,18 @@ CONTROLS = [
      [("/assets/og/home.png", "/assets/og/does-not-exist.png")], 1),
 ]
 
+# Controls that mutate a case-study page rather than index.html. Rule 5 exists
+# because rules 1-4 could not see these two defects, so its controls cannot live
+# in the index.html list either.
+PEER_CONTROLS = [
+    ("a case study orphaned from its siblings",
+     "orchestration/index.html",
+     [('<a href="../clinical-review/">Clinical review \u2192</a>\n', "")], 1),
+    ("a back-link count left stale",
+     "orchestration/index.html",
+     [("\u2190 all five", "\u2190 all four")], 1),
+]
+
 
 def self_test() -> int:
     me = Path(__file__).name
@@ -180,6 +223,28 @@ def self_test() -> int:
                         ok = False
                     s = s.replace(a, b)
                 p.write_text(s, encoding="utf-8")
+            got = subprocess.run([sys.executable, str(t / "tools" / me)],
+                                 capture_output=True, text=True).returncode
+            mark = "ok  " if got == expect else "FAIL"
+            if got != expect:
+                ok = False
+            print(f"  [{mark}] expect {expect}, got {got}  --  {label}")
+
+    for label, target, muts, expect in PEER_CONTROLS:
+        with tempfile.TemporaryDirectory() as td:
+            t = Path(td)
+            for item in ROOT.iterdir():
+                if item.name in (".git", ".claude") or item.name.startswith("."):
+                    continue
+                (shutil.copytree if item.is_dir() else shutil.copy2)(item, t / item.name)
+            p = t / target
+            s = p.read_text(encoding="utf-8")
+            for a, b in muts:
+                if a not in s:
+                    print(f"  ERROR  control '{label}': anchor not found in {target}: {a!r}")
+                    ok = False
+                s = s.replace(a, b)
+            p.write_text(s, encoding="utf-8")
             got = subprocess.run([sys.executable, str(t / "tools" / me)],
                                  capture_output=True, text=True).returncode
             mark = "ok  " if got == expect else "FAIL"

@@ -33,7 +33,8 @@
       <a href="../automation/">Hooks →</a>
       <a href="../publishing/">Publishing →</a>
       <a href="../orchestration/">Orchestration →</a>
-      <a href="../case-studies/" class="back">← all four</a>
+      <a href="../clinical-review/">Clinical review →</a>
+      <a href="../case-studies/" class="back">← all five</a>
       <a href="../" class="back">← portfolio</a>
     </nav>
   </div>
@@ -212,7 +213,7 @@
 
     <p class="note" style="margin-top:1.5rem; border-left-color: var(--accent-green);"><b>The rule that came out of it.</b> A wired hook is not a tracked check, a tracked check is not a biting one, and a passing test is not a check that ran &mdash; <b>each gap closes only from the outside, by something that assumes the layer beneath it is lying.</b> The corollary is scheduling: the first two casualties were caught reactively, by luck. The proactive complement is deliberately <em>not</em> a one-session sprint &mdash; a few rows driven to bite-tested per session, reviewed at every release, plus a recurring sweep that files what it finds where the work actually is. The queue's job is to keep the residual visible in the meantime, and it says out loud which proofs are still owed.</p>
 
-    <p class="secsub" style="margin-top:2rem;"><b>A later sweep found the same shape in four new places.</b> None is a variant of the casualties above. Each is a distinct mechanism arriving at one outcome, which is the argument for treating the class as structural rather than as a run of bad luck.</p>
+    <p class="secsub" style="margin-top:2rem;"><b>Later sweeps found the same shape in five new places, the last of them on this site.</b> None is a variant of the casualties above. Each is a distinct mechanism arriving at one outcome, which is the argument for treating the class as structural rather than as a run of bad luck.</p>
 
     <div class="cas">
       <div class="ct">casualty five &middot; the detector was indistinguishable from what it detects</div>
@@ -242,7 +243,16 @@
       <p><b>Existing, correct and unreachable is indistinguishable from absent</b>, and it costs more, because the code is there to be pointed at. The same shape appears one layer up in any permanently red suite: a set of known failures nobody has pinned means the next new failure arrives invisible, inside noise the team has already trained itself to skip.</p>
     </div>
 
-    <p class="note" style="margin-top:1.5rem; border-left-color: var(--accent-amber);"><b>What the second sweep changes.</b> The first set could be read as one bad quarter. These four are different mechanisms: a self-referential detector, a signal-handling artifact, a test method, an unreachable entry point. They produce one outcome. <b>The consistent property is not the bug, it is that each was green while broken</b>, which is the only reason any of them survived long enough to be found.</p>
+    <div class="cas" style="border-color: rgba(255,180,84,0.3); border-left-color: var(--accent-amber);">
+      <div class="ct" style="color: var(--accent-amber);">casualty nine &middot; found on this site, while extending it</div>
+      <h4>A check that passed, over two live instances of the defect it is named for</h4>
+      <p>This portfolio carries an integrity check of its own. It exists because two defects shipped here on one day: a case study went live linked from nowhere on the front page, and the front page then stated the wrong number of case studies in seven places. The check asserts both &mdash; every case study reachable from the homepage, every stated count agreeing with the hub that registers them. It has passed ever since, including on its paired controls.</p>
+      <p><b>It was passing over two live instances of the shape it is named for.</b> Four of the five case studies carried an &ldquo;all four&rdquo; back-link above a hub that says five. The fifth study was linked from no sibling at all: it had been added to the hub and to the homepage and to nothing else, while the other four cross-link to each other.</p>
+      <p>The mechanism is the one this whole page is about. The check reads <em>two files</em>, the homepage and the hub, and both were correct. Neither is the surface a reader arriving from a search result actually lands on, and the navigation those readers do see had never been in range of any assertion. <b>A check named for integrity that inspects two of seven pages is not a weaker version of the check you wanted. It is a different check wearing its name.</b></p>
+      <p>Closed as a rule rather than as an edit: every case study must link to every other, and any &ldquo;all N&rdquo; back-link must agree with the hub's count. Both ship with paired controls, verified going red on the exact two instances found by hand. <em>The control harness had to be extended before they could be written</em>, because it could only mutate the homepage &mdash; the same blind spot, one layer down, in the thing built to prove the layer above it works.</p>
+    </div>
+
+    <p class="note" style="margin-top:1.5rem; border-left-color: var(--accent-amber);"><b>What the later sweeps change.</b> The first set could be read as one bad quarter. These five are different mechanisms: a self-referential detector, a signal-handling artifact, a test method, an unreachable entry point, and a check whose file list was narrower than its name. They produce one outcome. <b>The consistent property is not the bug, it is that each was green while broken</b>, which is the only reason any of them survived long enough to be found.</p>
   </section>
 
   <div class="takeaway">
