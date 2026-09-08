@@ -339,9 +339,51 @@
                     </div>
                 </div>
 
+                <!-- Trauma Tracker — the one shipped, open, runnable product -->
+                <div class="app-card flagship">
+                    <div class="app-number">CLINICAL PRODUCT &middot; LIVE &middot; OPEN SOURCE</div>
+                    <h3 class="app-title">Trauma Tracker</h3>
+                    <p class="app-subtitle">A Real-Time ED Trauma Registrar</p>
+                    <div class="flagship-inner">
+                        <div>
+                            <div class="app-problem">
+                                <span class="app-problem-label">Clinical Problem</span>
+                                A trauma resuscitation generates an enormous amount of documentable fact in a very short window, and everyone in the room is busy. The record gets reconstructed afterward, from memory, by someone who was also running the resuscitation &mdash; which is where timestamps drift, quality measures get missed, and charges go unsupported.
+                            </div>
+                            <p class="app-description">
+                                Multi-agent documentation that runs <em>during</em> the resuscitation rather than after it, producing the nursing narrative, the accreditation clocks and the charge capture from one set of timestamped events. Anything it asked about and did not get an answer to rides through to the report as a documented gap rather than being resolved away.
+                            </p>
+                            <div class="validation-badge"><span class="validation-dot"></span>LIVE &middot; RUNS IN THE BROWSER</div>
+                        </div>
+                        <div>
+                            <ul class="app-features">
+                                <li>Values and interventions extracted and stamped as they are spoken</li>
+                                <li>Shock Index, RTS and GCS computed deterministically from published tables &mdash; not inferred</li>
+                                <li>A charge fires only when the documentation that code requires is actually present</li>
+                                <li>Activation determination carries the evidence it was made on</li>
+                                <li>Unresolved prompts appear in the output as documented gaps</li>
+                                <li>Four capture sources &middot; synthetic data only</li>
+                            </ul>
+                            <div class="app-card-footer">
+                                <div>
+                                    <span class="tech-badge">React</span>
+                                    <span class="tech-badge">Multi-Agent</span>
+                                    <span class="tech-badge">MIT</span>
+                                </div>
+                                <div style="display:flex; gap:0.75rem; flex-wrap:wrap; margin-top:0.5rem;">
+                                    <a href="trauma-tracker/" class="launch-btn" style="text-decoration:none; cursor:pointer;">READ THE WRITE-UP &rarr;</a>
+                                    <a href="https://traumatrackerv2.netlify.app" target="_blank" rel="noopener noreferrer" class="launch-btn" style="text-decoration:none; cursor:pointer;">LIVE DEMO &rarr;</a>
+                                    <a href="https://github.com/mikejgiardina/trauma-tracker-public" target="_blank" rel="noopener noreferrer" class="launch-btn" style="text-decoration:none; cursor:pointer;">REPOSITORY &rarr;</a>
+                                </div>
+                                <p style="font-size:0.78rem; color:var(--text-muted); margin-top:0.6rem; line-height:1.5;">Synthetic data only, no PHI, by design. Not a medical device and not deployed against real patient data.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Nurse Orchestrator -->
                 <div class="app-card">
-                    <div class="app-number">PROJECT_01</div>
+                    <div class="app-number">PROTOTYPE &middot; RECORDED WALKTHROUGH</div>
                     <h3 class="app-title">Nurse Orchestrator</h3>
                     <p class="app-subtitle">Contextual Clinical Decision Support</p>
                     <div class="app-problem">
@@ -371,123 +413,33 @@
                     </div>
                 </div>
 
-                <!-- UnitScheduler Pro -->
+                <!-- The four prototypes that carry no link, collapsed deliberately -->
                 <div class="app-card">
-                    <div class="app-number">PROJECT_02</div>
-                    <h3 class="app-title">UnitScheduler Pro</h3>
-                    <p class="app-subtitle">Operational Command Console</p>
+                    <div class="app-number">ALSO BUILT &middot; PROTOTYPES, NOT LINKED</div>
+                    <h3 class="app-title">Four more, described rather than shown</h3>
+                    <p class="app-subtitle">Each solves something watched breaking at the bedside. None is far enough along to put in front of you.</p>
                     <div class="app-problem">
-                        <span class="app-problem-label">Clinical Problem</span>
-                        ED charge nurses make real-time staffing decisions using static spreadsheets — no pattern visibility, no predictive support, no operational awareness beyond the current shift.
+                        <span class="app-problem-label">Why they are listed and not linked</span>
+                        These touch clinical decision-making and are working prototypes at best. Describing one honestly is worth more than a link to something half-finished, and you cannot verify any of it from here, so weight it accordingly.
                     </div>
-                    <p class="app-description">
-                        Reads historical schedules and surfaces the coverage pattern a static grid hides, as a draft the charge nurse rules on. Whether it changes an outcome is unmeasured and this is not the setting to measure it in.
-                    </p>
                     <ul class="app-features">
-                        <li>OCR ingestion of historical schedule PDFs</li>
-                        <li>AI-powered staffing predictions</li>
-                        <li>Real-time operational directives</li>
-                        <li>Intelligent coverage math excluding non-clinical roles</li>
+                        <li><strong>UnitScheduler Pro</strong> &mdash; reads historical schedules and surfaces the coverage pattern a static grid hides, as a draft the charge nurse rules on. Whether it changes an outcome is unmeasured.</li>
+                        <li><strong>Emergent Media Manager</strong> &mdash; an outside EKG on paper, a CD of imaging, a scanned discharge summary: all carry clinical meaning, none of it queryable. Turns those into structured records, local-first, with an egress guard that blocks identifier patterns from reaching a cloud model. The guard detects and blocks; it does not de-identify, and that is not a compliance claim.</li>
+                        <li><strong>Clinical Information Workflow Engine</strong> &mdash; drafts CE-style articles and simulation scenarios in the structure nurse educators work in. Everything it produces is a draft for a human reviewer. Not an accreditation claim and not peer review.</li>
+                        <li><strong>Alerter</strong> &mdash; a design for ordering alerts by acuity context rather than firing them all at one weight. Nothing is built. The constraint that it may never withhold an alert from the clinician is the part worth stating.</li>
                     </ul>
                     <div class="app-card-footer">
                         <div>
                             <span class="tech-badge">React</span>
-                            <span class="tech-badge">Gemini AI</span>
-                            <span class="tech-badge">Tailwind</span>
-                        </div>
-                        <p style="font-size:0.78rem; color:var(--text-muted); margin-top:0.6rem; line-height:1.5;">Advisory only. Coverage suggestions are a draft for the charge nurse, never an assignment.</p>
-                    </div>
-                </div>
-
-                <!-- Media Manager -->
-                <div class="app-card">
-                    <div class="app-number">PROJECT_03</div>
-                    <h3 class="app-title">Emergent Media Manager</h3>
-                    <p class="app-subtitle">Local-First Medical Data Layer</p>
-                    <div class="app-problem">
-                        <span class="app-problem-label">Clinical Problem</span>
-                        A patient arrives with an outside EKG on paper, a CD of imaging, and a discharge summary as a scanned PDF. All three carry clinical meaning, none of it is queryable, and turning one into the other is done by a person reading them at the bedside.
-                    </div>
-                    <p class="app-description">
-                        Takes those three inputs and produces structured, searchable records from them. Files stay on the local device by default rather than being uploaded to a server.
-                    </p>
-                    <ul class="app-features">
-                        <li>Multi-modal analysis: EKG, MRI, clinical imagery</li>
-                        <li>Extracts ICD-10/CPT candidates from document context, flagged for coder review — it never assigns a billable code</li>
-                        <li>Egress guard: five identifier patterns (SSN, MRN, date of birth, phone, patient-name field) block cloud upload and force the request to a local model instead</li>
-                        <li>Dataset nutrition label per collection: completeness, author and category distribution, a privacy-risk heuristic</li>
-                        <li>OMOP and CDISC SDTM mapping · File System Access API for local-first storage</li>
-                    </ul>
-                    <div class="app-card-footer">
-                        <div>
-                            <span class="tech-badge">React</span>
-                            <span class="tech-badge">Gemini AI</span>
+                            <span class="tech-badge">TypeScript</span>
                             <span class="tech-badge">Local-First</span>
                         </div>
-                        <p style="font-size:0.78rem; color:var(--text-muted); margin-top:0.6rem; line-height:1.5;">Prototype, synthetic data only. The egress guard detects and blocks; it does not de-identify. Not a compliance claim.</p>
-                    </div>
-                </div>
-
-                <!-- CIWE -->
-                <div class="app-card">
-                    <div class="app-number">PROJECT_04</div>
-                    <h3 class="app-title">Clinical Information Workflow Engine</h3>
-                    <p class="app-subtitle">Clinical Educator Automation Platform</p>
-                    <div class="app-problem">
-                        <span class="app-problem-label">Clinical Problem</span>
-                        Nurse educators spend hours writing CE content, simulation scenarios, and policy-aligned materials that could be generated in minutes with the right clinical context layer.
-                    </div>
-                    <p class="app-description">
-                        Drafting engine for CE-style articles, simulation scenarios and literature-referenced content, structured to the format nurse educators work in. Everything it produces is a draft for a human reviewer.
-                    </p>
-                    <ul class="app-features">
-                        <li>Drafts articles in the structure ANCC-accredited providers use — not an accreditation claim</li>
-                        <li>Simulation scenario drafting from case inputs</li>
-                        <li>Automated consistency and citation checks before human review — not peer review</li>
-                        <li>Literature compilation with references carried through</li>
-                    </ul>
-                    <div class="app-card-footer">
-                        <div>
-                            <span class="tech-badge">React</span>
-                            <span class="tech-badge">TypeScript</span>
-                            <span class="tech-badge">Gemini</span>
-                            <span class="tech-badge">Claude</span>
-                            <span class="tech-badge">Perplexity</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Alerter -->
-                <div class="app-card">
-                    <div class="app-number">PROJECT_05</div>
-                    <h3 class="app-title">Alerter</h3>
-                    <p class="app-subtitle">Clinical Alerting System</p>
-                    <div class="app-problem">
-                        <span class="app-problem-label">Clinical Problem</span>
-                        Alert burden is not primarily a volume problem, it is a ranking problem: an EHR that flags a potassium of 6.8 and a routine dietary consult with the same visual weight has already spent the clinician's attention before the important one arrives.
-                    </div>
-                    <p class="app-description">
-                        A design for ordering alerts by acuity context rather than firing them all at one weight. Nothing is built; the ranking rule and the constraint that it may never withhold an alert are the parts worth stating.
-                    </p>
-                    <ul class="app-features">
-                        <li>Acuity-aware alert prioritization</li>
-                        <li>Configurable escalation pathways</li>
-                        <li>Designed to reorder and group by context, never to withhold an alert from the clinician</li>
-                        <li>Integration-ready alert routing</li>
-                    </ul>
-                    <div class="app-card-footer">
-                        <div>
-                            <span class="tech-badge">React</span>
-                            <span class="tech-badge">TypeScript</span>
-                            <span class="tech-badge">Tailwind</span>
-                        </div>
-                        <p style="font-size:0.78rem; color:var(--text-muted); margin-top:0.6rem; line-height:1.5;">Concept stage. Prioritization only — it reorders alerts and never silences one.</p>
                     </div>
                 </div>
 
                 <!-- Clinical Article Library -->
                 <div class="app-card">
-                    <div class="app-number">PROJECT_06</div>
+                    <div class="app-number">EDUCATION &middot; LIVE &middot; OPEN ACCESS</div>
                     <h3 class="app-title">Clinical Article Library</h3>
                     <p class="app-subtitle">Open-Source Nursing Education</p>
                     <div class="app-problem">
