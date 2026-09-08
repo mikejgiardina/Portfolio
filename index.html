@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mike Giardina — Clinical AI Evaluation & Forward Deployed Engineering</title>
+    <title>Mike Giardina — Clinical AI Evaluation &amp; Solutions Architecture</title>
     <meta name="description" content="Emergency nurse (BSN, RN, CEN) building clinical simulation and AI tooling. Five engineering case studies on lifecycle-hook automation, turning conventions into enforced checks, disclosure control, coordinating parallel AI coding sessions, and measuring whether an AI review pipeline over a clinical corpus was reporting what it appeared to report.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://mike-giardina.netlify.app/">
-<meta property="og:title" content="Michael Giardina — clinical AI evaluation and forward-deployed engineering">
+<meta property="og:title" content="Michael Giardina — clinical AI evaluation and solutions architecture">
 <meta property="og:description" content="Emergency nurse building clinical simulation and AI tooling. Five engineering case studies, a real-time ED trauma registrar, and clinical AI evaluation work.">
 <meta property="og:image" content="https://mike-giardina.netlify.app/assets/og/home.png">
 <meta property="og:image:width" content="1200">
@@ -52,10 +52,10 @@
             </div>
 
             <h1>Mike Giardina</h1>
-            <p class="subtitle">Clinical AI Evaluation &nbsp;·&nbsp; Forward Deployed Engineer (Clinical) &nbsp;·&nbsp; ED Supervisor &nbsp;·&nbsp; RN, BSN, CEN</p>
+            <p class="subtitle">Clinical AI Evaluation &nbsp;·&nbsp; Clinical Solutions Architect &nbsp;·&nbsp; ED Supervisor &nbsp;·&nbsp; RN, BSN, CEN</p>
 
             <p class="hero-statement">
-                19 years in a Level 1 trauma ED, Epic ASAP module clinical lead, ATCN course director —
+                19 years in a Level 1 trauma ED, Epic ASAP super user and the ER nursing liaison to Epic since before go-live, ATCN course director —
                 now building <span class="highlight">clinical AI tooling</span> and the systems that keep it honest.
                 I specify these systems, direct the agents that implement them, and own whether the result is
                 clinically right, and I have also stood in the room where a health system decides how the
@@ -96,7 +96,7 @@
                 <div class="section-divider"></div>
             </div>
             <p class="section-intro">
-                The Kymora product line: the physiological engine, the simulators built on it, and the iOS application that runs a Core ML surrogate of it on-device.
+                The physiological engine, the simulators built on it, and an iOS application that runs a Core ML surrogate of it on-device. One engine and three things that read from it, at three different stages of done.
             </p>
             <p class="section-intro" style="margin-top:-1.6rem; font-size:0.92rem; border-left:2px solid rgba(255,180,84,0.4); padding-left:0.9rem;">
                 <strong style="color:var(--text-primary); font-weight:500;">Read this before the cards.</strong> Everything below is pre-1.0 and none of it is deployed against real patient data. Two maturity tiers are mixed here on purpose: the <strong style="color:var(--text-primary); font-weight:500;">Kymora line</strong> — the engine and what runs on it — sits between 0.5 and 1.0, while everything under the <strong style="color:var(--text-primary); font-weight:500;">clinical apps</strong> heading is a working prototype. Where a card says <em>concept</em>, that means the boundary described is a design constraint rather than a shipped behavior, and the card says so.
@@ -185,14 +185,14 @@
                         Sim-based education is expensive, schedule-dependent, and doesn't scale. Clinicians across every discipline need on-demand, realistic case exposure, especially for low-frequency, high-acuity events.
                     </div>
                     <p class="app-description">
-                        Standalone simulation with AI-driven evolving clinical narratives, real-time vitals, and 45+ interactive procedures.
+                        Standalone simulation with AI-driven evolving clinical narratives, real-time vitals, and a set of interactive procedures.
                         Built for ED education days with Sentry error tracking and keyboard shortcuts for rapid clinical input.
                     </p>
                     <ul class="app-features">
                         <li>Dynamic vitals with physiological drift engine</li>
                         <li>Canvas-based ECG with QRS morphology and arrhythmia simulation</li>
                         <li>AI-driven case evolution based on clinical decisions</li>
-                        <li>45+ interactive procedures with SBAR generation</li>
+                        <li>Interactive procedures with SBAR generation</li>
                         <li>Sound alerts and keyboard shortcuts for rapid input</li>
                     </ul>
                     <div class="app-card-footer">
@@ -349,7 +349,7 @@
                         Generic AI assistants aren't calibrated for bedside use — wrong scope, wrong acuity thresholds, no concept of state-specific practice boundaries or unit-level policy.
                     </div>
                     <p class="app-description">
-                        A clinical copilot that adapts to acuity context, routes by semantic intent, and enforces guardrails grounded in real scope-of-practice frameworks.
+                        A clinical copilot that adapts to acuity context and routes by semantic intent, with scope-of-practice guardrails built from published state frameworks. The guardrails are implemented and demonstrable; whether they hold against a determined user is untested.
                     </p>
                     <ul class="app-features">
                         <li>Adaptive personas tuned to clinical acuity level</li>
@@ -381,7 +381,7 @@
                         ED charge nurses make real-time staffing decisions using static spreadsheets — no pattern visibility, no predictive support, no operational awareness beyond the current shift.
                     </div>
                     <p class="app-description">
-                        Transforms unit scheduling from a passive grid into an active operational interface. AI-synthesized staffing patterns surface coverage risks before they become incidents.
+                        Reads historical schedules and surfaces the coverage pattern a static grid hides, as a draft the charge nurse rules on. Whether it changes an outcome is unmeasured and this is not the setting to measure it in.
                     </p>
                     <ul class="app-features">
                         <li>OCR ingestion of historical schedule PDFs</li>
@@ -409,7 +409,7 @@
                         A patient arrives with an outside EKG on paper, a CD of imaging, and a discharge summary as a scanned PDF. All three carry clinical meaning, none of it is queryable, and turning one into the other is done by a person reading them at the bedside.
                     </div>
                     <p class="app-description">
-                        Multi-modal ingestion pipeline that converts raw clinical media into structured, searchable knowledge. Files stay on the local device by default rather than being uploaded to a server.
+                        Takes those three inputs and produces structured, searchable records from them. Files stay on the local device by default rather than being uploaded to a server.
                     </p>
                     <ul class="app-features">
                         <li>Multi-modal analysis: EKG, MRI, clinical imagery</li>
@@ -467,7 +467,7 @@
                         Alert burden is not primarily a volume problem, it is a ranking problem: an EHR that flags a potassium of 6.8 and a routine dietary consult with the same visual weight has already spent the clinician's attention before the important one arrives.
                     </div>
                     <p class="app-description">
-                        Intelligent clinical alerting that prioritizes by acuity context and reduces noise, surfacing only the alerts that require immediate clinical action.
+                        A design for ordering alerts by acuity context rather than firing them all at one weight. Nothing is built; the ranking rule and the constraint that it may never withhold an alert are the parts worth stating.
                     </p>
                     <ul class="app-features">
                         <li>Acuity-aware alert prioritization</li>
@@ -498,7 +498,7 @@
                         A growing library of clinical articles written from bedside experience — emergency medicine, critical care, pharmacology, clinical reasoning. ANCC-aligned style, evidence-cited, open access.
                     </p>
                     <ul class="app-features">
-                        <li>85+ self-published clinical articles</li>
+                        <li>Self-published clinical articles, added to as they are written</li>
                         <li>Emergency medicine, critical care, pharmacology</li>
                         <li>Evidence-cited with literature references</li>
                         <li>ANCC-aligned content style</li>
@@ -533,7 +533,7 @@
                     <p class="timeline-description">
                         Emergency Department Supervisor and Clinical Educator at Duke Lifepoint – Conemaugh Health System,
                         a <span class="highlight">Level 1 Trauma Center</span>.
-                        CEN-certified. Epic Super User and ASAP module clinical lead.
+                        CEN-certified. Clinical Driver on the 2016 facility-wide Epic implementation, ASAP super user and super trainer, and the ER nursing liaison to Epic since before go-live.
                         <br><br>
                         What looks like a clinical career is also 19 years of systematic observation:
                         where workflows fail, where cognitive load peaks, where technology creates friction instead of reducing it.
@@ -547,9 +547,9 @@
                     <h3 class="timeline-title">From Workflow Design to AI Implementation</h3>
                     <p class="timeline-description">
                         Founded <span class="highlight">Trimergent Tech LLC</span> and started building the workflow knowledge into software instead of describing it.
-                        Eight applications came out of that year: clinical decision support, patient simulation, scheduling, alerting and
-                        education tooling, sharing one architecture and a local-first data posture. They are working prototypes, not shipped
-                        products, and the disclosure note above says which is which.
+                        What came out of that year was a set of working prototypes rather than shipped products — clinical decision support,
+                        patient simulation, scheduling, alerting and education tooling, sharing one architecture and a local-first data
+                        posture. The disclosure note above says which is which.
                         <br><br>
                         The design decisions behind the tools —
                         the acuity-adaptive interfaces, the scope-of-practice guardrails, the physiological accuracy —
@@ -563,12 +563,12 @@
                     <h3 class="timeline-title">From a Single Engine to a Product Line</h3>
                     <p class="timeline-description">
                         The engine grew into a <span class="highlight">product line</span> in 2026.
-                        A clinical-grade simulator runs on top of it for educators and researchers.
+                        A simulator for educators and researchers runs on top of it.
                         A Core ML surrogate of the engine, compiled for on-device iOS inference, sits at the core of the Kymora consumer app.
                         <br><br>
                         Patent pending.
                         <br><br>
-                        Seeking roles at the intersection of clinical expertise and AI product development —
+                        Looking for clinical evaluation and solutions-architecture work —
                         companies building tools for clinicians who need someone at the table
                         who has actually used and lived inside the systems they're replacing.
                     </p>
@@ -587,7 +587,7 @@
             <div class="contact-grid">
                 <div class="contact-card">
                     <div class="contact-title">Design Philosophy</div>
-                    <p class="contact-value">Clinical problem first. Architecture second. Cognitive load reduction as a primary success metric.</p>
+                    <p class="contact-value">Start from the clinical problem, not the technology. Design for the person who is already at capacity, and treat anything that adds a step as a cost that has to be earned.</p>
                 </div>
                 <div class="contact-card">
                     <div class="contact-title">AI & Safety</div>
