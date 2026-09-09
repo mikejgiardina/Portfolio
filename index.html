@@ -189,7 +189,7 @@
                     </p>
                     <ul class="app-features">
                         <li>Dynamic vitals with physiological drift engine</li>
-                        <li>Canvas ECG on the engine-backed build. The publicly reachable build drives rate only &mdash; no rhythm library, no morphology change</li>
+                        <li>SVG ECG driven by a 20-rhythm waveform library &mdash; AFib, VT/VF, torsades, AV block and paced rhythms each render their own morphology, not a rate-shifted sinus trace</li>
                         <li>AI-driven case evolution based on clinical decisions</li>
                         <li>Interactive procedures with SBAR generation</li>
                         <li>Sound alerts and keyboard shortcuts for rapid input</li>
@@ -197,7 +197,7 @@
                     <div class="app-card-footer">
                         <div>
                             <span class="tech-badge">React</span>
-                            <span class="tech-badge">Canvas</span>
+                            <span class="tech-badge">SVG</span>
                             <span class="tech-badge">Gemini AI</span>
                         </div>
                         <p style="font-size:0.78rem; color:var(--text-muted); margin-top:0.6rem; line-height:1.5;">Training only. Every patient is simulated — no real patient data enters it.</p>
