@@ -54,7 +54,7 @@
     <p class="kicker">Evidence appendix &middot; <a href="../" style="color:var(--accent-cyan); text-decoration:none; border-bottom:1px solid var(--line)">the case study is here</a></p>
     <h1>The full record, round by round.</h1>
     <p class="lede">This page is the <b>appendix</b> to <a href="../" style="color:var(--accent-cyan); text-decoration:none; border-bottom:1px solid var(--line)">a case study about running several AI coding sessions at once</a>. That page makes the argument in about twenty minutes. <b>This one carries the evidence it rests on</b> &mdash; every table, every round, every instance, and every note about which figures are not comparable to which.</p>
-    <p class="lede">It is long on purpose, and it is meant to be <em>checked</em> rather than read through. If you arrived here from a specific claim, the section numbers match the ones cited there.</p>
+    <p class="lede">It is long on purpose, and it is meant to be <em>checked</em> rather than read through &mdash; so <b>every section is folded shut and its heading stays in the page.</b> Open the one you came for. A link that points into a folded section opens it on arrival, and <em>Expand all</em> restores the whole document for printing or searching.</p>
     <p class="lede">Twenty-eight rounds of that, against a multi-repository workspace. This page is organised around the four things that survived: <b>the mechanism</b> (leases plus a single writer for everything serial), <b>the defect class that showed up in every round</b> &mdash; a check narrower than the claim it supports, which fails by passing &mdash; <b>what the coordination actually costs</b>, measured on two instruments that do not convert into one another, and <b>the rubric eventually written to count the defects</b>, which changed the measured rate by a factor of ten without the work changing. Round numbers appear as evidence, not as chapters.</p>
     <p class="lede">The load-bearing discipline is that from round 9 the prediction was written down <em>before</em> each round and scored afterward. <b>Eight registered predictions have missed.</b> Two of those misses were followed by the bar being moved onto the round that had just missed it &mdash; the thing this page says you must not do, done twice before the rule existed. <b>One round could not be scored at all</b>, and that turned out to be the more useful result: the same night's work returned 6.40 or 2.67 on one agreed denominator, depending only on how finely the instances were counted, and nothing in the series said which was right.</p>
     <p class="lede"><b>And at round 26 the practice was retired</b> &mdash; not abandoned, retired, with the grounds written down. The band had been missed high and low on adjacent rounds; the intake rule underneath it had changed by a factor of ten; and a count of the manifests found the band recorded under <b>eight different key spellings and read by nothing.</b> A predicted range was doing no work that the rubric underneath it was not already doing better. <em>What replaced it is the more interesting artifact, and it is what section 05 is about.</em></p>
@@ -71,11 +71,32 @@
     <p class="statnote">Nothing here is a product claim. The work itself is described only by shape &mdash; a checker, a gate, a test suite. The coordination is the transferable part.</p>
   </header>
 
+  <div class="toc">
+    <h4>Contents &mdash; sections are folded; open the one you came for</h4>
+    <ol>
+        <li><a href="#leases">The mechanism: leases out, one writer back</a> <span class="tw">3,113 words</span></li>
+        <li><a href="#green">The check that is narrower than its claim</a> <span class="tw">3,608 words</span></li>
+        <li><a href="#cost">What it costs, on two instruments that do not convert</a> <span class="tw">3,085 words</span></li>
+        <li><a href="#predict">Registering the prediction, and retiring it</a> <span class="tw">2,649 words</span></li>
+        <li><a href="#rubric">Grading the grader</a> <span class="tw">1,689 words</span></li>
+        <li><a href="#brief">Instructions that read fine and cannot be executed</a> <span class="tw">1,806 words</span></li>
+        <li><a href="#next">Why it converges, and where it goes</a> <span class="tw">842 words</span></li>
+    </ol>
+  </div>
+  <div class="foldbar">
+    <button type="button" data-fold="open">Expand all</button>
+    <button type="button" data-fold="close">Collapse all</button>
+    <span class="tw" style="color:var(--ink-3);font-family:var(--mono);font-size:.66rem">a link to a section opens it on arrival</span>
+  </div>
+
   <section class="sec" id="leases">
     <div class="sechead"><span class="secnum">01</span><h2>The mechanism: leases out, one writer back</h2><div class="divider"></div></div>
     <p class="secsub">The failure mode that motivates everything: two sessions given clearly unrelated jobs, both of which turn out to need the same file. Topic independence does not imply file independence, and you find out at merge time.</p>
 
-    <p class="pr"><b>None of this is new.</b> Locking schemes, <code>CODEOWNERS</code>, monorepo ownership boundaries and branch policies have partitioned work by file ownership for decades. What is specific to the AI-session case is that <em>the workers can't negotiate.</em> Two engineers who both need the same file talk to each other, usually before either has finished. Two sessions don't. They both write it, and the merge is the first anyone hears about it.</p>
+    <details class="fold" id="fold-leases">
+      <summary><span class="fw">The lease unit, the disjointness check, the four serial resources and the loop they close &mdash; plus the cases where the primitive did not fit, including the <b>path-versus-content gap</b> and the instance found inside the document asserting the isolation.</span></summary>
+      <div class="foldbody">
+<p class="pr"><b>None of this is new.</b> Locking schemes, <code>CODEOWNERS</code>, monorepo ownership boundaries and branch policies have partitioned work by file ownership for decades. What is specific to the AI-session case is that <em>the workers can't negotiate.</em> Two engineers who both need the same file talk to each other, usually before either has finished. Two sessions don't. They both write it, and the merge is the first anyone hears about it.</p>
 
     <div class="cards">
       <div class="card">
@@ -378,13 +399,18 @@
       <div class="stagehead"><span class="stagenum">4</span><span class="stagename">It writes the board, which is the input to the next round</span><span class="stagekind">deduped, single voice</span></div>
       <p>Findings become items here and only here, filed by the one participant that saw every lease's output. Either the same coordinator carries on, or a fresh one starts from the board it just wrote. Nothing has to survive in anyone's head between cycles, which is what makes it a loop instead of one very long session.</p>
     </div>
+      </div>
+    </details>
   </section>
 
   <section class="sec" id="green">
     <div class="sechead"><span class="secnum">02</span><h2>The check that is narrower than its claim</h2><div class="divider"></div></div>
     <p class="secsub">Across every round the same class kept turning up, in unrelated parts of the system, found by workers who were not looking for it: <b>a failure whose symptom is a green result rather than an error</b>. It is the most transferable thing on this page. As a rule: <em>a check that cannot fail loudly will eventually pass quietly.</em></p>
 
-    <div class="cas">
+    <details class="fold" id="fold-green">
+      <summary><span class="fw">Every worked instance of the class: a gate scanning an empty directory, a test whose fixture never arrived, a merge that closed nothing, a docstring, a provenance stamp, a liveness probe. <b>The scored-rate table for rounds 19&ndash;25</b>, and the two audits that moved a published figure against the party that recorded it.</span></summary>
+      <div class="foldbody">
+<div class="cas">
       <div class="ct">shape one &middot; checked the wrong thing, reported pass</div>
       <h4>The gate that scanned a directory nothing was in</h4>
       <p>A gate ran its scan from a working directory that was not the one being changed. It found no problems there, because there was nothing there. It reported pass, correctly and uselessly, for every run.</p>
@@ -496,12 +522,17 @@
     <p class="note" style="border-left-color: var(--accent-amber);"><b>One confound has been carried, undisguised, through all four scorings.</b> The scoping clause forbids going looking for this class. It does not forbid <em>priming</em>, and every brief in every round names the class: three workers spend the night with the shape in mind, and round 20 recorded its instances live where two earlier rounds recorded theirs as acknowledged lower bounds. So some part of 3.00 rising to 5.00 is detection rather than incidence, and nothing in the prediction's design separates them. Round 22 registered a control and <b>the control never ran</b>, because the axis statement it was meant to withhold was sitting in a file every lease had been pointed at. Round 23 declined to try again and recorded that at open rather than at close. <b>Every figure in the table is primed incidental detection, not incidence</b>, and that phrase belongs beside the number rather than in a footnote under it.</p>
 
     <p class="note" style="margin-top:1.1rem; border-left-color: var(--accent-red);"><b>The table stops at round 24, and the reason is not that counting stopped.</b> From round 25 the figure published under the same name is <em>a different quantity</em>, hub-owned scored instances per worker, 4.67, measured under a rubric that had itself been revised, in a round explicitly designated as the calibration for that revision, with the old band recorded as <b>not in force</b>. Extending the column would put two instruments in one series, which is the single thing the series refuses to do. <b>From round 26 no band is registered at all.</b> Rounds 26, 27 and 28 still record every instance they find, since the tally is kept precisely so findings do not vanish, and they compute no rate from it. <em>What the counting became instead is section 05.</em></p>
+      </div>
+    </details>
   </section>
   <section class="sec" id="cost">
     <div class="sechead"><span class="secnum">03</span><h2>What it costs, on two instruments that do not convert</h2><div class="divider"></div></div>
     <p class="secsub">Rounds 1&ndash;6 are measured in <b>percentage points of a rolling weekly allowance</b>, read off a usage panel by hand &mdash; approximate, not metered per session. <b>From round 7 the instrument is output tokens taken from the transcripts.</b> Nothing in one table converts into anything in the other, and this page never does that arithmetic. What the change bought is a figure that can be written down in advance and scored afterward, which a hand-read panel never could.</p>
 
-    <p class="pr"><b>Why a weekly allowance and not dollars.</b> Write-ups of multi-agent setups usually assume metered API billing, where the question is cost per call and parallelism is close to free. This runs on a subscription with a shared weekly ceiling, which changes the shape of the problem: the constraint is not per-call price, it's <em>one pool that every lease and the coordinator draw from at once</em>. That is what makes the reconciliation step expensive in a way an API-billed setup would not surface the same way.</p>
+    <details class="fold" id="fold-cost">
+      <summary><span class="fw"><b>Both cost tables, all twenty-eight rounds</b>, with every footnote on window rules and undercounting. The two defects found in the measuring tool, the two figures captured before their round ended, the one parallelism measurement, and why none of the three nearby frameworks applies.</span></summary>
+      <div class="foldbody">
+<p class="pr"><b>Why a weekly allowance and not dollars.</b> Write-ups of multi-agent setups usually assume metered API billing, where the question is cost per call and parallelism is close to free. This runs on a subscription with a shared weekly ceiling, which changes the shape of the problem: the constraint is not per-call price, it's <em>one pool that every lease and the coordinator draw from at once</em>. That is what makes the reconciliation step expensive in a way an API-billed setup would not surface the same way.</p>
 
     <div class="tablewrap" style="margin-bottom:1.2rem;">
       <table>
@@ -611,13 +642,18 @@
     <p class="note" style="margin-bottom:1.1rem; border-left-color: var(--accent-amber);"><b>Round 6 ran three hours and twenty minutes with no blocking human decisions &mdash; and that sentence is available in a more impressive form which is not true.</b> &ldquo;No blocking decisions&rdquo; is not &ldquo;no intervention.&rdquo; The operator surfaced one substantive finding neither thread produced, and the coordinator's merge error was detected through an observation channel the operator supplies rather than by anything in the system. <em>Detection, not prevention.</em> The unqualified version is the better headline and the worse claim.</p>
 
     <p class="pr"><b>What this page will not do is tell you what that replaced.</b> &ldquo;This would have taken a person N hours&rdquo; is a number nobody measured, and inventing it is exactly the failure the corrections above exist to fix. What was <em>required</em> is counted. What it <em>displaced</em> is not, and no amount of it being a good story makes it a measurement.</p>
+      </div>
+    </details>
   </section>
 
   <section class="sec" id="predict">
     <div class="sechead"><span class="secnum">04</span><h2>Registering the prediction, and what it costs to hold one</h2><div class="divider"></div></div>
     <p class="secsub">Every figure in section 03 was computed after the fact by a party with a stake in the answer. Round 5's coordinator share required manually subtracting 29,752 tokens of pre-round work out of its own transcript &mdash; a defensible subtraction, made by the party it flattered. Its underlying split was <b>250,637 worker tokens against 112,467 of post-spawn coordination</b>, and the 29,752 of pre-spawn supervision was excluded by hand. Round 6 changed the setup rather than the arithmetic.</p>
 
-    <p class="note" style="margin-bottom:1.2rem; border-left-color: var(--accent-red);"><b>That split partly contradicted the hypothesis this page had been carrying.</b> &ldquo;The marginal worker is cheap, the marginal decision is not&rdquo; predicted that coordination would dominate. It doesn't. Coordination is <b>about a third</b> of output. The guess was directionally interesting and quantitatively wrong, and it is corrected in the same place it was made.</p>
+    <details class="fold" id="fold-predict">
+      <summary><span class="fw"><b>The full prediction scoreboard from round 8 onward.</b> What round 20 registered and missed, the rule against re-basing a bar onto the round that just missed it, what holding a prediction across five rounds cost, and the grounds for retiring it.</span></summary>
+      <div class="foldbody">
+<p class="note" style="margin-bottom:1.2rem; border-left-color: var(--accent-red);"><b>That split partly contradicted the hypothesis this page had been carrying.</b> &ldquo;The marginal worker is cheap, the marginal decision is not&rdquo; predicted that coordination would dominate. It doesn't. Coordination is <b>about a third</b> of output. The guess was directionally interesting and quantitatively wrong, and it is corrected in the same place it was made.</p>
 
     <div class="dcol good" style="margin-bottom:1.2rem;">
       <div class="dlab">written into the manifest before the coordinator existed</div>
@@ -711,13 +747,18 @@
     <p class="pr"><b>The person who made that ruling then got the ratio wrong on the first pass, in the series' own registered failure mode.</b> The window had no fixed endpoint, so it ran to the current tip and counted the very commits being written to record the ruling &mdash; the figure moved by one line between two readings in the same sitting, and the first pass said 2.5&times;. <em>A counter whose window is opened by an external caller measures the caller.</em> Both records now name the endpoint commits so the number is re-derivable. It is worth saying plainly that this happened on a figure <b>about measurement discipline</b>, in the decision that retired a measurement, made by the one participant who is not a session.</p>
 
     <p class="note" style="margin-top:1.4rem; border-left-color: var(--accent-red);"><b>One series this page will not plot.</b> Every round from 7 on enumerates its own coordinator errors at close, and the counts run 6 to 23. They are not plotted because <em>successor rounds disagree with their predecessors about the totals</em> &mdash; round 10 recounts round 9 as 19 errors where round 9's own row says 8, and round 12 revises <em>itself</em> from 14 to 23 after a closing session ran the checks that round had only read. No round has claimed its error <em>rate</em> improved, and none could: the counts are lower bounds that move, with no denominator anywhere in the series. What is measurable is the split &mdash; how many were caught by a party other than the one that made them: <b>6/13, 14/22, 7/23, 4/7, 9/11, 6/8, 7/12, 5/7, 5/6, 8/14</b> across rounds 10 to 20. <b>It does not move in one direction, the worst round sits between two of the better ones, and the best is not the most recent.</b> Round 18's pair is the weakest in that list and its own record says so: no error block was written at close, so the count was reconstructed afterward and disagrees with the round's sealed claim. Rounds 19 and 20 are the only two that are not lower bounds, because both had a closing session that audited the coordinator's self-report rather than totalling it.</p>
+      </div>
+    </details>
   </section>
 
   <section class="sec" id="rubric">
     <div class="sechead"><span class="secnum">05</span><h2>Grading the grader</h2><div class="divider"></div></div>
     <p class="secsub">Twenty-four rounds counted defects without a written rule for what counted as one, who was allowed to decide, or what a number from one round was comparable to. <b>Every figure in section 02 was produced under those conditions.</b> The rubric that arrived at round 24 is the most transferable artifact the series has, and the first thing it did was move the headline number by a factor of ten without the work changing.</p>
 
-    <h3 style="font-family:var(--serif); font-size:1.45rem; font-weight:600; margin:2.2rem 0 0.5rem;">The admission rule changed the rate ten-fold, and the work did not change</h3>
+    <details class="fold" id="fold-rubric">
+      <summary><span class="fw">The admission rule and the ten-fold change, grader independence and the figure wrong by one, <b>the three inter-rater numbers and why they must not be trended</b>, the tally-versus-artifacts gap, and the grading seat's own defect.</span></summary>
+      <div class="foldbody">
+<h3 style="font-family:var(--serif); font-size:1.45rem; font-weight:600; margin:2.2rem 0 0.5rem;">The admission rule changed the rate ten-fold, and the work did not change</h3>
     <p class="pr">Until round 24, an observation reached the tally if somebody filed it under the heading the tally expected. That is intake matching a <b>label</b> rather than a <b>shape</b>, and it is the same defect as everything in section 02, one level up: the count reads as a measurement of the round and is a measurement of what people remembered to label.</p>
 
     <div class="tablewrap" style="margin:1.2rem 0;">
@@ -783,13 +824,18 @@
     </div>
 
     <p class="note" style="margin-top:1.2rem; border-left-color: var(--accent-red);"><b>And the seat doing the grading is not exempt, which is the last thing this section has to say.</b> Round 28's closing session shipped the round's own registered defect, an enumeration with no resolvable count beside it so that nothing could disagree with the list, <em>inside the block classifying that defect</em>, minutes after classifying two earlier instances of it. The figure it should have been checked against was sitting on the adjacent line. It was caught by the automated checker, which listed the field as <b>not checked</b>, rather than by the seat re-reading its own work. <b>Fourth party, fourth round, same defect.</b> Noticing a class confers no immunity to it, and the party that had just written that sentence down is the one that proved it.</p>
+      </div>
+    </details>
   </section>
 
   <section class="sec" id="brief">
     <div class="sechead"><span class="secnum">06</span><h2>Instructions that read fine and cannot be executed</h2><div class="divider"></div></div>
     <p class="secsub">Rounds 1 and 2 asked every worker to check in at fixed points. Across both rounds, <b>the number of check-ins received was zero.</b> Round 3 asked four workers for the same thing and <b>all four complied, unprompted.</b> Same coordinator, same model, same brief structure. The difference was one paragraph.</p>
 
-    <div class="diff">
+    <details class="fold" id="fold-brief">
+      <summary><span class="fw">The brief that could not be executed and the one that could, <b>the receiver-duty table</b>, the eighth written rule, and the corrections workers made to the coordinator's own diagnosis.</span></summary>
+      <div class="foldbody">
+<div class="diff">
       <div class="dcol bad">
         <div class="dlab">rounds 1&ndash;2 &mdash; 0 check-ins received</div>
         <p class="dtext">&ldquo;<b>Reply to the sender of this message</b> for all checkpoints &mdash; <b>do not ask for a session id.</b>&rdquo;</p>
@@ -843,13 +889,18 @@
       <p><b>Round 20 sharpened that into a rule the coordinator got wrong in its own favour.</b> Its closing self-assessment read: <em>&ldquo;every time the hub checked a lease's claim by running something the lease had not run, it was productive; every time it passed a lease's reasoning along intact, it was the weak link. The value is in the different command, not in the second opinion.&rdquo;</em> The substance is right and the framing flatters the wrong seat &mdash; two of its five supporting examples are cases where the different command was run <em>by a lease, on the coordinator</em>. The corrected form is stronger and less flattering: <b>the value is in the different command regardless of which seat runs it &mdash; and this round the coordinator was the subject of that command as often as its author.</b> That is the argument for leases with standing to push back, rather than an argument about coordinator diligence.</p>
       <p>Across every round, <b>workers corrected the coordinator's premise more often than the reverse</b> &mdash; the ordinary asymmetry between a lead and the person actually in the file, not a scoreboard &mdash; and the briefs came to say so out loud, granting explicit permission to reject the task's own stated reasoning. In round 3 four workers corrected the premise of their own assignment and two corrected the coordinator's. That is the pattern's error-correction path working, and it argues for writing the brief so it can be argued with.</p>
     </div>
+      </div>
+    </details>
   </section>
 
   <section class="sec" id="next">
     <div class="sechead"><span class="secnum">07</span><h2>Why it converges, and where it goes</h2><div class="divider"></div></div>
     <p class="secsub">A worker pointed at an area that has never been checked comes back with a pile of findings. The instinct is to read that as a pile of problems. It is usually <b>one unlit area</b>, and the pile is what a first light looks like.</p>
 
-    <div class="cards">
+    <details class="fold" id="fold-next">
+      <summary><span class="fw">Why findings cluster by unlit area and the process terminates, the rule preferring an enforcing check over N corrections, and two things that have not been tried.</span></summary>
+      <div class="foldbody">
+<div class="cards">
       <div class="card">
         <div class="tag">the pattern</div>
         <h3>Burst, then silence</h3>
@@ -895,6 +946,8 @@
       <div class="stagehead"><span class="stagenum">?</span><span class="stagename">Something above the coordinators</span><span class="stagekind">untried</span></div>
       <p>Past some number of concurrent coordinators the merge problem comes back one level up &mdash; several finished worktrees, each internally consistent, that now have to land together in an order nobody has worked out. That is section 01 with bigger units, and it presumably wants the same answer: one writer, holding the ordering. Whether that tier is worth building depends entirely on whether the cost shape in section 03 holds at that scale, and there is no reason to assume it does. The reconciliation step is the expensive one, and a tier whose entire job is reconciliation is not obviously a bargain.</p>
     </div>
+      </div>
+    </details>
   </section>
 
   <div class="takeaway">

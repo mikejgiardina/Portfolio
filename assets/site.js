@@ -219,6 +219,69 @@
         }, { threshold: 0.6 });
         io.observe(el);
       });
+
+    /* ---------------------------------------------------------------------
+       Section folds.
+       Reference pages wrap each section body in <details class="fold">, so the
+       default view is an index rather than a wall. Two things have to keep
+       working once they do: a link to #cost has to OPEN the fold it lands in
+       instead of scrolling to a collapsed heading, and the whole page has to
+       be openable in one action for printing, or for a browser whose find
+       does not reach into a closed <details>.
+
+       No-op on every page that has no folds.
+       --------------------------------------------------------------------- */
+    var folds = [].slice.call(document.querySelectorAll('details.fold'));
+    if (folds.length) {
+      var bar = document.querySelector('.foldbar');
+
+      function setAll(open) {
+        folds.forEach(function (d) { d.open = open; });
+      }
+      if (bar) {
+        bar.addEventListener('click', function (e) {
+          var b = e.target.closest ? e.target.closest('[data-fold]') : null;
+          if (!b) return;
+          setAll(b.getAttribute('data-fold') === 'open');
+        });
+      }
+
+      /* A hash can name the section itself, or anything inside its fold. */
+      function revealHash() {
+        var id = (location.hash || '').slice(1);
+        if (!id) return;
+        var el = document.getElementById(id);
+        if (!el) return;
+
+        var d = el.closest ? el.closest('details.fold') : null;
+        if (!d && el.querySelector) d = el.querySelector('details.fold');
+        while (d) {
+          d.open = true;
+          var p = d.parentNode;
+          d = (p && p.closest) ? p.closest('details.fold') : null;
+        }
+        /* Opening a fold moves the layout underneath the browser's own jump. */
+        if (el.scrollIntoView) el.scrollIntoView();
+      }
+
+      window.addEventListener('hashchange', revealHash);
+      document.addEventListener('click', function (e) {
+        var a = e.target.closest ? e.target.closest('a[href^="#"]') : null;
+        if (!a) return;
+        var id = a.getAttribute('href').slice(1);
+        if (!id) return;
+        var t = document.getElementById(id);
+        if (!t) return;
+        var d = t.closest ? t.closest('details.fold') : null;
+        if (!d && t.querySelector) d = t.querySelector('details.fold');
+        while (d) {
+          d.open = true;
+          var p = d.parentNode;
+          d = (p && p.closest) ? p.closest('details.fold') : null;
+        }
+      });
+      revealHash();
+    }
   });
 })();
 
