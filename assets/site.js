@@ -161,6 +161,14 @@
        Reads the value already in the element, so it needs no data attribute
        and cannot disagree with the copy. Anything non-numeric (L1, CEN,
        ATCN) is left exactly as authored.
+
+       The animation writes INTERMEDIATE VALUES into the element, which makes
+       it the one piece of decoration on this site that can put a false number
+       on screen. requestAnimationFrame stops delivering frames in a background
+       tab, so a count started just before the tab was backgrounded used to
+       freeze partway and stay there: 28 rendered as 9, and nothing about it
+       looked broken. Every path below therefore ends at the authored text --
+       a visibility change, a backstop timer, or the animation finishing.
        --------------------------------------------------------------------- */
     [].slice.call(document.querySelectorAll('.stat .n, .stat-value'))
       .forEach(function (el) {
@@ -170,19 +178,43 @@
         var target = parseInt(m[1].replace(/,/g, ''), 10);
         var suffix = m[2] || '';
         if (!isFinite(target) || target === 0) return;
+        if (reduced) return;                   // authored value, never animated
 
         var io = new IntersectionObserver(function (entries) {
           if (!entries[0].isIntersecting) return;
           io.disconnect();
-          var start = null, dur = 850;
+
+          var dur = 850, settled = false, backstop = null;
+
+          function settle() {                  // the only way this ever ends
+            if (settled) return;
+            settled = true;
+            clearTimeout(backstop);
+            document.removeEventListener('visibilitychange', onVisibility);
+            el.textContent = raw;              // restore the exact original
+          }
+          function onVisibility() {
+            if (document.hidden) settle();     // never freeze mid-count
+          }
+
+          if (document.hidden) { settle(); return; }
+          document.addEventListener('visibilitychange', onVisibility);
+          // setTimeout still fires in a throttled tab; rAF may not.
+          backstop = setTimeout(settle, dur + 500);
+
+          var start = null;
           requestAnimationFrame(function step(ts) {
+            if (settled) return;
             if (start === null) start = ts;
             var p = Math.min(1, (ts - start) / dur);
             var eased = 1 - Math.pow(1 - p, 3);   // decelerate into the value
-            el.textContent = Math.round(target * eased).toLocaleString() +
-                             (p === 1 ? suffix : '');
-            if (p < 1) requestAnimationFrame(step);
-            else el.textContent = raw;            // restore the exact original
+            if (p < 1) {
+              el.textContent = Math.round(target * eased).toLocaleString() +
+                               suffix;            // suffix held so width is stable
+              requestAnimationFrame(step);
+            } else {
+              settle();
+            }
           });
         }, { threshold: 0.6 });
         io.observe(el);
