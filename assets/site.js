@@ -260,8 +260,16 @@
           var p = d.parentNode;
           d = (p && p.closest) ? p.closest('details.fold') : null;
         }
-        /* Opening a fold moves the layout underneath the browser's own jump. */
-        if (el.scrollIntoView) el.scrollIntoView();
+        /* Opening a fold grows the document under the browser's own hash jump,
+           which would otherwise leave the reader above the thing they asked
+           for. Re-aim one frame later, after that growth has been laid out. */
+        if (el.scrollIntoView) {
+          if (window.requestAnimationFrame) {
+            requestAnimationFrame(function () { el.scrollIntoView(); });
+          } else {
+            el.scrollIntoView();
+          }
+        }
       }
 
       window.addEventListener('hashchange', revealHash);
