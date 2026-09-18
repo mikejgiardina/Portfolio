@@ -29,6 +29,18 @@ of it. **A check narrower than the claim it gets read as supporting** — which 
 the subject of [the orchestration case study](orchestration/) in this repo,
 committed against that case study's own publication.
 
+## Naming the marker also trips it
+
+The commit that first documented all this was titled *"Document the [skip ci]
+trap that has kept two merges off the live site"*. It was landed with the
+suppression flag, so the tooling correctly did **not** append a marker — and
+Netlify skipped the build anyway, because **the subject contains the token it is
+about.**
+
+Anything that scans a commit subject for a literal token fires on prose *about*
+that token. Write it as "the CI-skip marker" in any subject line that has to
+mention it.
+
 ## The rule
 
 **Land a PR here with the marker suppressed.** The merge tooling has a flag for
