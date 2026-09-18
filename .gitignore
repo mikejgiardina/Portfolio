@@ -1,2 +1,11 @@
 __pycache__/
 *.pyc
+
+# Scratch that must never reach a publish target.
+# A push to this repo IS the publish action (Netlify auto-deploys the default
+# branch), so anything dropped in the tree for reading -- an external review, a
+# downloaded draft, a scratch export -- is one `git add -A` away from being
+# public. Named directories rather than a pattern, so adding one is deliberate.
+/Perplex/
+/_scratch/
+/_review/
