@@ -161,6 +161,14 @@
        Reads the value already in the element, so it needs no data attribute
        and cannot disagree with the copy. Anything non-numeric (L1, CEN,
        ATCN) is left exactly as authored.
+
+       The animation writes INTERMEDIATE VALUES into the element, which makes
+       it the one piece of decoration on this site that can put a false number
+       on screen. requestAnimationFrame stops delivering frames in a background
+       tab, so a count started just before the tab was backgrounded used to
+       freeze partway and stay there: 28 rendered as 9, and nothing about it
+       looked broken. Every path below therefore ends at the authored text --
+       a visibility change, a backstop timer, or the animation finishing.
        --------------------------------------------------------------------- */
     [].slice.call(document.querySelectorAll('.stat .n, .stat-value'))
       .forEach(function (el) {
@@ -170,23 +178,118 @@
         var target = parseInt(m[1].replace(/,/g, ''), 10);
         var suffix = m[2] || '';
         if (!isFinite(target) || target === 0) return;
+        if (reduced) return;                   // authored value, never animated
 
         var io = new IntersectionObserver(function (entries) {
           if (!entries[0].isIntersecting) return;
           io.disconnect();
-          var start = null, dur = 850;
+
+          var dur = 850, settled = false, backstop = null;
+
+          function settle() {                  // the only way this ever ends
+            if (settled) return;
+            settled = true;
+            clearTimeout(backstop);
+            document.removeEventListener('visibilitychange', onVisibility);
+            el.textContent = raw;              // restore the exact original
+          }
+          function onVisibility() {
+            if (document.hidden) settle();     // never freeze mid-count
+          }
+
+          if (document.hidden) { settle(); return; }
+          document.addEventListener('visibilitychange', onVisibility);
+          // setTimeout still fires in a throttled tab; rAF may not.
+          backstop = setTimeout(settle, dur + 500);
+
+          var start = null;
           requestAnimationFrame(function step(ts) {
+            if (settled) return;
             if (start === null) start = ts;
             var p = Math.min(1, (ts - start) / dur);
             var eased = 1 - Math.pow(1 - p, 3);   // decelerate into the value
-            el.textContent = Math.round(target * eased).toLocaleString() +
-                             (p === 1 ? suffix : '');
-            if (p < 1) requestAnimationFrame(step);
-            else el.textContent = raw;            // restore the exact original
+            if (p < 1) {
+              el.textContent = Math.round(target * eased).toLocaleString() +
+                               suffix;            // suffix held so width is stable
+              requestAnimationFrame(step);
+            } else {
+              settle();
+            }
           });
         }, { threshold: 0.6 });
         io.observe(el);
       });
+
+    /* ---------------------------------------------------------------------
+       Section folds.
+       Reference pages wrap each section body in <details class="fold">, so the
+       default view is an index rather than a wall. Two things have to keep
+       working once they do: a link to #cost has to OPEN the fold it lands in
+       instead of scrolling to a collapsed heading, and the whole page has to
+       be openable in one action for printing, or for a browser whose find
+       does not reach into a closed <details>.
+
+       No-op on every page that has no folds.
+       --------------------------------------------------------------------- */
+    var folds = [].slice.call(document.querySelectorAll('details.fold'));
+    if (folds.length) {
+      var bar = document.querySelector('.foldbar');
+
+      function setAll(open) {
+        folds.forEach(function (d) { d.open = open; });
+      }
+      if (bar) {
+        bar.addEventListener('click', function (e) {
+          var b = e.target.closest ? e.target.closest('[data-fold]') : null;
+          if (!b) return;
+          setAll(b.getAttribute('data-fold') === 'open');
+        });
+      }
+
+      /* A hash can name the section itself, or anything inside its fold. */
+      function revealHash() {
+        var id = (location.hash || '').slice(1);
+        if (!id) return;
+        var el = document.getElementById(id);
+        if (!el) return;
+
+        var d = el.closest ? el.closest('details.fold') : null;
+        if (!d && el.querySelector) d = el.querySelector('details.fold');
+        while (d) {
+          d.open = true;
+          var p = d.parentNode;
+          d = (p && p.closest) ? p.closest('details.fold') : null;
+        }
+        /* Opening a fold grows the document under the browser's own hash jump,
+           which would otherwise leave the reader above the thing they asked
+           for. Re-aim one frame later, after that growth has been laid out. */
+        if (el.scrollIntoView) {
+          if (window.requestAnimationFrame) {
+            requestAnimationFrame(function () { el.scrollIntoView(); });
+          } else {
+            el.scrollIntoView();
+          }
+        }
+      }
+
+      window.addEventListener('hashchange', revealHash);
+      document.addEventListener('click', function (e) {
+        var a = e.target.closest ? e.target.closest('a[href^="#"]') : null;
+        if (!a) return;
+        var id = a.getAttribute('href').slice(1);
+        if (!id) return;
+        var t = document.getElementById(id);
+        if (!t) return;
+        var d = t.closest ? t.closest('details.fold') : null;
+        if (!d && t.querySelector) d = t.querySelector('details.fold');
+        while (d) {
+          d.open = true;
+          var p = d.parentNode;
+          d = (p && p.closest) ? p.closest('details.fold') : null;
+        }
+      });
+      revealHash();
+    }
   });
 })();
 

@@ -1012,6 +1012,71 @@ details.src pre{
   font-size:.72rem; line-height:1.7; color:var(--ink-2);
 }
 
+/* --------------------------------------------------------------------------
+   16b. SECTION FOLD
+   Used on reference pages that are too long to read through. The section
+   heading and its one-line summary ALWAYS stay in the page; only the body
+   folds, so the default view is a readable index rather than a wall of text.
+
+   <details> is native: the text stays in the DOM, stays indexable, and stays
+   reachable with the browser's own find. Nothing here is hidden by CSS that
+   only JS can put back.
+   -------------------------------------------------------------------------- */
+.fold{border-top:1px solid var(--line-soft);margin-top:1.1rem}
+.fold > summary{
+  cursor:pointer; list-style:none; padding:.75rem 0;
+  display:flex; align-items:baseline; gap:.65rem;
+  font-family:var(--mono); font-size:.68rem; text-transform:uppercase;
+  letter-spacing:.09em; color:var(--ink-3);
+}
+.fold > summary::-webkit-details-marker{display:none}
+.fold > summary::before{
+  content:'+'; color:var(--accent); font-weight:700; font-size:.9rem;
+  line-height:1; width:.8rem; flex:none;
+}
+.fold[open] > summary::before{content:'\2212'}
+.fold > summary:hover{color:var(--accent)}
+.fold > summary:hover::before{color:var(--accent)}
+.fold > summary:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:var(--r-xs)}
+.fold > summary .fw{
+  font-family:var(--sans); font-size:.88rem; line-height:1.5;
+  text-transform:none; letter-spacing:0; color:var(--ink-2);
+}
+.fold > summary .fw b{color:var(--ink);font-weight:600}
+.foldbody{padding-top:.5rem}
+
+.foldbar{
+  display:flex; flex-wrap:wrap; gap:.55rem; align-items:center;
+  margin:.4rem 0 1.4rem;
+}
+.foldbar button{
+  cursor:pointer; font:inherit;
+  font-family:var(--mono); font-size:.66rem; text-transform:uppercase; letter-spacing:.09em;
+  background:var(--card-2); color:var(--ink-3);
+  border:1px solid var(--line); border-radius:var(--r-sm); padding:.42rem .8rem;
+}
+.foldbar button:hover{color:var(--accent);border-color:var(--accent-line)}
+.foldbar button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+.toc{
+  border:1px solid var(--line); border-radius:var(--r); background:var(--card-2);
+  padding:1.15rem 1.35rem; margin:1.7rem 0 .6rem;
+}
+.toc h4{
+  font-family:var(--mono); font-size:.66rem; text-transform:uppercase;
+  letter-spacing:.09em; color:var(--ink-3); margin:0 0 .8rem; font-weight:500;
+}
+.toc ol{margin:0;padding-left:1.5rem}
+.toc li{margin:.42rem 0;color:var(--ink-2);font-size:.9rem;line-height:1.55}
+.toc a{color:var(--ink);text-decoration:none;border-bottom:1px solid var(--line);font-weight:600}
+.toc a:hover{color:var(--accent);border-bottom-color:var(--accent-line)}
+.toc .tw{color:var(--ink-3);font-family:var(--mono);font-size:.7rem;white-space:nowrap}
+
+@media (max-width:640px){
+  .fold > summary{align-items:flex-start}
+  .fold > summary .fw{font-size:.85rem}
+}
+
 .verdict{
   background:var(--card-2); border:1px solid var(--line); border-radius:var(--r);
   padding:1.1rem 1.25rem; overflow-x:auto;
