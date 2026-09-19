@@ -1,305 +1,548 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Running an Error-Rate Instrument on Your Own Agent System &mdash; Case Study</title>
-<meta name="description" content="Twenty-eight rounds of running several AI coding sessions at once against one shared repository set. The transferable part is not the architecture — it is what happened when the defect rate was measured, the measuring instrument turned out to be wrong, and the old numbers were kept and labelled incomparable rather than quietly replaced.">
-<meta property="og:type" content="article">
-<meta property="og:url" content="https://mike-giardina.netlify.app/orchestration/">
-<meta property="og:title" content="Red Leader — measuring the error rate of your own agent system, and finding the instrument wrong">
-<meta property="og:description" content="Twenty-eight rounds against one repository set. An admission rule that moved the measured defect rate ten-fold without the work changing; a headline figure wrong by one because the party being graded was the grader; 100% inter-rater agreement published with the reason to distrust it attached.">
-<meta property="og:image" content="https://mike-giardina.netlify.app/assets/og/red-leader.png">
-<meta property="og:image:width" content="1200">
-<meta property="og:image:height" content="627">
-<meta property="og:image:alt" content="Seven arrowhead craft in echelon formation, the lead one red, over the words RED LEADER.">
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://mike-giardina.netlify.app/assets/og/red-leader.png">
-<link rel="stylesheet" href="../assets/site.css">
-<script src="../assets/site.js" defer></script>
-<script>try{var t=localStorage.getItem("mg-theme");if(t==="dark"||t==="light")document.documentElement.setAttribute("data-theme",t);}catch(e){}</script>
-</head>
-<body>
-<div class="grid-bg"></div>
 
-<div class="topbar">
-  <div class="topin">
-    <span class="mark"><b>orchestrate/</b> &middot; one coordinator, N workers</span>
-    <nav class="topnav">
-      <a href="#measure">Measuring it</a>
-      <a href="#green">The defect class</a>
-      <a href="#mech">The mechanism</a>
-      <a href="#brief">Instructions</a>
-      <a href="#cost">Cost</a>
-      <a href="evidence/">Full record &rarr;</a>
-      <a href="../automation/">Hooks &rarr;</a>
-      <a href="../enforcement/">Enforcement &rarr;</a>
-      <a href="../case-studies/" class="back">&larr; all five</a>
-      <a href="../" class="back">&larr; portfolio</a>
-    </nav>
-  </div>
-</div>
+<html data-theme="light" lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Running an Error-Rate Instrument on Your Own Agent System — Case Study</title>
+<meta content="Twenty-eight rounds of running several AI coding sessions at once against one shared repository set. The transferable part is not the architecture — it is what happened when the defect rate was measured, the measuring instrument turned out to be wrong, and the old numbers were kept and labelled incomparable rather than quietly replaced." name="description"/>
+<meta property="og:type" content="article"/>
+<meta property="og:url" content="https://mike-giardina.netlify.app/orchestration/"/>
+<meta property="og:title" content="Red Leader — measuring the error rate of your own agent system, and finding the instrument wrong"/>
+<meta property="og:description" content="Twenty-eight rounds against one repository set. An admission rule that moved the measured defect rate ten-fold without the work changing; a headline figure wrong by one because the party being graded was the grader; 100% inter-rater agreement published with the reason to distrust it attached."/>
+<meta property="og:image" content="https://mike-giardina.netlify.app/assets/og/red-leader.png"/>
+<meta property="og:image:width" content="1200"/>
+<meta property="og:image:height" content="627"/>
+<meta property="og:image:alt" content="Seven arrowhead craft in echelon formation, the lead one red, over the words RED LEADER."/>
+<meta content="summary_large_image" name="twitter:card"/>
+<meta content="https://mike-giardina.netlify.app/assets/og/red-leader.png" name="twitter:image"/>
+
+<link href="https://api.fontshare.com" rel="preconnect"/><link rel="stylesheet" href="../assets/site.css"/><link rel="stylesheet" href="../base.css"/><link rel="stylesheet" href="../style.css"/><link rel="stylesheet" href="../assets/portfolio.css"/><link rel="stylesheet" href="../assets/fonts/editorial.css"/><script src="../app.js" defer=""></script><script src="../assets/navigation.js" defer=""></script></head>
+<body class="editorial-article"><a class="skip" href="#reading">Skip to content</a><header class="masthead"><div class="mast-inner">
+<a class="brand" href="../"><svg width="32" height="32" viewbox="0 0 32 32" fill="none" role="img" aria-label="Michael Giardina monogram"><path d="M4 26V6l12 12L28 6v20M4 6l12 12 12-12" stroke="currentColor" stroke-width="2.5"></path><path d="M16 18v8" stroke="currentColor" stroke-width="2.5"></path></svg><span>MICHAEL GIARDINA<span class="brand-sub">Clinical judgment. Systems thinking.</span></span></a>
+<button class="mobile-menu" aria-expanded="false" aria-controls="primary-navigation" type="button">Menu</button>
+<nav class="primary-nav" id="primary-navigation" aria-label="Portfolio navigation">
+<a href="../#work">Work</a>
+<details class="nav-dropdown"><summary>Case studies</summary><div class="nav-panel"><a href="../case-studies/">All five case studies</a><a href="../automation/">Lifecycle hooks</a><a href="../enforcement/">Enforcement</a><a href="../publishing/">Disclosure & publishing</a><a href="../clinical-review/">Clinical AI evaluation</a><a href="../orchestration/">Multi-session orchestration</a><a href="../orchestration/evidence/">Evidence appendix</a><a href="../trauma-tracker/">Trauma Tracker</a></div></details>
+<details class="nav-dropdown"><summary>Clinical stories</summary><div class="nav-panel"><a href="../story/gi-bleed/">GI hemorrhage</a><a href="../story/hyperkalemia/">Hyperkalemia</a><a href="../story/first-code-blue/">Your first code blue</a><a href="https://erinfo.netlify.app" target="_blank" rel="noopener noreferrer">ER articles ↗</a></div></details>
+<a href="../#background">About</a><a href="../#connect">Contact</a></nav>
+<button class="theme-toggle" type="button" aria-label="Switch to dark mode"><span class="theme-symbol" aria-hidden="true">◐</span><span class="theme-label">Dark</span></button></div><div class="reading-progress" aria-hidden="true"></div></header>
+
 
 <div class="wrap">
-
-  <header class="hero" id="top">
-    <div class="status-bar">
-      <div class="status-item"><span class="status-dot"></span><span>ENGINEERING CASE STUDY</span></div>
-      <div class="status-item"><span class="status-dot"></span><span>MEASUREMENT &middot; MULTI-SESSION ORCHESTRATION</span></div>
-    </div>
-    <p class="kicker">Workflow design &middot; parallel sessions</p>
-    <h1>I built an error-rate instrument for my own agent system, and then found the instrument wrong.</h1>
-    <p class="lede">Twenty-eight rounds of running several AI coding sessions at once against one shared repository set. <b>The architecture is the least interesting part.</b> Leases, worktrees and a single writer for everything serial are sound engineering that other people have also done, and the write-up of that is <a href="#mech">one short section, below</a>.</p>
-    <p class="lede">What almost nobody does is <b>run an error-rate instrument on their own agent system, discover the instrument is wrong, say so in public, and keep the old number labelled incomparable.</b> That happened here repeatedly, and it is what this page is about.</p>
-    <p class="context">a coordinating session &middot; N worker sessions &middot; git worktrees &middot; a shared issue tracker &middot; one human approving merges</p>
-
-    <div class="stats">
-      <div class="stat"><span class="n">10&times;</span><span class="l">the measured defect rate moved, when the <b>admission rule</b> changed and the work did not</span></div>
-      <div class="stat"><span class="n">1 of 5</span><span class="l">registered predictions that landed inside their band &middot; before the practice was retired on measured grounds</span></div>
-      <div class="stat"><span class="n">49/49</span><span class="l">inter-rater agreement &middot; published together with the reason it should be discounted</span></div>
-      <div class="stat"><span class="n">28</span><span class="l">rounds with a ledger row &middot; 102 worker sessions &middot; every figure traces to a manifest</span></div>
-    </div>
-
-    <p class="statnote">Nothing here is a product claim. The work these sessions performed is described only by shape &mdash; a checker, a gate, a test suite. <b>The full round-by-round record, every table and every instance, is in <a href="evidence/" style="color:var(--accent-cyan); text-decoration:none; border-bottom:1px solid var(--line)">the evidence appendix</a></b>; this page carries the argument and the strongest figure for each claim.</p>
-  </header>
-
-  <section class="sec" id="measure">
-    <div class="sechead"><span class="secnum">01</span><h2>Measuring it, and then measuring the measurement</h2><div class="divider"></div></div>
-    <p class="secsub">Twenty-four rounds counted defects with no written rule for what counted as one, who was allowed to decide, or what a number from one round was comparable to. The rubric that finally arrived did four things, and the first thing it did was invalidate most of what came before it.</p>
-
-    <h3 style="font-family:var(--serif); font-size:1.45rem; font-weight:600; margin:2rem 0 0.5rem;">The admission rule moved the rate ten-fold, and the work did not change</h3>
-    <p class="pr">Until round 24, an observation reached the tally if somebody filed it under the heading the tally expected. That is intake matching a <b>label</b> rather than a <b>shape</b> &mdash; the count reads as a measurement of the round and is a measurement of what people remembered to label.</p>
-
-    <div class="tablewrap" style="margin:1.2rem 0;">
-      <table>
-        <thead><tr><th>Near-misses reaching the tally</th><th class="num">recorded</th><th class="num">workers</th><th class="num">per worker</th></tr></thead>
-        <tbody>
-          <tr><td><b>Round 23</b> <span class="absent">&mdash; intake keyed on the label</span></td><td class="num">5</td><td class="num">6</td><td class="num"><b>0.8</b></td></tr>
-          <tr><td><b>Round 24</b> <span class="absent">&mdash; intake keyed on the shape</span></td><td class="num">25</td><td class="num">3</td><td class="num"><b>8.3</b></td></tr>
-        </tbody>
-      </table>
-    </div>
-
-    <p class="pr"><b>A factor of exactly ten, and it survives to four decimal places.</b> The replacement rule is four binary items: a claim was made; something about it was wrong, or could not support what it was used for; it is locatable at a source; it is not already counted somewhere else. Binary on purpose, because two graders rarely mean the same thing by a 3. It also carries a required disposition of <b>insufficient evidence</b>, so a grader forced to guess is not producing something indistinguishable from a judgment.</p>
-
-    <p class="note" style="border-left-color: var(--accent-amber);"><b>Said beside the figure, or it gets read as something it is not.</b> The numerator counts every admitted near-miss regardless of who produced it, <em>including the coordinator's own</em>, while the denominator contains no coordinator at all. So &ldquo;per worker&rdquo; is <b>a detection-posture index, not a per-person error rate.</b> It did not revert &mdash; the next round came in between 8 and 9 &mdash; but no claim of stability survives either: three rounds, three rubric versions, and a single added admission item moved the figure by 0.4.</p>
-
-    <h3 style="font-family:var(--serif); font-size:1.45rem; font-weight:600; margin:2.6rem 0 0.5rem;">The most-quoted figure in a round was wrong by one, because the graded party was the grader</h3>
-    <p class="pr">Round 24 recorded that <b>18 of its 33 scored instances were the coordinator's own errors</b> &mdash; the number that led the round's summary, fed the per-worker error rate, and went to the ledger. The coordinator classified all 33. A separate closing session re-derived the attribution independently and found <b>19</b>. The one it had missed was a guard the coordinator itself had written and broadcast to all three workers as a control; that entry's own text says it is the coordinator's, and it appears in no enumeration of the coordinator's errors anywhere in the round.</p>
-
-    <p class="pr"><b>The fair reading is less satisfying than the story.</b> That coordinator scored several of its own items that a strict reading would have routed out of the count altogether; <em>every borderline call it made ran toward scoring itself.</em> The defect was an omission under load, which is exactly what an independence rule is for and exactly what diligence is not. <b>The wrong number was not overwritten.</b> It is still on the ledger, still in the round's summary, still in what the tool prints, with the correction beside it &mdash; editing it would tidy away the fact that it was ever wrong.</p>
-
-    <div class="stage" style="margin-top:1.4rem;">
-      <div class="stagehead"><span class="stagenum">&rarr;</span><span class="stagename">The rule, and the one line that enforces it</span><span class="stagekind">narrated, then enforced</span></div>
-      <p><b>Any party records freely, including against itself, immediately</b> &mdash; self-reporting is the most productive habit in the series and nothing slows it down. <b>No party sets the score on an entry it owns.</b> A separate closing seat classifies, and does not classify its own either; those route to the one human in the loop. The mechanical form is a single comparison: <em>the party that classified an entry must not be the party that owns it, on any entry that scored.</em> The rubric calls that the one check that would have caught the round's headline.</p>
-    </div>
-
-    <h3 style="font-family:var(--serif); font-size:1.45rem; font-weight:600; margin:2.6rem 0 0.5rem;">Three inter-rater numbers, three instruments, and the best one is the one to discount</h3>
-
-    <div class="tablewrap" style="margin:1.2rem 0;">
-      <table>
-        <thead><tr><th>Second reading of a classified set</th><th class="num">agreement</th><th>what it is actually a measurement of</th></tr></thead>
-        <tbody>
-          <tr><td><b>Round 24's set</b>, re-derived by that round's closing session</td><td class="num"><b>32 / 33</b></td><td>one binary call inside a set already scored</td></tr>
-          <tr><td><b>Round 26's set</b>, re-derived a round later</td><td class="num"><b>16 / 18</b></td><td>the full three-way classification &mdash; a different question</td></tr>
-          <tr><td><b>Round 27's set</b>, re-derived a round later</td><td class="num"><b>49 / 49</b></td><td><span class="absent">defensibility, not reproducibility &mdash; see below</span></td></tr>
-        </tbody>
-      </table>
-    </div>
-
-    <p class="pr"><b>A line through 97%, 89% and 100% is a line through three rulers.</b> The middle figure is not a decline and the last is not a recovery. Two other rounds could have produced a figure and <em>declined to</em>, saying why: one because a single grader had classified everything, so there was no second rating to agree with and none would be manufactured; the other because it had re-read five entries out of ninety-two, and a partial agreement presented as a rate is this series' own defect.</p>
-
-    <div class="keyfig">
-      <div class="kn">49 of 49</div>
-      <div class="kt"><b>100% agreement, and it should not be quoted.</b> The first grader had written its per-row justification <em>into the very field a second grader must read to know what the row is.</em> The re-derivation was <b>anchored by construction</b> and could not be un-anchored afterward. It is worse than that: the second grader's own brief named exactly where the first had been least confident. <b>What that measures is whether the calls are defensible. It is not evidence that they are independently reproducible.</b></div>
-      <div class="kl">the fix is cheap and belongs in the tooling &middot; strip the classification and its reasons before handing a set to a second reader &middot; and record whether the pass was blind</div>
-    </div>
-
-    <p class="pr">Three rows in that round were genuinely blind, because the first grader had declined to classify entries it owned. <b>No agreement figure exists for those three</b>, and they are reported separately rather than folded into the 49 &mdash; the same move as leaving the wrong 18 standing. <em>A number that has to be explained away is worth more than one that has to be taken on trust</em>, but only if the explanation ships attached to it.</p>
-
-    <h3 style="font-family:var(--serif); font-size:1.45rem; font-weight:600; margin:2.6rem 0 0.5rem;">A prediction registered five times, missed in every available direction, then retired</h3>
-    <p class="pr">From round 20 the defect rate was <b>registered as a band before the round existed</b>, written by the <em>previous</em> round's coordinator and committed before any worker was spawned, so the coordinator executing it started cold and could not have shaped its own bar. A scoping clause made it falsifiable: only instances found incidentally, while doing other work, count.</p>
-
-    <p class="pr"><b>Five rounds were scored. One landed in band.</b> The others failed high on a unit that turned out to be wrong, low on the unit that replaced it, high again on that replacement a round later, and once produced <em>no number at all</em> &mdash; the same night's work returning 6.40 or 2.67 on one agreed denominator depending only on how finely instances were counted, with nothing in the series saying which was right. That round sealed unscoreable rather than picking one.</p>
-
-    <div class="dcol good" style="margin:1.4rem 0;">
-      <div class="dlab">why it was retired, and why that is not a retreat</div>
-      <p class="dtext">A band missed high and low on <em>adjacent</em> rounds is not a bar you are failing; it is an instrument you are not reading. And the miss that mattered was scored against a round whose <b>detection instrument had changed underneath it</b> &mdash; the ten-fold intake change above. The falsifier registered at open ranged over four declared attributes. The intake rule was not one of them, because a falsifier only ranges over what somebody thought to list.</p>
-      <p class="dwhy">So the band was <em>measured</em> before being dropped. Across the manifests it is written under <b>eight distinct key spellings</b> and <b>read by nothing</b>: no hook, no checker, no field of that kind in the ledger at all. <em>A field with no consumer has nothing holding its name still.</em> <b>Retired: predicting a range and grading a round against it. Kept: the admission rule, the classification rules, grader independence, and the version stamp.</b> Those make an observation comparable and keep a party from grading itself. A predicted range does neither.</p>
-    </div>
-
-    <p class="note" style="border-left-color: var(--accent-amber);"><b>The ruling that retired it came with a ratio nobody enjoyed publishing</b> &mdash; over one recent round the series had written <b>2.4&times; more prose about itself than product</b>, and several of that round's headline findings were defects in machinery whose only customer was the machinery. <b>And the first pass at that ratio was wrong</b>, in the series' own registered failure mode: the window had no fixed endpoint, so it ran to the current tip and counted the commits being written to record the ruling. <em>A counter whose window is opened by an external caller measures the caller.</em> On a figure about measurement discipline, in the decision that retired a measurement.</p>
-
-    <p class="pr" style="margin-top:1.2rem;"><b>Full tables &mdash; every scored round, both denominators, every audit that moved a published figure against the party that recorded it &mdash; are in <a href="evidence/#green" style="color:var(--accent-cyan); text-decoration:none; border-bottom:1px solid var(--line)">the appendix</a>.</b></p>
-  </section>
-
-  <section class="sec" id="green">
-    <div class="sechead"><span class="secnum">02</span><h2>The check that is narrower than its claim</h2><div class="divider"></div></div>
-    <p class="secsub">The thing being counted, and the most transferable idea here. Across every round the same class kept turning up, in unrelated parts of the system, found by workers who were not looking for it: <b>a failure whose symptom is a green result rather than an error.</b> As a rule: <em>a check that cannot fail loudly will eventually pass quietly.</em></p>
-
-    <div class="cas">
-      <div class="ct">shape one &middot; checked the wrong thing, reported pass</div>
-      <h4>The gate that scanned a directory nothing was in</h4>
-      <p>A gate ran its scan from a working directory that was not the one being changed. It found no problems there, because there was nothing there. It reported pass, correctly and uselessly, for every run. Nothing in the output distinguished &ldquo;scanned and clean&rdquo; from &ldquo;scanned an empty place.&rdquo; <b>Both are the same green.</b> The general fix: make a check assert it examined a non-zero amount of something, and fail if it did not.</p>
-    </div>
-
-    <div class="cas">
-      <div class="ct">shape two &middot; passed because the input was empty</div>
-      <h4>The test whose fixture never arrived</h4>
-      <p>A test asserted that a bad input produces no output. It passed. It would also have passed if the tool under test had never run at all, and that is what was happening, because the fixture resolved to nothing. <b>An assertion of absence is satisfied perfectly by a test that never executed.</b> The counter-measure is structural rather than clever: every &ldquo;stays quiet&rdquo; case is paired with a &ldquo;makes noise&rdquo; case over the same wiring. If the noisy twin is silent too, the harness is dead, and now you can tell.</p>
-    </div>
-
-    <div class="cas" style="border-color: rgba(255,180,84,0.3); border-left-color: var(--accent-amber);">
-      <div class="ct" style="color: var(--accent-amber);">the hard version &middot; the defect inside its own fix</div>
-      <h4>An assertion that was its own witness</h4>
-      <p>A test asserted a protection existed by searching for a literal string &mdash; <b>on a line that itself contained that string.</b> Delete the protection entirely and the search still matches itself. <b>Then the fix reproduced it.</b> The worker built a detector for the whole class and a control to prove the detector worked; the control carried <em>its own copy of the pattern</em>, so it verified that <em>a detector like this can fire</em>, not that <em>this detector fires</em>. Breaking the real detector left the control green. Found only because the worker mutation-tested a control nothing required it to mutation-test.</p>
-    </div>
-
-    <p class="pr"><b>Knowing the class is not a defence against it, and one round put a number on how little it defends.</b> Round 25 produced eight instances of one family &mdash; <em>a check returning a confident number over the wrong subject</em> &mdash; from four different parties, every one of whom had read the rule naming the family. In all eight what caught it was an assertion that made the failing case <em>loud</em>: a floor on how much subject the check had to have examined, a coverage check running in both directions, a grep for failure vocabulary rather than success vocabulary, a row count that would not close. <em>Never the rule.</em></p>
-
-    <div class="pull">When a check and its subject disagree, <b>print the subject before believing the check.</b>
-      <span class="src">the form that survived eight instances across four parties</span>
-    </div>
-
-    <p class="note" style="border-left-color: var(--accent-green);"><b>Why an orchestration round is unusually good at finding these.</b> A worker arrives with no memory of why anything was built and no stake in it being correct. It reads a check the way a stranger does, and a stranger is the only reader who notices that a pass proves nothing. The same blindness that makes a session useless for judgment calls is what makes it <em>excellent</em> at this specific job.</p>
-
-    <p class="pr"><b>A dozen more worked instances</b> &mdash; a docstring promising what its assertion structurally cannot deliver, a provenance stamp certifying numbers it never opens, a liveness probe answering about the wrong process namespace, five capabilities built and correct and unreachable, a merge that read as closing three items and closed none &mdash; are <a href="evidence/#green" style="color:var(--accent-cyan); text-decoration:none; border-bottom:1px solid var(--line)">in the appendix</a>.</p>
-  </section>
-
-  <section class="sec" id="mech">
-    <div class="sechead"><span class="secnum">03</span><h2>The mechanism, briefly, because it is the ordinary part</h2><div class="divider"></div></div>
-    <p class="secsub">None of this is new. Locking schemes, <code>CODEOWNERS</code> and monorepo ownership boundaries have partitioned work by file ownership for decades. What is specific to the AI-session case is that <em>the workers can't negotiate.</em> Two engineers who both need the same file talk to each other. Two sessions don't &mdash; they both write it, and the merge is the first anyone hears about it.</p>
-
-    <div class="cards">
-      <div class="card">
-        <div class="tag">the unit</div>
-        <h3>A lease is a repo plus globs</h3>
-        <p>Not &ldquo;you take auth, you take docs.&rdquo; A lease is <code>(repository, [path globs])</code> &mdash; a concrete, enumerable set of files a session may write. Everything outside it is read-only to that session, and each lease gets its own git worktree and branch.</p>
-      </div>
-      <div class="card">
-        <div class="tag">the check</div>
-        <h3>Disjointness is verified, not assumed</h3>
-        <p>Before any session is spawned the glob sets are expanded and intersected. A non-empty intersection is a <em>planning error</em>, caught in seconds, rather than a merge conflict discovered after both sessions have finished.</p>
-      </div>
-      <div class="card">
-        <div class="tag">the spine</div>
-        <h3>One writer for everything serial</h3>
-        <p>The tracking board, merges to the default branch, shared append-only files, and work intake. The test is not &ldquo;is it shared&rdquo; &mdash; almost everything is. It is: <em>if two sessions did this simultaneously, would the loser know?</em> A merge conflict is loud and safe to leave distributed. A board overwrite is silent, so it gets centralized.</p>
-      </div>
-      <div class="card">
-        <div class="tag">what it buys</div>
-        <h3>One decision instead of four</h3>
-        <p>Run four branches yourself and you are on call for all four. Routing them through one writer turns that into one decision at the end. <b>Click, click, click, click becomes click.</b> For a single operator that is a larger return than the throughput.</p>
-      </div>
-    </div>
-
-    <p class="pr" style="margin-top:1.4rem;"><b>Where it leaks, and the leak is the reason this section exists at all.</b> A lease constrains writes. It says nothing about a session <em>reading</em> a file another session is halfway through rewriting, so a worker can build correct work on a premise being invalidated underneath it. Two workers can hold perfectly disjoint globs and still break each other: one changes a constant or a threshold inside a file only it holds, the other's files read or assert against that value. Both merge clean. No lease is violated. Nothing fires. <b>The check answers &ldquo;did two sessions write the same bytes.&rdquo; Nobody is asking &ldquo;did one session invalidate a baseline another is reading.&rdquo;</b></p>
-
-    <div class="cas" style="margin-top:1.4rem; border-color: rgba(0,255,159,0.28); border-left-color: var(--accent-green);">
-      <div class="ct" style="color: var(--accent-green);">rounds 28 and 29 &middot; the caveat is what made the instance findable</div>
-      <h4>Filed with the hole in its own evidence stated</h4>
-      <p>That gap was written up at round 28's close as a tracked item, and the filing said in as many words that the one measured instance available involved a <em>shared</em> file &mdash; the coupled-content hazard in its easy form, the one a path check could in principle see &mdash; that there was <b>no measured instance of the pure form</b>, and that it should not be quoted as one.</p>
-      <p><b>That caveat is the reason an instance exists.</b> The next round's coordinator went looking for the pure form in its own governing document and found one there: the manifest's own justification for running three concurrent lanes argued entirely from disjoint write surfaces and asserted the single seam anyone had identified was <em>removed</em>. Removing that item removed the <b>file</b> overlap and left the <b>semantic</b> dependency standing.</p>
-      <p><b>The shape, which is all that transfers.</b> One feature's only call site pulls an event predicate and a text-shaping helper from the first lane's surface, hands the result to a downstream function owned by the second, from a component owned by the third. The contract between them is a shared formatting convention, written as two separate expressions in two files belonging to two different lanes. <b>No two lanes share a path.</b> All three branches would merge clean and nothing would fire.</p>
-      <p class="note" style="margin:0.9rem 0 0; border-left-color: var(--accent-amber);"><b>Cite it with its qualification.</b> This is a <em>predicted</em> break, not an observed one &mdash; no lease had started, and that was verified rather than assumed. It is a measured contract across measured-disjoint surfaces with the failure modes traced to source, and it is not a defect that landed. <em>Round 29 was still running when this page was published, and nothing here reports its outcome.</em> What it establishes is that the pure form is neither hypothetical nor rare: it turned up in the first round anyone looked, in the document asserting the isolation.</p>
-      <p><b>Ownership is recorded as shared, and the split is the part worth reading.</b> The sentence was authored at prep by the same seat that had filed the issue one turn earlier. The coordinator read it, relied on it to spawn three lanes, and <em>restated the argument in a brief of its own</em> without checking it. The author offered to take the whole thing; the coordinator declined, on the ground that <b>inheriting a claim and repeating it in a document of your own is not the same as not having made it.</b></p>
-    </div>
-
-    <div class="pull">A control whose subject is cheap to check rather than the one that matters. Paths are easy and semantics are hard; names are easy and shape is hard. <b>Both report clean, and in both cases silence and a pass are the same bytes.</b>
-      <span class="src">the sentence that covers this and the merge that closed nothing equally</span>
-    </div>
-  </section>
-
-  <section class="sec" id="brief">
-    <div class="sechead"><span class="secnum">04</span><h2>Instructions that read fine and cannot be executed</h2><div class="divider"></div></div>
-    <p class="secsub">Rounds 1 and 2 asked every worker to check in at fixed points. Across both, <b>the number of check-ins received was zero.</b> Round 3 asked four workers for the same thing and <b>all four complied, unprompted.</b> Same coordinator, same model, same brief structure. The difference was one paragraph.</p>
-
-    <div class="diff">
-      <div class="dcol bad">
-        <div class="dlab">rounds 1&ndash;2 &mdash; 0 check-ins received</div>
-        <p class="dtext">&ldquo;<b>Reply to the sender of this message</b> for all checkpoints &mdash; <b>do not ask for a session id.</b>&rdquo;</p>
-        <p class="dwhy"><b>Why it cannot be run.</b> The brief is delivered as the worker's <em>opening prompt</em>. There is no sender. The instruction names an affordance that does not exist in the situation it describes, and the second clause forbids the one route that does work. It is not vague; it is precise about the wrong thing.</p>
-      </div>
-      <div class="dcol good">
-        <div class="dlab">round 3 &mdash; 4 of 4 checked in</div>
-        <p class="dtext">&ldquo;To reach me, use the <b>cross-session message tool</b>. Find my session id by <b>listing sessions</b> &mdash; I am the one <b>titled &lt;coordinator&gt;</b>. Your brief arrived as your opening prompt, so <b>there is no sender to reply to.</b>&rdquo;</p>
-        <p class="dwhy"><b>Why it runs.</b> It names the mechanism, gives a way to <em>derive</em> the address rather than assuming one, and pre-empts the wrong inference explicitly. Same request; now executable.</p>
-      </div>
-    </div>
-
-    <p class="pr" style="margin-top:1.4rem;"><b>The general form:</b> an instruction is real only if it names an observable trigger, a mechanism, and an address the reader can work out. Hand a human an impossible instruction and they ask a clarifying question. A worker session does something worse: it forms a reasonable belief that the channel doesn't exist, and proceeds without it. <em>That paragraph was reviewed twice before it was sent and read as perfectly clear, because it is clear &mdash; to a reader.</em> The defect was invisible from the writing side and showed up only as an absence.</p>
-
-    <h3 style="font-family:var(--serif); font-size:1.45rem; font-weight:600; margin:2.4rem 0 0.5rem;">Writing the rule down is the weakest available intervention</h3>
-    <p class="secsub">Round 27 asked the harder question &mdash; when an instruction is executable and its <em>premise</em> is stale, what actually catches it &mdash; and measured both candidate answers inside one round.</p>
-
-    <div class="tablewrap" style="margin:1.2rem 0;">
-      <table>
-        <thead><tr><th>Two ways to stop an instruction being acted on wrongly</th><th class="num">instances</th><th class="num">catches</th></tr></thead>
-        <tbody>
-          <tr><td>A written rule, addressed to the party that might get it wrong</td><td class="num"><b>8</b></td><td class="num"><b>0</b></td></tr>
-          <tr><td>A receiver checking a premise against repository state before acting</td><td class="num"><b>4</b></td><td class="num"><b>4</b></td></tr>
-        </tbody>
-      </table>
-    </div>
-
-    <p class="pr"><b>The reason is structural rather than personal.</b> A coordinator is the party <em>most</em> likely to be wrong about state, because it is furthest from the code and its instructions are stalest on arrival. <b>A sender cannot fix staleness by trying harder. A receiver can detect it for the price of one command.</b> Every premise caught that round was falsifiable in a single invocation. <em>Nothing that was caught required judgement, and nothing that required judgement got caught.</em></p>
-
-    <p class="note" style="border-left-color: var(--accent-red);"><b>The eighth written rule is project memory, and the worker asked for it to be counted.</b> A lease re-derived, mid-task, a lesson the persistent memory had carried verbatim for two weeks &mdash; specific to this project, with a first-person cost attached. It did not reach the party at the moment of need; they found it at close-out <em>while deduplicating</em>, after independently re-deriving it. The surface everyone assumes is exempt, <b>our own prior finding addressed to us</b>, failed the same way the other seven did. <em>It was added to the count at the worker's request, on the stated ground that it makes the ratio worse and the clause stronger.</em></p>
-
-    <div class="pull">A premise-check is <b>pulled at the moment of use</b>. A written rule &mdash; including one you wrote about yourself &mdash; is <b>pushed in advance and has to survive until needed.</b> Memory loses on exactly the axis a cheap check wins on.
-      <span class="src">why the duty sits on the receiver and not the sender</span>
-    </div>
-
-    <p class="pr"><b>The duty and the channel are one control.</b> Twice that round a worker stopped and asked instead of acting, and both times that was possible only because it <em>had an inbox and a coordinator that answered.</em> The previous round's workers had neither &mdash; spawned as in-process subagents, where cross-session messaging is unavailable &mdash; so all parties inherited one session identity, a mid-round ruling could not reach them, and the ledger could not tell them apart. Physical isolation held; what was lost was the ability to <em>prove</em> it. <b>A receiver expected to check a premise, with no way to report what it found, converts a caught error into an unlogged one.</b></p>
-
-    <p class="note" style="border-left-color: var(--accent-green);"><b>Two disclosures the clause carries about itself.</b> The coordinator that recommended it <em>deliberately did not adopt it</em> &mdash; a party writing a protocol clause about its own failure mode should not also be the party that enacts it. And measured again the next round, receiver checks came in at four of four with <b>two of the four performed by the seat reporting the figure</b>; that record's own prose says three, and the list of four beside it names two. <em>Writing a rule down does not make it bind</em>, which the clause states about itself, on the ground that a clause about written rules failing cannot exempt itself.</p>
-  </section>
-
-  <section class="sec" id="cost">
-    <div class="sechead"><span class="secnum">05</span><h2>What it costs, and what the cost figures are worth</h2><div class="divider"></div></div>
-    <p class="secsub">Rounds 1&ndash;6 are percentage points of a rolling weekly allowance read off a panel by hand. From round 7 the instrument is output tokens from the transcripts. <b>Nothing in one converts into anything in the other, and this page never does that arithmetic.</b></p>
-
-    <p class="pr"><b>The measuring tool was found wrong twice, and neither time by looking for it.</b> First, its window selected sessions but never filtered messages inside them &mdash; harmless for a worker, whose session begins when its chip does, fatal for a coordinator, whose session predates the round and outlives it. Corrected, one round fell five points and another <em>rose</em> 2.4. <b>The correction has no direction, and that is the point:</b> a fix that only ever shrank the number would be a discount, and a discount that flatters whoever applies it is not a finding. Second, its join excluded any session whose first message predated the window instead of testing whether it had messages inside it &mdash; so one round resolved <b>0 of 3</b> workers against its own manifest. <em>Guarded against being windowed to zero, unguarded against being excluded to zero</em>: section 02's shape, inside the instrument that measures section 05.</p>
-
-    <p class="note" style="border-left-color: var(--accent-green);"><b>What those corrections bought is not accuracy.</b> Later, faced with a join it could not make, the tool exited non-zero, printed its unresolved rows, and <em>refused to print the coordinator share at all</em>, on the recorded ground that a share over half a denominator is arithmetically fine and substantively meaningless. An earlier version would have printed a number. <b>The measurable improvement across this series is the instrument's willingness to return nothing</b>, which is the harder property and the one that makes the rest of the table worth reading.</p>
-
-    <p class="pr"><b>A third failure mode is neither of those, and it is about <em>when</em> rather than <em>what</em>.</b> Two rounds published a figure captured before the round had ended &mdash; one by enough that the closed-window value is 26.8% higher, located afterward by bisection; the other by 65 seconds, proved rather than argued by re-running the unchanged tool against a copy of the manifest with the end time rewound, which reproduced the published numbers exactly. <b>Same tool, same data, right answer at the wrong instant.</b> Both figures are left as published and marked, rather than silently replaced. The rule: <em>a cost figure must carry the instant it was taken, not the day.</em></p>
-
-    <p class="pr"><b>The one comparison the series can actually make.</b> Coordinator share only compares across rounds of equal worker count, because the denominator moves with it. Five rounds ran three workers on the same instrument: <b>38.7 &middot; 39.0 &middot; 30.9 &middot; 41.1 &middot; 41.4</b>. An earlier version of this page leaned on the 39.0-to-30.9 step as the one clean comparison it had. It was clean, it was a single excursion, and two later rounds put the figure back. <em>That correction is recorded here rather than made by deleting the sentence that needed it.</em></p>
-
-    <p class="note" style="border-left-color: var(--accent-red);"><b>And from round 26 the cost was not measured at all.</b> The three most recent rounds carry no coordinator share, and the last two no merged-PR figure either. That is a deliberate instruction &mdash; <em>keep the guards, cut the metrics</em> &mdash; not an omission. <b>It is still a gap and it is stated as one:</b> those rounds cannot be placed in either cost table, and nothing here should be read as evidence that the cost shape held through them.</p>
-
-    <h3 style="font-family:var(--serif); font-size:1.45rem; font-weight:600; margin:2.4rem 0 0.5rem;">Is there a standard for this? No.</h3>
-    <p class="pr"><b>DORA</b> &mdash; deployment frequency, lead time, change failure rate, time to restore (Forsgren, Humble, Kim, <em>Accelerate</em>) &mdash; measures outcomes, not cost per unit of output. <b>SPACE</b> (Forsgren, Storey, Maddila, Zimmermann, Houck, Butler; <em>ACM Queue</em> 19(1), 2021) argues productivity <em>cannot</em> be captured in a single metric and that activity counts mislead &mdash; the most citable thing in the area argues against the number people ask for, and that applies to every figure here. <b>Agentic benchmarks</b> report cost per resolved instance, the closest published analog, but that is a reporting convention assuming a fixed task distribution, and production work is not that. <b>The defensible sentence is the narrow one:</b> these specific things were measured, those are the nearest frameworks, and no conformance is claimed to any of them.</p>
-
-    <p class="pr"><b>The metric I would actually keep is human decisions required per unit of delivered work</b> &mdash; counted by the person, not the system, which means the system cannot optimize it by looking better. One round ran three hours and twenty minutes with no blocking human decisions, and <em>that sentence is available in a more impressive form which is not true</em>: &ldquo;no blocking decisions&rdquo; is not &ldquo;no intervention.&rdquo; The operator surfaced one substantive finding neither thread produced, and the coordinator's merge error was detected through an observation channel the operator supplies. <b>Detection, not prevention.</b> What this page will not do is tell you what any of it replaced &mdash; &ldquo;this would have taken a person N hours&rdquo; is a number nobody measured.</p>
-
-    <p class="pr"><b>Both cost tables, all twenty-eight rounds, every footnote about window rules and undercounting, are <a href="evidence/#cost" style="color:var(--accent-cyan); text-decoration:none; border-bottom:1px solid var(--line)">in the appendix</a>.</b></p>
-  </section>
-
-  <div class="takeaway">
-    <h3>What I'd keep, and what I'd change</h3>
-
-    <p><b>Grade the grader, and say when the grading is not blind.</b> The rubric &mdash; what is admitted, how it is classified, who may classify it, what version the number was taken under &mdash; moved the headline measure ten-fold on first application without the work changing, then caught the most-quoted figure in a round being wrong by one because the graded party was the grader. <b>The best agreement number in the series is 49 of 49, and it is the one to discount.</b> Reporting a perfect score and then explaining why it does not mean what it looks like is the only version of it worth anything.</p>
-
-    <p><b>Measure before believing, and publish the correction whichever way it goes.</b> The measuring instrument was wrong twice and mistimed twice more. Corrections that moved a figure <em>up</em> were published at the worse number, two consecutive independent audits moved published figures against the interest of the party that recorded them, and the wrong values are still on the ledger with the corrections beside them. <b>Editing a landed number tidies away the fact that it was wrong.</b></p>
-
-    <p><b>Retire a measurement out loud, with its grounds.</b> Predicting a band and grading a round against it was registered five times, landed once, and was retired &mdash; not dropped. The grounds were themselves measured: eight key spellings, read by nothing. <em>A field with no consumer has nothing holding its name still.</em> What was retired was the prediction; what was kept is the rubric underneath, which was doing the work all along.</p>
-
-    <p><b>Keep the lease, and stop treating path disjointness as sufficient.</b> Partitioning by write-surface removed an entire category of failure and the check costs seconds. But paths can be disjoint while <em>content</em> collides, and the passing check says nothing about that. The gap was filed <em>with the hole in its own evidence stated</em>, and that caveat is what made an instance findable one round later, inside the document asserting the isolation. Keep the serial spine too: routing the board, the merges, the shared sinks and the intake through one writer is what stops N sessions producing N versions of the truth.</p>
-
-    <p><b>And treat every green as a claim.</b> The finding that recurs across twenty-eight rounds was never a bug in a component. It was a test, a stamp, a kill, a merge, a documentation page and a written instruction, each reporting success while doing nothing. <b>The failure that looks like an error gets fixed. The failure that looks like a pass gets built on.</b> The detector is still a session with no memory of why the check was written, reading it like a stranger.</p>
-
-    <p style="margin-top:1.1rem; padding-top:1.1rem; border-top:1px solid var(--line-soft);"><b><a href="evidence/" style="color:var(--accent-cyan); text-decoration:none; border-bottom:1px solid var(--line)">The evidence appendix</a></b> carries the full round-by-round record. Companion write-ups: <a href="../automation/" style="color:var(--accent-cyan); text-decoration:none; border-bottom:1px solid var(--line)">the lifecycle-hook layer these sessions run inside</a> &middot; <a href="../enforcement/" style="color:var(--accent-cyan); text-decoration:none; border-bottom:1px solid var(--line)">the ledger that tracks which checks actually bite</a> &middot; <a href="../publishing/" style="color:var(--accent-cyan); text-decoration:none; border-bottom:1px solid var(--line)">the disclosure pipeline that gated this page</a>.</p>
-  </div>
-
-  <footer>
-    <p>Case study &middot; coordinating parallel AI coding sessions against one shared repository set.</p>
-    <p>Process shape only. The work these sessions performed is described generically; proprietary specifics are omitted throughout.</p>
-    <p>Every figure traces to a round manifest or to a row in the series ledger, and the round each one comes from is named beside it. Where two records of the same round disagree, the figure quoted is the one an automated check reads, and the disagreement is treated as a finding rather than resolved silently. Round 29 was still running when this page was published; nothing here reports its outcome.</p>
-    <p>Michael Giardina &middot; <a href="../">portfolio</a> &middot; <a href="https://www.linkedin.com/in/michael-giardina">linkedin.com/in/michael-giardina</a></p>
-  </footer>
-
+<header class="hero" id="top">
+<p class="kicker">FIELD NOTES / MULTI-SESSION ORCHESTRATION</p>
+<div class="hero-title"><h1>I built an error-rate instrument for my own agent system, <span>and then found the instrument wrong.</span></h1><aside aria-label="Study scope" class="study-stamp"><div class="stamp-label">THE OBSERVATION WINDOW</div><div class="round-number">28<span>rounds</span></div><div aria-hidden="true" class="round-marks"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="stamp-detail">102 worker sessions<br/>One shared repository set</div><div class="stamp-bottom">Measured. Challenged. Corrected.</div></aside></div><div class="hero-intro"><p class="lede">Twenty-eight rounds of running several AI coding sessions at once against one shared repository set. <b>The architecture is the least interesting part.</b> Leases, worktrees and a single writer for everything serial are sound engineering that other people have also done, and the write-up of that is <a href="#mech">one short section, below</a>.</p><p class="lede">What almost nobody does is <b>run an error-rate instrument on their own agent system, discover the instrument is wrong, say so in public, and keep the old number labelled incomparable.</b> That happened here repeatedly, and it is what this page is about.</p></div><div class="hero-actions"><a class="button-primary" href="#measure">Read the case study <span aria-hidden="true">↓</span></a><span class="byline">Michael Giardina <span>Independent engineering notes</span></span></div>
+<p class="context">a coordinating session · N worker sessions · git worktrees · a shared issue tracker · one human approving merges</p>
+<div class="metric-caption">AT A GLANCE <span>Read each figure with its qualification.</span></div><div class="stats">
+<div class="stat"><span class="n">10×</span><span class="l">the measured defect rate moved, when the <b>admission rule</b> changed and the work did not</span></div>
+<div class="stat"><span class="n">1 of 5</span><span class="l">registered predictions that landed inside their band · before the practice was retired on measured grounds</span></div>
+<div class="stat"><span class="n">49/49</span><span class="l">inter-rater agreement · published together with the reason it should be discounted</span></div>
+<div class="stat"><span class="n">28</span><span class="l">rounds with a ledger row · 102 worker sessions · every figure traces to a manifest</span></div>
 </div>
-</body>
+<p class="statnote">Nothing here is a product claim. The work these sessions performed is described only by shape — a checker, a gate, a test suite. <b>The full round-by-round record, every table and every instance, is in <a href="./evidence/" style="color:var(--accent-cyan); text-decoration:none; border-bottom:1px solid var(--line)">the evidence appendix</a></b>; this page carries the argument and the strongest figure for each claim.</p>
+</header><div class="reading-layout" id="reading"><aside class="contents-rail"><div class="rail-sticky"><div class="rail-label">IN THIS STUDY</div><nav aria-label="On this page"><a href="#measure"><span>01</span>Measuring the measurement</a><a href="#green"><span>02</span>The defect class</a><a href="#mech"><span>03</span>The mechanism</a><a href="#brief"><span>04</span>Executable instructions</a><a href="#cost"><span>05</span>The cost of coordination</a></nav><div class="rail-foot">The argument here.<br/>The full record in the appendix.<a class="rail-appendix" href="./evidence/">Open the evidence ↗</a></div><button class="back-top" type="button">Back to top ↑</button></div></aside><main id="article"><section class="sec" id="measure">
+<div class="sechead"><span class="secnum">01</span><h2>Measuring it, and then measuring the measurement</h2><div class="divider"></div></div>
+<p class="secsub">Twenty-four rounds counted defects with no written rule for what counted as one, who was allowed to decide, or what a number from one round was comparable to. The rubric that finally arrived did four things, and the first thing it did was invalidate most of what came before it.</p>
+<h3 style="font-family:var(--serif); font-size:1.45rem; font-weight:600; margin:2rem 0 0.5rem;">The admission rule moved the rate ten-fold, and the work did not change</h3>
+<p class="pr">Until round 24, an observation reached the tally if somebody filed it under the heading the tally expected. That is intake matching a <b>label</b> rather than a <b>shape</b> — the count reads as a measurement of the round and is a measurement of what people remembered to label.</p>
+<div class="tablewrap" style="margin:1.2rem 0;">
+<table>
+<thead><tr><th>Near-misses reaching the tally</th><th class="num">recorded</th><th class="num">workers</th><th class="num">per worker</th></tr></thead>
+<tbody>
+<tr><td><b>Round 23</b> <span class="absent">— intake keyed on the label</span></td><td class="num">5</td><td class="num">6</td><td class="num"><b>0.8</b></td></tr>
+<tr><td><b>Round 24</b> <span class="absent">— intake keyed on the shape</span></td><td class="num">25</td><td class="num">3</td><td class="num"><b>8.3</b></td></tr>
+</tbody>
+</table>
+</div>
+<p class="pr"><b>A factor of exactly ten, and it survives to four decimal places.</b> The replacement rule is four binary items: a claim was made; something about it was wrong, or could not support what it was used for; it is locatable at a source; it is not already counted somewhere else. Binary on purpose, because two graders rarely mean the same thing by a 3. It also carries a required disposition of <b>insufficient evidence</b>, so a grader forced to guess is not producing something indistinguishable from a judgment.</p>
+<p class="note" style="border-left-color: var(--accent-amber);"><b>Said beside the figure, or it gets read as something it is not.</b> The numerator counts every admitted near-miss regardless of who produced it, <em>including the coordinator's own</em>, while the denominator contains no coordinator at all. So “per worker” is <b>a detection-posture index, not a per-person error rate.</b> It did not revert — the next round came in between 8 and 9 — but no claim of stability survives either: three rounds, three rubric versions, and a single added admission item moved the figure by 0.4.</p>
+<h3 style="font-family:var(--serif); font-size:1.45rem; font-weight:600; margin:2.6rem 0 0.5rem;">The most-quoted figure in a round was wrong by one, because the graded party was the grader</h3>
+<p class="pr">Round 24 recorded that <b>18 of its 33 scored instances were the coordinator's own errors</b> — the number that led the round's summary, fed the per-worker error rate, and went to the ledger. The coordinator classified all 33. A separate closing session re-derived the attribution independently and found <b>19</b>. The one it had missed was a guard the coordinator itself had written and broadcast to all three workers as a control; that entry's own text says it is the coordinator's, and it appears in no enumeration of the coordinator's errors anywhere in the round.</p>
+<p class="pr"><b>The fair reading is less satisfying than the story.</b> That coordinator scored several of its own items that a strict reading would have routed out of the count altogether; <em>every borderline call it made ran toward scoring itself.</em> The defect was an omission under load, which is exactly what an independence rule is for and exactly what diligence is not. <b>The wrong number was not overwritten.</b> It is still on the ledger, still in the round's summary, still in what the tool prints, with the correction beside it — editing it would tidy away the fact that it was ever wrong.</p>
+<div class="stage" style="margin-top:1.4rem;">
+<div class="stagehead"><span class="stagenum">→</span><span class="stagename">The rule, and the one line that enforces it</span><span class="stagekind">narrated, then enforced</span></div>
+<p><b>Any party records freely, including against itself, immediately</b> — self-reporting is the most productive habit in the series and nothing slows it down. <b>No party sets the score on an entry it owns.</b> A separate closing seat classifies, and does not classify its own either; those route to the one human in the loop. The mechanical form is a single comparison: <em>the party that classified an entry must not be the party that owns it, on any entry that scored.</em> The rubric calls that the one check that would have caught the round's headline.</p>
+</div>
+<h3 style="font-family:var(--serif); font-size:1.45rem; font-weight:600; margin:2.6rem 0 0.5rem;">Three inter-rater numbers, three instruments, and the best one is the one to discount</h3>
+<div class="tablewrap" style="margin:1.2rem 0;">
+<table>
+<thead><tr><th>Second reading of a classified set</th><th class="num">agreement</th><th>what it is actually a measurement of</th></tr></thead>
+<tbody>
+<tr><td><b>Round 24's set</b>, re-derived by that round's closing session</td><td class="num"><b>32 / 33</b></td><td>one binary call inside a set already scored</td></tr>
+<tr><td><b>Round 26's set</b>, re-derived a round later</td><td class="num"><b>16 / 18</b></td><td>the full three-way classification — a different question</td></tr>
+<tr><td><b>Round 27's set</b>, re-derived a round later</td><td class="num"><b>49 / 49</b></td><td><span class="absent">defensibility, not reproducibility — see below</span></td></tr>
+</tbody>
+</table>
+</div>
+<p class="pr"><b>A line through 97%, 89% and 100% is a line through three rulers.</b> The middle figure is not a decline and the last is not a recovery. Two other rounds could have produced a figure and <em>declined to</em>, saying why: one because a single grader had classified everything, so there was no second rating to agree with and none would be manufactured; the other because it had re-read five entries out of ninety-two, and a partial agreement presented as a rate is this series' own defect.</p>
+<div class="keyfig">
+<div class="kn">49 of 49</div>
+<div class="kt"><b>100% agreement, and it should not be quoted.</b> The first grader had written its per-row justification <em>into the very field a second grader must read to know what the row is.</em> The re-derivation was <b>anchored by construction</b> and could not be un-anchored afterward. It is worse than that: the second grader's own brief named exactly where the first had been least confident. <b>What that measures is whether the calls are defensible. It is not evidence that they are independently reproducible.</b></div>
+<div class="kl">the fix is cheap and belongs in the tooling · strip the classification and its reasons before handing a set to a second reader · and record whether the pass was blind</div>
+</div>
+<p class="pr">Three rows in that round were genuinely blind, because the first grader had declined to classify entries it owned. <b>No agreement figure exists for those three</b>, and they are reported separately rather than folded into the 49 — the same move as leaving the wrong 18 standing. <em>A number that has to be explained away is worth more than one that has to be taken on trust</em>, but only if the explanation ships attached to it.</p>
+<h3 style="font-family:var(--serif); font-size:1.45rem; font-weight:600; margin:2.6rem 0 0.5rem;">A prediction registered five times, missed in every available direction, then retired</h3>
+<p class="pr">From round 20 the defect rate was <b>registered as a band before the round existed</b>, written by the <em>previous</em> round's coordinator and committed before any worker was spawned, so the coordinator executing it started cold and could not have shaped its own bar. A scoping clause made it falsifiable: only instances found incidentally, while doing other work, count.</p>
+<p class="pr"><b>Five rounds were scored. One landed in band.</b> The others failed high on a unit that turned out to be wrong, low on the unit that replaced it, high again on that replacement a round later, and once produced <em>no number at all</em> — the same night's work returning 6.40 or 2.67 on one agreed denominator depending only on how finely instances were counted, with nothing in the series saying which was right. That round sealed unscoreable rather than picking one.</p>
+<div class="dcol good" style="margin:1.4rem 0;">
+<div class="dlab">why it was retired, and why that is not a retreat</div>
+<p class="dtext">A band missed high and low on <em>adjacent</em> rounds is not a bar you are failing; it is an instrument you are not reading. And the miss that mattered was scored against a round whose <b>detection instrument had changed underneath it</b> — the ten-fold intake change above. The falsifier registered at open ranged over four declared attributes. The intake rule was not one of them, because a falsifier only ranges over what somebody thought to list.</p>
+<p class="dwhy">So the band was <em>measured</em> before being dropped. Across the manifests it is written under <b>eight distinct key spellings</b> and <b>read by nothing</b>: no hook, no checker, no field of that kind in the ledger at all. <em>A field with no consumer has nothing holding its name still.</em> <b>Retired: predicting a range and grading a round against it. Kept: the admission rule, the classification rules, grader independence, and the version stamp.</b> Those make an observation comparable and keep a party from grading itself. A predicted range does neither.</p>
+</div>
+<p class="note" style="border-left-color: var(--accent-amber);"><b>The ruling that retired it came with a ratio nobody enjoyed publishing</b> — over one recent round the series had written <b>2.4× more prose about itself than product</b>, and several of that round's headline findings were defects in machinery whose only customer was the machinery. <b>And the first pass at that ratio was wrong</b>, in the series' own registered failure mode: the window had no fixed endpoint, so it ran to the current tip and counted the commits being written to record the ruling. <em>A counter whose window is opened by an external caller measures the caller.</em> On a figure about measurement discipline, in the decision that retired a measurement.</p>
+<p class="pr" style="margin-top:1.2rem;"><b>Full tables — every scored round, both denominators, every audit that moved a published figure against the party that recorded it — are in <a href="./evidence/#green" style="color:var(--accent-cyan); text-decoration:none; border-bottom:1px solid var(--line)">the appendix</a>.</b></p>
+</section><section class="sec" id="green">
+<div class="sechead"><span class="secnum">02</span><h2>The check that is narrower than its claim</h2><div class="divider"></div></div>
+<p class="secsub">The thing being counted, and the most transferable idea here. Across every round the same class kept turning up, in unrelated parts of the system, found by workers who were not looking for it: <b>a failure whose symptom is a green result rather than an error.</b> As a rule: <em>a check that cannot fail loudly will eventually pass quietly.</em></p>
+<div class="cas">
+<div class="ct">shape one · checked the wrong thing, reported pass</div>
+<h3>The gate that scanned a directory nothing was in</h3>
+<p>A gate ran its scan from a working directory that was not the one being changed. It found no problems there, because there was nothing there. It reported pass, correctly and uselessly, for every run. Nothing in the output distinguished “scanned and clean” from “scanned an empty place.” <b>Both are the same green.</b> The general fix: make a check assert it examined a non-zero amount of something, and fail if it did not.</p>
+</div>
+<div class="cas">
+<div class="ct">shape two · passed because the input was empty</div>
+<h3>The test whose fixture never arrived</h3>
+<p>A test asserted that a bad input produces no output. It passed. It would also have passed if the tool under test had never run at all, and that is what was happening, because the fixture resolved to nothing. <b>An assertion of absence is satisfied perfectly by a test that never executed.</b> The counter-measure is structural rather than clever: every “stays quiet” case is paired with a “makes noise” case over the same wiring. If the noisy twin is silent too, the harness is dead, and now you can tell.</p>
+</div>
+<div class="cas" style="border-color: rgba(255,180,84,0.3); border-left-color: var(--accent-amber);">
+<div class="ct" style="color: var(--accent-amber);">the hard version · the defect inside its own fix</div>
+<h3>An assertion that was its own witness</h3>
+<p>A test asserted a protection existed by searching for a literal string — <b>on a line that itself contained that string.</b> Delete the protection entirely and the search still matches itself. <b>Then the fix reproduced it.</b> The worker built a detector for the whole class and a control to prove the detector worked; the control carried <em>its own copy of the pattern</em>, so it verified that <em>a detector like this can fire</em>, not that <em>this detector fires</em>. Breaking the real detector left the control green. Found only because the worker mutation-tested a control nothing required it to mutation-test.</p>
+</div>
+<p class="pr"><b>Knowing the class is not a defence against it, and one round put a number on how little it defends.</b> Round 25 produced eight instances of one family — <em>a check returning a confident number over the wrong subject</em> — from four different parties, every one of whom had read the rule naming the family. In all eight what caught it was an assertion that made the failing case <em>loud</em>: a floor on how much subject the check had to have examined, a coverage check running in both directions, a grep for failure vocabulary rather than success vocabulary, a row count that would not close. <em>Never the rule.</em></p>
+<div class="pull">When a check and its subject disagree, <b>print the subject before believing the check.</b>
+<span class="src">the form that survived eight instances across four parties</span>
+</div>
+<p class="note" style="border-left-color: var(--accent-green);"><b>Why an orchestration round is unusually good at finding these.</b> A worker arrives with no memory of why anything was built and no stake in it being correct. It reads a check the way a stranger does, and a stranger is the only reader who notices that a pass proves nothing. The same blindness that makes a session useless for judgment calls is what makes it <em>excellent</em> at this specific job.</p>
+<p class="pr"><b>A dozen more worked instances</b> — a docstring promising what its assertion structurally cannot deliver, a provenance stamp certifying numbers it never opens, a liveness probe answering about the wrong process namespace, five capabilities built and correct and unreachable, a merge that read as closing three items and closed none — are <a href="./evidence/#green" style="color:var(--accent-cyan); text-decoration:none; border-bottom:1px solid var(--line)">in the appendix</a>.</p>
+</section><section class="sec" id="mech">
+<div class="sechead"><span class="secnum">03</span><h2>The mechanism, briefly, because it is the ordinary part</h2><div class="divider"></div></div>
+<p class="secsub">None of this is new. Locking schemes, <code>CODEOWNERS</code> and monorepo ownership boundaries have partitioned work by file ownership for decades. What is specific to the AI-session case is that <em>the workers can't negotiate.</em> Two engineers who both need the same file talk to each other. Two sessions don't — they both write it, and the merge is the first anyone hears about it.</p>
+<div class="cards">
+<div class="card">
+<div class="tag">the unit</div>
+<h3>A lease is a repo plus globs</h3>
+<p>Not “you take auth, you take docs.” A lease is <code>(repository, [path globs])</code> — a concrete, enumerable set of files a session may write. Everything outside it is read-only to that session, and each lease gets its own git worktree and branch.</p>
+</div>
+<div class="card">
+<div class="tag">the check</div>
+<h3>Disjointness is verified, not assumed</h3>
+<p>Before any session is spawned the glob sets are expanded and intersected. A non-empty intersection is a <em>planning error</em>, caught in seconds, rather than a merge conflict discovered after both sessions have finished.</p>
+</div>
+<div class="card">
+<div class="tag">the spine</div>
+<h3>One writer for everything serial</h3>
+<p>The tracking board, merges to the default branch, shared append-only files, and work intake. The test is not “is it shared” — almost everything is. It is: <em>if two sessions did this simultaneously, would the loser know?</em> A merge conflict is loud and safe to leave distributed. A board overwrite is silent, so it gets centralized.</p>
+</div>
+<div class="card">
+<div class="tag">what it buys</div>
+<h3>One decision instead of four</h3>
+<p>Run four branches yourself and you are on call for all four. Routing them through one writer turns that into one decision at the end. <b>Click, click, click, click becomes click.</b> For a single operator that is a larger return than the throughput.</p>
+</div>
+</div>
+<p class="pr" style="margin-top:1.4rem;"><b>Where it leaks, and the leak is the reason this section exists at all.</b> A lease constrains writes. It says nothing about a session <em>reading</em> a file another session is halfway through rewriting, so a worker can build correct work on a premise being invalidated underneath it. Two workers can hold perfectly disjoint globs and still break each other: one changes a constant or a threshold inside a file only it holds, the other's files read or assert against that value. Both merge clean. No lease is violated. Nothing fires. <b>The check answers “did two sessions write the same bytes.” Nobody is asking “did one session invalidate a baseline another is reading.”</b></p>
+<div class="cas" style="margin-top:1.4rem; border-color: rgba(0,255,159,0.28); border-left-color: var(--accent-green);">
+<div class="ct" style="color: var(--accent-green);">rounds 28 and 29 · the caveat is what made the instance findable</div>
+<h3>Filed with the hole in its own evidence stated</h3>
+<p>That gap was written up at round 28's close as a tracked item, and the filing said in as many words that the one measured instance available involved a <em>shared</em> file — the coupled-content hazard in its easy form, the one a path check could in principle see — that there was <b>no measured instance of the pure form</b>, and that it should not be quoted as one.</p>
+<p><b>That caveat is the reason an instance exists.</b> The next round's coordinator went looking for the pure form in its own governing document and found one there: the manifest's own justification for running three concurrent lanes argued entirely from disjoint write surfaces and asserted the single seam anyone had identified was <em>removed</em>. Removing that item removed the <b>file</b> overlap and left the <b>semantic</b> dependency standing.</p>
+<p><b>The shape, which is all that transfers.</b> One feature's only call site pulls an event predicate and a text-shaping helper from the first lane's surface, hands the result to a downstream function owned by the second, from a component owned by the third. The contract between them is a shared formatting convention, written as two separate expressions in two files belonging to two different lanes. <b>No two lanes share a path.</b> All three branches would merge clean and nothing would fire.</p>
+<p class="note" style="margin:0.9rem 0 0; border-left-color: var(--accent-amber);"><b>Cite it with its qualification.</b> This is a <em>predicted</em> break, not an observed one — no lease had started, and that was verified rather than assumed. It is a measured contract across measured-disjoint surfaces with the failure modes traced to source, and it is not a defect that landed. <em>Round 29 was still running when this page was published, and nothing here reports its outcome.</em> What it establishes is that the pure form is neither hypothetical nor rare: it turned up in the first round anyone looked, in the document asserting the isolation.</p>
+<p><b>Ownership is recorded as shared, and the split is the part worth reading.</b> The sentence was authored at prep by the same seat that had filed the issue one turn earlier. The coordinator read it, relied on it to spawn three lanes, and <em>restated the argument in a brief of its own</em> without checking it. The author offered to take the whole thing; the coordinator declined, on the ground that <b>inheriting a claim and repeating it in a document of your own is not the same as not having made it.</b></p>
+</div>
+<div class="pull">A control whose subject is cheap to check rather than the one that matters. Paths are easy and semantics are hard; names are easy and shape is hard. <b>Both report clean, and in both cases silence and a pass are the same bytes.</b>
+<span class="src">the sentence that covers this and the merge that closed nothing equally</span>
+</div>
+</section><section class="sec" id="brief">
+<div class="sechead"><span class="secnum">04</span><h2>Instructions that read fine and cannot be executed</h2><div class="divider"></div></div>
+<p class="secsub">Rounds 1 and 2 asked every worker to check in at fixed points. Across both, <b>the number of check-ins received was zero.</b> Round 3 asked four workers for the same thing and <b>all four complied, unprompted.</b> Same coordinator, same model, same brief structure. The difference was one paragraph.</p>
+<div class="diff">
+<div class="dcol bad">
+<div class="dlab">rounds 1–2 — 0 check-ins received</div>
+<p class="dtext">“<b>Reply to the sender of this message</b> for all checkpoints — <b>do not ask for a session id.</b>”</p>
+<p class="dwhy"><b>Why it cannot be run.</b> The brief is delivered as the worker's <em>opening prompt</em>. There is no sender. The instruction names an affordance that does not exist in the situation it describes, and the second clause forbids the one route that does work. It is not vague; it is precise about the wrong thing.</p>
+</div>
+<div class="dcol good">
+<div class="dlab">round 3 — 4 of 4 checked in</div>
+<p class="dtext">“To reach me, use the <b>cross-session message tool</b>. Find my session id by <b>listing sessions</b> — I am the one <b>titled <coordinator></b>. Your brief arrived as your opening prompt, so <b>there is no sender to reply to.</b>”</p>
+<p class="dwhy"><b>Why it runs.</b> It names the mechanism, gives a way to <em>derive</em> the address rather than assuming one, and pre-empts the wrong inference explicitly. Same request; now executable.</p>
+</div>
+</div>
+<p class="pr" style="margin-top:1.4rem;"><b>The general form:</b> an instruction is real only if it names an observable trigger, a mechanism, and an address the reader can work out. Hand a human an impossible instruction and they ask a clarifying question. A worker session does something worse: it forms a reasonable belief that the channel doesn't exist, and proceeds without it. <em>That paragraph was reviewed twice before it was sent and read as perfectly clear, because it is clear — to a reader.</em> The defect was invisible from the writing side and showed up only as an absence.</p>
+<h3 style="font-family:var(--serif); font-size:1.45rem; font-weight:600; margin:2.4rem 0 0.5rem;">Writing the rule down is the weakest available intervention</h3>
+<p class="secsub">Round 27 asked the harder question — when an instruction is executable and its <em>premise</em> is stale, what actually catches it — and measured both candidate answers inside one round.</p>
+<div class="tablewrap" style="margin:1.2rem 0;">
+<table>
+<thead><tr><th>Two ways to stop an instruction being acted on wrongly</th><th class="num">instances</th><th class="num">catches</th></tr></thead>
+<tbody>
+<tr><td>A written rule, addressed to the party that might get it wrong</td><td class="num"><b>8</b></td><td class="num"><b>0</b></td></tr>
+<tr><td>A receiver checking a premise against repository state before acting</td><td class="num"><b>4</b></td><td class="num"><b>4</b></td></tr>
+</tbody>
+</table>
+</div>
+<p class="pr"><b>The reason is structural rather than personal.</b> A coordinator is the party <em>most</em> likely to be wrong about state, because it is furthest from the code and its instructions are stalest on arrival. <b>A sender cannot fix staleness by trying harder. A receiver can detect it for the price of one command.</b> Every premise caught that round was falsifiable in a single invocation. <em>Nothing that was caught required judgement, and nothing that required judgement got caught.</em></p>
+<p class="note" style="border-left-color: var(--accent-red);"><b>The eighth written rule is project memory, and the worker asked for it to be counted.</b> A lease re-derived, mid-task, a lesson the persistent memory had carried verbatim for two weeks — specific to this project, with a first-person cost attached. It did not reach the party at the moment of need; they found it at close-out <em>while deduplicating</em>, after independently re-deriving it. The surface everyone assumes is exempt, <b>our own prior finding addressed to us</b>, failed the same way the other seven did. <em>It was added to the count at the worker's request, on the stated ground that it makes the ratio worse and the clause stronger.</em></p>
+<div class="pull">A premise-check is <b>pulled at the moment of use</b>. A written rule — including one you wrote about yourself — is <b>pushed in advance and has to survive until needed.</b> Memory loses on exactly the axis a cheap check wins on.
+      <span class="src">why the duty sits on the receiver and not the sender</span>
+</div>
+<p class="pr"><b>The duty and the channel are one control.</b> Twice that round a worker stopped and asked instead of acting, and both times that was possible only because it <em>had an inbox and a coordinator that answered.</em> The previous round's workers had neither — spawned as in-process subagents, where cross-session messaging is unavailable — so all parties inherited one session identity, a mid-round ruling could not reach them, and the ledger could not tell them apart. Physical isolation held; what was lost was the ability to <em>prove</em> it. <b>A receiver expected to check a premise, with no way to report what it found, converts a caught error into an unlogged one.</b></p>
+<p class="note" style="border-left-color: var(--accent-green);"><b>Two disclosures the clause carries about itself.</b> The coordinator that recommended it <em>deliberately did not adopt it</em> — a party writing a protocol clause about its own failure mode should not also be the party that enacts it. And measured again the next round, receiver checks came in at four of four with <b>two of the four performed by the seat reporting the figure</b>; that record's own prose says three, and the list of four beside it names two. <em>Writing a rule down does not make it bind</em>, which the clause states about itself, on the ground that a clause about written rules failing cannot exempt itself.</p>
+</section><section class="sec" id="cost">
+<div class="sechead"><span class="secnum">05</span><h2>What it costs, and what the cost figures are worth</h2><div class="divider"></div></div>
+<p class="secsub">Rounds 1–6 are percentage points of a rolling weekly allowance read off a panel by hand. From round 7 the instrument is output tokens from the transcripts. <b>Nothing in one converts into anything in the other, and this page never does that arithmetic.</b></p>
+<p class="pr"><b>The measuring tool was found wrong twice, and neither time by looking for it.</b> First, its window selected sessions but never filtered messages inside them — harmless for a worker, whose session begins when its chip does, fatal for a coordinator, whose session predates the round and outlives it. Corrected, one round fell five points and another <em>rose</em> 2.4. <b>The correction has no direction, and that is the point:</b> a fix that only ever shrank the number would be a discount, and a discount that flatters whoever applies it is not a finding. Second, its join excluded any session whose first message predated the window instead of testing whether it had messages inside it — so one round resolved <b>0 of 3</b> workers against its own manifest. <em>Guarded against being windowed to zero, unguarded against being excluded to zero</em>: section 02's shape, inside the instrument that measures section 05.</p>
+<p class="note" style="border-left-color: var(--accent-green);"><b>What those corrections bought is not accuracy.</b> Later, faced with a join it could not make, the tool exited non-zero, printed its unresolved rows, and <em>refused to print the coordinator share at all</em>, on the recorded ground that a share over half a denominator is arithmetically fine and substantively meaningless. An earlier version would have printed a number. <b>The measurable improvement across this series is the instrument's willingness to return nothing</b>, which is the harder property and the one that makes the rest of the table worth reading.</p>
+<p class="pr"><b>A third failure mode is neither of those, and it is about <em>when</em> rather than <em>what</em>.</b> Two rounds published a figure captured before the round had ended — one by enough that the closed-window value is 26.8% higher, located afterward by bisection; the other by 65 seconds, proved rather than argued by re-running the unchanged tool against a copy of the manifest with the end time rewound, which reproduced the published numbers exactly. <b>Same tool, same data, right answer at the wrong instant.</b> Both figures are left as published and marked, rather than silently replaced. The rule: <em>a cost figure must carry the instant it was taken, not the day.</em></p>
+<p class="pr"><b>The one comparison the series can actually make.</b> Coordinator share only compares across rounds of equal worker count, because the denominator moves with it. Five rounds ran three workers on the same instrument: <b>38.7 · 39.0 · 30.9 · 41.1 · 41.4</b>. An earlier version of this page leaned on the 39.0-to-30.9 step as the one clean comparison it had. It was clean, it was a single excursion, and two later rounds put the figure back. <em>That correction is recorded here rather than made by deleting the sentence that needed it.</em></p>
+<p class="note" style="border-left-color: var(--accent-red);"><b>And from round 26 the cost was not measured at all.</b> The three most recent rounds carry no coordinator share, and the last two no merged-PR figure either. That is a deliberate instruction — <em>keep the guards, cut the metrics</em> — not an omission. <b>It is still a gap and it is stated as one:</b> those rounds cannot be placed in either cost table, and nothing here should be read as evidence that the cost shape held through them.</p>
+<h3 style="font-family:var(--serif); font-size:1.45rem; font-weight:600; margin:2.4rem 0 0.5rem;">Is there a standard for this? No.</h3>
+<p class="pr"><b>DORA</b> — deployment frequency, lead time, change failure rate, time to restore (Forsgren, Humble, Kim, <em>Accelerate</em>) — measures outcomes, not cost per unit of output. <b>SPACE</b> (Forsgren, Storey, Maddila, Zimmermann, Houck, Butler; <em>ACM Queue</em> 19(1), 2021) argues productivity <em>cannot</em> be captured in a single metric and that activity counts mislead — the most citable thing in the area argues against the number people ask for, and that applies to every figure here. <b>Agentic benchmarks</b> report cost per resolved instance, the closest published analog, but that is a reporting convention assuming a fixed task distribution, and production work is not that. <b>The defensible sentence is the narrow one:</b> these specific things were measured, those are the nearest frameworks, and no conformance is claimed to any of them.</p>
+<p class="pr"><b>The metric I would actually keep is human decisions required per unit of delivered work</b> — counted by the person, not the system, which means the system cannot optimize it by looking better. One round ran three hours and twenty minutes with no blocking human decisions, and <em>that sentence is available in a more impressive form which is not true</em>: “no blocking decisions” is not “no intervention.” The operator surfaced one substantive finding neither thread produced, and the coordinator's merge error was detected through an observation channel the operator supplies. <b>Detection, not prevention.</b> What this page will not do is tell you what any of it replaced — “this would have taken a person N hours” is a number nobody measured.</p>
+<p class="pr"><b>Both cost tables, all twenty-eight rounds, every footnote about window rules and undercounting, are <a href="./evidence/#cost" style="color:var(--accent-cyan); text-decoration:none; border-bottom:1px solid var(--line)">in the appendix</a>.</b></p>
+</section><div class="takeaway">
+<h3>What I'd keep, and what I'd change</h3>
+<p><b>Grade the grader, and say when the grading is not blind.</b> The rubric — what is admitted, how it is classified, who may classify it, what version the number was taken under — moved the headline measure ten-fold on first application without the work changing, then caught the most-quoted figure in a round being wrong by one because the graded party was the grader. <b>The best agreement number in the series is 49 of 49, and it is the one to discount.</b> Reporting a perfect score and then explaining why it does not mean what it looks like is the only version of it worth anything.</p>
+<p><b>Measure before believing, and publish the correction whichever way it goes.</b> The measuring instrument was wrong twice and mistimed twice more. Corrections that moved a figure <em>up</em> were published at the worse number, two consecutive independent audits moved published figures against the interest of the party that recorded them, and the wrong values are still on the ledger with the corrections beside them. <b>Editing a landed number tidies away the fact that it was wrong.</b></p>
+<p><b>Retire a measurement out loud, with its grounds.</b> Predicting a band and grading a round against it was registered five times, landed once, and was retired — not dropped. The grounds were themselves measured: eight key spellings, read by nothing. <em>A field with no consumer has nothing holding its name still.</em> What was retired was the prediction; what was kept is the rubric underneath, which was doing the work all along.</p>
+<p><b>Keep the lease, and stop treating path disjointness as sufficient.</b> Partitioning by write-surface removed an entire category of failure and the check costs seconds. But paths can be disjoint while <em>content</em> collides, and the passing check says nothing about that. The gap was filed <em>with the hole in its own evidence stated</em>, and that caveat is what made an instance findable one round later, inside the document asserting the isolation. Keep the serial spine too: routing the board, the merges, the shared sinks and the intake through one writer is what stops N sessions producing N versions of the truth.</p>
+<p><b>And treat every green as a claim.</b> The finding that recurs across twenty-eight rounds was never a bug in a component. It was a test, a stamp, a kill, a merge, a documentation page and a written instruction, each reporting success while doing nothing. <b>The failure that looks like an error gets fixed. The failure that looks like a pass gets built on.</b> The detector is still a session with no memory of why the check was written, reading it like a stranger.</p>
+<p style="margin-top:1.1rem; padding-top:1.1rem; border-top:1px solid var(--line-soft);"><b><a href="./evidence/" style="color:var(--accent-cyan); text-decoration:none; border-bottom:1px solid var(--line)">The evidence appendix</a></b> carries the full round-by-round record. Companion write-ups: <a href="../automation/" style="color:var(--accent-cyan); text-decoration:none; border-bottom:1px solid var(--line)">the lifecycle-hook layer these sessions run inside</a> · <a href="../enforcement/" style="color:var(--accent-cyan); text-decoration:none; border-bottom:1px solid var(--line)">the ledger that tracks which checks actually bite</a> · <a href="../publishing/" style="color:var(--accent-cyan); text-decoration:none; border-bottom:1px solid var(--line)">the disclosure pipeline that gated this page</a>.</p>
+</div></main></div>
+<footer>
+<p>Case study · coordinating parallel AI coding sessions against one shared repository set.</p>
+<p>Process shape only. The work these sessions performed is described generically; proprietary specifics are omitted throughout.</p>
+<p>Every figure traces to a round manifest or to a row in the series ledger, and the round each one comes from is named beside it. Where two records of the same round disagree, the figure quoted is the one an automated check reads, and the disagreement is treated as a finding rather than resolved silently. Round 29 was still running when this page was published; nothing here reports its outcome.</p>
+<p>Michael Giardina · <a href="../">portfolio</a> · <a href="https://www.linkedin.com/in/michael-giardina" rel="noopener noreferrer" target="_blank">linkedin.com/in/michael-giardina</a></p>
+<p class="footer-navigation"><a href="../">Portfolio</a> · <a href="../case-studies/">Case studies</a> · <a href="../#connect">Get in touch</a></p></footer>
+</div>
+<script data-pplx-inline-edit>
+(function () {
+  if (window === window.top) return;
+
+  const allowedParentOrigins = ["https://www.perplexity.ai","https://perplexity.ai","https://testing.perplexity.ai","https://staging.perplexity.ai","https://*.preview.i.perplexity.ai","http://perplexity.localhost","http://localhost:1420","http://127.0.0.1:1420","http://localhost:3000","http://127.0.0.1:3000","http://localhost:5173","http://127.0.0.1:5173"];
+  const MAX_FONT_BYTES = 500 * 1024;
+  const MAX_TOTAL_FONT_BYTES = 2 * 1024 * 1024;
+  let scrollForwarding = false;
+  let scrollRaf = 0;
+  let trustedTopOrigin = null;
+
+  // Allow entries like "https://*.preview.i.perplexity.ai" — the wildcard
+  // matches a single DNS label (no dots), so "https://*.foo" cannot stretch
+  // across multiple labels.
+  function matchesAllowedOrigin(origin) {
+    if (!origin) return false;
+    for (const entry of allowedParentOrigins) {
+      if (!entry.includes("*")) {
+        if (entry === origin) return true;
+        continue;
+      }
+      const pattern = new RegExp(
+        "^" +
+          entry.replace(/[.+?^${}()|[\]\\]/g, "\\$&").replace(/\*/g, "[^.]+") +
+          "$",
+      );
+      if (pattern.test(origin)) return true;
+    }
+    return false;
+  }
+
+  // Trust decision: when the sender is same-origin-visible (event.origin is a
+  // real origin like https://www.perplexity.ai) we trust event.origin directly.
+  // When event.origin is "null" (opaque broker srcdoc), we fall back to the
+  // broker's stamped `parentOrigin` to identify the top window. The fallback
+  // is claim-only — we rely on the browser's native `targetOrigin` enforcement
+  // on the response path (see postToTrustedTop) to ensure replies can't be
+  // delivered to anyone but the actual top window of that claimed origin.
+  function getTrustedParentOrigin(event) {
+    const forwardedParentOrigin =
+      typeof event.data.parentOrigin === "string" ? event.data.parentOrigin : null;
+    const parentOrigin = event.origin === "null" ? forwardedParentOrigin : event.origin;
+    return matchesAllowedOrigin(parentOrigin) ? parentOrigin : null;
+  }
+
+  // All responses go to window.top with targetOrigin = the allowlisted origin.
+  // An attacker that iframes us inside their own null-origin broker can claim
+  // any parentOrigin they like, but the browser will drop the reply whenever
+  // the real top's origin doesn't match — so the screenshot never leaves.
+  function postToTrustedTop(message) {
+    if (!trustedTopOrigin) return;
+    try {
+      window.top.postMessage(message, trustedTopOrigin);
+    } catch (_error) {}
+  }
+
+  function inlineAll(original, clone) {
+    if (original.nodeType !== 1 || clone.nodeType !== 1) return;
+
+    try {
+      const computedStyle = getComputedStyle(original);
+      // cssText on a computed style is the serialized declaration in modern
+      // Chromium/Safari — a single read beats enumerating ~400 longhand
+      // properties. Firefox returns "" here, so we fall back on empty.
+      const serialized = computedStyle.cssText;
+      if (serialized) {
+        clone.style.cssText = serialized;
+      } else {
+        const parts = new Array(computedStyle.length);
+        for (let index = 0; index < computedStyle.length; index += 1) {
+          const property = computedStyle[index];
+          parts[index] = `${property}:${computedStyle.getPropertyValue(property)};`;
+        }
+        clone.style.cssText = parts.join("");
+      }
+    } catch (_error) {}
+
+    const originalChildren = original.children;
+    const clonedChildren = clone.children;
+    for (
+      let index = 0;
+      index < originalChildren.length && index < clonedChildren.length;
+      index += 1
+    ) {
+      inlineAll(originalChildren[index], clonedChildren[index]);
+    }
+  }
+
+  function extractFontUrl(srcValue) {
+    const matches = [
+      ...srcValue.matchAll(
+        /url\(["']?([^"')]+)["']?\)(?:\s*format\(["']?([^"')]+)["']?\))?/gi,
+      ),
+    ];
+    if (matches.length === 0) return null;
+    const woff2 = matches.find((m) => m[2] && m[2].toLowerCase().includes("woff2"));
+    if (woff2) return woff2[1];
+    const woff = matches.find((m) => m[2] && m[2].toLowerCase().includes("woff"));
+    if (woff) return woff[1];
+    return matches[0][1];
+  }
+
+  // Cache resolved font URL -> data URI across captures. Fonts on a page
+  // essentially never change, and a batch run emits multiple captures back to
+  // back — without this we'd refetch + re-base64 every time.
+  const fontDataUriCache = new Map();
+  const SRC_DECLARATION_RE = /src\s*:\s*[^;}]+/i;
+
+  async function fetchAsDataUri(url) {
+    if (fontDataUriCache.has(url)) return fontDataUriCache.get(url);
+    let dataUri = null;
+    try {
+      const response = await fetch(url, { mode: "cors", credentials: "omit" });
+      if (response.ok) {
+        const blob = await response.blob();
+        if (blob.size <= MAX_FONT_BYTES) {
+          dataUri = await new Promise((resolve) => {
+            const reader = new FileReader();
+            reader.onloadend = () =>
+              resolve(typeof reader.result === "string" ? reader.result : null);
+            reader.onerror = () => resolve(null);
+            reader.readAsDataURL(blob);
+          });
+        }
+      }
+    } catch (_error) {
+      dataUri = null;
+    }
+    fontDataUriCache.set(url, dataUri);
+    return dataUri;
+  }
+
+  function collectFontFaceRuleTexts() {
+    const rules = [];
+    for (const sheet of document.styleSheets) {
+      let cssRules;
+      try {
+        cssRules = sheet.cssRules;
+      } catch (_error) {
+        continue;
+      }
+      if (!cssRules) continue;
+      for (const rule of cssRules) {
+        const cssText = rule.cssText || "";
+        if (cssText.startsWith("@font-face")) rules.push(cssText);
+      }
+    }
+    return rules;
+  }
+
+  async function buildInlinedFontCss() {
+    const ruleTexts = collectFontFaceRuleTexts();
+    if (ruleTexts.length === 0) return null;
+
+    const resolved = ruleTexts.map((cssText) => {
+      if (!SRC_DECLARATION_RE.test(cssText)) return null;
+      const srcMatch = cssText.match(/src\s*:\s*([^;}]+)[;}]/i);
+      if (!srcMatch) return null;
+      const url = extractFontUrl(srcMatch[1]);
+      if (!url) return null;
+      try {
+        return { cssText, url: new URL(url, document.baseURI).href };
+      } catch (_error) {
+        return null;
+      }
+    });
+
+    const dataUris = await Promise.all(
+      resolved.map((entry) => (entry ? fetchAsDataUri(entry.url) : Promise.resolve(null))),
+    );
+
+    const inlined = [];
+    let totalBytes = 0;
+    for (let index = 0; index < resolved.length; index += 1) {
+      const entry = resolved[index];
+      const dataUri = dataUris[index];
+      if (!entry || !dataUri) continue;
+      const approxBytes = dataUri.length * 0.75;
+      if (totalBytes + approxBytes > MAX_TOTAL_FONT_BYTES) break;
+      totalBytes += approxBytes;
+      inlined.push(entry.cssText.replace(SRC_DECLARATION_RE, `src: url("${dataUri}")`));
+    }
+    return inlined.length > 0 ? inlined.join("\n") : null;
+  }
+
+  function stripExternal(clone) {
+    const images = clone.querySelectorAll("img");
+    for (let index = 0; index < images.length; index += 1) {
+      const src = images[index].getAttribute("src");
+      if (src && !src.startsWith("data:")) images[index].removeAttribute("src");
+    }
+
+    const elements = clone.querySelectorAll("*");
+    for (let index = 0; index < elements.length; index += 1) {
+      const style = elements[index].style.cssText;
+      if (style && style.includes("url(")) {
+        elements[index].style.cssText = style.replace(
+          /url\(["']?(?!data:)[^)"']*["']?\)/gi,
+          "none",
+        );
+      }
+    }
+  }
+
+  function emitScroll() {
+    scrollRaf = 0;
+    if (!scrollForwarding) return;
+    postToTrustedTop({
+      type: "INLINE_EDIT_SCROLL",
+      scrollX: window.scrollX,
+      scrollY: window.scrollY,
+    });
+  }
+
+  window.addEventListener(
+    "scroll",
+    function () {
+      if (!scrollForwarding || scrollRaf) return;
+      scrollRaf = requestAnimationFrame(emitScroll);
+    },
+    { passive: true, capture: true },
+  );
+
+  async function handleCaptureRequest(event) {
+    const requestId = event.data.requestId;
+    const scrollX = window.scrollX;
+    const scrollY = window.scrollY;
+    const width = window.innerWidth;
+    const height = window.innerHeight;
+
+    function postResult(dataUrl) {
+      postToTrustedTop({
+        type: "INLINE_EDIT_SCREENSHOT_RESULT",
+        requestId,
+        dataUrl,
+        scrollX,
+        scrollY,
+      });
+    }
+
+    try {
+      // Wait for any pending web fonts to resolve so both inline metrics and
+      // the @font-face inlining below see the same loaded faces.
+      if (document.fonts && document.fonts.ready) {
+        try {
+          await document.fonts.ready;
+        } catch (_error) {}
+      }
+
+      const clone = document.documentElement.cloneNode(true);
+      inlineAll(document.documentElement, clone);
+
+      const removedNodes = clone.querySelectorAll("script,link[rel=\"stylesheet\"],style");
+      for (let index = 0; index < removedNodes.length; index += 1) {
+        removedNodes[index].remove();
+      }
+
+      stripExternal(clone);
+
+      // Re-embed web fonts as data-URI @font-face rules so the SVG rasterizer
+      // can resolve them — external font URLs aren't fetched during
+      // foreignObject rendering, which would otherwise force a fallback face
+      // and change text metrics.
+      const inlinedFontCss = await buildInlinedFontCss();
+      if (inlinedFontCss) {
+        const styleEl = document.createElement("style");
+        styleEl.textContent = inlinedFontCss;
+        const head = clone.querySelector("head");
+        if (head) head.appendChild(styleEl);
+        else clone.insertBefore(styleEl, clone.firstChild);
+      }
+
+      const html = new XMLSerializer().serializeToString(clone);
+      const svg =
+        `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}">` +
+        '<foreignObject width="100%" height="100%">' +
+        `<div xmlns="http://www.w3.org/1999/xhtml" style="width:${width}px;height:${height}px;overflow:hidden">` +
+        `<div style="position:relative;left:-${scrollX}px;top:-${scrollY}px">` +
+        html +
+        "</div></div></foreignObject></svg>";
+      const svgUrl = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
+      const image = new Image();
+      image.onload = function () {
+        const canvas = document.createElement("canvas");
+        canvas.width = width;
+        canvas.height = height;
+        canvas.getContext("2d").drawImage(image, 0, 0);
+        postResult(canvas.toDataURL("image/png"));
+      };
+      image.onerror = function () {
+        postResult(null);
+      };
+      image.src = svgUrl;
+    } catch (_error) {
+      postResult(null);
+    }
+  }
+
+  window.addEventListener("message", function (event) {
+    if (!event.data) return;
+    // Only accept messages from the direct parent frame. Blocks sibling /
+    // unrelated-window postMessage senders that could otherwise reach us.
+    if (event.source !== window.parent) return;
+
+    const trustedParentOrigin = getTrustedParentOrigin(event);
+    if (!trustedParentOrigin) return;
+    trustedTopOrigin = trustedParentOrigin;
+
+    if (event.data.type === "INLINE_EDIT_SCROLL_START") {
+      scrollForwarding = true;
+      emitScroll();
+      return;
+    }
+
+    if (event.data.type === "INLINE_EDIT_SCROLL_STOP") {
+      scrollForwarding = false;
+      if (scrollRaf) cancelAnimationFrame(scrollRaf);
+      scrollRaf = 0;
+      return;
+    }
+
+    if (event.data.type !== "INLINE_EDIT_CAPTURE_REQUEST") return;
+
+    handleCaptureRequest(event);
+  });
+})();
+
+
+</script></body>
 </html>

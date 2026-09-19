@@ -1,12 +1,13 @@
-<!doctype html>
-<html lang="en">
+<!DOCTYPE html>
+
+<html lang="en" data-theme="light">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>At the Threshold — Hyperkalemia in Real Time</title>
-<meta name="description" content="Potassium is climbing and the ECG will tell you before the lab does. A Kymora Clinical Story Mode piece — scroll the case and the waveform morphs with the potassium.">
-<meta name="theme-color" content="#0B1014">
-<meta name="author" content="Mike Giardina BSN, RN, CEN">
+<meta name="description" content="Potassium is climbing and the ECG will tell you before the lab does. A Kymora Clinical Story Mode piece — scroll the case and the waveform morphs with the potassium."/>
+<meta name="theme-color" content="#0B1014"/>
+<meta name="author" content="Mike Giardina BSN, RN, CEN"/>
 <style>
   html { background: #0B1014; }
   :root {
@@ -336,221 +337,211 @@
     * { scroll-behavior: auto !important; }
   }
 </style>
-<script>try{var t=localStorage.getItem("mg-theme");if(t==="dark"||t==="light")document.documentElement.setAttribute("data-theme",t);}catch(e){}</script>
-<meta property="og:type" content="article">
-<meta property="og:url" content="https://mike-giardina.netlify.app/story/hyperkalemia/">
-<meta property="og:title" content="The potassium is 7.9 — hyperkalemia in real time">
-<meta property="og:description" content="A clinical teaching article re-staged as a real-time patient case, with a live monitor that tracks the patient as you scroll.">
-<meta property="og:image" content="https://mike-giardina.netlify.app/assets/og/story-hyperkalemia.png">
-<meta property="og:image:width" content="1200">
-<meta property="og:image:height" content="627">
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://mike-giardina.netlify.app/assets/og/story-hyperkalemia.png">
-</head>
-<body>
 
+<meta property="og:type" content="article"/>
+<meta property="og:url" content="https://mike-giardina.netlify.app/story/hyperkalemia/"/>
+<meta property="og:title" content="The potassium is 7.9 — hyperkalemia in real time"/>
+<meta property="og:description" content="A clinical teaching article re-staged as a real-time patient case, with a live monitor that tracks the patient as you scroll."/>
+<meta property="og:image" content="https://mike-giardina.netlify.app/assets/og/story-hyperkalemia.png"/>
+<meta property="og:image:width" content="1200"/>
+<meta property="og:image:height" content="627"/>
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="https://mike-giardina.netlify.app/assets/og/story-hyperkalemia.png"/>
+<link rel="stylesheet" href="../../assets/fonts/editorial.css"/><link rel="stylesheet" href="../../assets/story-editorial.css"/><script src="../../assets/navigation.js" defer=""></script></head>
+<body class="story-page"><a class="skip" href="#reading">Skip to content</a><header class="masthead"><div class="mast-inner">
+<a class="brand" href="../../"><svg width="32" height="32" viewbox="0 0 32 32" fill="none" role="img" aria-label="Michael Giardina monogram"><path d="M4 26V6l12 12L28 6v20M4 6l12 12 12-12" stroke="currentColor" stroke-width="2.5"></path><path d="M16 18v8" stroke="currentColor" stroke-width="2.5"></path></svg><span>MICHAEL GIARDINA<span class="brand-sub">Clinical judgment. Systems thinking.</span></span></a>
+<button class="mobile-menu" aria-expanded="false" aria-controls="primary-navigation" type="button">Menu</button>
+<nav class="primary-nav" id="primary-navigation" aria-label="Portfolio navigation">
+<a href="../../#work">Work</a>
+<details class="nav-dropdown"><summary>Case studies</summary><div class="nav-panel"><a href="../../case-studies/">All five case studies</a><a href="../../automation/">Lifecycle hooks</a><a href="../../enforcement/">Enforcement</a><a href="../../publishing/">Disclosure & publishing</a><a href="../../clinical-review/">Clinical AI evaluation</a><a href="../../orchestration/">Multi-session orchestration</a><a href="../../orchestration/evidence/">Evidence appendix</a><a href="../../trauma-tracker/">Trauma Tracker</a></div></details>
+<details class="nav-dropdown"><summary>Clinical stories</summary><div class="nav-panel"><a href="../../story/gi-bleed/">GI hemorrhage</a><a href="../../story/hyperkalemia/">Hyperkalemia</a><a href="../../story/first-code-blue/">Your first code blue</a><a href="https://erinfo.netlify.app" target="_blank" rel="noopener noreferrer">ER articles ↗</a></div></details>
+<a href="../../#background">About</a><a href="../../#connect">Contact</a></nav>
+<button class="theme-toggle" type="button" aria-label="Switch to dark mode"><span class="theme-symbol" aria-hidden="true">◐</span><span class="theme-label">Dark</span></button></div><div class="reading-progress" aria-hidden="true"></div></header>
 <div class="monitor" id="monitor">
-  <div class="monitor-inner">
-    <div class="m-left">
-      <div class="m-clock">T+ <b id="clock">00:00</b></div>
-      <div class="m-status" id="mstatus"><span class="dot"></span><span id="statustxt">Monitoring</span></div>
-    </div>
-    <div class="m-right">
-      <div class="trace-cell"><canvas id="trace" width="360" height="124"></canvas></div>
-      <div class="vital hr"><div class="lab">HR</div><div class="num" id="v-hr" style="--val:var(--green)">58</div><div class="unit">bpm</div></div>
-      <div class="vital k critical"><div class="lab">K⁺ serum</div><div class="num" id="v-k" style="--kval:var(--slate-dim)">—</div><div class="unit">mEq/L</div></div>
-      <div class="vital qrs"><div class="lab">QRS</div><div class="num" id="v-qrs" style="--qval:var(--amber)">104</div><div class="unit">ms</div></div>
-    </div>
-  </div>
+<div class="monitor-inner">
+<div class="m-left">
+<div class="m-clock">T+ <b id="clock">00:00</b></div>
+<div class="m-status" id="mstatus"><span class="dot"></span><span id="statustxt">Monitoring</span></div>
 </div>
-
+<div class="m-right">
+<div class="trace-cell"><canvas id="trace" width="360" height="124" role="img" aria-label="Simulated educational ECG waveform"></canvas></div>
+<div class="vital hr"><div class="lab">HR</div><div class="num" id="v-hr" style="--val:var(--green)">58</div><div class="unit">bpm</div></div>
+<div class="vital k critical"><div class="lab">K⁺ serum</div><div class="num" id="v-k" style="--kval:var(--slate-dim)">—</div><div class="unit">mEq/L</div></div>
+<div class="vital qrs"><div class="lab">QRS</div><div class="num" id="v-qrs" style="--qval:var(--amber)">104</div><div class="unit">ms</div></div>
+</div>
+</div>
+</div>
 <header class="hero wrap">
-  <div class="eyebrow">Kymora · Clinical Story Mode · No. 2</div>
-  <h1>A Heart <em>at the Threshold</em></h1>
-  <p class="dek">Potassium is climbing, and the ECG will tell you before the lab does. The monitor above is his — watch the waveform bend as the number rises, and snap back when you treat it.</p>
-  <div class="byline">Adapted from the Season 2 scholarly article · Mike Giardina BSN, RN, CEN</div>
-  <div class="scroll-cue">Scroll to begin the case<span>▼</span></div>
+<div class="eyebrow">Kymora · Clinical Story Mode · No. 2</div>
+<h1>A Heart <em>at the Threshold</em></h1>
+<p class="dek">Potassium is climbing, and the ECG will tell you before the lab does. The monitor above is his — watch the waveform bend as the number rises, and snap back when you treat it.</p>
+<div class="byline">Adapted from the Season 2 scholarly article · Mike Giardina BSN, RN, CEN</div>
+<div class="scroll-cue">Scroll to begin the case<span>▼</span></div>
 </header>
-
-<main>
-
+<main id="reading">
 <!-- BEAT 1 -->
 <section class="beat wrap" data-hr="56" data-ecgk="6.3" data-k="pending" data-state="caution" data-clock="00:00">
-  <div class="timecard"><span class="t">00:00</span> Triage · arrives by wheelchair</div>
-  <div class="story">
-    <p class="drop">She's forty-nine and she apologizes for coming in. Missed her dialysis run on Tuesday (the ride fell through) and now her legs feel like sandbags and her lips won't stop tingling. She's calm. Too calm for what her heart is doing.</p>
-    <p>You get her onto the monitor before anything else, and the trace stops you: the QRS complexes are ordinary enough, but the <b>T waves are tall</b> — narrow, tented, pulling up to a point like circus tents. Her pulse is 56 and lazy. <span class="said">"I feel fine,"</span> she says. <span class="said">"Just tired."</span></p>
-  </div>
-  <div class="decode amber">
-    <h3>◇ The waveform is the first lab</h3>
-    <p>Those <strong>peaked T waves</strong> — narrow-based, symmetrical, tented — are the <strong>earliest ECG sign of hyperkalemia</strong>, and they show up before any blood comes back. In a dialysis patient who missed a session, that trace is a diagnosis you can act on now.</p>
-    <p>The rule the article is blunt about: a patient with reason to be hyperkalemic (renal failure, weakness, missed dialysis) <strong>gets an ECG immediately, and if the T waves are peaked, you treat before the lab confirms it.</strong> Don't wait for the number.</p>
-    <p><span class="chip">Peaked T = earliest sign</span><span class="chip">Bradycardia = worry</span><span class="chip">Treat before the draw</span></p>
-  </div>
+<div class="timecard"><span class="t">00:00</span> Triage · arrives by wheelchair</div>
+<div class="story">
+<p class="drop">She's forty-nine and she apologizes for coming in. Missed her dialysis run on Tuesday (the ride fell through) and now her legs feel like sandbags and her lips won't stop tingling. She's calm. Too calm for what her heart is doing.</p>
+<p>You get her onto the monitor before anything else, and the trace stops you: the QRS complexes are ordinary enough, but the <b>T waves are tall</b> — narrow, tented, pulling up to a point like circus tents. Her pulse is 56 and lazy. <span class="said">"I feel fine,"</span> she says. <span class="said">"Just tired."</span></p>
+</div>
+<div class="decode amber">
+<h3>◇ The waveform is the first lab</h3>
+<p>Those <strong>peaked T waves</strong> — narrow-based, symmetrical, tented — are the <strong>earliest ECG sign of hyperkalemia</strong>, and they show up before any blood comes back. In a dialysis patient who missed a session, that trace is a diagnosis you can act on now.</p>
+<p>The rule the article is blunt about: a patient with reason to be hyperkalemic (renal failure, weakness, missed dialysis) <strong>gets an ECG immediately, and if the T waves are peaked, you treat before the lab confirms it.</strong> Don't wait for the number.</p>
+<p><span class="chip">Peaked T = earliest sign</span><span class="chip">Bradycardia = worry</span><span class="chip">Treat before the draw</span></p>
+</div>
 </section>
-
 <!-- BEAT 2 -->
 <section class="beat wrap" data-hr="54" data-ecgk="6.5" data-k="pending" data-state="caution" data-clock="00:04">
-  <div class="timecard"><span class="t">00:04</span> Why the tent?</div>
-  <div class="story tight">
-    <p>Know what you're looking at, because it tells you where this is heading. Every one of her heart cells is sitting closer to its trigger than it should be.</p>
-  </div>
-  <div class="decode">
-    <h3>◇ The narrowing safety margin</h3>
-    <p>A resting cardiac cell sits at about <strong>−90 mV</strong>, and it fires at roughly <strong>−60 mV</strong>. That <strong>30 mV gap is the safety margin</strong> — the buffer between resting and firing. Potassium sets that resting voltage (Nernst): as serum K⁺ rises, the resting potential drifts <em>up</em> toward threshold, and the buffer shrinks.</p>
-    <div class="margin-meter" id="mm">
-      <div class="mm-row"><span class="lbl">K⁺ 4.0 · normal</span><div class="mm-bar"><span class="mm-fill" style="width:100%;background:linear-gradient(90deg,#1f7a4d,#35E08A)"></span><span class="val">30 mV buffer</span></div></div>
-      <div class="mm-row"><span class="lbl">K⁺ 6.3 · now</span><div class="mm-bar"><span class="mm-fill" style="width:50%;background:linear-gradient(90deg,#7a5a1f,#F5B544)"></span><span class="val">~15 mV</span></div></div>
-      <div class="mm-row"><span class="lbl">K⁺ 8+ · lethal</span><div class="mm-bar"><span class="mm-fill" style="width:8%;background:linear-gradient(90deg,#8f1e2c,#E23B4E)"></span><span class="val">~0 mV</span></div></div>
-    </div>
-    <p style="margin-top:12px;">Shrink the margin and you get the whole progression in order: <strong>peaked T</strong> (twitchy repolarization) → <strong>flattened P + widened QRS</strong> (conduction slows) → <strong>sine wave</strong> → asystole. The ECG is a voltmeter for how close she is to the edge.</p>
-  </div>
+<div class="timecard"><span class="t">00:04</span> Why the tent?</div>
+<div class="story tight">
+<p>Know what you're looking at, because it tells you where this is heading. Every one of her heart cells is sitting closer to its trigger than it should be.</p>
+</div>
+<div class="decode">
+<h3>◇ The narrowing safety margin</h3>
+<p>A resting cardiac cell sits at about <strong>−90 mV</strong>, and it fires at roughly <strong>−60 mV</strong>. That <strong>30 mV gap is the safety margin</strong> — the buffer between resting and firing. Potassium sets that resting voltage (Nernst): as serum K⁺ rises, the resting potential drifts <em>up</em> toward threshold, and the buffer shrinks.</p>
+<div class="margin-meter" id="mm">
+<div class="mm-row"><span class="lbl">K⁺ 4.0 · normal</span><div class="mm-bar"><span class="mm-fill" style="width:100%;background:linear-gradient(90deg,#1f7a4d,#35E08A)"></span><span class="val">30 mV buffer</span></div></div>
+<div class="mm-row"><span class="lbl">K⁺ 6.3 · now</span><div class="mm-bar"><span class="mm-fill" style="width:50%;background:linear-gradient(90deg,#7a5a1f,#F5B544)"></span><span class="val">~15 mV</span></div></div>
+<div class="mm-row"><span class="lbl">K⁺ 8+ · lethal</span><div class="mm-bar"><span class="mm-fill" style="width:8%;background:linear-gradient(90deg,#8f1e2c,#E23B4E)"></span><span class="val">~0 mV</span></div></div>
+</div>
+<p style="margin-top:12px;">Shrink the margin and you get the whole progression in order: <strong>peaked T</strong> (twitchy repolarization) → <strong>flattened P + widened QRS</strong> (conduction slows) → <strong>sine wave</strong> → asystole. The ECG is a voltmeter for how close she is to the edge.</p>
+</div>
 </section>
-
 <!-- BEAT 3 -->
 <section class="beat wrap" data-hr="50" data-ecgk="6.9" data-k="7.3" data-state="critical" data-clock="00:09">
-  <div class="timecard crit"><span class="t">00:09</span> iSTAT back · K⁺ 7.3</div>
-  <div class="story">
-    <p>The point-of-care gas prints and there it is: potassium <b>7.3</b>. On the monitor, the P waves have gone shy and the QRS is starting to smear wider at the edges — the tent is becoming something worse. Heart rate drifting into the low 50s.</p>
-    <p>The resident reaches for the insulin. You stop them, because the order here is not the order you'd guess.</p>
-  </div>
-  <div class="fork" id="fork">
-    <div class="q">◇ Wide QRS, K⁺ 7.3, rate in the 50s — what goes in <em>first</em>?</div>
-    <div class="choices">
-      <button class="choice wrong" data-choice="insulin">
-        <span class="h">Insulin + dextrose</span>
+<div class="timecard crit"><span class="t">00:09</span> iSTAT back · K⁺ 7.3</div>
+<div class="story">
+<p>The point-of-care gas prints and there it is: potassium <b>7.3</b>. On the monitor, the P waves have gone shy and the QRS is starting to smear wider at the edges — the tent is becoming something worse. Heart rate drifting into the low 50s.</p>
+<p>The resident reaches for the insulin. You stop them, because the order here is not the order you'd guess.</p>
+</div>
+<div class="fork" id="fork">
+<div class="q">◇ Wide QRS, K⁺ 7.3, rate in the 50s — what goes in <em>first</em>?</div>
+<div class="choices">
+<button class="choice wrong" data-choice="insulin">
+<span class="h">Insulin + dextrose</span>
         Start lowering the potassium — drive it back into the cells.
       </button>
-      <button class="choice right" data-choice="calcium">
-        <span class="h">Calcium gluconate</span>
+<button class="choice right" data-choice="calcium">
+<span class="h">Calcium gluconate</span>
         Stabilize the membrane first, then lower the potassium.
       </button>
-    </div>
-    <div class="verdict-box" id="forkverdict"></div>
-  </div>
+</div>
+<div class="verdict-box" id="forkverdict"></div>
+</div>
 </section>
-
 <!-- BEAT 4 -->
 <section class="beat wrap" data-hr="60" data-ecgk="5.8" data-k="7.3" data-state="caution" data-clock="00:12">
-  <div class="timecard"><span class="t">00:12</span> Calcium · and a lesson in what it does</div>
-  <div class="story">
-    <p>Ten mL of 10% calcium gluconate, slow IV push over three minutes. You watch the monitor while it goes in, and within a couple of minutes the trace loosens — the QRS pulls back in, the T waves sit down, the P waves come back to visit. The heart looks, on screen, almost reassured.</p>
-    <p>Now look at the K⁺ tile. Still <b>7.3</b>.</p>
-  </div>
-  <div class="decode green">
-    <h3>◇ The most misunderstood drug in the room</h3>
-    <p>Calcium <strong>did not lower her potassium by a single point</strong>, and it was still exactly the right first move. Calcium raises the firing threshold back away from that drifted-up resting voltage, <strong>re-widening the safety margin</strong>. It buys the heart 30–60 minutes of protection while the drugs that actually lower K⁺ get to work.</p>
-    <p>That split — <strong>a calmer ECG sitting on top of an unchanged number</strong> — is the whole mental model of hyperkalemia. Onset 1–3 minutes; it is the first thing you give for any hyperkalemia <em>with</em> ECG changes. It is a shield, not a cure.</p>
-    <p><span class="chip">Onset 1–3 min</span><span class="chip">Lasts 30–60 min</span><span class="chip">On digoxin? push slow</span></p>
-  </div>
+<div class="timecard"><span class="t">00:12</span> Calcium · and a lesson in what it does</div>
+<div class="story">
+<p>Ten mL of 10% calcium gluconate, slow IV push over three minutes. You watch the monitor while it goes in, and within a couple of minutes the trace loosens — the QRS pulls back in, the T waves sit down, the P waves come back to visit. The heart looks, on screen, almost reassured.</p>
+<p>Now look at the K⁺ tile. Still <b>7.3</b>.</p>
+</div>
+<div class="decode green">
+<h3>◇ The most misunderstood drug in the room</h3>
+<p>Calcium <strong>did not lower her potassium by a single point</strong>, and it was still exactly the right first move. Calcium raises the firing threshold back away from that drifted-up resting voltage, <strong>re-widening the safety margin</strong>. It buys the heart 30–60 minutes of protection while the drugs that actually lower K⁺ get to work.</p>
+<p>That split — <strong>a calmer ECG sitting on top of an unchanged number</strong> — is the whole mental model of hyperkalemia. Onset 1–3 minutes; it is the first thing you give for any hyperkalemia <em>with</em> ECG changes. It is a shield, not a cure.</p>
+<p><span class="chip">Onset 1–3 min</span><span class="chip">Lasts 30–60 min</span><span class="chip">On digoxin? push slow</span></p>
+</div>
 </section>
-
 <!-- BEAT 5 -->
 <section class="beat wrap" data-hr="64" data-ecgk="5.6" data-k="6.1" data-state="caution" data-clock="00:22">
-  <div class="timecard"><span class="t">00:22</span> Now actually move the potassium</div>
-  <div class="story tight">
-    <p>Shield up, you go after the number. Two drugs to shove potassium back inside the cells where 98% of it belongs — and one pitfall you say out loud so nobody forgets it.</p>
-  </div>
-  <div class="decode">
-    <h3>◇ Shift therapy — temporary, but fast</h3>
-    <ul class="orders">
-      <li><b>Insulin 10 units IV + D50 25 g</b> — drives K⁺ into cells via the Na-K pump. Onset 10–20 min; drops K⁺ 0.5–1.2 mEq/L. Works even with no kidneys.</li>
-      <li><b>Albuterol 10–20 mg neb</b> — same pump, different key. Additive with insulin. Onset 20–30 min.</li>
-    </ul>
-    <p style="margin-top:12px;"><strong>The pitfall, said aloud:</strong> insulin without dextrose will lower her potassium and then drop her sugar into the floor. <strong>Always give the glucose</strong>, and check a fingerstick afterward — insulin outlasts a single amp of D50, so the hypoglycemia can arrive an hour later.</p>
-    <p>And know what shift buys you: it's a <strong>loan, not a payment</strong>. The potassium is hidden inside cells, not gone from the body. It will leak back out.</p>
-  </div>
+<div class="timecard"><span class="t">00:22</span> Now actually move the potassium</div>
+<div class="story tight">
+<p>Shield up, you go after the number. Two drugs to shove potassium back inside the cells where 98% of it belongs — and one pitfall you say out loud so nobody forgets it.</p>
+</div>
+<div class="decode">
+<h3>◇ Shift therapy — temporary, but fast</h3>
+<ul class="orders">
+<li><b>Insulin 10 units IV + D50 25 g</b> — drives K⁺ into cells via the Na-K pump. Onset 10–20 min; drops K⁺ 0.5–1.2 mEq/L. Works even with no kidneys.</li>
+<li><b>Albuterol 10–20 mg neb</b> — same pump, different key. Additive with insulin. Onset 20–30 min.</li>
+</ul>
+<p style="margin-top:12px;"><strong>The pitfall, said aloud:</strong> insulin without dextrose will lower her potassium and then drop her sugar into the floor. <strong>Always give the glucose</strong>, and check a fingerstick afterward — insulin outlasts a single amp of D50, so the hypoglycemia can arrive an hour later.</p>
+<p>And know what shift buys you: it's a <strong>loan, not a payment</strong>. The potassium is hidden inside cells, not gone from the body. It will leak back out.</p>
+</div>
 </section>
-
 <!-- BEAT 6: K slider tool -->
 <section class="beat wrap" data-hr="66" data-ecgk="5.6" data-k="6.1" data-state="caution" data-clock="00:30">
-  <div class="timecard"><span class="t">00:30</span> Feel the waveform bend</div>
-  <div class="story tight">
-    <p>That is the part a textbook plate can't teach, because every ECG in one is frozen at a single number. Drag the potassium yourself and watch a single rhythm morph through the whole spectrum — the way hers did, only faster.</p>
-  </div>
-  <div class="tool" id="slidertool">
-    <h3>Potassium → ECG · drag it</h3>
-    <p class="sub">One lead, one patient. Move K⁺ and watch the morphology change.</p>
-    <div class="slider-ecg"><canvas id="sliderTrace" width="680" height="240"></canvas></div>
-    <div class="slider-row">
-      <input type="range" id="kslider" min="4" max="9.5" step="0.1" value="6.1" aria-label="Serum potassium level">
-      <div class="slider-readout"><div class="kv" id="ksliderval">6.1</div><div class="ku">mEq/L</div></div>
-    </div>
-    <div class="slider-finding" id="sliderfinding"></div>
-  </div>
-  <div class="decode amber" style="margin-top:14px;">
-    <h3>◇ The map is not the territory</h3>
-    <p>ECG changes <strong>track K⁺ loosely, not exactly</strong>. Some patients sit at 7+ with only tall T waves; others show a wide QRS at 6. Chronicity, calcium, and magnesium all bend the curve. So the ECG tells you <em>how unstable this heart is right now</em> (which is what you actually treat) while the serum number tells you <em>how much potassium you have to remove</em>. You need both.</p>
-  </div>
+<div class="timecard"><span class="t">00:30</span> Feel the waveform bend</div>
+<div class="story tight">
+<p>That is the part a textbook plate can't teach, because every ECG in one is frozen at a single number. Drag the potassium yourself and watch a single rhythm morph through the whole spectrum — the way hers did, only faster.</p>
+</div>
+<div class="tool" id="slidertool">
+<h3>Potassium → ECG · drag it</h3>
+<p class="sub">One lead, one patient. Move K⁺ and watch the morphology change.</p>
+<div class="slider-ecg"><canvas id="sliderTrace" width="680" height="240" role="img" aria-label="Simulated educational ECG waveform"></canvas></div>
+<div class="slider-row">
+<input type="range" id="kslider" min="4" max="9.5" step="0.1" value="6.1" aria-label="Serum potassium level"/>
+<div class="slider-readout"><div class="kv" id="ksliderval">6.1</div><div class="ku">mEq/L</div></div>
+</div>
+<div class="slider-finding" id="sliderfinding"></div>
+</div>
+<div class="decode amber" style="margin-top:14px;">
+<h3>◇ The map is not the territory</h3>
+<p>ECG changes <strong>track K⁺ loosely, not exactly</strong>. Some patients sit at 7+ with only tall T waves; others show a wide QRS at 6. Chronicity, calcium, and magnesium all bend the curve. So the ECG tells you <em>how unstable this heart is right now</em> (which is what you actually treat) while the serum number tells you <em>how much potassium you have to remove</em>. You need both.</p>
+</div>
 </section>
-
 <!-- BEAT 7: classifier -->
 <section class="beat wrap" data-hr="70" data-ecgk="5.3" data-k="5.7" data-state="caution" data-clock="00:40">
-  <div class="timecard"><span class="t">00:40</span> Three jobs, not one</div>
-  <div class="story tight">
-    <p>By now her monitor looks almost normal and her potassium is trending down, but "trending down" is not "fixed," and the resident asks what's left to do. The answer is easier if you stop treating hyperkalemia as one problem. It's three jobs, and every drug does exactly one of them.</p>
-  </div>
-  <div class="classifier" id="classifier">
-    <h3>Protect · Shift · Remove — sort the shelf</h3>
-    <p class="sub">Tap each therapy. It drops into the one job it actually does.</p>
-    <div class="pool" id="pool"></div>
-    <div class="buckets">
-      <div class="bucket protect"><div class="bt">◇ Protect</div><div class="bd">Guards the heart. Changes no K⁺.</div><div class="placed" id="b-protect"></div></div>
-      <div class="bucket shift"><div class="bt">◇ Shift</div><div class="bd">Hides K⁺ in cells. Temporary.</div><div class="placed" id="b-shift"></div></div>
-      <div class="bucket remove"><div class="bt">◇ Remove</div><div class="bd">Takes K⁺ out of the body. Definitive.</div><div class="placed" id="b-remove"></div></div>
-    </div>
-    <div class="cls-note" id="clsnote">Only the <b>Remove</b> column ends the emergency. Everything else is buying time until it happens.</div>
-  </div>
+<div class="timecard"><span class="t">00:40</span> Three jobs, not one</div>
+<div class="story tight">
+<p>By now her monitor looks almost normal and her potassium is trending down, but "trending down" is not "fixed," and the resident asks what's left to do. The answer is easier if you stop treating hyperkalemia as one problem. It's three jobs, and every drug does exactly one of them.</p>
+</div>
+<div class="classifier" id="classifier">
+<h3>Protect · Shift · Remove — sort the shelf</h3>
+<p class="sub">Tap each therapy. It drops into the one job it actually does.</p>
+<div class="pool" id="pool"></div>
+<div class="buckets">
+<div class="bucket protect"><div class="bt">◇ Protect</div><div class="bd">Guards the heart. Changes no K⁺.</div><div class="placed" id="b-protect"></div></div>
+<div class="bucket shift"><div class="bt">◇ Shift</div><div class="bd">Hides K⁺ in cells. Temporary.</div><div class="placed" id="b-shift"></div></div>
+<div class="bucket remove"><div class="bt">◇ Remove</div><div class="bd">Takes K⁺ out of the body. Definitive.</div><div class="placed" id="b-remove"></div></div>
+</div>
+<div class="cls-note" id="clsnote">Only the <b>Remove</b> column ends the emergency. Everything else is buying time until it happens.</div>
+</div>
 </section>
-
 <!-- BEAT 8 -->
 <section class="beat wrap" data-hr="74" data-ecgk="4.8" data-k="4.8" data-state="stable" data-clock="00:55">
-  <div class="timecard"><span class="t">00:55</span> The definitive move</div>
-  <div class="story">
-    <p>Insulin and albuterol bought the hour. Calcium bought the minutes. But she has no kidneys to pee the potassium out and no bowel trick fast enough to trust, so the only thing that actually <b>ends</b> this is the machine she missed on Tuesday. Nephrology writes for urgent dialysis, and because she's a chronic HD patient the access is already hers — the fistula thrills under your fingers, nothing to place — so they can run her now.</p>
-    <p>Dialysis pulls the potassium out for real. On the monitor, the trace has forgotten it was ever a tent: ordinary P, tidy QRS, a T wave that sits back down where it belongs. Rate in the 70s. K⁺ 4.8.</p>
-  </div>
-  <div class="decode green">
-    <h3>◇ Removal is the only cure in ESRD</h3>
-    <p><strong>Hemodialysis is definitive</strong> for total-body hyperkalemia — it clears 1–2+ mEq/L and doesn't care whether she makes urine. Calcium protected, insulin and albuterol stalled, but in a dialysis-dependent patient <strong>only removal closes the case.</strong> Watch for <strong>rebound</strong>: potassium leaks back out of cells as the shift wears off, so the number can climb again after the run.</p>
-  </div>
+<div class="timecard"><span class="t">00:55</span> The definitive move</div>
+<div class="story">
+<p>Insulin and albuterol bought the hour. Calcium bought the minutes. But she has no kidneys to pee the potassium out and no bowel trick fast enough to trust, so the only thing that actually <b>ends</b> this is the machine she missed on Tuesday. Nephrology writes for urgent dialysis, and because she's a chronic HD patient the access is already hers — the fistula thrills under your fingers, nothing to place — so they can run her now.</p>
+<p>Dialysis pulls the potassium out for real. On the monitor, the trace has forgotten it was ever a tent: ordinary P, tidy QRS, a T wave that sits back down where it belongs. Rate in the 70s. K⁺ 4.8.</p>
+</div>
+<div class="decode green">
+<h3>◇ Removal is the only cure in ESRD</h3>
+<p><strong>Hemodialysis is definitive</strong> for total-body hyperkalemia — it clears 1–2+ mEq/L and doesn't care whether she makes urine. Calcium protected, insulin and albuterol stalled, but in a dialysis-dependent patient <strong>only removal closes the case.</strong> Watch for <strong>rebound</strong>: potassium leaks back out of cells as the shift wears off, so the number can climb again after the run.</p>
+</div>
 </section>
-
 <!-- BEAT 9 -->
 <section class="beat wrap" data-hr="76" data-ecgk="4.7" data-k="4.6" data-state="stable" data-clock="01:30">
-  <div class="timecard"><span class="t">01:30</span> Off to the unit</div>
-  <div class="story tight">
-    <p>Ninety minutes ago her heart was a few millivolts from quitting, and she apologized for the inconvenience. The save was never one dramatic drug — it was reading the waveform before the lab, shielding the membrane, stalling with the shift, and removing the load. In that order. Protect, shift, remove.</p>
-    <p>You watch the T wave sit quietly on the screen. Ordinary. Which, tonight, is the most beautiful shape it could make.</p>
-  </div>
+<div class="timecard"><span class="t">01:30</span> Off to the unit</div>
+<div class="story tight">
+<p>Ninety minutes ago her heart was a few millivolts from quitting, and she apologized for the inconvenience. The save was never one dramatic drug — it was reading the waveform before the lab, shielding the membrane, stalling with the shift, and removing the load. In that order. Protect, shift, remove.</p>
+<p>You watch the T wave sit quietly on the screen. Ordinary. Which, tonight, is the most beautiful shape it could make.</p>
+</div>
 </section>
-
 <div class="outro wrap">
-  <div class="rule"></div>
-  <h2>The waveform did the teaching.</h2>
-  <p>Peaked T waves, the Nernst safety margin, calcium-that-doesn't-lower-potassium, the insulin-needs-dextrose trap, protect-shift-remove, dialysis as the only cure in ESRD — every beat of that traces to the literature at the foot of this page. It was just wired to a monitor that moves.</p>
-
-  <div class="decode" style="border-left-color:#6b7a82; margin-top:22px;">
-    <h3>◇ How the monitor actually works</h3>
-    <p>The ECG on this page is not a video and not a library. It's about 13 KB of JavaScript drawing to a canvas, and the potassium slider is wired to the morphology rather than to a picture of it.</p>
-    <p><strong>Who wrote it, since that matters.</strong> I didn't type this, and I don't claim to. What I did was specify it — which four morphologies, at which potassiums, what has to change and in what order, and what a real strip does that a clean function won't. The implementation was generated under that direction and checked back against the clinical behavior. <em>The judgment is mine; the keystrokes aren't.</em> Saying so is cheaper than letting you assume otherwise and finding out later.</p>
-    <p>Four waveform archetypes are defined as functions of cycle phase — normal, peaked, widened and sine — anchored at <span class="mono">K 5.2 / 6.2 / 7.6 / 8.8</span>. Any potassium between two anchors is drawn by interpolating between their two waveforms, so the trace morphs continuously instead of snapping between four fixed images. QRS width is mapped separately, widening from a normal baseline as potassium climbs past roughly 5.4. The strip scrolls through a ring buffer at a fixed sample rate; the vitals ease toward their targets rather than jumping, because a monitor that snaps reads as fake.</p>
-    <p><strong>What the model gets wrong, on purpose and otherwise.</strong> Real hyperkalemic ECG progression is not a clean function of the serum number — rate of rise, calcium, sodium, pH and the individual patient all move it, and people have died with a normal-looking strip at a potassium this page would draw as a sine wave. The morphology here is <em>stylized to teach the sequence</em>, not to predict what any given patient's monitor will show. Treat the ordering as real and the exact mapping as a teaching device.</p>
-  </div>
-  <p>A frozen ECG plate shows you one number. This shows you the <em>slope</em> — what the heart does as the potassium climbs, and what your drugs do to pull it back.</p>
+<div class="rule"></div>
+<h2>The waveform did the teaching.</h2>
+<p>Peaked T waves, the Nernst safety margin, calcium-that-doesn't-lower-potassium, the insulin-needs-dextrose trap, protect-shift-remove, dialysis as the only cure in ESRD — every beat of that traces to the literature at the foot of this page. It was just wired to a monitor that moves.</p>
+<div class="decode" style="border-left-color:#6b7a82; margin-top:22px;">
+<h3>◇ How the monitor actually works</h3>
+<p>The ECG on this page is not a video and not a library. It's about 13 KB of JavaScript drawing to a canvas, and the potassium slider is wired to the morphology rather than to a picture of it.</p>
+<p><strong>Who wrote it, since that matters.</strong> I didn't type this, and I don't claim to. What I did was specify it — which four morphologies, at which potassiums, what has to change and in what order, and what a real strip does that a clean function won't. The implementation was generated under that direction and checked back against the clinical behavior. <em>The judgment is mine; the keystrokes aren't.</em> Saying so is cheaper than letting you assume otherwise and finding out later.</p>
+<p>Four waveform archetypes are defined as functions of cycle phase — normal, peaked, widened and sine — anchored at <span class="mono">K 5.2 / 6.2 / 7.6 / 8.8</span>. Any potassium between two anchors is drawn by interpolating between their two waveforms, so the trace morphs continuously instead of snapping between four fixed images. QRS width is mapped separately, widening from a normal baseline as potassium climbs past roughly 5.4. The strip scrolls through a ring buffer at a fixed sample rate; the vitals ease toward their targets rather than jumping, because a monitor that snaps reads as fake.</p>
+<p><strong>What the model gets wrong, on purpose and otherwise.</strong> Real hyperkalemic ECG progression is not a clean function of the serum number — rate of rise, calcium, sodium, pH and the individual patient all move it, and people have died with a normal-looking strip at a potassium this page would draw as a sine wave. The morphology here is <em>stylized to teach the sequence</em>, not to predict what any given patient's monitor will show. Treat the ordering as real and the exact mapping as a teaching device.</p>
 </div>
-
+<p>A frozen ECG plate shows you one number. This shows you the <em>slope</em> — what the heart does as the potassium climbs, and what your drugs do to pull it back.</p>
+</div>
 <div style="text-align:center; padding:0 0 40px;">
-  <a href="../../" style="display:inline-block; font-family:'JetBrains Mono',ui-monospace,monospace; font-size:11px; letter-spacing:0.1em; text-transform:uppercase; color:#6b7a82; text-decoration:none; border-bottom:1px solid rgba(255,255,255,0.15); padding-bottom:2px;">← Back to the portfolio</a>
+<a href="../../" style="display:inline-block; font-family:'JetBrains Mono',ui-monospace,monospace; font-size:11px; letter-spacing:0.1em; text-transform:uppercase; color:#6b7a82; text-decoration:none; border-bottom:1px solid rgba(255,255,255,0.15); padding-bottom:2px;">← Back to the portfolio</a>
 </div>
-
 <footer class="foot">
   Kymora Clinical Education · Story Mode · No. 2
   <p class="disc">Educational narrative adapted from a clinical teaching article grounded in peer-reviewed literature. Doses, thresholds, and ECG morphology are stylized to illustrate the referenced content and are not a substitute for current institutional protocols or clinical judgment. Patient is fictional; any resemblance to a real case is coincidental.</p>
 </footer>
-
 </main>
-
 <script>
 (function () {
   "use strict";
@@ -827,5 +818,333 @@
   });
 })();
 </script>
-</body>
+<script data-pplx-inline-edit>
+(function () {
+  if (window === window.top) return;
+
+  const allowedParentOrigins = ["https://www.perplexity.ai","https://perplexity.ai","https://testing.perplexity.ai","https://staging.perplexity.ai","https://*.preview.i.perplexity.ai","http://perplexity.localhost","http://localhost:1420","http://127.0.0.1:1420","http://localhost:3000","http://127.0.0.1:3000","http://localhost:5173","http://127.0.0.1:5173"];
+  const MAX_FONT_BYTES = 500 * 1024;
+  const MAX_TOTAL_FONT_BYTES = 2 * 1024 * 1024;
+  let scrollForwarding = false;
+  let scrollRaf = 0;
+  let trustedTopOrigin = null;
+
+  // Allow entries like "https://*.preview.i.perplexity.ai" — the wildcard
+  // matches a single DNS label (no dots), so "https://*.foo" cannot stretch
+  // across multiple labels.
+  function matchesAllowedOrigin(origin) {
+    if (!origin) return false;
+    for (const entry of allowedParentOrigins) {
+      if (!entry.includes("*")) {
+        if (entry === origin) return true;
+        continue;
+      }
+      const pattern = new RegExp(
+        "^" +
+          entry.replace(/[.+?^${}()|[\]\\]/g, "\\$&").replace(/\*/g, "[^.]+") +
+          "$",
+      );
+      if (pattern.test(origin)) return true;
+    }
+    return false;
+  }
+
+  // Trust decision: when the sender is same-origin-visible (event.origin is a
+  // real origin like https://www.perplexity.ai) we trust event.origin directly.
+  // When event.origin is "null" (opaque broker srcdoc), we fall back to the
+  // broker's stamped `parentOrigin` to identify the top window. The fallback
+  // is claim-only — we rely on the browser's native `targetOrigin` enforcement
+  // on the response path (see postToTrustedTop) to ensure replies can't be
+  // delivered to anyone but the actual top window of that claimed origin.
+  function getTrustedParentOrigin(event) {
+    const forwardedParentOrigin =
+      typeof event.data.parentOrigin === "string" ? event.data.parentOrigin : null;
+    const parentOrigin = event.origin === "null" ? forwardedParentOrigin : event.origin;
+    return matchesAllowedOrigin(parentOrigin) ? parentOrigin : null;
+  }
+
+  // All responses go to window.top with targetOrigin = the allowlisted origin.
+  // An attacker that iframes us inside their own null-origin broker can claim
+  // any parentOrigin they like, but the browser will drop the reply whenever
+  // the real top's origin doesn't match — so the screenshot never leaves.
+  function postToTrustedTop(message) {
+    if (!trustedTopOrigin) return;
+    try {
+      window.top.postMessage(message, trustedTopOrigin);
+    } catch (_error) {}
+  }
+
+  function inlineAll(original, clone) {
+    if (original.nodeType !== 1 || clone.nodeType !== 1) return;
+
+    try {
+      const computedStyle = getComputedStyle(original);
+      // cssText on a computed style is the serialized declaration in modern
+      // Chromium/Safari — a single read beats enumerating ~400 longhand
+      // properties. Firefox returns "" here, so we fall back on empty.
+      const serialized = computedStyle.cssText;
+      if (serialized) {
+        clone.style.cssText = serialized;
+      } else {
+        const parts = new Array(computedStyle.length);
+        for (let index = 0; index < computedStyle.length; index += 1) {
+          const property = computedStyle[index];
+          parts[index] = `${property}:${computedStyle.getPropertyValue(property)};`;
+        }
+        clone.style.cssText = parts.join("");
+      }
+    } catch (_error) {}
+
+    const originalChildren = original.children;
+    const clonedChildren = clone.children;
+    for (
+      let index = 0;
+      index < originalChildren.length && index < clonedChildren.length;
+      index += 1
+    ) {
+      inlineAll(originalChildren[index], clonedChildren[index]);
+    }
+  }
+
+  function extractFontUrl(srcValue) {
+    const matches = [
+      ...srcValue.matchAll(
+        /url\(["']?([^"')]+)["']?\)(?:\s*format\(["']?([^"')]+)["']?\))?/gi,
+      ),
+    ];
+    if (matches.length === 0) return null;
+    const woff2 = matches.find((m) => m[2] && m[2].toLowerCase().includes("woff2"));
+    if (woff2) return woff2[1];
+    const woff = matches.find((m) => m[2] && m[2].toLowerCase().includes("woff"));
+    if (woff) return woff[1];
+    return matches[0][1];
+  }
+
+  // Cache resolved font URL -> data URI across captures. Fonts on a page
+  // essentially never change, and a batch run emits multiple captures back to
+  // back — without this we'd refetch + re-base64 every time.
+  const fontDataUriCache = new Map();
+  const SRC_DECLARATION_RE = /src\s*:\s*[^;}]+/i;
+
+  async function fetchAsDataUri(url) {
+    if (fontDataUriCache.has(url)) return fontDataUriCache.get(url);
+    let dataUri = null;
+    try {
+      const response = await fetch(url, { mode: "cors", credentials: "omit" });
+      if (response.ok) {
+        const blob = await response.blob();
+        if (blob.size <= MAX_FONT_BYTES) {
+          dataUri = await new Promise((resolve) => {
+            const reader = new FileReader();
+            reader.onloadend = () =>
+              resolve(typeof reader.result === "string" ? reader.result : null);
+            reader.onerror = () => resolve(null);
+            reader.readAsDataURL(blob);
+          });
+        }
+      }
+    } catch (_error) {
+      dataUri = null;
+    }
+    fontDataUriCache.set(url, dataUri);
+    return dataUri;
+  }
+
+  function collectFontFaceRuleTexts() {
+    const rules = [];
+    for (const sheet of document.styleSheets) {
+      let cssRules;
+      try {
+        cssRules = sheet.cssRules;
+      } catch (_error) {
+        continue;
+      }
+      if (!cssRules) continue;
+      for (const rule of cssRules) {
+        const cssText = rule.cssText || "";
+        if (cssText.startsWith("@font-face")) rules.push(cssText);
+      }
+    }
+    return rules;
+  }
+
+  async function buildInlinedFontCss() {
+    const ruleTexts = collectFontFaceRuleTexts();
+    if (ruleTexts.length === 0) return null;
+
+    const resolved = ruleTexts.map((cssText) => {
+      if (!SRC_DECLARATION_RE.test(cssText)) return null;
+      const srcMatch = cssText.match(/src\s*:\s*([^;}]+)[;}]/i);
+      if (!srcMatch) return null;
+      const url = extractFontUrl(srcMatch[1]);
+      if (!url) return null;
+      try {
+        return { cssText, url: new URL(url, document.baseURI).href };
+      } catch (_error) {
+        return null;
+      }
+    });
+
+    const dataUris = await Promise.all(
+      resolved.map((entry) => (entry ? fetchAsDataUri(entry.url) : Promise.resolve(null))),
+    );
+
+    const inlined = [];
+    let totalBytes = 0;
+    for (let index = 0; index < resolved.length; index += 1) {
+      const entry = resolved[index];
+      const dataUri = dataUris[index];
+      if (!entry || !dataUri) continue;
+      const approxBytes = dataUri.length * 0.75;
+      if (totalBytes + approxBytes > MAX_TOTAL_FONT_BYTES) break;
+      totalBytes += approxBytes;
+      inlined.push(entry.cssText.replace(SRC_DECLARATION_RE, `src: url("${dataUri}")`));
+    }
+    return inlined.length > 0 ? inlined.join("\n") : null;
+  }
+
+  function stripExternal(clone) {
+    const images = clone.querySelectorAll("img");
+    for (let index = 0; index < images.length; index += 1) {
+      const src = images[index].getAttribute("src");
+      if (src && !src.startsWith("data:")) images[index].removeAttribute("src");
+    }
+
+    const elements = clone.querySelectorAll("*");
+    for (let index = 0; index < elements.length; index += 1) {
+      const style = elements[index].style.cssText;
+      if (style && style.includes("url(")) {
+        elements[index].style.cssText = style.replace(
+          /url\(["']?(?!data:)[^)"']*["']?\)/gi,
+          "none",
+        );
+      }
+    }
+  }
+
+  function emitScroll() {
+    scrollRaf = 0;
+    if (!scrollForwarding) return;
+    postToTrustedTop({
+      type: "INLINE_EDIT_SCROLL",
+      scrollX: window.scrollX,
+      scrollY: window.scrollY,
+    });
+  }
+
+  window.addEventListener(
+    "scroll",
+    function () {
+      if (!scrollForwarding || scrollRaf) return;
+      scrollRaf = requestAnimationFrame(emitScroll);
+    },
+    { passive: true, capture: true },
+  );
+
+  async function handleCaptureRequest(event) {
+    const requestId = event.data.requestId;
+    const scrollX = window.scrollX;
+    const scrollY = window.scrollY;
+    const width = window.innerWidth;
+    const height = window.innerHeight;
+
+    function postResult(dataUrl) {
+      postToTrustedTop({
+        type: "INLINE_EDIT_SCREENSHOT_RESULT",
+        requestId,
+        dataUrl,
+        scrollX,
+        scrollY,
+      });
+    }
+
+    try {
+      // Wait for any pending web fonts to resolve so both inline metrics and
+      // the @font-face inlining below see the same loaded faces.
+      if (document.fonts && document.fonts.ready) {
+        try {
+          await document.fonts.ready;
+        } catch (_error) {}
+      }
+
+      const clone = document.documentElement.cloneNode(true);
+      inlineAll(document.documentElement, clone);
+
+      const removedNodes = clone.querySelectorAll("script,link[rel=\"stylesheet\"],style");
+      for (let index = 0; index < removedNodes.length; index += 1) {
+        removedNodes[index].remove();
+      }
+
+      stripExternal(clone);
+
+      // Re-embed web fonts as data-URI @font-face rules so the SVG rasterizer
+      // can resolve them — external font URLs aren't fetched during
+      // foreignObject rendering, which would otherwise force a fallback face
+      // and change text metrics.
+      const inlinedFontCss = await buildInlinedFontCss();
+      if (inlinedFontCss) {
+        const styleEl = document.createElement("style");
+        styleEl.textContent = inlinedFontCss;
+        const head = clone.querySelector("head");
+        if (head) head.appendChild(styleEl);
+        else clone.insertBefore(styleEl, clone.firstChild);
+      }
+
+      const html = new XMLSerializer().serializeToString(clone);
+      const svg =
+        `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}">` +
+        '<foreignObject width="100%" height="100%">' +
+        `<div xmlns="http://www.w3.org/1999/xhtml" style="width:${width}px;height:${height}px;overflow:hidden">` +
+        `<div style="position:relative;left:-${scrollX}px;top:-${scrollY}px">` +
+        html +
+        "</div></div></foreignObject></svg>";
+      const svgUrl = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
+      const image = new Image();
+      image.onload = function () {
+        const canvas = document.createElement("canvas");
+        canvas.width = width;
+        canvas.height = height;
+        canvas.getContext("2d").drawImage(image, 0, 0);
+        postResult(canvas.toDataURL("image/png"));
+      };
+      image.onerror = function () {
+        postResult(null);
+      };
+      image.src = svgUrl;
+    } catch (_error) {
+      postResult(null);
+    }
+  }
+
+  window.addEventListener("message", function (event) {
+    if (!event.data) return;
+    // Only accept messages from the direct parent frame. Blocks sibling /
+    // unrelated-window postMessage senders that could otherwise reach us.
+    if (event.source !== window.parent) return;
+
+    const trustedParentOrigin = getTrustedParentOrigin(event);
+    if (!trustedParentOrigin) return;
+    trustedTopOrigin = trustedParentOrigin;
+
+    if (event.data.type === "INLINE_EDIT_SCROLL_START") {
+      scrollForwarding = true;
+      emitScroll();
+      return;
+    }
+
+    if (event.data.type === "INLINE_EDIT_SCROLL_STOP") {
+      scrollForwarding = false;
+      if (scrollRaf) cancelAnimationFrame(scrollRaf);
+      scrollRaf = 0;
+      return;
+    }
+
+    if (event.data.type !== "INLINE_EDIT_CAPTURE_REQUEST") return;
+
+    handleCaptureRequest(event);
+  });
+})();
+
+
+</script></body>
 </html>

@@ -1,176 +1,149 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Publishing Out of a Patent-Pending Codebase — Case Study</title>
-<meta name="description" content="A seven-stage IP disclosure-control pipeline for a patent-pending codebase: term registry, write-time scan, scrub loop, hostile-reader review, publish checklist, publish gate, counsel queue — plus every failure on record and the one gap still open.">
-<meta property="og:type" content="article">
-<meta property="og:url" content="https://mike-giardina.netlify.app/publishing/">
-<meta property="og:title" content="Publishing out of a patent-pending codebase">
-<meta property="og:description" content="A staged pipeline between a draft and a public file, weighted by where it is going — plus every place it has failed.">
-<meta property="og:image" content="https://mike-giardina.netlify.app/assets/og/publishing.png">
-<meta property="og:image:width" content="1200">
-<meta property="og:image:height" content="627">
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://mike-giardina.netlify.app/assets/og/publishing.png">
-<link rel="stylesheet" href="../assets/site.css">
-<script src="../assets/site.js" defer></script>
-<script>try{var t=localStorage.getItem("mg-theme");if(t==="dark"||t==="light")document.documentElement.setAttribute("data-theme",t);}catch(e){}</script>
-</head>
-<body>
-<div class="grid-bg"></div>
 
-<div class="topbar">
-  <div class="topin">
-    <span class="mark"><b>publish/</b> · ip disclosure control</span>
-    <nav class="topnav">
-      <a href="#problem">Problem</a>
-      <a href="#pipeline">Pipeline</a>
-      <a href="#audience">Audience</a>
-      <a href="#verdict">Verdict</a>
-      <a href="#gaps">Known gaps</a>
-      <a href="../automation/">Hooks →</a>
-      <a href="../enforcement/">Enforcement →</a>
-      <a href="../orchestration/">Orchestration →</a>
-      <a href="../clinical-review/">Clinical review →</a>
-      <a href="../case-studies/" class="back">← all five</a>
-      <a href="../" class="back">← portfolio</a>
-    </nav>
-  </div>
-</div>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Publishing Out of a Patent-Pending Codebase — Case Study</title>
+<meta name="description" content="A seven-stage IP disclosure-control pipeline for a patent-pending codebase: term registry, write-time scan, scrub loop, hostile-reader review, publish checklist, publish gate, counsel queue — plus every failure on record and the one gap still open."/>
+<meta property="og:type" content="article"/>
+<meta property="og:url" content="https://mike-giardina.netlify.app/publishing/"/>
+<meta property="og:title" content="Publishing out of a patent-pending codebase"/>
+<meta property="og:description" content="A staged pipeline between a draft and a public file, weighted by where it is going — plus every place it has failed."/>
+<meta property="og:image" content="https://mike-giardina.netlify.app/assets/og/publishing.png"/>
+<meta property="og:image:width" content="1200"/>
+<meta property="og:image:height" content="627"/>
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="https://mike-giardina.netlify.app/assets/og/publishing.png"/>
+
+
+
+<link rel="stylesheet" href="../assets/site.css"/><link rel="stylesheet" href="../base.css"/><link rel="stylesheet" href="../style.css"/><link rel="stylesheet" href="../assets/portfolio.css"/><link rel="stylesheet" href="../assets/fonts/editorial.css"/><script src="../app.js" defer=""></script><script src="../assets/navigation.js" defer=""></script></head>
+<body class="editorial-article"><a class="skip" href="#reading">Skip to content</a><header class="masthead"><div class="mast-inner">
+<a class="brand" href="../"><svg width="32" height="32" viewbox="0 0 32 32" fill="none" role="img" aria-label="Michael Giardina monogram"><path d="M4 26V6l12 12L28 6v20M4 6l12 12 12-12" stroke="currentColor" stroke-width="2.5"></path><path d="M16 18v8" stroke="currentColor" stroke-width="2.5"></path></svg><span>MICHAEL GIARDINA<span class="brand-sub">Clinical judgment. Systems thinking.</span></span></a>
+<button class="mobile-menu" aria-expanded="false" aria-controls="primary-navigation" type="button">Menu</button>
+<nav class="primary-nav" id="primary-navigation" aria-label="Portfolio navigation">
+<a href="../#work">Work</a>
+<details class="nav-dropdown"><summary>Case studies</summary><div class="nav-panel"><a href="../case-studies/">All five case studies</a><a href="../automation/">Lifecycle hooks</a><a href="../enforcement/">Enforcement</a><a href="../publishing/">Disclosure & publishing</a><a href="../clinical-review/">Clinical AI evaluation</a><a href="../orchestration/">Multi-session orchestration</a><a href="../orchestration/evidence/">Evidence appendix</a><a href="../trauma-tracker/">Trauma Tracker</a></div></details>
+<details class="nav-dropdown"><summary>Clinical stories</summary><div class="nav-panel"><a href="../story/gi-bleed/">GI hemorrhage</a><a href="../story/hyperkalemia/">Hyperkalemia</a><a href="../story/first-code-blue/">Your first code blue</a><a href="https://erinfo.netlify.app" target="_blank" rel="noopener noreferrer">ER articles ↗</a></div></details>
+<a href="../#background">About</a><a href="../#connect">Contact</a></nav>
+<button class="theme-toggle" type="button" aria-label="Switch to dark mode"><span class="theme-symbol" aria-hidden="true">◐</span><span class="theme-label">Dark</span></button></div><div class="reading-progress" aria-hidden="true"></div></header>
+
 
 <div class="wrap">
+<header class="hero" id="top">
+<div class="status-bar">
+<div class="status-item"><span class="status-dot"></span><span>ENGINEERING CASE STUDY</span></div>
+<div class="status-item"><span class="status-dot"></span><span>IP DISCLOSURE CONTROL</span></div>
+</div>
+<p class="kicker">Process design · defense in depth</p>
+<h1 class="article-title">Publishing out of a patent-pending codebase.</h1><div class="article-introduction"><p class="lede">I write in public constantly — grant submissions, investor material, a portfolio, conference talks, an open clinical article library — and all of it is drafted inside private repositories that contain <b>patentable mechanism</b>. Every outward-facing file is a potential disclosure, and a federal filing is <span class="cy">permanent and public the moment it lands</span>. So publishing isn't a step at the end. It's a pipeline with seven stages, four audience tiers, and a written record of every place it has failed.</p></div>
 
-  <header class="hero" id="top">
-    <div class="status-bar">
-      <div class="status-item"><span class="status-dot"></span><span>ENGINEERING CASE STUDY</span></div>
-      <div class="status-item"><span class="status-dot"></span><span>IP DISCLOSURE CONTROL</span></div>
-    </div>
-    <p class="kicker">Process design · defense in depth</p>
-    <h1>Publishing out of a patent-pending codebase.</h1>
-    <p class="lede">I write in public constantly &mdash; grant submissions, investor material, a portfolio, conference talks, an open clinical article library &mdash; and all of it is drafted inside private repositories that contain <b>patentable mechanism</b>. Every outward-facing file is a potential disclosure, and a federal filing is <span class="cy">permanent and public the moment it lands</span>. So publishing isn't a step at the end. It's a pipeline with seven stages, four audience tiers, and a written record of every place it has failed.</p>
-    <p class="context">patent pending · solo founder-engineer · outward artifacts drafted in-repo, never in a separate &ldquo;public&rdquo; workspace</p>
-
-    <p class="statnote"><b>Two registries feed every stage</b> &mdash; one for <em>what</em> is protected, one for <em>where</em> publishing actually happens. Nothing downstream hardcodes either. Some stages are automated and some are read, by an agent or by me, and the split is not a matter of budget: the automatable part of disclosure control is <b>literal matching</b>, which is the easy half. <em>Paraphrase is the hard half</em>, and no regex has ever caught it.</p>
-  </header>
-
-  <section class="sec" id="problem">
-    <div class="sechead"><span class="secnum">01</span><h2>Why a checklist wasn't enough</h2><div class="divider"></div></div>
-    <p class="secsub">The naive version of this is a pre-send checklist. I have one, and it's stage five, but on its own it fails for a specific structural reason.</p>
-    <div class="cards">
-      <div class="card">
-        <div class="tag">asymmetry</div>
-        <h3>The costs don't match</h3>
-        <p>A late filing is recoverable. A disclosed mechanism in a filing that becomes public record is <em>not</em>. When one side of a decision is permanent and the other is an inconvenience, the process has to be biased, not balanced.</p>
-      </div>
-      <div class="card">
-        <div class="tag">drafting reality</div>
-        <h3>Public text is written in private repos</h3>
-        <p>Outward artifacts are drafted next to the source they describe, because that's the only way the numbers in them stay true. The convenience that keeps claims accurate is the same one that puts mechanism a paragraph away from the public draft.</p>
-      </div>
-      <div class="card">
-        <div class="tag">the actual failure mode</div>
-        <h3>A quiet check reads as coverage</h3>
-        <p>The write-time scanner reports nothing when a file is clean, and nothing when it never examined the file at all. Those two outcomes are <em>indistinguishable from the author's chair</em>, which is how a gap survives for months.</p>
-      </div>
-      <div class="card">
-        <div class="tag">trust</div>
-        <h3>Nothing is trusted on first presentation</h3>
-        <p>I know what I meant, so I read past the sentence that gives the mechanism away. An agent's draft is worse: it does not know what is proprietary here at all. So neither one is trusted on its own account. The reader whose only job is to find the disclosure has to be a different reader than whoever wrote it &mdash; and that is a role rather than a person, so it can be assigned.</p>
-      </div>
-    </div>
-  </section>
-
-  <section class="sec" id="pipeline">
-    <div class="sechead"><span class="secnum">02</span><h2>The pipeline</h2><div class="divider"></div></div>
-    <p class="secsub">Seven stages, ordered by when they fire &mdash; from the moment a proprietary term is defined through to the record that goes to patent counsel. Each stage catches a class the stage before it structurally cannot.</p>
-
-    <div class="stage">
-      <div class="stagehead"><span class="stagenum">01</span><span class="stagename">The registries</span><span class="stagekind">single source of truth</span></div>
-      <p>One versioned file holds every proprietary term, each paired with a <b>replacement hint</b>, not just &ldquo;don't say this&rdquo; but &ldquo;say this instead.&rdquo; Nothing downstream hardcodes a term; every later stage reads it at run time, so adding one term propagates to the scanner, the scrubber, and the reviewer at once.</p>
-      <p>The replacement hints carry a rule: a rewrite must <em>preserve the claim</em>, dropping only to the next-lowest useful specificity. Sanitizing a capability into vagueness is a different failure &mdash; it protects the IP by making the work sound like nothing.</p>
-      <p>A second registry was added later and answers a different question: not <em>what</em> is protected but <b>where publishing actually happens</b> &mdash; the destinations where a push is itself the act of publishing. It's a hand-kept list, which is a weakness, so it carries an explicit bias rule: <em>when unsure whether a destination belongs, add it.</em> A false inclusion costs one extra scan. A false exclusion is a permanent disclosure. Splitting <em>what</em> from <em>where</em> is what let the later stages stop guessing either one from a file path.</p>
-    </div>
-
-    <div class="stage">
-      <div class="stagehead"><span class="stagenum">02</span><span class="stagename">Write-time scan</span><span class="stagekind">automated · fires on every edit</span></div>
-      <p>A lifecycle hook fires after any write to a file under an outward-facing path and flags registry terms immediately, while the sentence is still on screen. It's the cheapest stage and it catches the largest volume &mdash; the flat, literal mistakes.</p>
-      <p>It is also the <em>narrowest</em> stage, in two ways: it only sees paths it was told to watch, and it only fires on write and edit events. Both limits are documented at the top of the script, next to each incident that revealed them.</p>
-      <p>Its scoping has since been widened twice, and the second time is the more interesting one. First, filename patterns were added alongside directory ones &mdash; three dashboards carried their audience in the <em>filename</em> and sat in an internal directory, so every directory rule missed them. Then the glob list stopped being the last word: anything it doesn't match is now checked against the <em>destinations</em> registry before the hook gives up. Registering a new public surface in one place extends coverage here for free, which is the whole point &mdash; four surfaces had already been missed by hand-kept globs while sitting in that registry the entire time.</p>
-    </div>
-
-    <div class="stage">
-      <div class="stagehead"><span class="stagenum">03</span><span class="stagename">The scrub loop</span><span class="stagekind">on demand · rewrites</span></div>
-      <p>A packaged skill takes a target file and runs scan &rarr; propose rewrite &rarr; apply &rarr; <b>re-scan</b>, looping until the file comes back clean, capped at five passes before it hard-fails with a report naming the stubborn terms.</p>
-      <p>The re-scan is why it loops. A single-pass rewrite can introduce a second listed term while removing the first, and a capped loop that reports failure honestly beats an uncapped one that quietly declares success.</p>
-    </div>
-
-    <div class="stage">
-      <div class="stagehead"><span class="stagenum">04</span><span class="stagename">Hostile-reader review</span><span class="stagekind">specialist agent · assumes nothing ran</span></div>
-      <p>A dedicated review agent reads the <b>finished</b> artifact end to end and returns a verdict. Its brief is explicit: <em>assume nothing upstream ran.</em> It exists because stage two is a path filter, and a path filter cannot protect a directory nobody told it about.</p>
-      <p>It hunts what a pattern can't express &mdash; mechanism described accurately enough to reimplement regardless of vocabulary, internal architecture nomenclature, scale figures that don't trace to a named source, overclaiming verbs, and credential drift. Three rules shape it: it reads the registry fresh every run rather than working from memory, it <em>never edits the artifact</em> (findings only, so a human applies every change to a public document), and it <b>may not report clear on a file it did not read in full</b>.</p>
-    </div>
-
-    <div class="stage">
-      <div class="stagehead"><span class="stagenum">05</span><span class="stagename">The publish checklist</span><span class="stagekind">human · pre-flight</span></div>
-      <p>A written pre-flight run top to bottom before anything leaves for a non-NDA audience. Universal checks first &mdash; scrubber clean, claims linter clean, <b>a manual paraphrase eyeball</b> with the registry in mind, every numeric claim re-derived from source rather than memory, no &ldquo;shipped&rdquo; or &ldquo;production&rdquo; language for things that aren't, patent scope not overstated into adjacent territory nobody filed on.</p>
-      <p>One item is a taste rule rather than a safety rule: <em>no count-stuffing.</em> A pile of impressive-sounding totals is impressive once and exhausting twice. Lead with what the system does, not what it contains.</p>
-    </div>
-
-    <div class="stage">
-      <div class="stagehead"><span class="stagenum">06</span><span class="stagename">The publish gate</span><span class="stagekind">automated · fires on the push</span></div>
-      <p>The last automated thing that happens before anything leaves. It hangs off the <b>push</b>, not the file path: when the destination is one that publishes on receipt, every changed file in the outgoing commits is scanned against the registry &mdash; whatever directory it sits in.</p>
-      <p>This stage exists because stage two's scoping kept failing &mdash; four times in two months. A push is the choke point &mdash; nothing reaches a public destination without one &mdash; so gating it takes path matching off the critical path entirely. It fails <em>closed</em>, but only for destinations that publish; everywhere else it exits without an opinion. A gate that blocks everything gets switched off within a week, and a gate that is switched off is worth less than no gate at all.</p>
-      <p class="note" style="margin-top:0.9rem;"><b>And then this stage had the same bug.</b> Its own &ldquo;I could not work out what is being pushed&rdquo; branch &mdash; the fail-closed one, the reason the stage is trustworthy at all &mdash; was <em>unreachable</em>. A shell idiom used to keep the command from aborting also overwrote the status the guard was reading, so the check was testing a value that could only ever be zero. An unreadable push range therefore read as &ldquo;nothing to push,&rdquo; and a commit carrying a protected term would have been <b>allowed</b>. It was found by writing a regression test for a stage that had never had one. The lesson isn't about this gate: <em>a fail-closed posture is a claim about a code path, and an untested code path is not a posture.</em></p>
-    </div>
-
-    <div class="stage">
-      <div class="stagehead"><span class="stagenum">07</span><span class="stagename">The counsel queue</span><span class="stagekind">record · same session</span></div>
-      <p>When engineering work touches the patent thesis, a review packet is filed <b>in the same session the work lands</b> &mdash; monotonically numbered, never renumbered, held in a directory excluded from version control. The bodies never enter a tracked repo; only an existence-and-status pointer does, so the queue is auditable without being disclosable.</p>
-      <p>The same-session rule was bought the expensive way. One early packet had to be reconstructed retroactively because the queue didn't exist when the work landed, and the recipe for a piece of engineering &mdash; the context, the path that produced it, the prior-art comparison &mdash; decays much faster than the code does. The marginal cost of filing now is small; the cost of waiting grows every week.</p>
-    </div>
-  </section>
-
-  <section class="sec" id="audience">
-    <div class="sechead"><span class="secnum">03</span><h2>Weighted by destination</h2><div class="divider"></div></div>
-    <p class="secsub">&ldquo;Is this safe to publish?&rdquo; has no answer without a destination. The same paragraph can be fine for a clinical audience and unrecoverable in a federal filing, so the review agent asks where an artifact is going &mdash; and, when it isn't told, <b>states the tier it assumed</b>.</p>
-    <div class="tablewrap">
-      <table>
-        <thead><tr><th>Destination</th><th>Assumption</th><th>Bar</th></tr></thead>
-        <tbody>
-          <tr>
-            <td><b>Government / public-record filing</b></td>
-            <td>The full text becomes public and permanent, and a competitor reads it.</td>
-            <td>Strictest. <em>No mechanism detail survives this bar</em> &mdash; not paraphrased, not partial.</td>
-          </tr>
-          <tr>
-            <td><b>Investor</b></td>
-            <td>No NDA unless one is signed and in hand.</td>
-            <td>Mechanism out. Every number must survive diligence and trace to a named artifact.</td>
-          </tr>
-          <tr>
-            <td><b>Public web / portfolio / press</b></td>
-            <td>Permanent and search-indexed.</td>
-            <td>Benefit framing, not mechanism. <span class="st st-h">this page</span></td>
-          </tr>
-          <tr>
-            <td><b>Conference / clinical</b></td>
-            <td>Expert audience, sympathetic but sharp.</td>
-            <td>Mechanism still out; every clinical claim needs a named source.</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-    <p class="note" style="margin-top:1.3rem;"><b>This page went through its own pipeline.</b> It describes stages, ordering, and failure modes, and never shows a registry entry.</p>
-  </section>
-
-  <section class="sec" id="verdict">
-    <div class="sechead"><span class="secnum">04</span><h2>The output contract</h2><div class="divider"></div></div>
-    <p class="secsub">The review stage returns a fixed shape. Verdict first, no preamble. Every finding quotes the offending text and names the replacement, because a category label without the sentence isn't actionable. And the last section is the one that keeps the whole pipeline honest.</p>
-    <div class="verdict">
+<p class="context">patent pending · solo founder-engineer · outward artifacts drafted in-repo, never in a separate “public” workspace</p>
+<p class="statnote"><b>Two registries feed every stage</b> — one for <em>what</em> is protected, one for <em>where</em> publishing actually happens. Nothing downstream hardcodes either. Some stages are automated and some are read, by an agent or by me, and the split is not a matter of budget: the automatable part of disclosure control is <b>literal matching</b>, which is the easy half. <em>Paraphrase is the hard half</em>, and no regex has ever caught it.</p>
+</header><div class="reading-layout" id="reading"><aside class="contents-rail"><div class="rail-sticky"><div class="rail-label">IN THIS STUDY</div><nav aria-label="On this page"><a href="#problem"><span>01</span>Why a checklist wasn't enough</a><a href="#pipeline"><span>02</span>The pipeline</a><a href="#audience"><span>03</span>Weighted by destination</a><a href="#verdict"><span>04</span>The output contract</a><a href="#gaps"><span>05</span>Where it has failed</a></nav><div class="rail-foot"><a href="../case-studies/">All engineering case studies ↗</a></div><button class="back-top" type="button">Back to top ↑</button></div></aside><main id="article"><section class="sec" id="problem">
+<div class="sechead"><span class="secnum">01</span><h2>Why a checklist wasn't enough</h2><div class="divider"></div></div>
+<p class="secsub">The naive version of this is a pre-send checklist. I have one, and it's stage five, but on its own it fails for a specific structural reason.</p>
+<div class="cards">
+<div class="card">
+<div class="tag">asymmetry</div>
+<h3>The costs don't match</h3>
+<p>A late filing is recoverable. A disclosed mechanism in a filing that becomes public record is <em>not</em>. When one side of a decision is permanent and the other is an inconvenience, the process has to be biased, not balanced.</p>
+</div>
+<div class="card">
+<div class="tag">drafting reality</div>
+<h3>Public text is written in private repos</h3>
+<p>Outward artifacts are drafted next to the source they describe, because that's the only way the numbers in them stay true. The convenience that keeps claims accurate is the same one that puts mechanism a paragraph away from the public draft.</p>
+</div>
+<div class="card">
+<div class="tag">the actual failure mode</div>
+<h3>A quiet check reads as coverage</h3>
+<p>The write-time scanner reports nothing when a file is clean, and nothing when it never examined the file at all. Those two outcomes are <em>indistinguishable from the author's chair</em>, which is how a gap survives for months.</p>
+</div>
+<div class="card">
+<div class="tag">trust</div>
+<h3>Nothing is trusted on first presentation</h3>
+<p>I know what I meant, so I read past the sentence that gives the mechanism away. An agent's draft is worse: it does not know what is proprietary here at all. So neither one is trusted on its own account. The reader whose only job is to find the disclosure has to be a different reader than whoever wrote it — and that is a role rather than a person, so it can be assigned.</p>
+</div>
+</div>
+</section><section class="sec" id="pipeline">
+<div class="sechead"><span class="secnum">02</span><h2>The pipeline</h2><div class="divider"></div></div>
+<p class="secsub">Seven stages, ordered by when they fire — from the moment a proprietary term is defined through to the record that goes to patent counsel. Each stage catches a class the stage before it structurally cannot.</p>
+<div class="stage">
+<div class="stagehead"><span class="stagenum">01</span><span class="stagename">The registries</span><span class="stagekind">single source of truth</span></div>
+<p>One versioned file holds every proprietary term, each paired with a <b>replacement hint</b>, not just “don't say this” but “say this instead.” Nothing downstream hardcodes a term; every later stage reads it at run time, so adding one term propagates to the scanner, the scrubber, and the reviewer at once.</p>
+<p>The replacement hints carry a rule: a rewrite must <em>preserve the claim</em>, dropping only to the next-lowest useful specificity. Sanitizing a capability into vagueness is a different failure — it protects the IP by making the work sound like nothing.</p>
+<p>A second registry was added later and answers a different question: not <em>what</em> is protected but <b>where publishing actually happens</b> — the destinations where a push is itself the act of publishing. It's a hand-kept list, which is a weakness, so it carries an explicit bias rule: <em>when unsure whether a destination belongs, add it.</em> A false inclusion costs one extra scan. A false exclusion is a permanent disclosure. Splitting <em>what</em> from <em>where</em> is what let the later stages stop guessing either one from a file path.</p>
+</div>
+<div class="stage">
+<div class="stagehead"><span class="stagenum">02</span><span class="stagename">Write-time scan</span><span class="stagekind">automated · fires on every edit</span></div>
+<p>A lifecycle hook fires after any write to a file under an outward-facing path and flags registry terms immediately, while the sentence is still on screen. It's the cheapest stage and it catches the largest volume — the flat, literal mistakes.</p>
+<p>It is also the <em>narrowest</em> stage, in two ways: it only sees paths it was told to watch, and it only fires on write and edit events. Both limits are documented at the top of the script, next to each incident that revealed them.</p>
+<p>Its scoping has since been widened twice, and the second time is the more interesting one. First, filename patterns were added alongside directory ones — three dashboards carried their audience in the <em>filename</em> and sat in an internal directory, so every directory rule missed them. Then the glob list stopped being the last word: anything it doesn't match is now checked against the <em>destinations</em> registry before the hook gives up. Registering a new public surface in one place extends coverage here for free, which is the whole point — four surfaces had already been missed by hand-kept globs while sitting in that registry the entire time.</p>
+</div>
+<div class="stage">
+<div class="stagehead"><span class="stagenum">03</span><span class="stagename">The scrub loop</span><span class="stagekind">on demand · rewrites</span></div>
+<p>A packaged skill takes a target file and runs scan → propose rewrite → apply → <b>re-scan</b>, looping until the file comes back clean, capped at five passes before it hard-fails with a report naming the stubborn terms.</p>
+<p>The re-scan is why it loops. A single-pass rewrite can introduce a second listed term while removing the first, and a capped loop that reports failure honestly beats an uncapped one that quietly declares success.</p>
+</div>
+<div class="stage">
+<div class="stagehead"><span class="stagenum">04</span><span class="stagename">Hostile-reader review</span><span class="stagekind">specialist agent · assumes nothing ran</span></div>
+<p>A dedicated review agent reads the <b>finished</b> artifact end to end and returns a verdict. Its brief is explicit: <em>assume nothing upstream ran.</em> It exists because stage two is a path filter, and a path filter cannot protect a directory nobody told it about.</p>
+<p>It hunts what a pattern can't express — mechanism described accurately enough to reimplement regardless of vocabulary, internal architecture nomenclature, scale figures that don't trace to a named source, overclaiming verbs, and credential drift. Three rules shape it: it reads the registry fresh every run rather than working from memory, it <em>never edits the artifact</em> (findings only, so a human applies every change to a public document), and it <b>may not report clear on a file it did not read in full</b>.</p>
+</div>
+<div class="stage">
+<div class="stagehead"><span class="stagenum">05</span><span class="stagename">The publish checklist</span><span class="stagekind">human · pre-flight</span></div>
+<p>A written pre-flight run top to bottom before anything leaves for a non-NDA audience. Universal checks first — scrubber clean, claims linter clean, <b>a manual paraphrase eyeball</b> with the registry in mind, every numeric claim re-derived from source rather than memory, no “shipped” or “production” language for things that aren't, patent scope not overstated into adjacent territory nobody filed on.</p>
+<p>One item is a taste rule rather than a safety rule: <em>no count-stuffing.</em> A pile of impressive-sounding totals is impressive once and exhausting twice. Lead with what the system does, not what it contains.</p>
+</div>
+<div class="stage">
+<div class="stagehead"><span class="stagenum">06</span><span class="stagename">The publish gate</span><span class="stagekind">automated · fires on the push</span></div>
+<p>The last automated thing that happens before anything leaves. It hangs off the <b>push</b>, not the file path: when the destination is one that publishes on receipt, every changed file in the outgoing commits is scanned against the registry — whatever directory it sits in.</p>
+<p>This stage exists because stage two's scoping kept failing — four times in two months. A push is the choke point — nothing reaches a public destination without one — so gating it takes path matching off the critical path entirely. It fails <em>closed</em>, but only for destinations that publish; everywhere else it exits without an opinion. A gate that blocks everything gets switched off within a week, and a gate that is switched off is worth less than no gate at all.</p>
+<p class="note" style="margin-top:0.9rem;"><b>And then this stage had the same bug.</b> Its own “I could not work out what is being pushed” branch — the fail-closed one, the reason the stage is trustworthy at all — was <em>unreachable</em>. A shell idiom used to keep the command from aborting also overwrote the status the guard was reading, so the check was testing a value that could only ever be zero. An unreadable push range therefore read as “nothing to push,” and a commit carrying a protected term would have been <b>allowed</b>. It was found by writing a regression test for a stage that had never had one. The lesson isn't about this gate: <em>a fail-closed posture is a claim about a code path, and an untested code path is not a posture.</em></p>
+</div>
+<div class="stage">
+<div class="stagehead"><span class="stagenum">07</span><span class="stagename">The counsel queue</span><span class="stagekind">record · same session</span></div>
+<p>When engineering work touches the patent thesis, a review packet is filed <b>in the same session the work lands</b> — monotonically numbered, never renumbered, held in a directory excluded from version control. The bodies never enter a tracked repo; only an existence-and-status pointer does, so the queue is auditable without being disclosable.</p>
+<p>The same-session rule was bought the expensive way. One early packet had to be reconstructed retroactively because the queue didn't exist when the work landed, and the recipe for a piece of engineering — the context, the path that produced it, the prior-art comparison — decays much faster than the code does. The marginal cost of filing now is small; the cost of waiting grows every week.</p>
+</div>
+</section><section class="sec" id="audience">
+<div class="sechead"><span class="secnum">03</span><h2>Weighted by destination</h2><div class="divider"></div></div>
+<p class="secsub">“Is this safe to publish?” has no answer without a destination. The same paragraph can be fine for a clinical audience and unrecoverable in a federal filing, so the review agent asks where an artifact is going — and, when it isn't told, <b>states the tier it assumed</b>.</p>
+<div class="tablewrap">
+<table>
+<thead><tr><th>Destination</th><th>Assumption</th><th>Bar</th></tr></thead>
+<tbody>
+<tr>
+<td><b>Government / public-record filing</b></td>
+<td>The full text becomes public and permanent, and a competitor reads it.</td>
+<td>Strictest. <em>No mechanism detail survives this bar</em> — not paraphrased, not partial.</td>
+</tr>
+<tr>
+<td><b>Investor</b></td>
+<td>No NDA unless one is signed and in hand.</td>
+<td>Mechanism out. Every number must survive diligence and trace to a named artifact.</td>
+</tr>
+<tr>
+<td><b>Public web / portfolio / press</b></td>
+<td>Permanent and search-indexed.</td>
+<td>Benefit framing, not mechanism. <span class="st st-h">this page</span></td>
+</tr>
+<tr>
+<td><b>Conference / clinical</b></td>
+<td>Expert audience, sympathetic but sharp.</td>
+<td>Mechanism still out; every clinical claim needs a named source.</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p class="note" style="margin-top:1.3rem;"><b>This page went through its own pipeline.</b> It describes stages, ordering, and failure modes, and never shows a registry entry.</p>
+</section><section class="sec" id="verdict">
+<div class="sechead"><span class="secnum">04</span><h2>The output contract</h2><div class="divider"></div></div>
+<p class="secsub">The review stage returns a fixed shape. Verdict first, no preamble. Every finding quotes the offending text and names the replacement, because a category label without the sentence isn't actionable. And the last section is the one that keeps the whole pipeline honest.</p>
+<div class="verdict">
 <pre><span class="vk">VERDICT:</span> <span class="vb">BLOCK</span> | <span class="st st-h">REVISE</span> | <span class="vg">CLEAR</span>
-  one sentence &mdash; and if BLOCK, the single reason
+  one sentence — and if BLOCK, the single reason
 
 <span class="vk">BLOCKERS</span>  <span class="vd">— must fix before this leaves the repo</span>
   file:line   category   the offending text, quoted
@@ -186,71 +159,394 @@
 <span class="vk">COVERAGE</span>
   files read · sections skipped and why · <span class="vg">whether the automated
   scan would have caught each blocker on its own</span></pre>
-    </div>
-    <p class="secsub" style="margin-top:1.4rem;">Every review reports <b>which findings the automated stage would have missed</b>, so the pipeline measures its own front end continuously, from real artifacts rather than from a test fixture. A review that keeps reporting &ldquo;the scanner would have caught this&rdquo; means the human stages are wasting effort. A review reporting the opposite is telling me exactly where the next check belongs.</p>
-    <p class="secsub">Two anti-softening rules ride alongside it: a blocker is never downgraded to a revision because a deadline is close (say it's a blocker, let the human override on the record), and a sampled read caps the verdict at <em>revise</em> &mdash; clear requires having read the whole thing.</p>
-  </section>
-
-  <section class="sec" id="gaps">
-    <div class="sechead"><span class="secnum">05</span><h2>Where it has failed</h2><div class="divider"></div></div>
-    <p class="secsub">A disclosure-control write-up that only lists controls is marketing. These are the failures on record and the gap still open &mdash; each one documented in the repo, at the top of the script it affects, next to the fix. They are mostly the <em>same</em> failure, and the last one turns out to have been sitting underneath the others the whole time.</p>
-
-    <div class="cas">
-      <div class="ct">failure · found july 2026</div>
-      <h4>A plural directory name</h4>
-      <p>The write-time scanner's path filter listed the <em>singular</em> form of a directory name. The live directory was the <em>plural</em>. Every file in it &mdash; including a federal grant packet, the single most disclosure-sensitive artifact class in the entire workspace &mdash; fell outside the filter entirely.</p>
-      <p>The scanner didn't fail. It ran, matched no path, and exited clean, <b>every single time</b>. From the author's chair that's identical to a passing scan. The packet was drafted with zero scan coverage while the tooling reported success.</p>
-      <p>Fixed by adding the pattern, but the real fix was the conclusion drawn from it: <em>path-glob scoping is brittle by nature.</em> The script now says so in a comment, and the reviewer agent &mdash; which reads finished artifacts regardless of where they live &mdash; was promoted from nice-to-have to the pre-publish gate of record. One layer's structural blind spot became another layer's job description.</p>
-    </div>
-
-    <div class="cas">
-      <div class="ct">failure &middot; found july 2026 &middot; third instance</div>
-      <h4>The same miss, on this page</h4>
-      <p>Two permanent, search-indexed case-study pages (<b>including the one you are reading</b>) were drafted in a directory the filter had never been told about. Same silent shape as the packet above: the scanner ran, matched no path, exited clean. It was caught only because the review stage was run by hand.</p>
-      <p>Three instances of one bug in two months, each &ldquo;fixed&rdquo; by adding another pattern, is no longer a bug. It's the design. <em>Whether something will be published is not a property of its path</em>, so a hand-maintained list of paths will keep missing new public surfaces as fast as they are created, and keep missing them <b>silently</b>, which is the part that matters.</p>
-      <p>That produced stage six. The automated check now hangs off the <b>push</b> rather than the path, which takes path matching off the critical path entirely. The filter stays as an early warning; it is no longer the thing standing between a draft and the public. Its remaining gaps became a latency problem (you find out later) instead of a silent-hole problem.</p>
-    </div>
-
-    <div class="cas">
-      <div class="ct">failure &middot; found july 2026 &middot; fourth instance</div>
-      <h4>The surface that was already on the list</h4>
-      <p>A live public site had never been written into the write-time filter, so everything drafted for it was scanned by nothing. Predictable by now &mdash; except for one detail that changed the conclusion: <b>it was already enumerated in the destinations registry</b>, and had been the whole time. The stage that gates the push knew about it. The stage that scans the draft was reading a different, hand-kept list and had never been told.</p>
-      <p>Three prior instances read as &ldquo;the list keeps missing things.&rdquo; This one reads as something worse and more fixable: <em>two stages were answering the same question from two different sources.</em> The fix was not a fifth pattern. The early stage now falls through to the destinations registry when its own globs don't match, so the two stages can no longer disagree about what publishes. Adding a surface in one place is now the whole job.</p>
-      <p>The generalization: a duplicated source of truth doesn't announce itself while the copies agree. It surfaces as a gap in whichever copy is consulted less often &mdash; and that copy is always the cheap early check, because it's the one nobody notices staying quiet.</p>
-    </div>
-
-    <div class="cas">
-      <div class="ct">failure &middot; found june 2026 &middot; underneath all three</div>
-      <h4>Enforced on the map, dead on the machine &mdash; the whole time</h4>
-      <p>Underneath all three of the above, the same scanner was a complete no-op for an unrelated reason: it read the edited file's path from an environment variable the runtime doesn't set, so the path came back empty and it bailed on its first line. Its warning also went to a stream the wiring discarded. Two independent bugs, stacked, both silent. It was found by accident, while editing a neighbouring hook (not by any check) while the process register listed the discipline as <b>enforced</b>.</p>
-      <p><b>And the fix for it didn't work either.</b> The diagnosis was right (wrong variable) and the correction substituted a <em>second</em> variable that was equally imaginary. Same empty path, same exit on line one, now with a commit message saying it was fixed. The hook stayed dead for another seven weeks.</p>
-      <p>Which reframes the three failures above: <b>every one of those path fixes was applied to a scanner that could not run at all.</b> Each was reasoned about carefully, tested by reading, and landed against a hook that was going to exit on line one no matter what the filter said. The scoping was never the reason nothing was being caught. It only looked like the reason, because scoping is what you can see by reading the script &mdash; and a dead hook and a correctly-scoped clean one produce byte-identical output.</p>
-      <p>This is what produced the standing rule now applied to every gate in the workspace: <em>a check that exists is not a check that bites &mdash; and a fix that reads correctly is not a fix.</em> Both close only by feeding the thing a known-bad input and watching it go red. That rule, and the ledger tracking it, is <a href="../enforcement/" style="color:var(--accent-cyan); text-decoration:none; border-bottom:1px solid var(--line)">its own write-up</a>.</p>
-    </div>
-
-    <div class="cas" style="border-color: rgba(255,180,84,0.28); border-left-color: var(--accent-amber);">
-      <div class="ct" style="color: var(--accent-amber);">open gap · tracked, not fixed</div>
-      <h4>The paraphrase hole</h4>
-      <p>The registry catches a proprietary term written literally. It does not catch the same mechanism described in plain English by someone who understands it, and <b>architecture described accurately enough to reimplement is a disclosure regardless of vocabulary</b>.</p>
-      <p>So the discipline is enforced at the literal layer and narrated at the paraphrase layer. It sits on the conversion backlog with a named target: a fuzzy pattern family per protected term, failing on near-matches under outward-facing paths.</p>
-      <p>It is not fixed. It's <em>ranked</em> (the highest-leverage item still open) and covered in the interim by the two human-read stages.</p>
-    </div>
-  </section>
-
-  <div class="takeaway">
-    <h3>Layering controls against named blind spots</h3>
-    <p>Not IP paranoia &mdash; <b>layering controls against known blind spots, and knowing which blind spot each layer covers.</b> Every stage here was added because the stage before it failed in a way I could name. The human stages exist because literal matching cannot catch paraphrase. The newest automated stage exists because the oldest one was scoped by file path, and it took four separate misses to accept that <em>path is the wrong thing to key on</em> &mdash; then a fifth to notice the two stages had been reading different lists.</p>
-    <p>The through-line is the same one that runs through the rest of this workspace: <b>a check that fails quietly is worse than no check</b>, because it reads as coverage you don't have. The answer isn't more scripts. It's pairing every automated gate with a reader whose job is to assume the gate didn't run &mdash; and writing down what it missed, every time, so the next check is chosen from evidence instead of instinct.</p>
-    <p style="margin-top:1.1rem; padding-top:1.1rem; border-top:1px solid var(--line-soft);">Companion write-ups: <a href="../automation/" style="color:var(--accent-cyan); text-decoration:none; border-bottom:1px solid var(--line)">the lifecycle-hook layer this pipeline runs on</a> · <a href="../enforcement/" style="color:var(--accent-cyan); text-decoration:none; border-bottom:1px solid var(--line)">how a written convention becomes an enforced check</a>.</p>
-    <p style="margin-top:1.1rem; padding-top:1.1rem; border-top:1px solid var(--line-soft);"><b>The code is open.</b> The hooks and the suite described here live at <a href="https://github.com/mikejgiardina/hook-discipline" target="_blank" rel="noopener noreferrer" style="color:var(--accent-cyan); text-decoration:none; border-bottom:1px solid var(--line)">github.com/mikejgiardina/hook-discipline</a> &mdash; Apache-2.0, and it went through the same disclosure review as this page.</p>
-  </div>
-
-  <footer>
-    <p>Case study &middot; IP disclosure control for a patent-pending, AI-assisted codebase.</p>
-    <p>Process shape only. No registry contents, mechanism detail, or proprietary vocabulary appears on this page &mdash; by the same pipeline it describes.</p>
-    <p>Michael Giardina &middot; <a href="../">portfolio</a> &middot; <a href="https://www.linkedin.com/in/michael-giardina">linkedin.com/in/michael-giardina</a></p>
-  </footer>
-
 </div>
-</body>
+<p class="secsub" style="margin-top:1.4rem;">Every review reports <b>which findings the automated stage would have missed</b>, so the pipeline measures its own front end continuously, from real artifacts rather than from a test fixture. A review that keeps reporting “the scanner would have caught this” means the human stages are wasting effort. A review reporting the opposite is telling me exactly where the next check belongs.</p>
+<p class="secsub">Two anti-softening rules ride alongside it: a blocker is never downgraded to a revision because a deadline is close (say it's a blocker, let the human override on the record), and a sampled read caps the verdict at <em>revise</em> — clear requires having read the whole thing.</p>
+</section><section class="sec" id="gaps">
+<div class="sechead"><span class="secnum">05</span><h2>Where it has failed</h2><div class="divider"></div></div>
+<p class="secsub">A disclosure-control write-up that only lists controls is marketing. These are the failures on record and the gap still open — each one documented in the repo, at the top of the script it affects, next to the fix. They are mostly the <em>same</em> failure, and the last one turns out to have been sitting underneath the others the whole time.</p>
+<div class="cas">
+<div class="ct">failure · found july 2026</div>
+<h4>A plural directory name</h4>
+<p>The write-time scanner's path filter listed the <em>singular</em> form of a directory name. The live directory was the <em>plural</em>. Every file in it — including a federal grant packet, the single most disclosure-sensitive artifact class in the entire workspace — fell outside the filter entirely.</p>
+<p>The scanner didn't fail. It ran, matched no path, and exited clean, <b>every single time</b>. From the author's chair that's identical to a passing scan. The packet was drafted with zero scan coverage while the tooling reported success.</p>
+<p>Fixed by adding the pattern, but the real fix was the conclusion drawn from it: <em>path-glob scoping is brittle by nature.</em> The script now says so in a comment, and the reviewer agent — which reads finished artifacts regardless of where they live — was promoted from nice-to-have to the pre-publish gate of record. One layer's structural blind spot became another layer's job description.</p>
+</div>
+<div class="cas">
+<div class="ct">failure · found july 2026 · third instance</div>
+<h4>The same miss, on this page</h4>
+<p>Two permanent, search-indexed case-study pages (<b>including the one you are reading</b>) were drafted in a directory the filter had never been told about. Same silent shape as the packet above: the scanner ran, matched no path, exited clean. It was caught only because the review stage was run by hand.</p>
+<p>Three instances of one bug in two months, each “fixed” by adding another pattern, is no longer a bug. It's the design. <em>Whether something will be published is not a property of its path</em>, so a hand-maintained list of paths will keep missing new public surfaces as fast as they are created, and keep missing them <b>silently</b>, which is the part that matters.</p>
+<p>That produced stage six. The automated check now hangs off the <b>push</b> rather than the path, which takes path matching off the critical path entirely. The filter stays as an early warning; it is no longer the thing standing between a draft and the public. Its remaining gaps became a latency problem (you find out later) instead of a silent-hole problem.</p>
+</div>
+<div class="cas">
+<div class="ct">failure · found july 2026 · fourth instance</div>
+<h4>The surface that was already on the list</h4>
+<p>A live public site had never been written into the write-time filter, so everything drafted for it was scanned by nothing. Predictable by now — except for one detail that changed the conclusion: <b>it was already enumerated in the destinations registry</b>, and had been the whole time. The stage that gates the push knew about it. The stage that scans the draft was reading a different, hand-kept list and had never been told.</p>
+<p>Three prior instances read as “the list keeps missing things.” This one reads as something worse and more fixable: <em>two stages were answering the same question from two different sources.</em> The fix was not a fifth pattern. The early stage now falls through to the destinations registry when its own globs don't match, so the two stages can no longer disagree about what publishes. Adding a surface in one place is now the whole job.</p>
+<p>The generalization: a duplicated source of truth doesn't announce itself while the copies agree. It surfaces as a gap in whichever copy is consulted less often — and that copy is always the cheap early check, because it's the one nobody notices staying quiet.</p>
+</div>
+<div class="cas">
+<div class="ct">failure · found june 2026 · underneath all three</div>
+<h4>Enforced on the map, dead on the machine — the whole time</h4>
+<p>Underneath all three of the above, the same scanner was a complete no-op for an unrelated reason: it read the edited file's path from an environment variable the runtime doesn't set, so the path came back empty and it bailed on its first line. Its warning also went to a stream the wiring discarded. Two independent bugs, stacked, both silent. It was found by accident, while editing a neighbouring hook (not by any check) while the process register listed the discipline as <b>enforced</b>.</p>
+<p><b>And the fix for it didn't work either.</b> The diagnosis was right (wrong variable) and the correction substituted a <em>second</em> variable that was equally imaginary. Same empty path, same exit on line one, now with a commit message saying it was fixed. The hook stayed dead for another seven weeks.</p>
+<p>Which reframes the three failures above: <b>every one of those path fixes was applied to a scanner that could not run at all.</b> Each was reasoned about carefully, tested by reading, and landed against a hook that was going to exit on line one no matter what the filter said. The scoping was never the reason nothing was being caught. It only looked like the reason, because scoping is what you can see by reading the script — and a dead hook and a correctly-scoped clean one produce byte-identical output.</p>
+<p>This is what produced the standing rule now applied to every gate in the workspace: <em>a check that exists is not a check that bites — and a fix that reads correctly is not a fix.</em> Both close only by feeding the thing a known-bad input and watching it go red. That rule, and the ledger tracking it, is <a href="../enforcement/" style="color:var(--accent-cyan); text-decoration:none; border-bottom:1px solid var(--line)">its own write-up</a>.</p>
+</div>
+<div class="cas" style="border-color: rgba(255,180,84,0.28); border-left-color: var(--accent-amber);">
+<div class="ct" style="color: var(--accent-amber);">open gap · tracked, not fixed</div>
+<h4>The paraphrase hole</h4>
+<p>The registry catches a proprietary term written literally. It does not catch the same mechanism described in plain English by someone who understands it, and <b>architecture described accurately enough to reimplement is a disclosure regardless of vocabulary</b>.</p>
+<p>So the discipline is enforced at the literal layer and narrated at the paraphrase layer. It sits on the conversion backlog with a named target: a fuzzy pattern family per protected term, failing on near-matches under outward-facing paths.</p>
+<p>It is not fixed. It's <em>ranked</em> (the highest-leverage item still open) and covered in the interim by the two human-read stages.</p>
+</div>
+</section><div class="takeaway">
+<h3>Layering controls against named blind spots</h3>
+<p>Not IP paranoia — <b>layering controls against known blind spots, and knowing which blind spot each layer covers.</b> Every stage here was added because the stage before it failed in a way I could name. The human stages exist because literal matching cannot catch paraphrase. The newest automated stage exists because the oldest one was scoped by file path, and it took four separate misses to accept that <em>path is the wrong thing to key on</em> — then a fifth to notice the two stages had been reading different lists.</p>
+<p>The through-line is the same one that runs through the rest of this workspace: <b>a check that fails quietly is worse than no check</b>, because it reads as coverage you don't have. The answer isn't more scripts. It's pairing every automated gate with a reader whose job is to assume the gate didn't run — and writing down what it missed, every time, so the next check is chosen from evidence instead of instinct.</p>
+<p style="margin-top:1.1rem; padding-top:1.1rem; border-top:1px solid var(--line-soft);">Companion write-ups: <a href="../automation/" style="color:var(--accent-cyan); text-decoration:none; border-bottom:1px solid var(--line)">the lifecycle-hook layer this pipeline runs on</a> · <a href="../enforcement/" style="color:var(--accent-cyan); text-decoration:none; border-bottom:1px solid var(--line)">how a written convention becomes an enforced check</a>.</p>
+<p style="margin-top:1.1rem; padding-top:1.1rem; border-top:1px solid var(--line-soft);"><b>The code is open.</b> The hooks and the suite described here live at <a href="https://github.com/mikejgiardina/hook-discipline" target="_blank" rel="noopener noreferrer" style="color:var(--accent-cyan); text-decoration:none; border-bottom:1px solid var(--line)">github.com/mikejgiardina/hook-discipline</a> — Apache-2.0, and it went through the same disclosure review as this page.</p>
+</div></main></div>
+
+
+
+
+
+
+<footer>
+<p>Case study · IP disclosure control for a patent-pending, AI-assisted codebase.</p>
+<p>Process shape only. No registry contents, mechanism detail, or proprietary vocabulary appears on this page — by the same pipeline it describes.</p>
+<p>Michael Giardina · <a href="../">portfolio</a> · <a href="https://www.linkedin.com/in/michael-giardina" target="_blank" rel="noopener noreferrer">linkedin.com/in/michael-giardina</a></p>
+<p class="footer-navigation"><a href="../">Portfolio</a> · <a href="../case-studies/">Case studies</a> · <a href="../#connect">Get in touch</a></p></footer>
+</div>
+<script data-pplx-inline-edit>
+(function () {
+  if (window === window.top) return;
+
+  const allowedParentOrigins = ["https://www.perplexity.ai","https://perplexity.ai","https://testing.perplexity.ai","https://staging.perplexity.ai","https://*.preview.i.perplexity.ai","http://perplexity.localhost","http://localhost:1420","http://127.0.0.1:1420","http://localhost:3000","http://127.0.0.1:3000","http://localhost:5173","http://127.0.0.1:5173"];
+  const MAX_FONT_BYTES = 500 * 1024;
+  const MAX_TOTAL_FONT_BYTES = 2 * 1024 * 1024;
+  let scrollForwarding = false;
+  let scrollRaf = 0;
+  let trustedTopOrigin = null;
+
+  // Allow entries like "https://*.preview.i.perplexity.ai" — the wildcard
+  // matches a single DNS label (no dots), so "https://*.foo" cannot stretch
+  // across multiple labels.
+  function matchesAllowedOrigin(origin) {
+    if (!origin) return false;
+    for (const entry of allowedParentOrigins) {
+      if (!entry.includes("*")) {
+        if (entry === origin) return true;
+        continue;
+      }
+      const pattern = new RegExp(
+        "^" +
+          entry.replace(/[.+?^${}()|[\]\\]/g, "\\$&").replace(/\*/g, "[^.]+") +
+          "$",
+      );
+      if (pattern.test(origin)) return true;
+    }
+    return false;
+  }
+
+  // Trust decision: when the sender is same-origin-visible (event.origin is a
+  // real origin like https://www.perplexity.ai) we trust event.origin directly.
+  // When event.origin is "null" (opaque broker srcdoc), we fall back to the
+  // broker's stamped `parentOrigin` to identify the top window. The fallback
+  // is claim-only — we rely on the browser's native `targetOrigin` enforcement
+  // on the response path (see postToTrustedTop) to ensure replies can't be
+  // delivered to anyone but the actual top window of that claimed origin.
+  function getTrustedParentOrigin(event) {
+    const forwardedParentOrigin =
+      typeof event.data.parentOrigin === "string" ? event.data.parentOrigin : null;
+    const parentOrigin = event.origin === "null" ? forwardedParentOrigin : event.origin;
+    return matchesAllowedOrigin(parentOrigin) ? parentOrigin : null;
+  }
+
+  // All responses go to window.top with targetOrigin = the allowlisted origin.
+  // An attacker that iframes us inside their own null-origin broker can claim
+  // any parentOrigin they like, but the browser will drop the reply whenever
+  // the real top's origin doesn't match — so the screenshot never leaves.
+  function postToTrustedTop(message) {
+    if (!trustedTopOrigin) return;
+    try {
+      window.top.postMessage(message, trustedTopOrigin);
+    } catch (_error) {}
+  }
+
+  function inlineAll(original, clone) {
+    if (original.nodeType !== 1 || clone.nodeType !== 1) return;
+
+    try {
+      const computedStyle = getComputedStyle(original);
+      // cssText on a computed style is the serialized declaration in modern
+      // Chromium/Safari — a single read beats enumerating ~400 longhand
+      // properties. Firefox returns "" here, so we fall back on empty.
+      const serialized = computedStyle.cssText;
+      if (serialized) {
+        clone.style.cssText = serialized;
+      } else {
+        const parts = new Array(computedStyle.length);
+        for (let index = 0; index < computedStyle.length; index += 1) {
+          const property = computedStyle[index];
+          parts[index] = `${property}:${computedStyle.getPropertyValue(property)};`;
+        }
+        clone.style.cssText = parts.join("");
+      }
+    } catch (_error) {}
+
+    const originalChildren = original.children;
+    const clonedChildren = clone.children;
+    for (
+      let index = 0;
+      index < originalChildren.length && index < clonedChildren.length;
+      index += 1
+    ) {
+      inlineAll(originalChildren[index], clonedChildren[index]);
+    }
+  }
+
+  function extractFontUrl(srcValue) {
+    const matches = [
+      ...srcValue.matchAll(
+        /url\(["']?([^"')]+)["']?\)(?:\s*format\(["']?([^"')]+)["']?\))?/gi,
+      ),
+    ];
+    if (matches.length === 0) return null;
+    const woff2 = matches.find((m) => m[2] && m[2].toLowerCase().includes("woff2"));
+    if (woff2) return woff2[1];
+    const woff = matches.find((m) => m[2] && m[2].toLowerCase().includes("woff"));
+    if (woff) return woff[1];
+    return matches[0][1];
+  }
+
+  // Cache resolved font URL -> data URI across captures. Fonts on a page
+  // essentially never change, and a batch run emits multiple captures back to
+  // back — without this we'd refetch + re-base64 every time.
+  const fontDataUriCache = new Map();
+  const SRC_DECLARATION_RE = /src\s*:\s*[^;}]+/i;
+
+  async function fetchAsDataUri(url) {
+    if (fontDataUriCache.has(url)) return fontDataUriCache.get(url);
+    let dataUri = null;
+    try {
+      const response = await fetch(url, { mode: "cors", credentials: "omit" });
+      if (response.ok) {
+        const blob = await response.blob();
+        if (blob.size <= MAX_FONT_BYTES) {
+          dataUri = await new Promise((resolve) => {
+            const reader = new FileReader();
+            reader.onloadend = () =>
+              resolve(typeof reader.result === "string" ? reader.result : null);
+            reader.onerror = () => resolve(null);
+            reader.readAsDataURL(blob);
+          });
+        }
+      }
+    } catch (_error) {
+      dataUri = null;
+    }
+    fontDataUriCache.set(url, dataUri);
+    return dataUri;
+  }
+
+  function collectFontFaceRuleTexts() {
+    const rules = [];
+    for (const sheet of document.styleSheets) {
+      let cssRules;
+      try {
+        cssRules = sheet.cssRules;
+      } catch (_error) {
+        continue;
+      }
+      if (!cssRules) continue;
+      for (const rule of cssRules) {
+        const cssText = rule.cssText || "";
+        if (cssText.startsWith("@font-face")) rules.push(cssText);
+      }
+    }
+    return rules;
+  }
+
+  async function buildInlinedFontCss() {
+    const ruleTexts = collectFontFaceRuleTexts();
+    if (ruleTexts.length === 0) return null;
+
+    const resolved = ruleTexts.map((cssText) => {
+      if (!SRC_DECLARATION_RE.test(cssText)) return null;
+      const srcMatch = cssText.match(/src\s*:\s*([^;}]+)[;}]/i);
+      if (!srcMatch) return null;
+      const url = extractFontUrl(srcMatch[1]);
+      if (!url) return null;
+      try {
+        return { cssText, url: new URL(url, document.baseURI).href };
+      } catch (_error) {
+        return null;
+      }
+    });
+
+    const dataUris = await Promise.all(
+      resolved.map((entry) => (entry ? fetchAsDataUri(entry.url) : Promise.resolve(null))),
+    );
+
+    const inlined = [];
+    let totalBytes = 0;
+    for (let index = 0; index < resolved.length; index += 1) {
+      const entry = resolved[index];
+      const dataUri = dataUris[index];
+      if (!entry || !dataUri) continue;
+      const approxBytes = dataUri.length * 0.75;
+      if (totalBytes + approxBytes > MAX_TOTAL_FONT_BYTES) break;
+      totalBytes += approxBytes;
+      inlined.push(entry.cssText.replace(SRC_DECLARATION_RE, `src: url("${dataUri}")`));
+    }
+    return inlined.length > 0 ? inlined.join("\n") : null;
+  }
+
+  function stripExternal(clone) {
+    const images = clone.querySelectorAll("img");
+    for (let index = 0; index < images.length; index += 1) {
+      const src = images[index].getAttribute("src");
+      if (src && !src.startsWith("data:")) images[index].removeAttribute("src");
+    }
+
+    const elements = clone.querySelectorAll("*");
+    for (let index = 0; index < elements.length; index += 1) {
+      const style = elements[index].style.cssText;
+      if (style && style.includes("url(")) {
+        elements[index].style.cssText = style.replace(
+          /url\(["']?(?!data:)[^)"']*["']?\)/gi,
+          "none",
+        );
+      }
+    }
+  }
+
+  function emitScroll() {
+    scrollRaf = 0;
+    if (!scrollForwarding) return;
+    postToTrustedTop({
+      type: "INLINE_EDIT_SCROLL",
+      scrollX: window.scrollX,
+      scrollY: window.scrollY,
+    });
+  }
+
+  window.addEventListener(
+    "scroll",
+    function () {
+      if (!scrollForwarding || scrollRaf) return;
+      scrollRaf = requestAnimationFrame(emitScroll);
+    },
+    { passive: true, capture: true },
+  );
+
+  async function handleCaptureRequest(event) {
+    const requestId = event.data.requestId;
+    const scrollX = window.scrollX;
+    const scrollY = window.scrollY;
+    const width = window.innerWidth;
+    const height = window.innerHeight;
+
+    function postResult(dataUrl) {
+      postToTrustedTop({
+        type: "INLINE_EDIT_SCREENSHOT_RESULT",
+        requestId,
+        dataUrl,
+        scrollX,
+        scrollY,
+      });
+    }
+
+    try {
+      // Wait for any pending web fonts to resolve so both inline metrics and
+      // the @font-face inlining below see the same loaded faces.
+      if (document.fonts && document.fonts.ready) {
+        try {
+          await document.fonts.ready;
+        } catch (_error) {}
+      }
+
+      const clone = document.documentElement.cloneNode(true);
+      inlineAll(document.documentElement, clone);
+
+      const removedNodes = clone.querySelectorAll("script,link[rel=\"stylesheet\"],style");
+      for (let index = 0; index < removedNodes.length; index += 1) {
+        removedNodes[index].remove();
+      }
+
+      stripExternal(clone);
+
+      // Re-embed web fonts as data-URI @font-face rules so the SVG rasterizer
+      // can resolve them — external font URLs aren't fetched during
+      // foreignObject rendering, which would otherwise force a fallback face
+      // and change text metrics.
+      const inlinedFontCss = await buildInlinedFontCss();
+      if (inlinedFontCss) {
+        const styleEl = document.createElement("style");
+        styleEl.textContent = inlinedFontCss;
+        const head = clone.querySelector("head");
+        if (head) head.appendChild(styleEl);
+        else clone.insertBefore(styleEl, clone.firstChild);
+      }
+
+      const html = new XMLSerializer().serializeToString(clone);
+      const svg =
+        `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}">` +
+        '<foreignObject width="100%" height="100%">' +
+        `<div xmlns="http://www.w3.org/1999/xhtml" style="width:${width}px;height:${height}px;overflow:hidden">` +
+        `<div style="position:relative;left:-${scrollX}px;top:-${scrollY}px">` +
+        html +
+        "</div></div></foreignObject></svg>";
+      const svgUrl = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
+      const image = new Image();
+      image.onload = function () {
+        const canvas = document.createElement("canvas");
+        canvas.width = width;
+        canvas.height = height;
+        canvas.getContext("2d").drawImage(image, 0, 0);
+        postResult(canvas.toDataURL("image/png"));
+      };
+      image.onerror = function () {
+        postResult(null);
+      };
+      image.src = svgUrl;
+    } catch (_error) {
+      postResult(null);
+    }
+  }
+
+  window.addEventListener("message", function (event) {
+    if (!event.data) return;
+    // Only accept messages from the direct parent frame. Blocks sibling /
+    // unrelated-window postMessage senders that could otherwise reach us.
+    if (event.source !== window.parent) return;
+
+    const trustedParentOrigin = getTrustedParentOrigin(event);
+    if (!trustedParentOrigin) return;
+    trustedTopOrigin = trustedParentOrigin;
+
+    if (event.data.type === "INLINE_EDIT_SCROLL_START") {
+      scrollForwarding = true;
+      emitScroll();
+      return;
+    }
+
+    if (event.data.type === "INLINE_EDIT_SCROLL_STOP") {
+      scrollForwarding = false;
+      if (scrollRaf) cancelAnimationFrame(scrollRaf);
+      scrollRaf = 0;
+      return;
+    }
+
+    if (event.data.type !== "INLINE_EDIT_CAPTURE_REQUEST") return;
+
+    handleCaptureRequest(event);
+  });
+})();
+
+
+</script></body>
 </html>

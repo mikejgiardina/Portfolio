@@ -1,12 +1,13 @@
-<!doctype html>
-<html lang="en">
+<!DOCTYPE html>
+
+<html lang="en" data-theme="light">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>Bay 4 Is Bleeding — A GI Hemorrhage in Real Time</title>
-<meta name="description" content="A gastrointestinal hemorrhage told in real time — the Kymora Clinical Story Mode prototype. Scroll the case and the patient monitor responds.">
-<meta name="theme-color" content="#0B1014">
-<meta name="author" content="Mike Giardina BSN, RN, CEN">
+<meta name="description" content="A gastrointestinal hemorrhage told in real time — the Kymora Clinical Story Mode prototype. Scroll the case and the patient monitor responds."/>
+<meta name="theme-color" content="#0B1014"/>
+<meta name="author" content="Mike Giardina BSN, RN, CEN"/>
 <!-- Link-preview (OpenGraph / Twitter) so the URL unfurls nicely when sent -->
 <style>
   html { background: #0B1014; }
@@ -354,222 +355,211 @@
     * { scroll-behavior: auto !important; }
   }
 </style>
-<script>try{var t=localStorage.getItem("mg-theme");if(t==="dark"||t==="light")document.documentElement.setAttribute("data-theme",t);}catch(e){}</script>
-<meta property="og:type" content="article">
-<meta property="og:url" content="https://mike-giardina.netlify.app/story/gi-bleed/">
-<meta property="og:title" content="Bay 4 Is Bleeding — a GI hemorrhage in real time">
-<meta property="og:description" content="A clinical teaching article re-staged as a real-time patient case, with a live monitor that tracks the patient as you scroll.">
-<meta property="og:image" content="https://mike-giardina.netlify.app/assets/og/story-gi-bleed.png">
-<meta property="og:image:width" content="1200">
-<meta property="og:image:height" content="627">
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://mike-giardina.netlify.app/assets/og/story-gi-bleed.png">
-</head>
-<body>
 
+<meta property="og:type" content="article"/>
+<meta property="og:url" content="https://mike-giardina.netlify.app/story/gi-bleed/"/>
+<meta property="og:title" content="Bay 4 Is Bleeding — a GI hemorrhage in real time"/>
+<meta property="og:description" content="A clinical teaching article re-staged as a real-time patient case, with a live monitor that tracks the patient as you scroll."/>
+<meta property="og:image" content="https://mike-giardina.netlify.app/assets/og/story-gi-bleed.png"/>
+<meta property="og:image:width" content="1200"/>
+<meta property="og:image:height" content="627"/>
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="https://mike-giardina.netlify.app/assets/og/story-gi-bleed.png"/>
+<link rel="stylesheet" href="../../assets/fonts/editorial.css"/><link rel="stylesheet" href="../../assets/story-editorial.css"/><script src="../../assets/navigation.js" defer=""></script></head>
+<body class="story-page"><a class="skip" href="#reading">Skip to content</a><header class="masthead"><div class="mast-inner">
+<a class="brand" href="../../"><svg width="32" height="32" viewbox="0 0 32 32" fill="none" role="img" aria-label="Michael Giardina monogram"><path d="M4 26V6l12 12L28 6v20M4 6l12 12 12-12" stroke="currentColor" stroke-width="2.5"></path><path d="M16 18v8" stroke="currentColor" stroke-width="2.5"></path></svg><span>MICHAEL GIARDINA<span class="brand-sub">Clinical judgment. Systems thinking.</span></span></a>
+<button class="mobile-menu" aria-expanded="false" aria-controls="primary-navigation" type="button">Menu</button>
+<nav class="primary-nav" id="primary-navigation" aria-label="Portfolio navigation">
+<a href="../../#work">Work</a>
+<details class="nav-dropdown"><summary>Case studies</summary><div class="nav-panel"><a href="../../case-studies/">All five case studies</a><a href="../../automation/">Lifecycle hooks</a><a href="../../enforcement/">Enforcement</a><a href="../../publishing/">Disclosure & publishing</a><a href="../../clinical-review/">Clinical AI evaluation</a><a href="../../orchestration/">Multi-session orchestration</a><a href="../../orchestration/evidence/">Evidence appendix</a><a href="../../trauma-tracker/">Trauma Tracker</a></div></details>
+<details class="nav-dropdown"><summary>Clinical stories</summary><div class="nav-panel"><a href="../../story/gi-bleed/">GI hemorrhage</a><a href="../../story/hyperkalemia/">Hyperkalemia</a><a href="../../story/first-code-blue/">Your first code blue</a><a href="https://erinfo.netlify.app" target="_blank" rel="noopener noreferrer">ER articles ↗</a></div></details>
+<a href="../../#background">About</a><a href="../../#connect">Contact</a></nav>
+<button class="theme-toggle" type="button" aria-label="Switch to dark mode"><span class="theme-symbol" aria-hidden="true">◐</span><span class="theme-label">Dark</span></button></div><div class="reading-progress" aria-hidden="true"></div></header>
 <div class="monitor" id="monitor">
-  <div class="monitor-inner">
-    <div class="m-left">
-      <div class="m-clock">T+ <b id="clock">00:00</b></div>
-      <div class="m-status" id="mstatus"><span class="dot"></span><span id="statustxt">Stable</span></div>
-    </div>
-    <div class="m-right">
-      <div class="trace-cell"><canvas id="trace" width="360" height="124"></canvas></div>
-      <div class="vital hr critical"><div class="lab">HR</div><div class="num" id="v-hr" style="--val:var(--green)">78</div><div class="unit">bpm</div></div>
-      <div class="vital bp critical"><div class="lab">NIBP</div><div class="num" id="v-bp" style="--val:var(--green)">128/76</div><div class="unit">mmHg</div></div>
-      <div class="vital spo2"><div class="lab">SpO₂</div><div class="num" id="v-spo2">98</div><div class="unit">%</div></div>
-    </div>
-  </div>
+<div class="monitor-inner">
+<div class="m-left">
+<div class="m-clock">T+ <b id="clock">00:00</b></div>
+<div class="m-status" id="mstatus"><span class="dot"></span><span id="statustxt">Stable</span></div>
 </div>
-
+<div class="m-right">
+<div class="trace-cell"><canvas id="trace" width="360" height="124" role="img" aria-label="Simulated educational ECG waveform"></canvas></div>
+<div class="vital hr critical"><div class="lab">HR</div><div class="num" id="v-hr" style="--val:var(--green)">78</div><div class="unit">bpm</div></div>
+<div class="vital bp critical"><div class="lab">NIBP</div><div class="num" id="v-bp" style="--val:var(--green)">128/76</div><div class="unit">mmHg</div></div>
+<div class="vital spo2"><div class="lab">SpO₂</div><div class="num" id="v-spo2">98</div><div class="unit">%</div></div>
+</div>
+</div>
+</div>
 <header class="hero wrap">
-  <div class="eyebrow">Kymora · Clinical Story Mode</div>
-  <h1>Bay 4 Is <em>Bleeding</em></h1>
-  <p class="dek">A gastrointestinal hemorrhage, told in real time — from the doorway smell of melena to the endoscopy suite. The monitor at the top is his. Watch it as you read.</p>
-  <div class="byline">Adapted from the Season 2 scholarly article · Mike Giardina BSN, RN, CEN</div>
-  <div class="scroll-cue">Scroll to begin the case<span>▼</span></div>
+<div class="eyebrow">Kymora · Clinical Story Mode</div>
+<h1>Bay 4 Is <em>Bleeding</em></h1>
+<p class="dek">A gastrointestinal hemorrhage, told in real time — from the doorway smell of melena to the endoscopy suite. The monitor at the top is his. Watch it as you read.</p>
+<div class="byline">Adapted from the Season 2 scholarly article · Mike Giardina BSN, RN, CEN</div>
+<div class="scroll-cue">Scroll to begin the case<span>▼</span></div>
 </header>
-
-<main>
-
+<main id="reading">
 <!-- BEAT 1 -->
 <section class="beat wrap" data-hr="82" data-sbp="118" data-dbp="72" data-spo2="97" data-state="stable" data-clock="00:00">
-  <div class="timecard"><span class="t">00:00</span> Triage · walk-in</div>
-  <div class="story">
-    <p class="drop">He walks in on his own two feet, which is the first thing that fools everyone. Fifty-eight, pale as the floor, a plastic grocery bag clutched to his chest. He sets it on the triage desk without a word and opens the top so you can see inside: dark, coffee-ground vomit, and streaks of red that are unmistakably not coffee.</p>
-    <p><span class="said">"Started this morning,"</span> he says. <span class="said">"Thought it'd pass."</span> His skin is cool. His shirt collar is loose on a neck that used to fill it. On his abdomen, when you lift the shirt, a faint web of spider veins and a belly that's rounder than the rest of him.</p>
-  </div>
-  <div class="decode">
-    <h3>◇ What the bag is telling you</h3>
-    <p><strong>Hematemesis</strong> (vomited blood) plus <strong>melena</strong> (black, tarry, digested blood) points upstream: an <strong>upper GI bleed</strong>, proximal to the ligament of Treitz. Upper sources account for roughly <strong>80%</strong> of clinically significant GI hemorrhage.</p>
-    <p>The spider angiomas and distended abdomen are doing quiet diagnostic work. They whisper <strong>cirrhosis</strong>, and in a cirrhotic who is vomiting blood, you assume <strong>esophageal varices</strong> until an endoscope proves otherwise. Variceal bleeds are brisk, massive, and carry a 30-day mortality of 15–30%.</p>
-    <p><span class="chip">Coffee-ground = older blood</span><span class="chip">Bright red = active/brisk</span><span class="chip">Melena = digested, upper source</span></p>
-  </div>
+<div class="timecard"><span class="t">00:00</span> Triage · walk-in</div>
+<div class="story">
+<p class="drop">He walks in on his own two feet, which is the first thing that fools everyone. Fifty-eight, pale as the floor, a plastic grocery bag clutched to his chest. He sets it on the triage desk without a word and opens the top so you can see inside: dark, coffee-ground vomit, and streaks of red that are unmistakably not coffee.</p>
+<p><span class="said">"Started this morning,"</span> he says. <span class="said">"Thought it'd pass."</span> His skin is cool. His shirt collar is loose on a neck that used to fill it. On his abdomen, when you lift the shirt, a faint web of spider veins and a belly that's rounder than the rest of him.</p>
+</div>
+<div class="decode">
+<h3>◇ What the bag is telling you</h3>
+<p><strong>Hematemesis</strong> (vomited blood) plus <strong>melena</strong> (black, tarry, digested blood) points upstream: an <strong>upper GI bleed</strong>, proximal to the ligament of Treitz. Upper sources account for roughly <strong>80%</strong> of clinically significant GI hemorrhage.</p>
+<p>The spider angiomas and distended abdomen are doing quiet diagnostic work. They whisper <strong>cirrhosis</strong>, and in a cirrhotic who is vomiting blood, you assume <strong>esophageal varices</strong> until an endoscope proves otherwise. Variceal bleeds are brisk, massive, and carry a 30-day mortality of 15–30%.</p>
+<p><span class="chip">Coffee-ground = older blood</span><span class="chip">Bright red = active/brisk</span><span class="chip">Melena = digested, upper source</span></p>
+</div>
 </section>
-
 <!-- BEAT 2 -->
 <section class="beat wrap" data-hr="104" data-sbp="104" data-dbp="78" data-spo2="96" data-state="caution" data-clock="00:04">
-  <div class="timecard"><span class="t">00:04</span> Room 4 · first vitals</div>
-  <div class="story tight">
-    <p>Back in the room, the numbers arrive and they don't match the calm man on the stretcher. Heart rate 104. Pressure 104 over 78 — the diastolic is <em>up</em>, the pulse pressure narrowing like a fist closing. He answers your questions, but a beat slow, and twice he asks where his wife is when she's standing right there.</p>
-  </div>
-  <div class="decode amber">
-    <h3>◇ The body is lying to protect him</h3>
-    <p>A "normal-ish" blood pressure early in hemorrhage is a <strong>trap</strong>. Young, healthy compensation can hold systolic pressure until 30–40% of blood volume is gone — then it falls off a cliff. Read the <em>compensation</em>, not the systolic:</p>
-    <div class="ladder" id="ladder">
-      <div class="rung" data-cls="1"><span class="cls c1">CLASS I</span><span>HR &lt;100 · BP normal · alert</span><span class="loss">&lt;15%</span></div>
-      <div class="rung" data-cls="2"><span class="cls c2">CLASS II</span><span>HR 100–120 · narrowing pulse pressure · anxious</span><span class="loss">15–30%</span></div>
-      <div class="rung" data-cls="3"><span class="cls c3">CLASS III</span><span>HR &gt;120 · systolic drops · confused</span><span class="loss">30–40%</span></div>
-      <div class="rung" data-cls="4"><span class="cls c4">CLASS IV</span><span>HR &gt;140 · SBP &lt;90 · obtunded</span><span class="loss">&gt;40%</span></div>
-    </div>
-    <p style="margin-top:12px;">Tachycardia, a narrowed pulse pressure, and new confusion put him in <strong>Class II sliding toward III</strong>. The slow answers aren't fear — they're the first sign of cerebral hypoperfusion.</p>
-  </div>
+<div class="timecard"><span class="t">00:04</span> Room 4 · first vitals</div>
+<div class="story tight">
+<p>Back in the room, the numbers arrive and they don't match the calm man on the stretcher. Heart rate 104. Pressure 104 over 78 — the diastolic is <em>up</em>, the pulse pressure narrowing like a fist closing. He answers your questions, but a beat slow, and twice he asks where his wife is when she's standing right there.</p>
+</div>
+<div class="decode amber">
+<h3>◇ The body is lying to protect him</h3>
+<p>A "normal-ish" blood pressure early in hemorrhage is a <strong>trap</strong>. Young, healthy compensation can hold systolic pressure until 30–40% of blood volume is gone — then it falls off a cliff. Read the <em>compensation</em>, not the systolic:</p>
+<div class="ladder" id="ladder">
+<div class="rung" data-cls="1"><span class="cls c1">CLASS I</span><span>HR <100 · BP normal · alert</span><span class="loss"><15%</span></div>
+<div class="rung" data-cls="2"><span class="cls c2">CLASS II</span><span>HR 100–120 · narrowing pulse pressure · anxious</span><span class="loss">15–30%</span></div>
+<div class="rung" data-cls="3"><span class="cls c3">CLASS III</span><span>HR >120 · systolic drops · confused</span><span class="loss">30–40%</span></div>
+<div class="rung" data-cls="4"><span class="cls c4">CLASS IV</span><span>HR >140 · SBP <90 · obtunded</span><span class="loss">>40%</span></div>
+</div>
+<p style="margin-top:12px;">Tachycardia, a narrowed pulse pressure, and new confusion put him in <strong>Class II sliding toward III</strong>. The slow answers aren't fear — they're the first sign of cerebral hypoperfusion.</p>
+</div>
 </section>
-
 <!-- BEAT 3 -->
 <section class="beat wrap" data-hr="118" data-sbp="92" data-dbp="70" data-spo2="95" data-state="caution" data-clock="00:09">
-  <div class="timecard"><span class="t">00:09</span> Access & the first fork</div>
-  <div class="story tight">
-    <p>You go for access before you go for anything else. Two IVs, one in each AC — 18 gauge is the working floor for blood products and usually what you can actually land in a shocky cirrhotic; 16 or larger if his veins will give it to you, because the size of the tube decides how fast you can give back what he's losing. Type and cross, CBC, coags, lactate, a full chem. The tech is already wheeling the ultrasound over.</p>
-    <p>Then the resident says the thing that used to be reflex: <span class="said">"Let's open up fluids wide, two liters."</span> You pause with your hand on the bag.</p>
-  </div>
-  <div class="fork" id="fork">
-    <div class="q">◇ Your move — what runs through those IVs first?</div>
-    <div class="choices">
-      <button class="choice wrong" data-choice="crystal">
-        <span class="h">2 L crystalloid, wide open</span>
+<div class="timecard"><span class="t">00:09</span> Access & the first fork</div>
+<div class="story tight">
+<p>You go for access before you go for anything else. Two IVs, one in each AC — 18 gauge is the working floor for blood products and usually what you can actually land in a shocky cirrhotic; 16 or larger if his veins will give it to you, because the size of the tube decides how fast you can give back what he's losing. Type and cross, CBC, coags, lactate, a full chem. The tech is already wheeling the ultrasound over.</p>
+<p>Then the resident says the thing that used to be reflex: <span class="said">"Let's open up fluids wide, two liters."</span> You pause with your hand on the bag.</p>
+</div>
+<div class="fork" id="fork">
+<div class="q">◇ Your move — what runs through those IVs first?</div>
+<div class="choices">
+<button class="choice wrong" data-choice="crystal">
+<span class="h">2 L crystalloid, wide open</span>
         Chase the pressure back to normal with saline, fast.
       </button>
-      <button class="choice right" data-choice="balanced">
-        <span class="h">Blood early · permissive hypotension</span>
+<button class="choice right" data-choice="balanced">
+<span class="h">Blood early · permissive hypotension</span>
         Warmed crystalloid to bridge, activate products, accept a SBP of 80–90 until the source is controlled.
       </button>
-    </div>
-    <div class="verdict-box" id="forkverdict"></div>
-  </div>
+</div>
+<div class="verdict-box" id="forkverdict"></div>
+</div>
 </section>
-
 <!-- BEAT 4 -->
 <section class="beat wrap" data-hr="131" data-sbp="82" data-dbp="64" data-spo2="93" data-state="critical" data-clock="00:16">
-  <div class="timecard crit"><span class="t">00:16</span> He crashes</div>
-  <div class="story">
-    <p>It happens the way it always happens — between one set of vitals and the next. He turns his head and brings up a full emesis basin of bright red blood, and the monitor screams before you do. HR 131. Systolic 82. His lips go the color of the walls.</p>
-    <p><span class="said">"Massive transfusion — go."</span></p>
-    <p>The cooler comes up from the blood bank. You hang the first unit of red cells and someone starts the count, because from here it's a ratio, not a guess.</p>
-  </div>
-  <div class="decode crimson">
-    <h3>◇ Balanced resuscitation — replace blood with blood</h3>
-    <p>He is now <strong>Class IV</strong>. Crystalloid alone would dilute what few clotting factors he has left and drop his temperature — feeding the lethal spiral of <strong>hypothermia, acidosis, and coagulopathy</strong>. So you give back what he's losing, in the proportion he's losing it:</p>
-    <p style="text-align:center; font-family:var(--mono); font-size:1.15rem; color:var(--paper); letter-spacing:0.06em; margin:14px 0;">1 : 1 : 1<br><span style="font-size:11px; letter-spacing:0.14em; color:var(--slate-dim);">PRBC : FFP : PLATELETS</span></p>
-    <p><strong>Restraint is the counterintuitive heart of it.</strong> While he is actively exsanguinating you replace blood with blood, in ratio. What you do <em>not</em> do (at any point in this case) is chase his pressure back to normal with volume. In trauma the reason is that you pop the fresh clot. Here there's a second reason that is specific to him and matters more: <strong>the varix is bleeding because of portal pressure, and volume expansion raises portal pressure.</strong> Over-resuscitate a cirrhotic and you are turning up the pressure on the exact vessel you are trying to stop.</p>
-
-    <p>So the target is enough perfusion for brain and kidney and no more, <em>until the source is sealed</em> — and the moment he is no longer exsanguinating, the whole posture flips.</p>
-  </div>
-
-  <div class="decode amber" style="margin-top:14px;">
-    <h3>◇ And then the target changes — restrictive transfusion</h3>
-    <p>The ratio above is for the phase he's in right now: crashing, visibly losing volume faster than you can replace it. Once that stops, the evidence points hard the other way. In acute upper GI bleeding the transfusion threshold is <strong>hemoglobin below 7 g/dL</strong>, targeting 7–9 — not 10, and not "top him up because the number looks low."</p>
-    <p>Villanueva's trial is the one that settled it: patients transfused restrictively had <strong>better survival and less rebleeding</strong> than those transfused liberally, and the benefit was largest in exactly this patient — Child-Pugh A and B cirrhosis. The mechanism is the same one driving the paragraph above. Liberal transfusion pushed the portal pressure gradient up; restrictive transfusion did not. <em>More blood, more portal pressure, more rebleeding.</em></p>
-    <p>These two rules are not in conflict, and reading them as a contradiction is the trap. The trial deliberately excluded patients with massive exsanguinating hemorrhage — patients like him, in the sixty seconds he is in right now. <strong>Ratio-based resuscitation is for the crash. The restrictive threshold governs every hour after it.</strong> Knowing which phase you are in is the actual skill.</p>
-    <p style="margin-top:12px;">The failure mode here belongs to trauma nurses specifically: this is a <em>medical</em> bleed in a cirrhotic, and trauma doctrine imported wholesale will over-transfuse him and raise his rebleeding risk. The 1:1:1 ratio and permissive targets come from trauma literature. The threshold that follows does not.</p>
-  </div>
+<div class="timecard crit"><span class="t">00:16</span> He crashes</div>
+<div class="story">
+<p>It happens the way it always happens — between one set of vitals and the next. He turns his head and brings up a full emesis basin of bright red blood, and the monitor screams before you do. HR 131. Systolic 82. His lips go the color of the walls.</p>
+<p><span class="said">"Massive transfusion — go."</span></p>
+<p>The cooler comes up from the blood bank. You hang the first unit of red cells and someone starts the count, because from here it's a ratio, not a guess.</p>
+</div>
+<div class="decode crimson">
+<h3>◇ Balanced resuscitation — replace blood with blood</h3>
+<p>He is now <strong>Class IV</strong>. Crystalloid alone would dilute what few clotting factors he has left and drop his temperature — feeding the lethal spiral of <strong>hypothermia, acidosis, and coagulopathy</strong>. So you give back what he's losing, in the proportion he's losing it:</p>
+<p style="text-align:center; font-family:var(--mono); font-size:1.15rem; color:var(--paper); letter-spacing:0.06em; margin:14px 0;">1 : 1 : 1<br/><span style="font-size:11px; letter-spacing:0.14em; color:var(--slate-dim);">PRBC : FFP : PLATELETS</span></p>
+<p><strong>Restraint is the counterintuitive heart of it.</strong> While he is actively exsanguinating you replace blood with blood, in ratio. What you do <em>not</em> do (at any point in this case) is chase his pressure back to normal with volume. In trauma the reason is that you pop the fresh clot. Here there's a second reason that is specific to him and matters more: <strong>the varix is bleeding because of portal pressure, and volume expansion raises portal pressure.</strong> Over-resuscitate a cirrhotic and you are turning up the pressure on the exact vessel you are trying to stop.</p>
+<p>So the target is enough perfusion for brain and kidney and no more, <em>until the source is sealed</em> — and the moment he is no longer exsanguinating, the whole posture flips.</p>
+</div>
+<div class="decode amber" style="margin-top:14px;">
+<h3>◇ And then the target changes — restrictive transfusion</h3>
+<p>The ratio above is for the phase he's in right now: crashing, visibly losing volume faster than you can replace it. Once that stops, the evidence points hard the other way. In acute upper GI bleeding the transfusion threshold is <strong>hemoglobin below 7 g/dL</strong>, targeting 7–9 — not 10, and not "top him up because the number looks low."</p>
+<p>Villanueva's trial is the one that settled it: patients transfused restrictively had <strong>better survival and less rebleeding</strong> than those transfused liberally, and the benefit was largest in exactly this patient — Child-Pugh A and B cirrhosis. The mechanism is the same one driving the paragraph above. Liberal transfusion pushed the portal pressure gradient up; restrictive transfusion did not. <em>More blood, more portal pressure, more rebleeding.</em></p>
+<p>These two rules are not in conflict, and reading them as a contradiction is the trap. The trial deliberately excluded patients with massive exsanguinating hemorrhage — patients like him, in the sixty seconds he is in right now. <strong>Ratio-based resuscitation is for the crash. The restrictive threshold governs every hour after it.</strong> Knowing which phase you are in is the actual skill.</p>
+<p style="margin-top:12px;">The failure mode here belongs to trauma nurses specifically: this is a <em>medical</em> bleed in a cirrhotic, and trauma doctrine imported wholesale will over-transfuse him and raise his rebleeding risk. The 1:1:1 ratio and permissive targets come from trauma literature. The threshold that follows does not.</p>
+</div>
 </section>
-
 <!-- BEAT 5 -->
 <section class="beat wrap" data-hr="122" data-sbp="94" data-dbp="66" data-spo2="96" data-state="caution" data-clock="00:24">
-  <div class="timecard"><span class="t">00:24</span> The right drugs, now</div>
-  <div class="story tight">
-    <p>While the products run, you build the pharmacology around the working diagnosis. Cirrhotic, likely variceal, so this is not a plain ulcer, and the orders reflect that. You call them back as you draw them up.</p>
-  </div>
-  <div class="decode">
-    <h3>◇ Orders that match the source</h3>
-    <ul class="orders">
-      <li><b>Octreotide</b> — 50 mcg IV bolus, then 50 mcg/hr. Somatostatin analog; drops portal pressure and slows the variceal bleed.</li>
-      <li><b>Ceftriaxone</b>, 1 g IV. Prophylactic antibiotics in a cirrhotic GI bleed measurably cut infection <b>and mortality</b>.</li>
-      <li><b>Pantoprazole</b> — 80 mg IV bolus, then 8 mg/hr infusion. If any of this turns out to be ulcer, a gastric pH &gt;6 stabilizes the clot.</li>
-    </ul>
-    <p style="margin-top:12px;">Note what's <em>not</em> reflexive here: the PPI is the star for peptic ulcers, but in a variceal bleed it rides shotgun. <strong>Octreotide and antibiotics</strong> are the mortality movers. Match the drug to the source, not to the habit.</p>
-  </div>
+<div class="timecard"><span class="t">00:24</span> The right drugs, now</div>
+<div class="story tight">
+<p>While the products run, you build the pharmacology around the working diagnosis. Cirrhotic, likely variceal, so this is not a plain ulcer, and the orders reflect that. You call them back as you draw them up.</p>
+</div>
+<div class="decode">
+<h3>◇ Orders that match the source</h3>
+<ul class="orders">
+<li><b>Octreotide</b> — 50 mcg IV bolus, then 50 mcg/hr. Somatostatin analog; drops portal pressure and slows the variceal bleed.</li>
+<li><b>Ceftriaxone</b>, 1 g IV. Prophylactic antibiotics in a cirrhotic GI bleed measurably cut infection <b>and mortality</b>.</li>
+<li><b>Pantoprazole</b> — 80 mg IV bolus, then 8 mg/hr infusion. If any of this turns out to be ulcer, a gastric pH >6 stabilizes the clot.</li>
+</ul>
+<p style="margin-top:12px;">Note what's <em>not</em> reflexive here: the PPI is the star for peptic ulcers, but in a variceal bleed it rides shotgun. <strong>Octreotide and antibiotics</strong> are the mortality movers. Match the drug to the source, not to the habit.</p>
+</div>
 </section>
-
 <!-- BEAT 6: Blatchford tool -->
 <section class="beat wrap" data-hr="112" data-sbp="100" data-dbp="68" data-spo2="97" data-state="caution" data-clock="00:31">
-  <div class="timecard"><span class="t">00:31</span> Putting a number on the danger</div>
-  <div class="story tight">
-    <p>The GI fellow is on the phone and asks the question every consultant asks: <span class="said">"How sick is he, really?"</span> You don't hand them a vibe. You hand them a score — the same one the literature uses to decide who can go home and who cannot.</p>
-  </div>
-  <div class="tool" id="blatchford">
-    <h3>Glasgow-Blatchford Score · live</h3>
-    <p class="sub">Toggle what's true for him. The score climbs as the risk does. (Simplified from the full weighting.)</p>
-    <div class="toggles" id="gbtoggles">
-      <button data-pts="3" aria-pressed="false">Systolic &lt; 100</button>
-      <button data-pts="3" aria-pressed="false">Pulse ≥ 100</button>
-      <button data-pts="6" aria-pressed="false">Urea markedly ↑ (BUN)</button>
-      <button data-pts="6" aria-pressed="false">Hgb &lt; 10 g/dL</button>
-      <button data-pts="1" aria-pressed="false">Melena present</button>
-      <button data-pts="2" aria-pressed="false">Syncope</button>
-      <button data-pts="2" aria-pressed="false">Hepatic disease</button>
-    </div>
-    <div class="readout">
-      <div class="score" id="gbscore">0</div>
-      <div class="verdict" id="gbverdict"><b>Score 0.</b> The only score that reliably means "safe for outpatient." Anything above it earns admission.</div>
-    </div>
-  </div>
-  <div class="decode amber" style="margin-top:14px;">
-    <h3>◇ Why score at all</h3>
-    <p>A Glasgow-Blatchford of <strong>0</strong> is the rare green light for discharge and outpatient scope. Our patient — hypotensive, tachycardic, melena, known liver disease — lands <strong>high</strong>. The score doesn't tell you anything your gut didn't; it tells the <em>next</em> clinician, the bed manager, and the chart, in a language that travels.</p>
-  </div>
+<div class="timecard"><span class="t">00:31</span> Putting a number on the danger</div>
+<div class="story tight">
+<p>The GI fellow is on the phone and asks the question every consultant asks: <span class="said">"How sick is he, really?"</span> You don't hand them a vibe. You hand them a score — the same one the literature uses to decide who can go home and who cannot.</p>
+</div>
+<div class="tool" id="blatchford">
+<h3>Glasgow-Blatchford Score · live</h3>
+<p class="sub">Toggle what's true for him. The score climbs as the risk does. (Simplified from the full weighting.)</p>
+<div class="toggles" id="gbtoggles">
+<button data-pts="3" aria-pressed="false">Systolic < 100</button>
+<button data-pts="3" aria-pressed="false">Pulse ≥ 100</button>
+<button data-pts="6" aria-pressed="false">Urea markedly ↑ (BUN)</button>
+<button data-pts="6" aria-pressed="false">Hgb < 10 g/dL</button>
+<button data-pts="1" aria-pressed="false">Melena present</button>
+<button data-pts="2" aria-pressed="false">Syncope</button>
+<button data-pts="2" aria-pressed="false">Hepatic disease</button>
+</div>
+<div class="readout">
+<div class="score" id="gbscore">0</div>
+<div class="verdict" id="gbverdict"><b>Score 0.</b> The only score that reliably means "safe for outpatient." Anything above it earns admission.</div>
+</div>
+</div>
+<div class="decode amber" style="margin-top:14px;">
+<h3>◇ Why score at all</h3>
+<p>A Glasgow-Blatchford of <strong>0</strong> is the rare green light for discharge and outpatient scope. Our patient — hypotensive, tachycardic, melena, known liver disease — lands <strong>high</strong>. The score doesn't tell you anything your gut didn't; it tells the <em>next</em> clinician, the bed manager, and the chart, in a language that travels.</p>
+</div>
 </section>
-
 <!-- BEAT 7 -->
 <section class="beat wrap" data-hr="104" data-sbp="103" data-dbp="70" data-spo2="98" data-state="caution" data-clock="00:48">
-  <div class="timecard"><span class="t">00:48</span> The definitive move</div>
-  <div class="story">
-    <p>Resuscitation buys minutes; it doesn't fix pipes. The only thing that stops a variceal bleed is getting eyes and a band on the varix. GI is scrubbing. He's held at a systolic in the low 100s now, mentating again, the cell-saver ratio holding his coags together.</p>
-    <p>You wheel him to the suite yourself — NPO confirmed, a second unit checked and hanging, suction tested, the airway cart at the head of the bed because a stomach full of blood is an aspiration waiting to happen. <span class="said">"Ready when you are,"</span> the endoscopist says. The scope goes down. On the screen: a column of dilated veins, one of them weeping. A band snaps closed around it. The weeping stops.</p>
-  </div>
-  <div class="decode">
-    <h3>◇ Timing is the therapy</h3>
-    <p><strong>Urgent endoscopy</strong> (within the first hour or two) is for the unstable, actively-bleeding patient like this one; it is both the diagnosis and the treatment. <strong>Band ligation</strong> achieves hemostasis in 80–90% of variceal bleeds. Your job in the doorway to the suite is airway, access, and blood — endoscopy can't work on a patient who's aspirated or arrested on the way.</p>
-    <p>Now — and only now that the source is controlled — the pressure target comes up. Permissive hypotension ends when the bleeding does.</p>
-  </div>
+<div class="timecard"><span class="t">00:48</span> The definitive move</div>
+<div class="story">
+<p>Resuscitation buys minutes; it doesn't fix pipes. The only thing that stops a variceal bleed is getting eyes and a band on the varix. GI is scrubbing. He's held at a systolic in the low 100s now, mentating again, the cell-saver ratio holding his coags together.</p>
+<p>You wheel him to the suite yourself — NPO confirmed, a second unit checked and hanging, suction tested, the airway cart at the head of the bed because a stomach full of blood is an aspiration waiting to happen. <span class="said">"Ready when you are,"</span> the endoscopist says. The scope goes down. On the screen: a column of dilated veins, one of them weeping. A band snaps closed around it. The weeping stops.</p>
+</div>
+<div class="decode">
+<h3>◇ Timing is the therapy</h3>
+<p><strong>Urgent endoscopy</strong> (within the first hour or two) is for the unstable, actively-bleeding patient like this one; it is both the diagnosis and the treatment. <strong>Band ligation</strong> achieves hemostasis in 80–90% of variceal bleeds. Your job in the doorway to the suite is airway, access, and blood — endoscopy can't work on a patient who's aspirated or arrested on the way.</p>
+<p>Now — and only now that the source is controlled — the pressure target comes up. Permissive hypotension ends when the bleeding does.</p>
+</div>
 </section>
-
 <!-- BEAT 8 -->
 <section class="beat wrap" data-hr="88" data-sbp="118" data-dbp="74" data-spo2="98" data-state="stable" data-clock="01:20">
-  <div class="timecard"><span class="t">01:20</span> Handoff to the ICU</div>
-  <div class="story tight">
-    <p>Eighty minutes from the grocery bag to a banded varix. He's going to the unit, not the morgue, and the difference was never one heroic act — it was a dozen ordinary ones done in the right order: two good IVs, blood instead of saline, a pressure held deliberately low, the right three drugs, a number on the danger, and a clean road to the scope.</p>
-    <p>You watch the monitor settle. HR in the 80s. A real systolic, earned honestly. You clean the room. Somewhere out front, someone else is walking in on their own two feet.</p>
-  </div>
+<div class="timecard"><span class="t">01:20</span> Handoff to the ICU</div>
+<div class="story tight">
+<p>Eighty minutes from the grocery bag to a banded varix. He's going to the unit, not the morgue, and the difference was never one heroic act — it was a dozen ordinary ones done in the right order: two good IVs, blood instead of saline, a pressure held deliberately low, the right three drugs, a number on the danger, and a clean road to the scope.</p>
+<p>You watch the monitor settle. HR in the 80s. A real systolic, earned honestly. You clean the room. Somewhere out front, someone else is walking in on their own two feet.</p>
+</div>
 </section>
-
 <div class="outro wrap">
-  <div class="rule"></div>
-  <h2>Same medicine. Different doorway.</h2>
-  <p>Every clinical fact in that story — the hemorrhage classes, the transfusion thresholds, octreotide before PPI, the Blatchford cutoff, the timing of endoscopy — traces to the literature listed at the foot of this page. Nothing was softened. It was just <em>staged</em>.</p>
-  <p>The scholarly version teaches you what to know. This version teaches you what it feels like to know it at 3 a.m. with a bag of blood on the desk.</p>
+<div class="rule"></div>
+<h2>Same medicine. Different doorway.</h2>
+<p>Every clinical fact in that story — the hemorrhage classes, the transfusion thresholds, octreotide before PPI, the Blatchford cutoff, the timing of endoscopy — traces to the literature listed at the foot of this page. Nothing was softened. It was just <em>staged</em>.</p>
+<p>The scholarly version teaches you what to know. This version teaches you what it feels like to know it at 3 a.m. with a bag of blood on the desk.</p>
 </div>
-
 <div class="wrap" style="padding-bottom:34px;">
-  <div class="decode" style="border-left-color:#6b7a82;">
-    <h3>◇ A correction, left visible</h3>
-    <p>The first published version of this page taught the crash and stopped there — ratio-based resuscitation and a permissive pressure target, both imported from trauma literature. It never mentioned the restrictive transfusion threshold, which in acute upper GI bleeding is the finding with the largest effect on survival, and it explained the permissive target with the trauma rationale rather than the portal-pressure one that actually applies to a cirrhotic.</p>
-    <p>That is a real error and a specific kind of one: a trauma nurse reaching for trauma doctrine on a medical bleed. It is the exact failure this page exists to train people out of. The body above carries the correction; this note is the record that it was wrong.</p>
-  </div>
+<div class="decode" style="border-left-color:#6b7a82;">
+<h3>◇ A correction, left visible</h3>
+<p>The first published version of this page taught the crash and stopped there — ratio-based resuscitation and a permissive pressure target, both imported from trauma literature. It never mentioned the restrictive transfusion threshold, which in acute upper GI bleeding is the finding with the largest effect on survival, and it explained the permissive target with the trauma rationale rather than the portal-pressure one that actually applies to a cirrhotic.</p>
+<p>That is a real error and a specific kind of one: a trauma nurse reaching for trauma doctrine on a medical bleed. It is the exact failure this page exists to train people out of. The body above carries the correction; this note is the record that it was wrong.</p>
 </div>
-
+</div>
 <div style="text-align:center; padding:0 0 40px;">
-  <a href="../../" style="display:inline-block; font-family:'JetBrains Mono',ui-monospace,monospace; font-size:11px; letter-spacing:0.1em; text-transform:uppercase; color:#6b7a82; text-decoration:none; border-bottom:1px solid rgba(255,255,255,0.15); padding-bottom:2px;">← Back to the portfolio</a>
+<a href="../../" style="display:inline-block; font-family:'JetBrains Mono',ui-monospace,monospace; font-size:11px; letter-spacing:0.1em; text-transform:uppercase; color:#6b7a82; text-decoration:none; border-bottom:1px solid rgba(255,255,255,0.15); padding-bottom:2px;">← Back to the portfolio</a>
 </div>
-
 <footer class="foot">
   Kymora Clinical Education · Story Mode Prototype
   <p class="disc">Educational narrative adapted from a clinical teaching article grounded in peer-reviewed literature. Doses and thresholds illustrate the referenced content and are not a substitute for current institutional protocols or clinical judgment. Patient is fictional; any resemblance to a real case is coincidental.</p>
 </footer>
-
 </main>
-
 <script>
 (function () {
   "use strict";
@@ -786,5 +776,333 @@
   lio.observe(ladderBeat);
 })();
 </script>
-</body>
+<script data-pplx-inline-edit>
+(function () {
+  if (window === window.top) return;
+
+  const allowedParentOrigins = ["https://www.perplexity.ai","https://perplexity.ai","https://testing.perplexity.ai","https://staging.perplexity.ai","https://*.preview.i.perplexity.ai","http://perplexity.localhost","http://localhost:1420","http://127.0.0.1:1420","http://localhost:3000","http://127.0.0.1:3000","http://localhost:5173","http://127.0.0.1:5173"];
+  const MAX_FONT_BYTES = 500 * 1024;
+  const MAX_TOTAL_FONT_BYTES = 2 * 1024 * 1024;
+  let scrollForwarding = false;
+  let scrollRaf = 0;
+  let trustedTopOrigin = null;
+
+  // Allow entries like "https://*.preview.i.perplexity.ai" — the wildcard
+  // matches a single DNS label (no dots), so "https://*.foo" cannot stretch
+  // across multiple labels.
+  function matchesAllowedOrigin(origin) {
+    if (!origin) return false;
+    for (const entry of allowedParentOrigins) {
+      if (!entry.includes("*")) {
+        if (entry === origin) return true;
+        continue;
+      }
+      const pattern = new RegExp(
+        "^" +
+          entry.replace(/[.+?^${}()|[\]\\]/g, "\\$&").replace(/\*/g, "[^.]+") +
+          "$",
+      );
+      if (pattern.test(origin)) return true;
+    }
+    return false;
+  }
+
+  // Trust decision: when the sender is same-origin-visible (event.origin is a
+  // real origin like https://www.perplexity.ai) we trust event.origin directly.
+  // When event.origin is "null" (opaque broker srcdoc), we fall back to the
+  // broker's stamped `parentOrigin` to identify the top window. The fallback
+  // is claim-only — we rely on the browser's native `targetOrigin` enforcement
+  // on the response path (see postToTrustedTop) to ensure replies can't be
+  // delivered to anyone but the actual top window of that claimed origin.
+  function getTrustedParentOrigin(event) {
+    const forwardedParentOrigin =
+      typeof event.data.parentOrigin === "string" ? event.data.parentOrigin : null;
+    const parentOrigin = event.origin === "null" ? forwardedParentOrigin : event.origin;
+    return matchesAllowedOrigin(parentOrigin) ? parentOrigin : null;
+  }
+
+  // All responses go to window.top with targetOrigin = the allowlisted origin.
+  // An attacker that iframes us inside their own null-origin broker can claim
+  // any parentOrigin they like, but the browser will drop the reply whenever
+  // the real top's origin doesn't match — so the screenshot never leaves.
+  function postToTrustedTop(message) {
+    if (!trustedTopOrigin) return;
+    try {
+      window.top.postMessage(message, trustedTopOrigin);
+    } catch (_error) {}
+  }
+
+  function inlineAll(original, clone) {
+    if (original.nodeType !== 1 || clone.nodeType !== 1) return;
+
+    try {
+      const computedStyle = getComputedStyle(original);
+      // cssText on a computed style is the serialized declaration in modern
+      // Chromium/Safari — a single read beats enumerating ~400 longhand
+      // properties. Firefox returns "" here, so we fall back on empty.
+      const serialized = computedStyle.cssText;
+      if (serialized) {
+        clone.style.cssText = serialized;
+      } else {
+        const parts = new Array(computedStyle.length);
+        for (let index = 0; index < computedStyle.length; index += 1) {
+          const property = computedStyle[index];
+          parts[index] = `${property}:${computedStyle.getPropertyValue(property)};`;
+        }
+        clone.style.cssText = parts.join("");
+      }
+    } catch (_error) {}
+
+    const originalChildren = original.children;
+    const clonedChildren = clone.children;
+    for (
+      let index = 0;
+      index < originalChildren.length && index < clonedChildren.length;
+      index += 1
+    ) {
+      inlineAll(originalChildren[index], clonedChildren[index]);
+    }
+  }
+
+  function extractFontUrl(srcValue) {
+    const matches = [
+      ...srcValue.matchAll(
+        /url\(["']?([^"')]+)["']?\)(?:\s*format\(["']?([^"')]+)["']?\))?/gi,
+      ),
+    ];
+    if (matches.length === 0) return null;
+    const woff2 = matches.find((m) => m[2] && m[2].toLowerCase().includes("woff2"));
+    if (woff2) return woff2[1];
+    const woff = matches.find((m) => m[2] && m[2].toLowerCase().includes("woff"));
+    if (woff) return woff[1];
+    return matches[0][1];
+  }
+
+  // Cache resolved font URL -> data URI across captures. Fonts on a page
+  // essentially never change, and a batch run emits multiple captures back to
+  // back — without this we'd refetch + re-base64 every time.
+  const fontDataUriCache = new Map();
+  const SRC_DECLARATION_RE = /src\s*:\s*[^;}]+/i;
+
+  async function fetchAsDataUri(url) {
+    if (fontDataUriCache.has(url)) return fontDataUriCache.get(url);
+    let dataUri = null;
+    try {
+      const response = await fetch(url, { mode: "cors", credentials: "omit" });
+      if (response.ok) {
+        const blob = await response.blob();
+        if (blob.size <= MAX_FONT_BYTES) {
+          dataUri = await new Promise((resolve) => {
+            const reader = new FileReader();
+            reader.onloadend = () =>
+              resolve(typeof reader.result === "string" ? reader.result : null);
+            reader.onerror = () => resolve(null);
+            reader.readAsDataURL(blob);
+          });
+        }
+      }
+    } catch (_error) {
+      dataUri = null;
+    }
+    fontDataUriCache.set(url, dataUri);
+    return dataUri;
+  }
+
+  function collectFontFaceRuleTexts() {
+    const rules = [];
+    for (const sheet of document.styleSheets) {
+      let cssRules;
+      try {
+        cssRules = sheet.cssRules;
+      } catch (_error) {
+        continue;
+      }
+      if (!cssRules) continue;
+      for (const rule of cssRules) {
+        const cssText = rule.cssText || "";
+        if (cssText.startsWith("@font-face")) rules.push(cssText);
+      }
+    }
+    return rules;
+  }
+
+  async function buildInlinedFontCss() {
+    const ruleTexts = collectFontFaceRuleTexts();
+    if (ruleTexts.length === 0) return null;
+
+    const resolved = ruleTexts.map((cssText) => {
+      if (!SRC_DECLARATION_RE.test(cssText)) return null;
+      const srcMatch = cssText.match(/src\s*:\s*([^;}]+)[;}]/i);
+      if (!srcMatch) return null;
+      const url = extractFontUrl(srcMatch[1]);
+      if (!url) return null;
+      try {
+        return { cssText, url: new URL(url, document.baseURI).href };
+      } catch (_error) {
+        return null;
+      }
+    });
+
+    const dataUris = await Promise.all(
+      resolved.map((entry) => (entry ? fetchAsDataUri(entry.url) : Promise.resolve(null))),
+    );
+
+    const inlined = [];
+    let totalBytes = 0;
+    for (let index = 0; index < resolved.length; index += 1) {
+      const entry = resolved[index];
+      const dataUri = dataUris[index];
+      if (!entry || !dataUri) continue;
+      const approxBytes = dataUri.length * 0.75;
+      if (totalBytes + approxBytes > MAX_TOTAL_FONT_BYTES) break;
+      totalBytes += approxBytes;
+      inlined.push(entry.cssText.replace(SRC_DECLARATION_RE, `src: url("${dataUri}")`));
+    }
+    return inlined.length > 0 ? inlined.join("\n") : null;
+  }
+
+  function stripExternal(clone) {
+    const images = clone.querySelectorAll("img");
+    for (let index = 0; index < images.length; index += 1) {
+      const src = images[index].getAttribute("src");
+      if (src && !src.startsWith("data:")) images[index].removeAttribute("src");
+    }
+
+    const elements = clone.querySelectorAll("*");
+    for (let index = 0; index < elements.length; index += 1) {
+      const style = elements[index].style.cssText;
+      if (style && style.includes("url(")) {
+        elements[index].style.cssText = style.replace(
+          /url\(["']?(?!data:)[^)"']*["']?\)/gi,
+          "none",
+        );
+      }
+    }
+  }
+
+  function emitScroll() {
+    scrollRaf = 0;
+    if (!scrollForwarding) return;
+    postToTrustedTop({
+      type: "INLINE_EDIT_SCROLL",
+      scrollX: window.scrollX,
+      scrollY: window.scrollY,
+    });
+  }
+
+  window.addEventListener(
+    "scroll",
+    function () {
+      if (!scrollForwarding || scrollRaf) return;
+      scrollRaf = requestAnimationFrame(emitScroll);
+    },
+    { passive: true, capture: true },
+  );
+
+  async function handleCaptureRequest(event) {
+    const requestId = event.data.requestId;
+    const scrollX = window.scrollX;
+    const scrollY = window.scrollY;
+    const width = window.innerWidth;
+    const height = window.innerHeight;
+
+    function postResult(dataUrl) {
+      postToTrustedTop({
+        type: "INLINE_EDIT_SCREENSHOT_RESULT",
+        requestId,
+        dataUrl,
+        scrollX,
+        scrollY,
+      });
+    }
+
+    try {
+      // Wait for any pending web fonts to resolve so both inline metrics and
+      // the @font-face inlining below see the same loaded faces.
+      if (document.fonts && document.fonts.ready) {
+        try {
+          await document.fonts.ready;
+        } catch (_error) {}
+      }
+
+      const clone = document.documentElement.cloneNode(true);
+      inlineAll(document.documentElement, clone);
+
+      const removedNodes = clone.querySelectorAll("script,link[rel=\"stylesheet\"],style");
+      for (let index = 0; index < removedNodes.length; index += 1) {
+        removedNodes[index].remove();
+      }
+
+      stripExternal(clone);
+
+      // Re-embed web fonts as data-URI @font-face rules so the SVG rasterizer
+      // can resolve them — external font URLs aren't fetched during
+      // foreignObject rendering, which would otherwise force a fallback face
+      // and change text metrics.
+      const inlinedFontCss = await buildInlinedFontCss();
+      if (inlinedFontCss) {
+        const styleEl = document.createElement("style");
+        styleEl.textContent = inlinedFontCss;
+        const head = clone.querySelector("head");
+        if (head) head.appendChild(styleEl);
+        else clone.insertBefore(styleEl, clone.firstChild);
+      }
+
+      const html = new XMLSerializer().serializeToString(clone);
+      const svg =
+        `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}">` +
+        '<foreignObject width="100%" height="100%">' +
+        `<div xmlns="http://www.w3.org/1999/xhtml" style="width:${width}px;height:${height}px;overflow:hidden">` +
+        `<div style="position:relative;left:-${scrollX}px;top:-${scrollY}px">` +
+        html +
+        "</div></div></foreignObject></svg>";
+      const svgUrl = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
+      const image = new Image();
+      image.onload = function () {
+        const canvas = document.createElement("canvas");
+        canvas.width = width;
+        canvas.height = height;
+        canvas.getContext("2d").drawImage(image, 0, 0);
+        postResult(canvas.toDataURL("image/png"));
+      };
+      image.onerror = function () {
+        postResult(null);
+      };
+      image.src = svgUrl;
+    } catch (_error) {
+      postResult(null);
+    }
+  }
+
+  window.addEventListener("message", function (event) {
+    if (!event.data) return;
+    // Only accept messages from the direct parent frame. Blocks sibling /
+    // unrelated-window postMessage senders that could otherwise reach us.
+    if (event.source !== window.parent) return;
+
+    const trustedParentOrigin = getTrustedParentOrigin(event);
+    if (!trustedParentOrigin) return;
+    trustedTopOrigin = trustedParentOrigin;
+
+    if (event.data.type === "INLINE_EDIT_SCROLL_START") {
+      scrollForwarding = true;
+      emitScroll();
+      return;
+    }
+
+    if (event.data.type === "INLINE_EDIT_SCROLL_STOP") {
+      scrollForwarding = false;
+      if (scrollRaf) cancelAnimationFrame(scrollRaf);
+      scrollRaf = 0;
+      return;
+    }
+
+    if (event.data.type !== "INLINE_EDIT_CAPTURE_REQUEST") return;
+
+    handleCaptureRequest(event);
+  });
+})();
+
+
+</script></body>
 </html>

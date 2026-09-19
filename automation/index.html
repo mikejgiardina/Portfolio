@@ -1,276 +1,569 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Lifecycle-Hook Automation for a Multi-Repo AI Workspace — Case Study</title>
-<meta name="description" content="How a five-repository codebase where AI coding sessions run daily was given a lifecycle-hook automation layer that enforces safety, quality, and workflow — plus the command, skill, and review-agent layers around it.">
-<meta property="og:type" content="article">
-<meta property="og:url" content="https://mike-giardina.netlify.app/automation/">
-<meta property="og:title" content="The hook layer — lifecycle automation for a multi-repo AI workspace">
-<meta property="og:description" content="Making the safe path the default one, on every machine. Includes the checks that turned out never to fire.">
-<meta property="og:image" content="https://mike-giardina.netlify.app/assets/og/automation.png">
-<meta property="og:image:width" content="1200">
-<meta property="og:image:height" content="627">
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://mike-giardina.netlify.app/assets/og/automation.png">
-<link rel="stylesheet" href="../assets/site.css">
-<script src="../assets/site.js" defer></script>
-<script>try{var t=localStorage.getItem("mg-theme");if(t==="dark"||t==="light")document.documentElement.setAttribute("data-theme",t);}catch(e){}</script>
-</head>
-<body>
-<div class="grid-bg"></div>
 
-<div class="topbar">
-  <div class="topin">
-    <span class="mark"><b>hooks/</b> · ai workspace automation</span>
-    <nav class="topnav">
-      <a href="#principles">Principles</a>
-      <a href="#automatic">Automatic</a>
-      <a href="#commands">Commands</a>
-      <a href="#skills">Skills</a>
-      <a href="#scheduled">Scheduled</a>
-      <a href="#review">Review</a>
-      <a href="../enforcement/">Enforcement →</a>
-      <a href="../publishing/">Publishing →</a>
-      <a href="../orchestration/">Orchestration →</a>
-      <a href="../clinical-review/">Clinical review →</a>
-      <a href="../case-studies/" class="back">← all five</a>
-      <a href="../" class="back">← portfolio</a>
-    </nav>
-  </div>
-</div>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Lifecycle-Hook Automation for a Multi-Repo AI Workspace — Case Study</title>
+<meta name="description" content="How a five-repository codebase where AI coding sessions run daily was given a lifecycle-hook automation layer that enforces safety, quality, and workflow — plus the command, skill, and review-agent layers around it."/>
+<meta property="og:type" content="article"/>
+<meta property="og:url" content="https://mike-giardina.netlify.app/automation/"/>
+<meta property="og:title" content="The hook layer — lifecycle automation for a multi-repo AI workspace"/>
+<meta property="og:description" content="Making the safe path the default one, on every machine. Includes the checks that turned out never to fire."/>
+<meta property="og:image" content="https://mike-giardina.netlify.app/assets/og/automation.png"/>
+<meta property="og:image:width" content="1200"/>
+<meta property="og:image:height" content="627"/>
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="https://mike-giardina.netlify.app/assets/og/automation.png"/>
+
+
+
+<link rel="stylesheet" href="../assets/site.css"/><link rel="stylesheet" href="../base.css"/><link rel="stylesheet" href="../style.css"/><link rel="stylesheet" href="../assets/portfolio.css"/><link rel="stylesheet" href="../assets/fonts/editorial.css"/><script src="../app.js" defer=""></script><script src="../assets/navigation.js" defer=""></script></head>
+<body class="editorial-article"><a class="skip" href="#reading">Skip to content</a><header class="masthead"><div class="mast-inner">
+<a class="brand" href="../"><svg width="32" height="32" viewbox="0 0 32 32" fill="none" role="img" aria-label="Michael Giardina monogram"><path d="M4 26V6l12 12L28 6v20M4 6l12 12 12-12" stroke="currentColor" stroke-width="2.5"></path><path d="M16 18v8" stroke="currentColor" stroke-width="2.5"></path></svg><span>MICHAEL GIARDINA<span class="brand-sub">Clinical judgment. Systems thinking.</span></span></a>
+<button class="mobile-menu" aria-expanded="false" aria-controls="primary-navigation" type="button">Menu</button>
+<nav class="primary-nav" id="primary-navigation" aria-label="Portfolio navigation">
+<a href="../#work">Work</a>
+<details class="nav-dropdown"><summary>Case studies</summary><div class="nav-panel"><a href="../case-studies/">All five case studies</a><a href="../automation/">Lifecycle hooks</a><a href="../enforcement/">Enforcement</a><a href="../publishing/">Disclosure & publishing</a><a href="../clinical-review/">Clinical AI evaluation</a><a href="../orchestration/">Multi-session orchestration</a><a href="../orchestration/evidence/">Evidence appendix</a><a href="../trauma-tracker/">Trauma Tracker</a></div></details>
+<details class="nav-dropdown"><summary>Clinical stories</summary><div class="nav-panel"><a href="../story/gi-bleed/">GI hemorrhage</a><a href="../story/hyperkalemia/">Hyperkalemia</a><a href="../story/first-code-blue/">Your first code blue</a><a href="https://erinfo.netlify.app" target="_blank" rel="noopener noreferrer">ER articles ↗</a></div></details>
+<a href="../#background">About</a><a href="../#connect">Contact</a></nav>
+<button class="theme-toggle" type="button" aria-label="Switch to dark mode"><span class="theme-symbol" aria-hidden="true">◐</span><span class="theme-label">Dark</span></button></div><div class="reading-progress" aria-hidden="true"></div></header>
+
 
 <div class="wrap">
-
-  <header class="hero" id="top">
-    <div class="status-bar">
-      <div class="status-item"><span class="status-dot"></span><span>ENGINEERING CASE STUDY</span></div>
-      <div class="status-item"><span class="status-dot"></span><span>CLAUDE CODE · MULTI-REPO WORKSPACE</span></div>
-    </div>
-    <p class="kicker">Developer tooling · workflow automation</p>
-    <h1>Giving a multi-repo AI workspace a nervous system.</h1>
-    <p class="lede">A five-repository codebase where <b>AI coding sessions run daily</b> needs guardrails nobody can be relied on to remember. The answer is a <span class="cy">lifecycle-hook automation layer</span>: small, portable scripts that fire at fixed moments in every session to enforce safety, quality, and workflow &mdash; backed by a command layer for the work you drive by hand, a skill layer of packaged procedures, a scheduled layer for the checks that only fail slowly, and a review layer of specialist agents that audit what the scripts structurally cannot see.</p>
-    <p class="context">python simulation engine · typescript / react apps · swift ios app · markdown docs corpus · agent-config repo</p>
-
-    <div class="layers">
-      <div class="layer"><div class="k">automatic</div><div class="d">Scripts wired to the runtime's session lifecycle. Nothing to type.</div></div>
-      <div class="layer"><div class="k">commands</div><div class="d">Slash commands for the work you drive by hand.</div></div>
-      <div class="layer"><div class="k">skills</div><div class="d">Multi-step procedures packaged so they run the same way twice.</div></div>
-      <div class="layer"><div class="k">scheduled</div><div class="d">Weekly sweeps for the failures that never announce themselves.</div></div>
-      <div class="layer"><div class="k">review</div><div class="d">Specialist agents reading for what a pattern can't express.</div></div>
-    </div>
-    <p class="statnote">Most of the automatic layer only advises. A minority can stop a command outright, and they split by posture: a small set of gates fail <em>closed</em> &mdash; they block what they cannot prove is safe &mdash; while the rest deny on a positive match and stay open when their own toolchain is degraded. Which posture a gate gets is decided per gate, from what it costs to be wrong in each direction.</p>
-    <p class="statnote"><b style="color:var(--text-primary)">No counts on this page.</b> The scripts, commands, and agents are added and retired continuously, and a permanent page quoting a moving number is a stale claim with a countdown on it. The shapes below are stable; the totals are not, so they aren't here.</p>
-    <p class="statnote" style="border-left-color: var(--accent-green);"><b style="color:var(--text-primary)">Platform vs. build.</b> Claude Code supplies the runtime &mdash; the lifecycle events themselves, the slash-command and skill mechanisms, and the hook-wiring format. What's documented here is the layer built on top of it: the specific scripts, commands, and skills, the choice of which event each hangs off, and the engineering decisions that make them safe to run unattended on every machine, every session.</p>
-  </header>
-
-  <section class="sec" id="principles">
-    <div class="sechead"><span class="secnum">01</span><h2>Design principles</h2><div class="divider"></div></div>
-    <p class="secsub">The hooks follow a few rules that keep them safe to run on anyone's machine, every session, without becoming noise or a liability.</p>
-    <div class="cards">
-      <div class="card">
-        <div class="tag">posture</div>
-        <h3>Fail open is not fail silent</h3>
-        <p>A degraded toolchain makes a hook a no-op, never a hang or a false block &mdash; with deliberate exceptions for the gates whose false pass is unrecoverable (the secret scanner, the repo-identity guard, the publish gate), which fail <em>closed</em>.</p>
-        <p style="margin-top:0.7rem;">That was the whole principle until it wasn't. Exiting zero is fail-open; discarding the error is a <em>second, separate</em> choice, made by habit, and it costs the entire diagnostic surface. <b style="color:var(--text-primary)">Six defects in eight days</b> were each hidden by the silence rather than the openness &mdash; including a gate whose &ldquo;I could not evaluate this&rdquo; branch was unreachable, so an unreadable input read as nothing-to-check and was allowed through. A hook can decline to block and still refuse to be quiet.</p>
-      </div>
-      <div class="card">
-        <div class="tag">contract</div>
-        <h3>Three outcomes, never two</h3>
-        <p>Any check exits <em>clean</em>, <em>violations found</em>, or <em>could not check</em> &mdash; three states, not a boolean. The third is the one that matters: a detector reporting success when it never ran reproduces the exact bug it was built to catch. Four checks here had invented that distinction independently before it was made the project-wide convention; the other forty had none.</p>
-      </div>
-      <div class="card">
-        <div class="tag">philosophy</div>
-        <h3>Narrated &rarr; enforced</h3>
-        <p>A convention written in a doc gets forgotten. Wherever a rule can be expressed as a check, it becomes one, so the guarantee holds even when no one remembers it, and self-clears the moment the check goes green.</p>
-      </div>
-      <div class="card">
-        <div class="tag">portability</div>
-        <h3>One script, every machine</h3>
-        <p>The same hooks run on Windows and macOS with no hardcoded drive letters, <code>python3</code>-first resolution, POSIX-only tools and LF endings enforced. They reach every machine through one synced config repo.</p>
-        <p>This is not a hypothetical. The layer runs across <b>two Windows boxes and a Mac</b>, on more than one person's hardware, and a second contributor works inside it. <em>Portability stopped being a design goal the moment someone else's machine had a different drive letter.</em></p>
-      </div>
-      <div class="card">
-        <div class="tag">integrity</div>
-        <h3>Single source of truth</h3>
-        <p>Volatile metrics are computed once into one file, then propagated into docs and dashboards mechanically. A broken environment degrades to &ldquo;no change,&rdquo; never to bad numbers overwriting good ones.</p>
-      </div>
-      <div class="card">
-        <div class="tag">concurrency</div>
-        <h3>Multi-writer safety</h3>
-        <p>Several writers (human teammates or AI sessions) share one multi-repo workspace. Git worktrees, a branch-per-task convention, and a live-session registry keep two of them from editing the same sub-repo and committing onto each other's branches &mdash; a real failure this layer was built to prevent. The coordination rides on shared git conventions, so it holds for teammates who have never touched an AI tool.</p>
-      </div>
-    </div>
-  </section>
-
-  <section class="sec" id="automatic">
-    <div class="sechead"><span class="secnum">02</span><h2>The automatic layer</h2><div class="divider"></div></div>
-    <p class="secsub">Each hook hangs off one of the six lifecycle events wired here &mdash; hook points the runtime exposes, from session start to session end &mdash; and fires when that moment arrives; nothing to type. A minority can block you; the rest inject context, advise, or run silently in the background.</p>
-    <div class="legend">
-      <span class="chip c-block">blocks &middot; fail-closed</span>
-      <span class="chip c-loud">denies on a match &middot; fail-open, loud</span>
-      <span class="chip c-cond">conditional gate</span>
-      <span class="chip c-ctx">injects context</span>
-      <span class="chip c-adv">advisory &middot; nag / log</span>
-    </div>
-    <p style="font-size:0.8rem; color:var(--text-dim); margin:-0.6rem 0 1.4rem;">Row labels are plain-language descriptions of each script's job &mdash; not the scripts' filenames.</p>
-
-    <div class="lane">
-      <div class="lh"><span class="ev">SessionStart</span><span class="when">session begins &middot; output enters the model's context</span></div>
-      <div class="row"><span class="rname">Parallel-session registry</span><span class="rdesc">registers this session and warns when another session already shares a sub-repo, before edits collide</span><span class="chip c-ctx rchip">context</span></div>
-      <div class="row"><span class="rname">Backup reminder</span><span class="rdesc">flags overdue off-machine backups of irreplaceable working files</span><span class="chip c-ctx rchip">context</span></div>
-      <div class="row"><span class="rname">Metrics provenance</span><span class="rdesc">reports which git state the project's canonical metrics were last computed from</span><span class="chip c-ctx rchip">context</span></div>
-    </div>
-
-    <div class="lane">
-      <div class="lh"><span class="ev">UserPromptSubmit</span><span class="when">every prompt you send &middot; output enters context</span></div>
-      <div class="row"><span class="rname">Work-queue inject</span><span class="rdesc">on a work-intent phrase, surfaces your assigned issues from the tracker &mdash; once per session, so it never repeats</span><span class="chip c-ctx rchip">context</span></div>
-    </div>
-
-    <div class="lane">
-      <div class="lh"><span class="ev">PreToolUse</span><span class="when">before a shell command runs &middot; can block it</span><span class="match">Bash</span></div>
-      <div class="row"><span class="rname">Secret guard</span><span class="rdesc">blocks any commit that stages a secret &mdash; env files, private keys, secret JSON. Fails closed: if it can't prove the commit is clean, it blocks</span><span class="chip c-block rchip">blocks</span></div>
-      <div class="row"><span class="rname">Repo-identity guard</span><span class="rdesc">blocks a destructive repository operation &mdash; archive, delete, rename &mdash; when the name you typed no longer resolves to the repository you mean. Fails closed on destructive verbs</span><span class="chip c-block rchip">blocks</span></div>
-      <div class="row"><span class="rname">Publish gate</span><span class="rdesc">blocks a push to a repository whose remote publishes on receipt, scanning every changed file in the outgoing commits &mdash; whatever path they sit on. Fails closed, on those destinations only</span><span class="chip c-block rchip">blocks</span></div>
-      <div class="row"><span class="rname">Issue-claim guard</span><span class="rdesc">denies creating a branch for a work item another live session already holds</span><span class="chip c-loud rchip">denies</span></div>
-      <div class="row"><span class="rname">Merge serializer</span><span class="rdesc">takes a lock so two sessions can't merge into the same default branch seconds apart</span><span class="chip c-loud rchip">denies</span></div>
-      <div class="row"><span class="rname">Board-write serializer</span><span class="rdesc">serializes writes to the shared project board, and forces a re-pull after a batch that may have been cut short</span><span class="chip c-loud rchip">denies</span></div>
-      <div class="row"><span class="rname">Change-record gate</span><span class="rdesc">denies a push whose commits change how the agent behaves but leave the change record untouched</span><span class="chip c-loud rchip">denies</span></div>
-      <div class="row"><span class="rname">CI-skip guard</span><span class="rdesc">denies a commit carrying a CI-skip marker on a feature branch, where it silently disables the only pre-merge check there is</span><span class="chip c-loud rchip">denies</span></div>
-      <div class="row"><span class="rname">Dirty-tree guard</span><span class="rdesc">warns before a pull / merge / rebase onto uncommitted work, and asks you to commit or stash first</span><span class="chip c-cond rchip">conditional</span></div>
-      <div class="row"><span class="rname">Pre-run validation</span><span class="rdesc">validates the simulation config before a run is launched</span><span class="chip c-adv rchip">advisory</span></div>
-      <div class="row"><span class="rname">Manifest check</span><span class="rdesc">confirms the module manifest matches the source files actually on disk</span><span class="chip c-adv rchip">advisory</span></div>
-    </div>
-
-    <div class="note" style="margin: -0.2rem 0 1.4rem;"><b>Where the repo-identity guard came from.</b> A repository had been transferred between owners, which leaves a redirect behind. An archive command typed against the <em>old</em> name silently followed that redirect and archived the canonical repository instead, the one being kept. The check that catches it is a single API call asking whether the name you typed still equals its own canonical name; if it doesn't resolve, or resolves to something else, the destructive verb is denied. Nearly every gate on this page exists because something like that happened once.</div>
-
-    <div class="note" style="margin: -0.2rem 0 1.4rem;"><b>Why the newest gates all guard something that isn't a file.</b> The original guards protect a working tree: is it dirty, is another session in it. Then several sessions started running at once, and the collisions moved to resources a working-tree guard structurally cannot see &mdash; a remote branch being merged with no checkout, a shared project board with no repository at all, a work item two threads both decided to pick up. Each was quiet under every existing guard, and each cost real duplicated work before it got one of its own. <em>The unit of contention was never the file.</em></div>
-
-    <div class="lane">
-      <div class="lh"><span class="ev">PostToolUse</span><span class="when">after a shell command completes</span><span class="match">Bash</span></div>
-      <div class="row"><span class="rname">Inventory metric</span><span class="rdesc">records a project inventory count after shell commands</span><span class="chip c-adv rchip">advisory</span></div>
-      <div class="row"><span class="rname">Issue auto-flag</span><span class="rdesc">marks a tracker issue In Progress the moment its feature branch is created</span><span class="chip c-adv rchip">advisory</span></div>
-    </div>
-
-    <div class="lane">
-      <div class="lh"><span class="ev">PostToolUse</span><span class="when">after a file is written or edited</span><span class="match">Write / Edit</span></div>
-      <div class="row"><span class="rname">Architecture linter</span><span class="rdesc">checks core modules against the project's conventions &mdash; syntax and known anti-patterns</span><span class="chip c-adv rchip">advisory</span></div>
-      <div class="row"><span class="rname">Test reminder</span><span class="rdesc">nudges to run the suite when a core module changes</span><span class="chip c-adv rchip">advisory</span></div>
-      <div class="row"><span class="rname">Stale-docs flag</span><span class="rdesc">flags a module's docs as stale when its code changes underneath them</span><span class="chip c-adv rchip">advisory</span></div>
-      <div class="row"><span class="rname">Confidential-term scan</span><span class="rdesc">flags sensitive terms in files bound for public paths before they can be committed</span><span class="chip c-adv rchip">advisory</span></div>
-      <div class="row"><span class="rname">Claims lint</span><span class="rdesc">checks outward-facing docs for unsupported performance claims</span><span class="chip c-adv rchip">advisory</span></div>
-      <div class="row"><span class="rname">Doc-placement guard</span><span class="rdesc">keeps docs in the docs repo instead of scattered across the code repos<span class="wonly">write only</span></span><span class="chip c-adv rchip">advisory</span></div>
-      <div class="row"><span class="rname">Ad-hoc-script sniff</span><span class="rdesc">catches one-off scripts at creation and nudges toward maintained tooling<span class="wonly">write only</span></span><span class="chip c-adv rchip">advisory</span></div>
-    </div>
-
-    <div class="lane">
-      <div class="lh"><span class="ev">Stop</span><span class="when">when the assistant finishes a response</span></div>
-      <div class="row"><span class="rname">Metrics propagation</span><span class="rdesc">pushes single-source metrics into narrative docs and dashboards</span><span class="chip c-adv rchip">advisory</span></div>
-      <div class="row"><span class="rname">Commit log</span><span class="rdesc">records commit metadata after each turn</span><span class="chip c-adv rchip">advisory</span></div>
-      <div class="row"><span class="rname">Work-hours log</span><span class="rdesc">maintains a local hours log derived from git activity</span><span class="chip c-adv rchip">advisory</span></div>
-      <div class="row"><span class="rname">Pacing audit</span><span class="rdesc">warns when a newly added simulation component is missing a required timing parameter</span><span class="chip c-adv rchip">advisory</span></div>
-      <div class="row"><span class="rname">Tiered backups</span><span class="rdesc">runs off-machine backups on per-stream cadences</span><span class="chip c-adv rchip">advisory</span></div>
-      <div class="row"><span class="rname">Registry refresh</span><span class="rdesc">updates this session's registry timestamp each turn so other writers still see it as active</span><span class="chip c-adv rchip">advisory</span></div>
-    </div>
-
-    <div class="lane">
-      <div class="lh"><span class="ev">SessionEnd</span><span class="when">session ends</span></div>
-      <div class="row"><span class="rname">Session deregister</span><span class="rdesc">removes this session from the live-session registry</span><span class="chip c-adv rchip">advisory</span></div>
-    </div>
-  </section>
-
-  <section class="sec" id="commands">
-    <div class="sechead"><span class="secnum">03</span><h2>The command layer</h2><div class="divider"></div></div>
-    <p class="secsub">Alongside the automatic hooks, a set of slash commands drives the work you do by hand. Command first, purpose first &mdash; <span style="font-family:var(--mono);color:var(--accent-cyan)">/thing</span> does X so that Y.</p>
-
-    <div class="cmdgroup">
-      <div class="cmdgh">Start &amp; steer your work</div>
-      <div class="cmd"><div class="cmdname">/session-start</div><div class="cmdbody">opens a development session &mdash; loads current state, git status, and the issue board so you start with full context instead of cold.</div></div>
-      <div class="cmd"><div class="cmdname">/status</div><div class="cmdbody">prints a project snapshot &mdash; where things stand across repos, at a glance.</div></div>
-      <div class="cmd"><div class="cmdname">/my-work</div><div class="cmdbody">lists the issues assigned to you across repos, so &ldquo;what am I meant to be doing&rdquo; is one command.</div></div>
-      <div class="cmd"><div class="cmdname">/start &lt;#&gt;</div><div class="cmdbody">picks up an issue &mdash; creates the branch, marks it In Progress, and posts a pickup comment so the board reflects reality without you touching it.</div></div>
-      <div class="cmd"><div class="cmdname">/close-out</div><div class="cmdbody">wraps a session cleanly &mdash; captures loose ends into issues, reconciles what you touched against the board, and flags stale items so nothing gets lost. <span style="color:var(--text-dim)">(/session-end is a kept alias.)</span></div></div>
-    </div>
-
-    <div class="cmdgroup">
-      <div class="cmdgh">Machine &amp; environment</div>
-      <div class="cmd"><div class="cmdname">/doctor</div><div class="cmdbody">checks a machine is ready &mdash; verifies the toolchain the hooks and commands depend on, and prints a one-line fix for each gap.</div></div>
-      <div class="cmd"><div class="cmdname">/whereami</div><div class="cmdbody">confirms which machine you're on &mdash; reports host, hardware, and a task-fit verdict so heavy work doesn't run on the wrong box.</div></div>
-    </div>
-
-    <div class="cmdgroup">
-      <div class="cmdgh">Domain commands</div>
-      <div class="note">The project adds several more commands of its own for running and checking the simulation &mdash; launch a run, audit module wiring, grade calibration against reference data, stress-test scale, rebuild the dashboards, and report automation health. Specifics are omitted from this public write-up.</div>
-    </div>
-  </section>
-
-  <section class="sec" id="skills">
-    <div class="sechead"><span class="secnum">04</span><h2>The skill layer</h2><div class="divider"></div></div>
-    <p class="secsub">Skills package multi-step procedures the agent invokes on demand &mdash; each one a repeatable workflow with its own instructions and helper scripts, so a complex task runs the same way every time.</p>
-    <div class="skills">
-      <div class="skill"><h4>publish-safety scrubber</h4><p>Scans an outward-facing file for confidential terms against a maintained registry and rewrites them before it can leave a private repo.</p></div>
-      <div class="skill"><h4>citation verifier</h4><p>Validates a reference against a public index at the moment it's written, so a wrong attribution never lands in the source.</p></div>
-      <div class="skill"><h4>automation-placement advisor</h4><p>Decides whether a new automation belongs in CI, a local lifecycle hook, or a scheduled job &mdash; and whether it's safe to run.</p></div>
-      <div class="skill"><h4>document generator</h4><p>Builds branded documents from a single canonical content source, so figures and numbers never drift between formats.</p></div>
-    </div>
-    <p class="secsub" style="margin-top:1.4rem; margin-bottom:0;">Two further skills cover session self-review and an archival export routine.</p>
-  </section>
-
-  <section class="sec" id="scheduled">
-    <div class="sechead"><span class="secnum">05</span><h2>The scheduled layer</h2><div class="divider"></div></div>
-    <p class="secsub">Everything above fires on an event: you typed something, or the session started. That covers every failure with a moment attached to it, and none of the ones that accumulate. So a small set of sweeps runs on a calendar instead.</p>
-    <div class="skills">
-      <div class="skill">
-        <h4>weekly automation audit</h4>
-        <p>Dispatches the hook-health reviewer on a fixed day and files each genuinely new finding as an issue, de-duplicated against the open ones so an unfixed problem isn't re-reported every week.</p>
-      </div>
-      <div class="skill">
-        <h4>weekly board integrity sweep</h4>
-        <p>Reconciles the tracker against itself &mdash; closed work still showing as in-progress, rows that drifted out of sync &mdash; and regenerates the outward change record from source.</p>
-      </div>
-    </div>
-    <div class="note" style="margin-top:1.4rem;"><b>Why a cadence, and not just better hooks.</b> The hooks here are fail-open, which means <em>a hook that has stopped working is indistinguishable from one that found nothing.</em> One month produced four such silent no-ops: a path filter written in the singular against a plural directory, a registry alias nobody scanned, a whole publish surface never registered, and a fallback that had never once fired. Not one of them surfaced on its own &mdash; every one was found by accident, while someone was looking at something else nearby. A recurring sweep is the only thing that finds a failure with no event to hang off.</div>
-    <div class="note" style="margin-top:0.8rem;"><b>Findings go to the tracker, never to notes.</b> An earlier scheduled job wrote its results to the agent's memory, and a live grant deadline sat unread there for sixteen days. Memory isn't reachable mid-task; the issue tracker is the one surface that is already in the path of the work. Where a finding lands decides whether it is ever seen.</div>
-  </section>
-
-  <section class="sec" id="review">
-    <div class="sechead"><span class="secnum">06</span><h2>The review layer</h2><div class="divider"></div></div>
-    <p class="secsub">The last layer exists because of something the others can't fix. A script only looks for what it was told to look for, where it was told to look. Three specialist review agents read for the things a pattern can't express &mdash; and each one is scoped to a blind spot I could name.</p>
-    <div class="skills">
-      <div class="skill">
-        <h4>pre-publish IP reviewer</h4>
-        <p>Reads a finished outward-facing artifact the way a hostile reader would, and returns a verdict &mdash; block, revise, or clear. It exists because the write-time scanner is a <em>path filter</em>, and a path filter can only protect the directories it was told about.</p>
-      </div>
-      <div class="skill">
-        <h4>hook-health auditor</h4>
-        <p>Audits the automation layer for <em>silent failure</em>: filters that match nothing, swallowed errors, dead references, drift between the config and what's on disk. Fail-open has a cost: a broken hook and a clean run look identical.</p>
-      </div>
-      <div class="skill">
-        <h4>backlog triager</h4>
-        <p>Reconciles the issue board, syncing the mechanical facts on its own and escalating only the judgment calls &mdash; priority, and what to cut. <em>Facts are the agent's, values are the founder's.</em></p>
-      </div>
-    </div>
-    <p class="secsub" style="margin-top:1.4rem;">The pattern across all three is the same, and it's why this layer is separate rather than more hooks: <b style="color:var(--text-primary)">a check that fails open is indistinguishable from a check that found nothing.</b> Every automated gate here is quiet when it passes, so each one is paired with a reader whose entire job is to assume the gate didn't run. Together, the five layers share one design goal: <b style="color:var(--text-primary)">make the right thing automatic, and the wrong thing hard.</b></p>
-    <div class="note" style="margin-bottom:0;"><b>These now fire without being asked, and that was the fix.</b> For its first weeks the review layer had to be invoked deliberately &mdash; which meant the pre-publish reviewer, whose entire job is catching what the write-time scanner misses, was <em>slower than skipping it</em>. That is backwards for a control, and the layer went almost unused: built, wired, and idle. Each agent now has a documented trigger it fires on by itself. A safeguard that competes with the deadline loses to the deadline.</div>
-  </section>
-
-  <div class="takeaway">
-    <h3>Why it's built this way</h3>
-    <p>An AI coding agent is fast and tireless, but it forgets between sessions and it runs on whatever machine happens to be in front of it. The value of this layer isn't any single script &mdash; it's that the <b>guarantees survive the forgetting</b>: a secret can't be committed, a metric can't drift, two sessions can't silently clobber each other, and a convention no one remembers is still enforced because it was turned into a check.</p>
-    <p>Every design choice trades toward <b>safety-under-degradation</b>: fail open so a broken toolchain never blocks real work, fail closed on the handful of gates where a false pass is unrecoverable, keep the errors even where the block is waived, and make every script portable enough to run identically across every machine in the group from one synced config repo.</p>
-    <p style="margin-top:1.1rem; padding-top:1.1rem; border-top:1px solid var(--line-soft);"><b>The code is open.</b> <em>Lifecycle hooks for coding agents, and the test pattern that keeps them honest</em> &mdash; a generalized extraction of this layer, with the suite that tests it, at <a href="https://github.com/mikejgiardina/hook-discipline" target="_blank" rel="noopener noreferrer" style="color:var(--accent-cyan); text-decoration:none; border-bottom:1px solid var(--line)">github.com/mikejgiardina/hook-discipline</a>. It carries no proprietary terms and none of this workspace's configuration; it went through the same disclosure review as this page. Apache-2.0.</p>
-    <p style="margin-top:0.7rem; font-size:0.92rem; color:var(--text-muted);">Its premise is this page's: <b>a check that never ran and a check that found nothing produce identical output.</b> It is named because a write-up about checks that quietly stop working should say where the checks are.</p>
-
-    <p style="margin-top:1.1rem; padding-top:1.1rem; border-top:1px solid var(--line-soft);">This page covers the layer that <b>runs</b>. Two companion write-ups cover the layer that <b>decides</b>: <a href="../enforcement/" style="color:var(--accent-cyan); text-decoration:none; border-bottom:1px solid var(--line)">how a written convention becomes an enforced check</a>, and <a href="../publishing/" style="color:var(--accent-cyan); text-decoration:none; border-bottom:1px solid var(--line)">how anything gets published out of a patent-pending codebase</a>.</p>
-  </div>
-
-  <footer>
-    <p>Case study &middot; lifecycle-hook automation for an AI-assisted, multi-repo workspace.</p>
-    <p>Implementation details are generalized and proprietary specifics are omitted. Built and maintained with Claude Code.</p>
-    <p>Michael Giardina &middot; <a href="../">portfolio</a> &middot; <a href="https://www.linkedin.com/in/michael-giardina">linkedin.com/in/michael-giardina</a></p>
-  </footer>
-
+<header class="hero" id="top">
+<div class="status-bar">
+<div class="status-item"><span class="status-dot"></span><span>ENGINEERING CASE STUDY</span></div>
+<div class="status-item"><span class="status-dot"></span><span>CLAUDE CODE · MULTI-REPO WORKSPACE</span></div>
 </div>
-</body>
+<p class="kicker">Developer tooling · workflow automation</p>
+<h1 class="article-title">Giving a multi-repo AI workspace a nervous system.</h1><div class="article-introduction"><p class="lede">A five-repository codebase where <b>AI coding sessions run daily</b> needs guardrails nobody can be relied on to remember. The answer is a <span class="cy">lifecycle-hook automation layer</span>: small, portable scripts that fire at fixed moments in every session to enforce safety, quality, and workflow — backed by a command layer for the work you drive by hand, a skill layer of packaged procedures, a scheduled layer for the checks that only fail slowly, and a review layer of specialist agents that audit what the scripts structurally cannot see.</p></div>
+
+<p class="context">python simulation engine · typescript / react apps · swift ios app · markdown docs corpus · agent-config repo</p>
+<div class="layers">
+<div class="layer"><div class="k">automatic</div><div class="d">Scripts wired to the runtime's session lifecycle. Nothing to type.</div></div>
+<div class="layer"><div class="k">commands</div><div class="d">Slash commands for the work you drive by hand.</div></div>
+<div class="layer"><div class="k">skills</div><div class="d">Multi-step procedures packaged so they run the same way twice.</div></div>
+<div class="layer"><div class="k">scheduled</div><div class="d">Weekly sweeps for the failures that never announce themselves.</div></div>
+<div class="layer"><div class="k">review</div><div class="d">Specialist agents reading for what a pattern can't express.</div></div>
+</div>
+<p class="statnote">Most of the automatic layer only advises. A minority can stop a command outright, and they split by posture: a small set of gates fail <em>closed</em> — they block what they cannot prove is safe — while the rest deny on a positive match and stay open when their own toolchain is degraded. Which posture a gate gets is decided per gate, from what it costs to be wrong in each direction.</p>
+<p class="statnote"><b style="color:var(--text-primary)">No counts on this page.</b> The scripts, commands, and agents are added and retired continuously, and a permanent page quoting a moving number is a stale claim with a countdown on it. The shapes below are stable; the totals are not, so they aren't here.</p>
+<p class="statnote" style="border-left-color: var(--accent-green);"><b style="color:var(--text-primary)">Platform vs. build.</b> Claude Code supplies the runtime — the lifecycle events themselves, the slash-command and skill mechanisms, and the hook-wiring format. What's documented here is the layer built on top of it: the specific scripts, commands, and skills, the choice of which event each hangs off, and the engineering decisions that make them safe to run unattended on every machine, every session.</p>
+</header><div class="reading-layout" id="reading"><aside class="contents-rail"><div class="rail-sticky"><div class="rail-label">IN THIS STUDY</div><nav aria-label="On this page"><a href="#principles"><span>01</span>Design principles</a><a href="#automatic"><span>02</span>The automatic layer</a><a href="#commands"><span>03</span>The command layer</a><a href="#skills"><span>04</span>The skill layer</a><a href="#scheduled"><span>05</span>The scheduled layer</a><a href="#review"><span>06</span>The review layer</a></nav><div class="rail-foot"><a href="../case-studies/">All engineering case studies ↗</a></div><button class="back-top" type="button">Back to top ↑</button></div></aside><main id="article"><section class="sec" id="principles">
+<div class="sechead"><span class="secnum">01</span><h2>Design principles</h2><div class="divider"></div></div>
+<p class="secsub">The hooks follow a few rules that keep them safe to run on anyone's machine, every session, without becoming noise or a liability.</p>
+<div class="cards">
+<div class="card">
+<div class="tag">posture</div>
+<h3>Fail open is not fail silent</h3>
+<p>A degraded toolchain makes a hook a no-op, never a hang or a false block — with deliberate exceptions for the gates whose false pass is unrecoverable (the secret scanner, the repo-identity guard, the publish gate), which fail <em>closed</em>.</p>
+<p style="margin-top:0.7rem;">That was the whole principle until it wasn't. Exiting zero is fail-open; discarding the error is a <em>second, separate</em> choice, made by habit, and it costs the entire diagnostic surface. <b style="color:var(--text-primary)">Six defects in eight days</b> were each hidden by the silence rather than the openness — including a gate whose “I could not evaluate this” branch was unreachable, so an unreadable input read as nothing-to-check and was allowed through. A hook can decline to block and still refuse to be quiet.</p>
+</div>
+<div class="card">
+<div class="tag">contract</div>
+<h3>Three outcomes, never two</h3>
+<p>Any check exits <em>clean</em>, <em>violations found</em>, or <em>could not check</em> — three states, not a boolean. The third is the one that matters: a detector reporting success when it never ran reproduces the exact bug it was built to catch. Four checks here had invented that distinction independently before it was made the project-wide convention; the other forty had none.</p>
+</div>
+<div class="card">
+<div class="tag">philosophy</div>
+<h3>Narrated → enforced</h3>
+<p>A convention written in a doc gets forgotten. Wherever a rule can be expressed as a check, it becomes one, so the guarantee holds even when no one remembers it, and self-clears the moment the check goes green.</p>
+</div>
+<div class="card">
+<div class="tag">portability</div>
+<h3>One script, every machine</h3>
+<p>The same hooks run on Windows and macOS with no hardcoded drive letters, <code>python3</code>-first resolution, POSIX-only tools and LF endings enforced. They reach every machine through one synced config repo.</p>
+<p>This is not a hypothetical. The layer runs across <b>two Windows boxes and a Mac</b>, on more than one person's hardware, and a second contributor works inside it. <em>Portability stopped being a design goal the moment someone else's machine had a different drive letter.</em></p>
+</div>
+<div class="card">
+<div class="tag">integrity</div>
+<h3>Single source of truth</h3>
+<p>Volatile metrics are computed once into one file, then propagated into docs and dashboards mechanically. A broken environment degrades to “no change,” never to bad numbers overwriting good ones.</p>
+</div>
+<div class="card">
+<div class="tag">concurrency</div>
+<h3>Multi-writer safety</h3>
+<p>Several writers (human teammates or AI sessions) share one multi-repo workspace. Git worktrees, a branch-per-task convention, and a live-session registry keep two of them from editing the same sub-repo and committing onto each other's branches — a real failure this layer was built to prevent. The coordination rides on shared git conventions, so it holds for teammates who have never touched an AI tool.</p>
+</div>
+</div>
+</section><section class="sec" id="automatic">
+<div class="sechead"><span class="secnum">02</span><h2>The automatic layer</h2><div class="divider"></div></div>
+<p class="secsub">Each hook hangs off one of the six lifecycle events wired here — hook points the runtime exposes, from session start to session end — and fires when that moment arrives; nothing to type. A minority can block you; the rest inject context, advise, or run silently in the background.</p>
+<div class="legend">
+<span class="chip c-block">blocks · fail-closed</span>
+<span class="chip c-loud">denies on a match · fail-open, loud</span>
+<span class="chip c-cond">conditional gate</span>
+<span class="chip c-ctx">injects context</span>
+<span class="chip c-adv">advisory · nag / log</span>
+</div>
+<p style="font-size:0.8rem; color:var(--text-dim); margin:-0.6rem 0 1.4rem;">Row labels are plain-language descriptions of each script's job — not the scripts' filenames.</p>
+<div class="lane">
+<div class="lh"><span class="ev">SessionStart</span><span class="when">session begins · output enters the model's context</span></div>
+<div class="row"><span class="rname">Parallel-session registry</span><span class="rdesc">registers this session and warns when another session already shares a sub-repo, before edits collide</span><span class="chip c-ctx rchip">context</span></div>
+<div class="row"><span class="rname">Backup reminder</span><span class="rdesc">flags overdue off-machine backups of irreplaceable working files</span><span class="chip c-ctx rchip">context</span></div>
+<div class="row"><span class="rname">Metrics provenance</span><span class="rdesc">reports which git state the project's canonical metrics were last computed from</span><span class="chip c-ctx rchip">context</span></div>
+</div>
+<div class="lane">
+<div class="lh"><span class="ev">UserPromptSubmit</span><span class="when">every prompt you send · output enters context</span></div>
+<div class="row"><span class="rname">Work-queue inject</span><span class="rdesc">on a work-intent phrase, surfaces your assigned issues from the tracker — once per session, so it never repeats</span><span class="chip c-ctx rchip">context</span></div>
+</div>
+<div class="lane">
+<div class="lh"><span class="ev">PreToolUse</span><span class="when">before a shell command runs · can block it</span><span class="match">Bash</span></div>
+<div class="row"><span class="rname">Secret guard</span><span class="rdesc">blocks any commit that stages a secret — env files, private keys, secret JSON. Fails closed: if it can't prove the commit is clean, it blocks</span><span class="chip c-block rchip">blocks</span></div>
+<div class="row"><span class="rname">Repo-identity guard</span><span class="rdesc">blocks a destructive repository operation — archive, delete, rename — when the name you typed no longer resolves to the repository you mean. Fails closed on destructive verbs</span><span class="chip c-block rchip">blocks</span></div>
+<div class="row"><span class="rname">Publish gate</span><span class="rdesc">blocks a push to a repository whose remote publishes on receipt, scanning every changed file in the outgoing commits — whatever path they sit on. Fails closed, on those destinations only</span><span class="chip c-block rchip">blocks</span></div>
+<div class="row"><span class="rname">Issue-claim guard</span><span class="rdesc">denies creating a branch for a work item another live session already holds</span><span class="chip c-loud rchip">denies</span></div>
+<div class="row"><span class="rname">Merge serializer</span><span class="rdesc">takes a lock so two sessions can't merge into the same default branch seconds apart</span><span class="chip c-loud rchip">denies</span></div>
+<div class="row"><span class="rname">Board-write serializer</span><span class="rdesc">serializes writes to the shared project board, and forces a re-pull after a batch that may have been cut short</span><span class="chip c-loud rchip">denies</span></div>
+<div class="row"><span class="rname">Change-record gate</span><span class="rdesc">denies a push whose commits change how the agent behaves but leave the change record untouched</span><span class="chip c-loud rchip">denies</span></div>
+<div class="row"><span class="rname">CI-skip guard</span><span class="rdesc">denies a commit carrying a CI-skip marker on a feature branch, where it silently disables the only pre-merge check there is</span><span class="chip c-loud rchip">denies</span></div>
+<div class="row"><span class="rname">Dirty-tree guard</span><span class="rdesc">warns before a pull / merge / rebase onto uncommitted work, and asks you to commit or stash first</span><span class="chip c-cond rchip">conditional</span></div>
+<div class="row"><span class="rname">Pre-run validation</span><span class="rdesc">validates the simulation config before a run is launched</span><span class="chip c-adv rchip">advisory</span></div>
+<div class="row"><span class="rname">Manifest check</span><span class="rdesc">confirms the module manifest matches the source files actually on disk</span><span class="chip c-adv rchip">advisory</span></div>
+</div>
+<div class="note" style="margin: -0.2rem 0 1.4rem;"><b>Where the repo-identity guard came from.</b> A repository had been transferred between owners, which leaves a redirect behind. An archive command typed against the <em>old</em> name silently followed that redirect and archived the canonical repository instead, the one being kept. The check that catches it is a single API call asking whether the name you typed still equals its own canonical name; if it doesn't resolve, or resolves to something else, the destructive verb is denied. Nearly every gate on this page exists because something like that happened once.</div>
+<div class="note" style="margin: -0.2rem 0 1.4rem;"><b>Why the newest gates all guard something that isn't a file.</b> The original guards protect a working tree: is it dirty, is another session in it. Then several sessions started running at once, and the collisions moved to resources a working-tree guard structurally cannot see — a remote branch being merged with no checkout, a shared project board with no repository at all, a work item two threads both decided to pick up. Each was quiet under every existing guard, and each cost real duplicated work before it got one of its own. <em>The unit of contention was never the file.</em></div>
+<div class="lane">
+<div class="lh"><span class="ev">PostToolUse</span><span class="when">after a shell command completes</span><span class="match">Bash</span></div>
+<div class="row"><span class="rname">Inventory metric</span><span class="rdesc">records a project inventory count after shell commands</span><span class="chip c-adv rchip">advisory</span></div>
+<div class="row"><span class="rname">Issue auto-flag</span><span class="rdesc">marks a tracker issue In Progress the moment its feature branch is created</span><span class="chip c-adv rchip">advisory</span></div>
+</div>
+<div class="lane">
+<div class="lh"><span class="ev">PostToolUse</span><span class="when">after a file is written or edited</span><span class="match">Write / Edit</span></div>
+<div class="row"><span class="rname">Architecture linter</span><span class="rdesc">checks core modules against the project's conventions — syntax and known anti-patterns</span><span class="chip c-adv rchip">advisory</span></div>
+<div class="row"><span class="rname">Test reminder</span><span class="rdesc">nudges to run the suite when a core module changes</span><span class="chip c-adv rchip">advisory</span></div>
+<div class="row"><span class="rname">Stale-docs flag</span><span class="rdesc">flags a module's docs as stale when its code changes underneath them</span><span class="chip c-adv rchip">advisory</span></div>
+<div class="row"><span class="rname">Confidential-term scan</span><span class="rdesc">flags sensitive terms in files bound for public paths before they can be committed</span><span class="chip c-adv rchip">advisory</span></div>
+<div class="row"><span class="rname">Claims lint</span><span class="rdesc">checks outward-facing docs for unsupported performance claims</span><span class="chip c-adv rchip">advisory</span></div>
+<div class="row"><span class="rname">Doc-placement guard</span><span class="rdesc">keeps docs in the docs repo instead of scattered across the code repos<span class="wonly">write only</span></span><span class="chip c-adv rchip">advisory</span></div>
+<div class="row"><span class="rname">Ad-hoc-script sniff</span><span class="rdesc">catches one-off scripts at creation and nudges toward maintained tooling<span class="wonly">write only</span></span><span class="chip c-adv rchip">advisory</span></div>
+</div>
+<div class="lane">
+<div class="lh"><span class="ev">Stop</span><span class="when">when the assistant finishes a response</span></div>
+<div class="row"><span class="rname">Metrics propagation</span><span class="rdesc">pushes single-source metrics into narrative docs and dashboards</span><span class="chip c-adv rchip">advisory</span></div>
+<div class="row"><span class="rname">Commit log</span><span class="rdesc">records commit metadata after each turn</span><span class="chip c-adv rchip">advisory</span></div>
+<div class="row"><span class="rname">Work-hours log</span><span class="rdesc">maintains a local hours log derived from git activity</span><span class="chip c-adv rchip">advisory</span></div>
+<div class="row"><span class="rname">Pacing audit</span><span class="rdesc">warns when a newly added simulation component is missing a required timing parameter</span><span class="chip c-adv rchip">advisory</span></div>
+<div class="row"><span class="rname">Tiered backups</span><span class="rdesc">runs off-machine backups on per-stream cadences</span><span class="chip c-adv rchip">advisory</span></div>
+<div class="row"><span class="rname">Registry refresh</span><span class="rdesc">updates this session's registry timestamp each turn so other writers still see it as active</span><span class="chip c-adv rchip">advisory</span></div>
+</div>
+<div class="lane">
+<div class="lh"><span class="ev">SessionEnd</span><span class="when">session ends</span></div>
+<div class="row"><span class="rname">Session deregister</span><span class="rdesc">removes this session from the live-session registry</span><span class="chip c-adv rchip">advisory</span></div>
+</div>
+</section><section class="sec" id="commands">
+<div class="sechead"><span class="secnum">03</span><h2>The command layer</h2><div class="divider"></div></div>
+<p class="secsub">Alongside the automatic hooks, a set of slash commands drives the work you do by hand. Command first, purpose first — <span style="font-family:var(--mono);color:var(--accent-cyan)">/thing</span> does X so that Y.</p>
+<div class="cmdgroup">
+<div class="cmdgh">Start & steer your work</div>
+<div class="cmd"><div class="cmdname">/session-start</div><div class="cmdbody">opens a development session — loads current state, git status, and the issue board so you start with full context instead of cold.</div></div>
+<div class="cmd"><div class="cmdname">/status</div><div class="cmdbody">prints a project snapshot — where things stand across repos, at a glance.</div></div>
+<div class="cmd"><div class="cmdname">/my-work</div><div class="cmdbody">lists the issues assigned to you across repos, so “what am I meant to be doing” is one command.</div></div>
+<div class="cmd"><div class="cmdname">/start <#></div><div class="cmdbody">picks up an issue — creates the branch, marks it In Progress, and posts a pickup comment so the board reflects reality without you touching it.</div></div>
+<div class="cmd"><div class="cmdname">/close-out</div><div class="cmdbody">wraps a session cleanly — captures loose ends into issues, reconciles what you touched against the board, and flags stale items so nothing gets lost. <span style="color:var(--text-dim)">(/session-end is a kept alias.)</span></div></div>
+</div>
+<div class="cmdgroup">
+<div class="cmdgh">Machine & environment</div>
+<div class="cmd"><div class="cmdname">/doctor</div><div class="cmdbody">checks a machine is ready — verifies the toolchain the hooks and commands depend on, and prints a one-line fix for each gap.</div></div>
+<div class="cmd"><div class="cmdname">/whereami</div><div class="cmdbody">confirms which machine you're on — reports host, hardware, and a task-fit verdict so heavy work doesn't run on the wrong box.</div></div>
+</div>
+<div class="cmdgroup">
+<div class="cmdgh">Domain commands</div>
+<div class="note">The project adds several more commands of its own for running and checking the simulation — launch a run, audit module wiring, grade calibration against reference data, stress-test scale, rebuild the dashboards, and report automation health. Specifics are omitted from this public write-up.</div>
+</div>
+</section><section class="sec" id="skills">
+<div class="sechead"><span class="secnum">04</span><h2>The skill layer</h2><div class="divider"></div></div>
+<p class="secsub">Skills package multi-step procedures the agent invokes on demand — each one a repeatable workflow with its own instructions and helper scripts, so a complex task runs the same way every time.</p>
+<div class="skills">
+<div class="skill"><h4>publish-safety scrubber</h4><p>Scans an outward-facing file for confidential terms against a maintained registry and rewrites them before it can leave a private repo.</p></div>
+<div class="skill"><h4>citation verifier</h4><p>Validates a reference against a public index at the moment it's written, so a wrong attribution never lands in the source.</p></div>
+<div class="skill"><h4>automation-placement advisor</h4><p>Decides whether a new automation belongs in CI, a local lifecycle hook, or a scheduled job — and whether it's safe to run.</p></div>
+<div class="skill"><h4>document generator</h4><p>Builds branded documents from a single canonical content source, so figures and numbers never drift between formats.</p></div>
+</div>
+<p class="secsub" style="margin-top:1.4rem; margin-bottom:0;">Two further skills cover session self-review and an archival export routine.</p>
+</section><section class="sec" id="scheduled">
+<div class="sechead"><span class="secnum">05</span><h2>The scheduled layer</h2><div class="divider"></div></div>
+<p class="secsub">Everything above fires on an event: you typed something, or the session started. That covers every failure with a moment attached to it, and none of the ones that accumulate. So a small set of sweeps runs on a calendar instead.</p>
+<div class="skills">
+<div class="skill">
+<h4>weekly automation audit</h4>
+<p>Dispatches the hook-health reviewer on a fixed day and files each genuinely new finding as an issue, de-duplicated against the open ones so an unfixed problem isn't re-reported every week.</p>
+</div>
+<div class="skill">
+<h4>weekly board integrity sweep</h4>
+<p>Reconciles the tracker against itself — closed work still showing as in-progress, rows that drifted out of sync — and regenerates the outward change record from source.</p>
+</div>
+</div>
+<div class="note" style="margin-top:1.4rem;"><b>Why a cadence, and not just better hooks.</b> The hooks here are fail-open, which means <em>a hook that has stopped working is indistinguishable from one that found nothing.</em> One month produced four such silent no-ops: a path filter written in the singular against a plural directory, a registry alias nobody scanned, a whole publish surface never registered, and a fallback that had never once fired. Not one of them surfaced on its own — every one was found by accident, while someone was looking at something else nearby. A recurring sweep is the only thing that finds a failure with no event to hang off.</div>
+<div class="note" style="margin-top:0.8rem;"><b>Findings go to the tracker, never to notes.</b> An earlier scheduled job wrote its results to the agent's memory, and a live grant deadline sat unread there for sixteen days. Memory isn't reachable mid-task; the issue tracker is the one surface that is already in the path of the work. Where a finding lands decides whether it is ever seen.</div>
+</section><section class="sec" id="review">
+<div class="sechead"><span class="secnum">06</span><h2>The review layer</h2><div class="divider"></div></div>
+<p class="secsub">The last layer exists because of something the others can't fix. A script only looks for what it was told to look for, where it was told to look. Three specialist review agents read for the things a pattern can't express — and each one is scoped to a blind spot I could name.</p>
+<div class="skills">
+<div class="skill">
+<h4>pre-publish IP reviewer</h4>
+<p>Reads a finished outward-facing artifact the way a hostile reader would, and returns a verdict — block, revise, or clear. It exists because the write-time scanner is a <em>path filter</em>, and a path filter can only protect the directories it was told about.</p>
+</div>
+<div class="skill">
+<h4>hook-health auditor</h4>
+<p>Audits the automation layer for <em>silent failure</em>: filters that match nothing, swallowed errors, dead references, drift between the config and what's on disk. Fail-open has a cost: a broken hook and a clean run look identical.</p>
+</div>
+<div class="skill">
+<h4>backlog triager</h4>
+<p>Reconciles the issue board, syncing the mechanical facts on its own and escalating only the judgment calls — priority, and what to cut. <em>Facts are the agent's, values are the founder's.</em></p>
+</div>
+</div>
+<p class="secsub" style="margin-top:1.4rem;">The pattern across all three is the same, and it's why this layer is separate rather than more hooks: <b style="color:var(--text-primary)">a check that fails open is indistinguishable from a check that found nothing.</b> Every automated gate here is quiet when it passes, so each one is paired with a reader whose entire job is to assume the gate didn't run. Together, the five layers share one design goal: <b style="color:var(--text-primary)">make the right thing automatic, and the wrong thing hard.</b></p>
+<div class="note" style="margin-bottom:0;"><b>These now fire without being asked, and that was the fix.</b> For its first weeks the review layer had to be invoked deliberately — which meant the pre-publish reviewer, whose entire job is catching what the write-time scanner misses, was <em>slower than skipping it</em>. That is backwards for a control, and the layer went almost unused: built, wired, and idle. Each agent now has a documented trigger it fires on by itself. A safeguard that competes with the deadline loses to the deadline.</div>
+</section><div class="takeaway">
+<h3>Why it's built this way</h3>
+<p>An AI coding agent is fast and tireless, but it forgets between sessions and it runs on whatever machine happens to be in front of it. The value of this layer isn't any single script — it's that the <b>guarantees survive the forgetting</b>: a secret can't be committed, a metric can't drift, two sessions can't silently clobber each other, and a convention no one remembers is still enforced because it was turned into a check.</p>
+<p>Every design choice trades toward <b>safety-under-degradation</b>: fail open so a broken toolchain never blocks real work, fail closed on the handful of gates where a false pass is unrecoverable, keep the errors even where the block is waived, and make every script portable enough to run identically across every machine in the group from one synced config repo.</p>
+<p style="margin-top:1.1rem; padding-top:1.1rem; border-top:1px solid var(--line-soft);"><b>The code is open.</b> <em>Lifecycle hooks for coding agents, and the test pattern that keeps them honest</em> — a generalized extraction of this layer, with the suite that tests it, at <a href="https://github.com/mikejgiardina/hook-discipline" target="_blank" rel="noopener noreferrer" style="color:var(--accent-cyan); text-decoration:none; border-bottom:1px solid var(--line)">github.com/mikejgiardina/hook-discipline</a>. It carries no proprietary terms and none of this workspace's configuration; it went through the same disclosure review as this page. Apache-2.0.</p>
+<p style="margin-top:0.7rem; font-size:0.92rem; color:var(--text-muted);">Its premise is this page's: <b>a check that never ran and a check that found nothing produce identical output.</b> It is named because a write-up about checks that quietly stop working should say where the checks are.</p>
+<p style="margin-top:1.1rem; padding-top:1.1rem; border-top:1px solid var(--line-soft);">This page covers the layer that <b>runs</b>. Two companion write-ups cover the layer that <b>decides</b>: <a href="../enforcement/" style="color:var(--accent-cyan); text-decoration:none; border-bottom:1px solid var(--line)">how a written convention becomes an enforced check</a>, and <a href="../publishing/" style="color:var(--accent-cyan); text-decoration:none; border-bottom:1px solid var(--line)">how anything gets published out of a patent-pending codebase</a>.</p>
+</div></main></div>
+
+
+
+
+
+
+
+<footer>
+<p>Case study · lifecycle-hook automation for an AI-assisted, multi-repo workspace.</p>
+<p>Implementation details are generalized and proprietary specifics are omitted. Built and maintained with Claude Code.</p>
+<p>Michael Giardina · <a href="../">portfolio</a> · <a href="https://www.linkedin.com/in/michael-giardina" target="_blank" rel="noopener noreferrer">linkedin.com/in/michael-giardina</a></p>
+<p class="footer-navigation"><a href="../">Portfolio</a> · <a href="../case-studies/">Case studies</a> · <a href="../#connect">Get in touch</a></p></footer>
+</div>
+<script data-pplx-inline-edit>
+(function () {
+  if (window === window.top) return;
+
+  const allowedParentOrigins = ["https://www.perplexity.ai","https://perplexity.ai","https://testing.perplexity.ai","https://staging.perplexity.ai","https://*.preview.i.perplexity.ai","http://perplexity.localhost","http://localhost:1420","http://127.0.0.1:1420","http://localhost:3000","http://127.0.0.1:3000","http://localhost:5173","http://127.0.0.1:5173"];
+  const MAX_FONT_BYTES = 500 * 1024;
+  const MAX_TOTAL_FONT_BYTES = 2 * 1024 * 1024;
+  let scrollForwarding = false;
+  let scrollRaf = 0;
+  let trustedTopOrigin = null;
+
+  // Allow entries like "https://*.preview.i.perplexity.ai" — the wildcard
+  // matches a single DNS label (no dots), so "https://*.foo" cannot stretch
+  // across multiple labels.
+  function matchesAllowedOrigin(origin) {
+    if (!origin) return false;
+    for (const entry of allowedParentOrigins) {
+      if (!entry.includes("*")) {
+        if (entry === origin) return true;
+        continue;
+      }
+      const pattern = new RegExp(
+        "^" +
+          entry.replace(/[.+?^${}()|[\]\\]/g, "\\$&").replace(/\*/g, "[^.]+") +
+          "$",
+      );
+      if (pattern.test(origin)) return true;
+    }
+    return false;
+  }
+
+  // Trust decision: when the sender is same-origin-visible (event.origin is a
+  // real origin like https://www.perplexity.ai) we trust event.origin directly.
+  // When event.origin is "null" (opaque broker srcdoc), we fall back to the
+  // broker's stamped `parentOrigin` to identify the top window. The fallback
+  // is claim-only — we rely on the browser's native `targetOrigin` enforcement
+  // on the response path (see postToTrustedTop) to ensure replies can't be
+  // delivered to anyone but the actual top window of that claimed origin.
+  function getTrustedParentOrigin(event) {
+    const forwardedParentOrigin =
+      typeof event.data.parentOrigin === "string" ? event.data.parentOrigin : null;
+    const parentOrigin = event.origin === "null" ? forwardedParentOrigin : event.origin;
+    return matchesAllowedOrigin(parentOrigin) ? parentOrigin : null;
+  }
+
+  // All responses go to window.top with targetOrigin = the allowlisted origin.
+  // An attacker that iframes us inside their own null-origin broker can claim
+  // any parentOrigin they like, but the browser will drop the reply whenever
+  // the real top's origin doesn't match — so the screenshot never leaves.
+  function postToTrustedTop(message) {
+    if (!trustedTopOrigin) return;
+    try {
+      window.top.postMessage(message, trustedTopOrigin);
+    } catch (_error) {}
+  }
+
+  function inlineAll(original, clone) {
+    if (original.nodeType !== 1 || clone.nodeType !== 1) return;
+
+    try {
+      const computedStyle = getComputedStyle(original);
+      // cssText on a computed style is the serialized declaration in modern
+      // Chromium/Safari — a single read beats enumerating ~400 longhand
+      // properties. Firefox returns "" here, so we fall back on empty.
+      const serialized = computedStyle.cssText;
+      if (serialized) {
+        clone.style.cssText = serialized;
+      } else {
+        const parts = new Array(computedStyle.length);
+        for (let index = 0; index < computedStyle.length; index += 1) {
+          const property = computedStyle[index];
+          parts[index] = `${property}:${computedStyle.getPropertyValue(property)};`;
+        }
+        clone.style.cssText = parts.join("");
+      }
+    } catch (_error) {}
+
+    const originalChildren = original.children;
+    const clonedChildren = clone.children;
+    for (
+      let index = 0;
+      index < originalChildren.length && index < clonedChildren.length;
+      index += 1
+    ) {
+      inlineAll(originalChildren[index], clonedChildren[index]);
+    }
+  }
+
+  function extractFontUrl(srcValue) {
+    const matches = [
+      ...srcValue.matchAll(
+        /url\(["']?([^"')]+)["']?\)(?:\s*format\(["']?([^"')]+)["']?\))?/gi,
+      ),
+    ];
+    if (matches.length === 0) return null;
+    const woff2 = matches.find((m) => m[2] && m[2].toLowerCase().includes("woff2"));
+    if (woff2) return woff2[1];
+    const woff = matches.find((m) => m[2] && m[2].toLowerCase().includes("woff"));
+    if (woff) return woff[1];
+    return matches[0][1];
+  }
+
+  // Cache resolved font URL -> data URI across captures. Fonts on a page
+  // essentially never change, and a batch run emits multiple captures back to
+  // back — without this we'd refetch + re-base64 every time.
+  const fontDataUriCache = new Map();
+  const SRC_DECLARATION_RE = /src\s*:\s*[^;}]+/i;
+
+  async function fetchAsDataUri(url) {
+    if (fontDataUriCache.has(url)) return fontDataUriCache.get(url);
+    let dataUri = null;
+    try {
+      const response = await fetch(url, { mode: "cors", credentials: "omit" });
+      if (response.ok) {
+        const blob = await response.blob();
+        if (blob.size <= MAX_FONT_BYTES) {
+          dataUri = await new Promise((resolve) => {
+            const reader = new FileReader();
+            reader.onloadend = () =>
+              resolve(typeof reader.result === "string" ? reader.result : null);
+            reader.onerror = () => resolve(null);
+            reader.readAsDataURL(blob);
+          });
+        }
+      }
+    } catch (_error) {
+      dataUri = null;
+    }
+    fontDataUriCache.set(url, dataUri);
+    return dataUri;
+  }
+
+  function collectFontFaceRuleTexts() {
+    const rules = [];
+    for (const sheet of document.styleSheets) {
+      let cssRules;
+      try {
+        cssRules = sheet.cssRules;
+      } catch (_error) {
+        continue;
+      }
+      if (!cssRules) continue;
+      for (const rule of cssRules) {
+        const cssText = rule.cssText || "";
+        if (cssText.startsWith("@font-face")) rules.push(cssText);
+      }
+    }
+    return rules;
+  }
+
+  async function buildInlinedFontCss() {
+    const ruleTexts = collectFontFaceRuleTexts();
+    if (ruleTexts.length === 0) return null;
+
+    const resolved = ruleTexts.map((cssText) => {
+      if (!SRC_DECLARATION_RE.test(cssText)) return null;
+      const srcMatch = cssText.match(/src\s*:\s*([^;}]+)[;}]/i);
+      if (!srcMatch) return null;
+      const url = extractFontUrl(srcMatch[1]);
+      if (!url) return null;
+      try {
+        return { cssText, url: new URL(url, document.baseURI).href };
+      } catch (_error) {
+        return null;
+      }
+    });
+
+    const dataUris = await Promise.all(
+      resolved.map((entry) => (entry ? fetchAsDataUri(entry.url) : Promise.resolve(null))),
+    );
+
+    const inlined = [];
+    let totalBytes = 0;
+    for (let index = 0; index < resolved.length; index += 1) {
+      const entry = resolved[index];
+      const dataUri = dataUris[index];
+      if (!entry || !dataUri) continue;
+      const approxBytes = dataUri.length * 0.75;
+      if (totalBytes + approxBytes > MAX_TOTAL_FONT_BYTES) break;
+      totalBytes += approxBytes;
+      inlined.push(entry.cssText.replace(SRC_DECLARATION_RE, `src: url("${dataUri}")`));
+    }
+    return inlined.length > 0 ? inlined.join("\n") : null;
+  }
+
+  function stripExternal(clone) {
+    const images = clone.querySelectorAll("img");
+    for (let index = 0; index < images.length; index += 1) {
+      const src = images[index].getAttribute("src");
+      if (src && !src.startsWith("data:")) images[index].removeAttribute("src");
+    }
+
+    const elements = clone.querySelectorAll("*");
+    for (let index = 0; index < elements.length; index += 1) {
+      const style = elements[index].style.cssText;
+      if (style && style.includes("url(")) {
+        elements[index].style.cssText = style.replace(
+          /url\(["']?(?!data:)[^)"']*["']?\)/gi,
+          "none",
+        );
+      }
+    }
+  }
+
+  function emitScroll() {
+    scrollRaf = 0;
+    if (!scrollForwarding) return;
+    postToTrustedTop({
+      type: "INLINE_EDIT_SCROLL",
+      scrollX: window.scrollX,
+      scrollY: window.scrollY,
+    });
+  }
+
+  window.addEventListener(
+    "scroll",
+    function () {
+      if (!scrollForwarding || scrollRaf) return;
+      scrollRaf = requestAnimationFrame(emitScroll);
+    },
+    { passive: true, capture: true },
+  );
+
+  async function handleCaptureRequest(event) {
+    const requestId = event.data.requestId;
+    const scrollX = window.scrollX;
+    const scrollY = window.scrollY;
+    const width = window.innerWidth;
+    const height = window.innerHeight;
+
+    function postResult(dataUrl) {
+      postToTrustedTop({
+        type: "INLINE_EDIT_SCREENSHOT_RESULT",
+        requestId,
+        dataUrl,
+        scrollX,
+        scrollY,
+      });
+    }
+
+    try {
+      // Wait for any pending web fonts to resolve so both inline metrics and
+      // the @font-face inlining below see the same loaded faces.
+      if (document.fonts && document.fonts.ready) {
+        try {
+          await document.fonts.ready;
+        } catch (_error) {}
+      }
+
+      const clone = document.documentElement.cloneNode(true);
+      inlineAll(document.documentElement, clone);
+
+      const removedNodes = clone.querySelectorAll("script,link[rel=\"stylesheet\"],style");
+      for (let index = 0; index < removedNodes.length; index += 1) {
+        removedNodes[index].remove();
+      }
+
+      stripExternal(clone);
+
+      // Re-embed web fonts as data-URI @font-face rules so the SVG rasterizer
+      // can resolve them — external font URLs aren't fetched during
+      // foreignObject rendering, which would otherwise force a fallback face
+      // and change text metrics.
+      const inlinedFontCss = await buildInlinedFontCss();
+      if (inlinedFontCss) {
+        const styleEl = document.createElement("style");
+        styleEl.textContent = inlinedFontCss;
+        const head = clone.querySelector("head");
+        if (head) head.appendChild(styleEl);
+        else clone.insertBefore(styleEl, clone.firstChild);
+      }
+
+      const html = new XMLSerializer().serializeToString(clone);
+      const svg =
+        `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}">` +
+        '<foreignObject width="100%" height="100%">' +
+        `<div xmlns="http://www.w3.org/1999/xhtml" style="width:${width}px;height:${height}px;overflow:hidden">` +
+        `<div style="position:relative;left:-${scrollX}px;top:-${scrollY}px">` +
+        html +
+        "</div></div></foreignObject></svg>";
+      const svgUrl = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
+      const image = new Image();
+      image.onload = function () {
+        const canvas = document.createElement("canvas");
+        canvas.width = width;
+        canvas.height = height;
+        canvas.getContext("2d").drawImage(image, 0, 0);
+        postResult(canvas.toDataURL("image/png"));
+      };
+      image.onerror = function () {
+        postResult(null);
+      };
+      image.src = svgUrl;
+    } catch (_error) {
+      postResult(null);
+    }
+  }
+
+  window.addEventListener("message", function (event) {
+    if (!event.data) return;
+    // Only accept messages from the direct parent frame. Blocks sibling /
+    // unrelated-window postMessage senders that could otherwise reach us.
+    if (event.source !== window.parent) return;
+
+    const trustedParentOrigin = getTrustedParentOrigin(event);
+    if (!trustedParentOrigin) return;
+    trustedTopOrigin = trustedParentOrigin;
+
+    if (event.data.type === "INLINE_EDIT_SCROLL_START") {
+      scrollForwarding = true;
+      emitScroll();
+      return;
+    }
+
+    if (event.data.type === "INLINE_EDIT_SCROLL_STOP") {
+      scrollForwarding = false;
+      if (scrollRaf) cancelAnimationFrame(scrollRaf);
+      scrollRaf = 0;
+      return;
+    }
+
+    if (event.data.type !== "INLINE_EDIT_CAPTURE_REQUEST") return;
+
+    handleCaptureRequest(event);
+  });
+})();
+
+
+</script></body>
 </html>
