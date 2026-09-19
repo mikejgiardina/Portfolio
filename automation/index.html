@@ -58,7 +58,7 @@
 <div class="tag">posture</div>
 <h3>Fail open is not fail silent</h3>
 <p>A degraded toolchain makes a hook a no-op, never a hang or a false block — with deliberate exceptions for the gates whose false pass is unrecoverable (the secret scanner, the repo-identity guard, the publish gate), which fail <em>closed</em>.</p>
-<p style="margin-top:0.7rem;">That was the whole principle until it wasn't. Exiting zero is fail-open; discarding the error is a <em>second, separate</em> choice, made by habit, and it costs the entire diagnostic surface. <b style="color:var(--text-primary)">Six defects in eight days</b> were each hidden by the silence rather than the openness — including a gate whose “I could not evaluate this” branch was unreachable, so an unreadable input read as nothing-to-check and was allowed through. A hook can decline to block and still refuse to be quiet.</p>
+<p style="margin-top:0.7rem;">That was the whole principle until it wasn't. Exiting zero is fail-open; discarding the error is a <em>second, separate</em> choice, made by habit, and it costs the entire diagnostic surface. <b style="color:var(--text-primary)">Six defects in eight days</b> were each hidden by the silence, and the openness is what surfaced them — including a gate whose “I could not evaluate this” branch was unreachable, so an unreadable input read as nothing-to-check and was allowed through. A hook can decline to block and still refuse to be quiet.</p>
 </div>
 <div class="card">
 <div class="tag">contract</div>
@@ -214,7 +214,7 @@
 <p>Reconciles the issue board, syncing the mechanical facts on its own and escalating only the judgment calls — priority, and what to cut. <em>Facts are the agent's, values are the founder's.</em></p>
 </div>
 </div>
-<p class="secsub" style="margin-top:1.4rem;">The pattern across all three is the same, and it's why this layer is separate rather than more hooks: <b style="color:var(--text-primary)">a check that fails open is indistinguishable from a check that found nothing.</b> Every automated gate here is quiet when it passes, so each one is paired with a reader whose entire job is to assume the gate didn't run. Together, the five layers share one design goal: <b style="color:var(--text-primary)">make the right thing automatic, and the wrong thing hard.</b></p>
+<p class="secsub" style="margin-top:1.4rem;">The pattern across all three is the same, and it's why this layer is separate instead of being more hooks: <b style="color:var(--text-primary)">a check that fails open is indistinguishable from a check that found nothing.</b> Every automated gate here is quiet when it passes, so each one is paired with a reader whose entire job is to assume the gate didn't run. Together, the five layers share one design goal: <b style="color:var(--text-primary)">make the right thing automatic, and the wrong thing hard.</b></p>
 <div class="note" style="margin-bottom:0;"><b>These now fire without being asked, and that was the fix.</b> For its first weeks the review layer had to be invoked deliberately — which meant the pre-publish reviewer, whose entire job is catching what the write-time scanner misses, was <em>slower than skipping it</em>. That is backwards for a control, and the layer went almost unused: built, wired, and idle. Each agent now has a documented trigger it fires on by itself. A safeguard that competes with the deadline loses to the deadline.</div>
 </section><div class="takeaway">
 <h3>Why it's built this way</h3>

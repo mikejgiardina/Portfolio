@@ -63,7 +63,7 @@
 <div class="card">
 <div class="tag">trust</div>
 <h3>Nothing is trusted on first presentation</h3>
-<p>I know what I meant, so I read past the sentence that gives the mechanism away. An agent's draft is worse: it does not know what is proprietary here at all. So neither one is trusted on its own account. The reader whose only job is to find the disclosure has to be a different reader than whoever wrote it — and that is a role rather than a person, so it can be assigned.</p>
+<p>I know what I meant, so I read past the sentence that gives the mechanism away. An agent's draft is worse: it does not know what is proprietary here at all. So neither one is trusted on its own account. The reader whose only job is to find the disclosure has to be a different reader than whoever wrote it — and that is a role, so it can be assigned.</p>
 </div>
 </div>
 </section><section class="sec" id="pipeline">
@@ -71,9 +71,9 @@
 <p class="secsub">Seven stages, ordered by when they fire — from the moment a proprietary term is defined through to the record that goes to patent counsel. Each stage catches a class the stage before it structurally cannot.</p>
 <div class="stage">
 <div class="stagehead"><span class="stagenum">01</span><span class="stagename">The registries</span><span class="stagekind">single source of truth</span></div>
-<p>One versioned file holds every proprietary term, each paired with a <b>replacement hint</b>, not just “don't say this” but “say this instead.” Nothing downstream hardcodes a term; every later stage reads it at run time, so adding one term propagates to the scanner, the scrubber, and the reviewer at once.</p>
+<p>One versioned file holds every proprietary term, each paired with a <b>replacement hint</b>, so it says “say this instead” and not only “don't say this.” Nothing downstream hardcodes a term; every later stage reads it at run time, so adding one term propagates to the scanner, the scrubber, and the reviewer at once.</p>
 <p>The replacement hints carry a rule: a rewrite must <em>preserve the claim</em>, dropping only to the next-lowest useful specificity. Sanitizing a capability into vagueness is a different failure — it protects the IP by making the work sound like nothing.</p>
-<p>A second registry was added later and answers a different question: not <em>what</em> is protected but <b>where publishing actually happens</b> — the destinations where a push is itself the act of publishing. It's a hand-kept list, which is a weakness, so it carries an explicit bias rule: <em>when unsure whether a destination belongs, add it.</em> A false inclusion costs one extra scan. A false exclusion is a permanent disclosure. Splitting <em>what</em> from <em>where</em> is what let the later stages stop guessing either one from a file path.</p>
+<p>A second registry was added later and answers a different question: <b>where publishing actually happens</b> — the destinations where a push is itself the act of publishing. It's a hand-kept list, which is a weakness, so it carries an explicit bias rule: <em>when unsure whether a destination belongs, add it.</em> A false inclusion costs one extra scan. A false exclusion is a permanent disclosure. Splitting <em>what</em> from <em>where</em> is what let the later stages stop guessing either one from a file path.</p>
 </div>
 <div class="stage">
 <div class="stagehead"><span class="stagenum">02</span><span class="stagename">Write-time scan</span><span class="stagekind">automated · fires on every edit</span></div>
@@ -89,12 +89,12 @@
 <div class="stage">
 <div class="stagehead"><span class="stagenum">04</span><span class="stagename">Hostile-reader review</span><span class="stagekind">specialist agent · assumes nothing ran</span></div>
 <p>A dedicated review agent reads the <b>finished</b> artifact end to end and returns a verdict. Its brief is explicit: <em>assume nothing upstream ran.</em> It exists because stage two is a path filter, and a path filter cannot protect a directory nobody told it about.</p>
-<p>It hunts what a pattern can't express — mechanism described accurately enough to reimplement regardless of vocabulary, internal architecture nomenclature, scale figures that don't trace to a named source, overclaiming verbs, and credential drift. Three rules shape it: it reads the registry fresh every run rather than working from memory, it <em>never edits the artifact</em> (findings only, so a human applies every change to a public document), and it <b>may not report clear on a file it did not read in full</b>.</p>
+<p>It hunts what a pattern can't express — mechanism described accurately enough to reimplement regardless of vocabulary, internal architecture nomenclature, scale figures that don't trace to a named source, overclaiming verbs, and credential drift. Three rules shape it: it reads the registry fresh every run and never works from memory, it <em>never edits the artifact</em> (findings only, so a human applies every change to a public document), and it <b>may not report clear on a file it did not read in full</b>.</p>
 </div>
 <div class="stage">
 <div class="stagehead"><span class="stagenum">05</span><span class="stagename">The publish checklist</span><span class="stagekind">human · pre-flight</span></div>
-<p>A written pre-flight run top to bottom before anything leaves for a non-NDA audience. Universal checks first — scrubber clean, claims linter clean, <b>a manual paraphrase eyeball</b> with the registry in mind, every numeric claim re-derived from source rather than memory, no “shipped” or “production” language for things that aren't, patent scope not overstated into adjacent territory nobody filed on.</p>
-<p>One item is a taste rule rather than a safety rule: <em>no count-stuffing.</em> A pile of impressive-sounding totals is impressive once and exhausting twice. Lead with what the system does, not what it contains.</p>
+<p>A written pre-flight run top to bottom before anything leaves for a non-NDA audience. Universal checks first — scrubber clean, claims linter clean, <b>a manual paraphrase eyeball</b> with the registry in mind, every numeric claim re-derived from source, never from memory, no “shipped” or “production” language for things that aren't, patent scope not overstated into adjacent territory nobody filed on.</p>
+<p>One item is a taste rule and not a safety rule: <em>no count-stuffing.</em> A pile of impressive-sounding totals is impressive once and exhausting twice. Lead with what the system does, not what it contains.</p>
 </div>
 <div class="stage">
 <div class="stagehead"><span class="stagenum">06</span><span class="stagename">The publish gate</span><span class="stagekind">automated · fires on the push</span></div>
@@ -160,7 +160,7 @@
   files read · sections skipped and why · <span class="vg">whether the automated
   scan would have caught each blocker on its own</span></pre>
 </div>
-<p class="secsub" style="margin-top:1.4rem;">Every review reports <b>which findings the automated stage would have missed</b>, so the pipeline measures its own front end continuously, from real artifacts rather than from a test fixture. A review that keeps reporting “the scanner would have caught this” means the human stages are wasting effort. A review reporting the opposite is telling me exactly where the next check belongs.</p>
+<p class="secsub" style="margin-top:1.4rem;">Every review reports <b>which findings the automated stage would have missed</b>, so the pipeline measures its own front end continuously, from real artifacts, never from a test fixture. A review that keeps reporting “the scanner would have caught this” means the human stages are wasting effort. A review reporting the opposite is telling me exactly where the next check belongs.</p>
 <p class="secsub">Two anti-softening rules ride alongside it: a blocker is never downgraded to a revision because a deadline is close (say it's a blocker, let the human override on the record), and a sampled read caps the verdict at <em>revise</em> — clear requires having read the whole thing.</p>
 </section><section class="sec" id="gaps">
 <div class="sechead"><span class="secnum">05</span><h2>Where it has failed</h2><div class="divider"></div></div>

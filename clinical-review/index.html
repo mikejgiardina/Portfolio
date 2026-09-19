@@ -63,7 +63,7 @@
 <p>No third model adjudicates. Two findings agree if their quoted spans overlap, measured by the <em>maximum</em> of three signals — sequence ratio, token-set Jaccard, and containment — against a 0.7 threshold. Containment exists because one reviewer quotes a phrase where the other quotes the whole sentence.</p>
 </div>
 </div>
-<p class="note">Why deterministic correlation rather than a judge model: an adjudicator is a third opinion with its own failure modes, and it would have to be evaluated too. Span overlap is checkable by hand, produces the same answer twice, and costs nothing to run. The <em>interesting</em> failure below is not one a judge model would have caught either — it would have shared the same blind spot.</p>
+<p class="note">Why deterministic correlation and not a judge model: an adjudicator is a third opinion with its own failure modes, and it would have to be evaluated too. Span overlap is checkable by hand, produces the same answer twice, and costs nothing to run. The <em>interesting</em> failure below is not one a judge model would have caught either — it would have shared the same blind spot.</p>
 </section><section class="sec" id="agree">
 <div class="sechead"><span class="secnum">02</span><h2>When agreement stops being evidence</h2><div class="divider"></div></div>
 <p class="secsub">Of everything measurement turned up, this is the one that changed how the output gets read.</p>
@@ -72,7 +72,7 @@
 <div class="verdict">
 <div class="dlab">what correlation did with it</div>
 <p class="dtext">Both reviewers made the <b>identical</b> mistake on the <b>identical</b> text. So the spans matched exactly, and the correlator promoted the finding to the highest-confidence bucket it has, at <code>quote_similarity: 1.0</code>.</p>
-<p class="dwhy"><b>The ensemble did not fail to catch this. The ensemble is what made it look certain.</b> Agreement filters noise only when the two reviewers can be wrong in <em>different</em> ways. Here the error was in the shared input, so independence was zero and the intersection amplified rather than filtered. A third reviewer would have made it worse, not better — more agreement on the same artifact.</p>
+<p class="dwhy"><b>The ensemble did not fail to catch this. The ensemble is what made it look certain.</b> Agreement filters noise only when the two reviewers can be wrong in <em>different</em> ways. Here the error was in the shared input, so independence was zero and the intersection amplified instead of filtering. A third reviewer would have made it worse, not better — more agreement on the same artifact.</p>
 </div>
 <p>The operational consequence is a split in how agreement is read, and it is not symmetric: <b>an agreed finding is high-signal for clinical content and low-signal for citation and provenance claims</b> — because provenance claims are exactly the ones where both reviewers are reading the same secondary document and can be misled by it identically.</p>
 </section><section class="sec" id="artifact">
@@ -111,7 +111,7 @@
 </div>
 <div class="card">
 <h3>Disagreement fails toward gating</h3>
-<p>Either reviewer's category counts. Uncategorised findings gate too. Where the two reviewers disagree about what kind of problem something is, the pipeline resolves toward blocking rather than toward shipping.</p>
+<p>Either reviewer's category counts. Uncategorised findings gate too. Where the two reviewers disagree about what kind of problem something is, the pipeline resolves toward blocking and not toward shipping.</p>
 </div>
 </div>
 <div class="verdict">
@@ -119,7 +119,7 @@
 <p class="dtext">Turning the fix on moved the gate from <b>4 blocked</b> to <b>71 of 93</b>. Nothing was auto-exempted to soften that. Those 71 articles carried an undisposed gating finding the day before the fix too — tightening the check only made it visible.</p>
 <p class="dwhy">A gate that reports a comfortable number on the day you tighten it has been tuned to report a comfortable number. The backlog a check reveals is the backlog you already had.</p>
 </div>
-<p>Working it took six passes and produced a disposition for all <b>180</b> gating findings: <b>131 not applicable</b> (a companion-citation gap, or an objection that was preference rather than defect), <b>42 fixed</b>, <b>7 rejected</b> because applying the finding would itself have introduced an error.</p>
+<p>Working it took six passes and produced a disposition for all <b>180</b> gating findings: <b>131 not applicable</b> (a companion-citation gap, or an objection that was preference and not defect), <b>42 fixed</b>, <b>7 rejected</b> because applying the finding would itself have introduced an error.</p>
 <div class="verdict">
 <div class="dlab">what was actually in there</div>
 <p class="dtext"><b>16 real clinical defects, found and corrected.</b> The gate closed back to <b>4 of 93</b>, and the four that remain are pre-existing prose-fidelity holds with nothing clinical in them.</p>
@@ -128,7 +128,7 @@
 </section><section class="sec" id="close">
 <div class="sechead"><span class="secnum">05</span><h2>What this shows</h2><div class="divider"></div></div>
 <div class="context">
-<p><b>Not that the pipeline is good.</b> The findings above are all ways it was wrong, found by measuring it rather than by trusting it. The narrower claim: <b>an evaluation system nobody has evaluated supplies confidence rather than information</b>, and the difference does not show up until someone checks.</p>
+<p><b>Not that the pipeline is good.</b> The findings above are all ways it was wrong, found by measuring it instead of trusting it. The narrower claim: <b>an evaluation system nobody has evaluated supplies confidence and not information</b>, and the difference does not show up until someone checks.</p>
 <p>Each of the three findings has the same shape. Agreement looked like confirmation and was partly shared blindness. A blocker count looked like content quality and was mostly missing source material. A green gate looked like resolution and was only attendance. In every case the instrument was reporting something adjacent to the thing it was believed to report, and in every case the failure was in the flattering direction.</p>
 <p>The clinical judgment is the part that is mine: knowing that <em>"I cannot verify this"</em> and <em>"this is incorrect"</em> must not share an output field when the reader is a clinician, that an errata note is not an error, and that a deferral without a date is a decision to never look again. <b>I specified the behavior and directed the agents that implemented it. I did not type the implementation and do not claim to.</b></p>
 <p style="margin-top:1.1rem; padding-top:1.1rem; border-top:1px solid var(--line-soft);">Companion write-ups: <a href="../enforcement/" style="color:var(--accent-cyan); text-decoration:none; border-bottom:1px solid var(--line)">checks that report success without having run</a> · <a href="../publishing/" style="color:var(--accent-cyan); text-decoration:none; border-bottom:1px solid var(--line)">the disclosure pipeline</a> · <a href="../case-studies/" style="color:var(--accent-cyan); text-decoration:none; border-bottom:1px solid var(--line)">all case studies</a></p>
