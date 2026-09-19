@@ -1,12 +1,13 @@
-<!doctype html>
-<html lang="en">
+<!DOCTYPE html>
+
+<html lang="en" data-theme="light">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>Sink or Swim — Surviving Your First Code Blue</title>
-<meta name="description" content="Your first code blue, told through the one monitor no one shows you — your own. A Kymora Clinical Story Mode piece, from the original essay by Mike Giardina, BSN, RN, CEN.">
-<meta name="theme-color" content="#0B1014">
-<meta name="author" content="Mike Giardina BSN, RN, CEN">
+<meta name="description" content="Your first code blue, told through the one monitor no one shows you — your own. A Kymora Clinical Story Mode piece, from the original essay by Mike Giardina, BSN, RN, CEN."/>
+<meta name="theme-color" content="#0B1014"/>
+<meta name="author" content="Mike Giardina BSN, RN, CEN"/>
 <style>
   html { background: #0B1014; }
   :root {
@@ -175,194 +176,188 @@
     * { scroll-behavior: auto !important; }
   }
 </style>
-<script>try{var t=localStorage.getItem("mg-theme");if(t==="dark"||t==="light")document.documentElement.setAttribute("data-theme",t);}catch(e){}</script>
-<meta property="og:type" content="article">
-<meta property="og:url" content="https://mike-giardina.netlify.app/story/first-code-blue/">
-<meta property="og:title" content="Your first code blue — a cardiac arrest in real time">
-<meta property="og:description" content="A clinical teaching article re-staged as a real-time patient case, with a live monitor that tracks the patient as you scroll.">
-<meta property="og:image" content="https://mike-giardina.netlify.app/assets/og/story-first-code-blue.png">
-<meta property="og:image:width" content="1200">
-<meta property="og:image:height" content="627">
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://mike-giardina.netlify.app/assets/og/story-first-code-blue.png">
-</head>
-<body>
 
+<meta property="og:type" content="article"/>
+<meta property="og:url" content="https://mike-giardina.netlify.app/story/first-code-blue/"/>
+<meta property="og:title" content="Your first code blue — a cardiac arrest in real time"/>
+<meta property="og:description" content="A clinical teaching article re-staged as a real-time patient case, with a live monitor that tracks the patient as you scroll."/>
+<meta property="og:image" content="https://mike-giardina.netlify.app/assets/og/story-first-code-blue.png"/>
+<meta property="og:image:width" content="1200"/>
+<meta property="og:image:height" content="627"/>
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="https://mike-giardina.netlify.app/assets/og/story-first-code-blue.png"/>
+<link rel="stylesheet" href="../../assets/fonts/editorial.css"/><link rel="stylesheet" href="../../assets/story-editorial.css"/><script src="../../assets/navigation.js" defer=""></script></head>
+<body class="story-page"><a class="skip" href="#reading">Skip to content</a><header class="masthead"><div class="mast-inner">
+<a class="brand" href="../../"><svg width="32" height="32" viewbox="0 0 32 32" fill="none" role="img" aria-label="Michael Giardina monogram"><path d="M4 26V6l12 12L28 6v20M4 6l12 12 12-12" stroke="currentColor" stroke-width="2.5"></path><path d="M16 18v8" stroke="currentColor" stroke-width="2.5"></path></svg><span>MICHAEL GIARDINA<span class="brand-sub">Clinical judgment. Systems thinking.</span></span></a>
+<button class="mobile-menu" aria-expanded="false" aria-controls="primary-navigation" type="button">Menu</button>
+<nav class="primary-nav" id="primary-navigation" aria-label="Portfolio navigation">
+<a href="../../#work">Work</a>
+<details class="nav-dropdown"><summary>Case studies</summary><div class="nav-panel"><a href="../../case-studies/">All five case studies</a><a href="../../automation/">Lifecycle hooks</a><a href="../../enforcement/">Enforcement</a><a href="../../publishing/">Disclosure & publishing</a><a href="../../clinical-review/">Clinical AI evaluation</a><a href="../../orchestration/">Multi-session orchestration</a><a href="../../orchestration/evidence/">Evidence appendix</a><a href="../../trauma-tracker/">Trauma Tracker</a></div></details>
+<details class="nav-dropdown"><summary>Clinical stories</summary><div class="nav-panel"><a href="../../story/gi-bleed/">GI hemorrhage</a><a href="../../story/hyperkalemia/">Hyperkalemia</a><a href="../../story/first-code-blue/">Your first code blue</a><a href="https://erinfo.netlify.app" target="_blank" rel="noopener noreferrer">ER articles ↗</a></div></details>
+<a href="../../#background">About</a><a href="../../#connect">Contact</a></nav>
+<button class="theme-toggle" type="button" aria-label="Switch to dark mode"><span class="theme-symbol" aria-hidden="true">◐</span><span class="theme-label">Dark</span></button></div><div class="reading-progress" aria-hidden="true"></div></header>
 <div class="monitor" id="monitor">
-  <div class="monitor-inner">
-    <div class="m-left">
-      <div class="m-who"><span class="dot"></span>You</div>
-      <div class="m-state" id="mstate">Baseline</div>
-    </div>
-    <div class="m-right">
-      <div class="trace-cell"><canvas id="trace" width="360" height="124"></canvas></div>
-      <div class="vital"><div class="lab">Your HR</div><div class="num" id="v-hr" style="--val:var(--breath)">76</div><div class="unit">bpm</div></div>
-      <div class="vital"><div class="lab">Your RR</div><div class="num" id="v-rr" style="--val:var(--breath)">14</div><div class="unit">/min</div></div>
-      <div class="vital patient"><div class="lab">Patient</div><div class="num" id="v-pt">—</div><div class="unit">rhythm</div></div>
-    </div>
-  </div>
+<div class="monitor-inner">
+<div class="m-left">
+<div class="m-who"><span class="dot"></span>You</div>
+<div class="m-state" id="mstate">Baseline</div>
 </div>
-
+<div class="m-right">
+<div class="trace-cell"><canvas id="trace" width="360" height="124" role="img" aria-label="Simulated educational ECG waveform"></canvas></div>
+<div class="vital"><div class="lab">Your HR</div><div class="num" id="v-hr" style="--val:var(--breath)">76</div><div class="unit">bpm</div></div>
+<div class="vital"><div class="lab">Your RR</div><div class="num" id="v-rr" style="--val:var(--breath)">14</div><div class="unit">/min</div></div>
+<div class="vital patient"><div class="lab">Patient</div><div class="num" id="v-pt">—</div><div class="unit">rhythm</div></div>
+</div>
+</div>
+</div>
 <header class="hero wrap">
-  <div class="eyebrow">Kymora · Clinical Story Mode · No. 3</div>
-  <h1>Sink or <em>Swim</em></h1>
-  <p class="dek">Surviving your first code blue — told through the one monitor nobody ever shows you. Your own. The vitals up top are yours; steady them as you read.</p>
-  <div class="byline">The original essay, staged.<br><b>Written by Mike Giardina, BSN, RN, CEN</b></div>
-  <div class="scroll-cue">Begin<span>▼</span></div>
+<div class="eyebrow">Kymora · Clinical Story Mode · No. 3</div>
+<h1>Sink or <em>Swim</em></h1>
+<p class="dek">Surviving your first code blue — told through the one monitor nobody ever shows you. Your own. The vitals up top are yours; steady them as you read.</p>
+<div class="byline">The original essay, staged.<br/><b>Written by Mike Giardina, BSN, RN, CEN</b></div>
+<div class="scroll-cue">Begin<span>▼</span></div>
 </header>
-
-<main>
-
+<main id="reading">
 <!-- INTRO -->
 <section class="beat wrap" data-hr="138" data-rr="28" data-state="Fight-or-flight" data-panic="1" data-patient="VF ARREST">
-  <div class="phase crit"><span class="n">Intro</span> The physiology of the provider</div>
-  <div class="story">
-    <p class="drop">The first time a new nurse hears someone scream <em>"I NEED HELP!"</em> or <em>"GRAB THE CART!"</em>, the physiological response is nearly identical to that of the patient they're about to treat. Heart rate spikes or drops to the floor, peripheral vision narrows, fine motor skills deteriorate. Knees weak. Arms heavy. There might even be vomit on the sweater already. That is fight or flight.</p>
-    <p>It's an instinctual response — a survival mechanism evolved for running from predators, never made for calculating epinephrine intervals or measuring the depth of chest compressions. We spend cumulative months on mannequins that don't bleed, vomit, or have grieving families screaming in the corner. <b>The gap between simulation and reality is where many new graduates falter.</b></p>
-  </div>
-  <div class="decode crimson">
-    <h3>◇ Look up. That's your monitor.</h3>
-    <p>This piece isn't a guide to what to give and when. Plenty of things can teach you the algorithm. What nothing teaches you is the part that decides whether you can <em>run</em> the algorithm: your own nervous system, redlining before you've touched the patient.</p>
-    <p><strong>The first pulse you need to check is your own — before you walk through the door.</strong></p>
-  </div>
+<div class="phase crit"><span class="n">Intro</span> The physiology of the provider</div>
+<div class="story">
+<p class="drop">The first time a new nurse hears someone scream <em>"I NEED HELP!"</em> or <em>"GRAB THE CART!"</em>, the physiological response is nearly identical to that of the patient they're about to treat. Heart rate spikes or drops to the floor, peripheral vision narrows, fine motor skills deteriorate. Knees weak. Arms heavy. There might even be vomit on the sweater already. That is fight or flight.</p>
+<p>It's an instinctual response — a survival mechanism evolved for running from predators, never made for calculating epinephrine intervals or measuring the depth of chest compressions. We spend cumulative months on mannequins that don't bleed, vomit, or have grieving families screaming in the corner. <b>The gap between simulation and reality is where many new graduates falter.</b></p>
+</div>
+<div class="decode crimson">
+<h3>◇ Look up. That's your monitor.</h3>
+<p>This piece isn't a guide to what to give and when. Plenty of things can teach you the algorithm. What nothing teaches you is the part that decides whether you can <em>run</em> the algorithm: your own nervous system, redlining before you've touched the patient.</p>
+<p><strong>The first pulse you need to check is your own — before you walk through the door.</strong></p>
+</div>
 </section>
-
 <!-- PHASE 1 -->
 <section class="beat wrap" data-hr="128" data-rr="26" data-state="Pre-code" data-patient="VF ARREST">
-  <div class="phase"><span class="n">Phase 1</span> The pre-code pause</div>
-  <div class="story tight">
-    <p>The most critical moment of a resuscitation often happens before you touch the patient — the ten seconds it takes to walk from the station to the bay. In that window you perform a self-triage. Arrest with a couple-minute ETA? Time to crack the cart and set up your laboratory. Epi. Amio. Bicarb. <em>Modern alchemy at its finest.</em></p>
-    <p class="pull">If you enter a chaotic room at a heart rate of 140, <b>you're going to be part of the problem, not the solution.</b></p>
-  </div>
-  <div class="pacer" id="pacer">
-    <h3>Take a tactical breath · 4-4-4</h3>
-    <p class="sub">Box breathing engages the parasympathetic nervous system and widens your cognitive bandwidth. Follow the circle. Watch your monitor.</p>
-    <div class="breath-stage">
-      <div class="breath-ring" id="ring"></div>
-      <div>
-        <div class="breath-label" id="breathLabel">Ready</div>
-        <div class="breath-count" id="breathCount"></div>
-      </div>
-    </div>
-    <button id="breathBtn" type="button">Begin breathing</button>
-    <div class="hint" id="breathHint">Three rounds. You cannot organize a chaotic room if your own internal state is in chaos.</div>
-  </div>
+<div class="phase"><span class="n">Phase 1</span> The pre-code pause</div>
+<div class="story tight">
+<p>The most critical moment of a resuscitation often happens before you touch the patient — the ten seconds it takes to walk from the station to the bay. In that window you perform a self-triage. Arrest with a couple-minute ETA? Time to crack the cart and set up your laboratory. Epi. Amio. Bicarb. <em>Modern alchemy at its finest.</em></p>
+<p class="pull">If you enter a chaotic room at a heart rate of 140, <b>you're going to be part of the problem, not the solution.</b></p>
+</div>
+<div class="pacer" id="pacer">
+<h3>Take a tactical breath · 4-4-4</h3>
+<p class="sub">Box breathing engages the parasympathetic nervous system and widens your cognitive bandwidth. Follow the circle. Watch your monitor.</p>
+<div class="breath-stage">
+<div class="breath-ring" id="ring"></div>
+<div>
+<div class="breath-label" id="breathLabel">Ready</div>
+<div class="breath-count" id="breathCount"></div>
+</div>
+</div>
+<button id="breathBtn" type="button">Begin breathing</button>
+<div class="hint" id="breathHint">Three rounds. You cannot organize a chaotic room if your own internal state is in chaos.</div>
+</div>
 </section>
-
 <!-- PHASE 2 -->
 <section class="beat wrap" data-hr="92" data-rr="16" data-state="Regulated" data-patient="VF ARREST">
-  <div class="phase"><span class="n">Phase 2</span> The pit crew — finding your lane</div>
-  <div class="story tight">
-    <p>In high-acuity situations we work like a pit crew. No one on the side of a racetrack asks anyone else what to do — they fall in line and claim the role that suits them. Scan for the code lead. Attending, resident, ICU charge, doesn't matter. There's only one question to ask:</p>
-    <p class="pull"><b>"What do you need?"</b></p>
-    <p>You'll default to one of three high-value, low-ambiguity roles. Tap the one calling you.</p>
-  </div>
-  <div class="roles" id="roles">
-    <button class="role" type="button">
-      <span class="rt">Compressor</span>
-      <span class="rq">burn the energy</span>
-      <div class="rbody">High-quality CPR is the single most important intervention. It's stamina, not decision-making — the ideal role for a nurse running on adrenaline. Use your body, not just your arms, and you'll do more for that person than a LUCAS device ever could.</div>
-    </button>
-    <button class="role" type="button">
-      <span class="rt">Recorder</span>
-      <span class="rq">learn the flow</span>
-      <div class="rbody">Standing at the computer with the record open lets you watch the code, learn the algorithm, and contribute by calling the intervals — "two minutes since last epi," "pulse check in thirty." You won't hesitate on epi timing twice.</div>
-    </button>
-    <button class="role" type="button">
-      <span class="rt">Runner</span>
-      <span class="rq">clear the room</span>
-      <div class="rbody">If the room's already saturated, step out. Being the gopher isn't inglorious — knowing what people need before they need it, and the fastest way to get it, is its own skill. Flushes, more epi, lab results, the Accu-Chek. That can mean life or death.</div>
-    </button>
-  </div>
-  <div class="decode amber">
-    <h3>◇ The hazard of hovering</h3>
-    <p>The most dangerous thing a new nurse does is <strong>hover</strong> — standing near the bed without a task. It adds noise, blocks the leader's line of sight, and physically obstructs the team. <strong>If you don't have a role, find one</strong> — or go hold down the rest of the department, because the world doesn't stop when this happens.</p>
-  </div>
+<div class="phase"><span class="n">Phase 2</span> The pit crew — finding your lane</div>
+<div class="story tight">
+<p>In high-acuity situations we work like a pit crew. No one on the side of a racetrack asks anyone else what to do — they fall in line and claim the role that suits them. Scan for the code lead. Attending, resident, ICU charge, doesn't matter. There's only one question to ask:</p>
+<p class="pull"><b>"What do you need?"</b></p>
+<p>You'll default to one of three high-value, low-ambiguity roles. Tap the one calling you.</p>
+</div>
+<div class="roles" id="roles">
+<button class="role" type="button">
+<span class="rt">Compressor</span>
+<span class="rq">burn the energy</span>
+<div class="rbody">High-quality CPR is the single most important intervention. It's stamina, not decision-making — the ideal role for a nurse running on adrenaline. Use your body, not just your arms, and you'll do more for that person than a LUCAS device ever could.</div>
+</button>
+<button class="role" type="button">
+<span class="rt">Recorder</span>
+<span class="rq">learn the flow</span>
+<div class="rbody">Standing at the computer with the record open lets you watch the code, learn the algorithm, and contribute by calling the intervals — "two minutes since last epi," "pulse check in thirty." You won't hesitate on epi timing twice.</div>
+</button>
+<button class="role" type="button">
+<span class="rt">Runner</span>
+<span class="rq">clear the room</span>
+<div class="rbody">If the room's already saturated, step out. Being the gopher isn't inglorious — knowing what people need before they need it, and the fastest way to get it, is its own skill. Flushes, more epi, lab results, the Accu-Chek. That can mean life or death.</div>
+</button>
+</div>
+<div class="decode amber">
+<h3>◇ The hazard of hovering</h3>
+<p>The most dangerous thing a new nurse does is <strong>hover</strong> — standing near the bed without a task. It adds noise, blocks the leader's line of sight, and physically obstructs the team. <strong>If you don't have a role, find one</strong> — or go hold down the rest of the department, because the world doesn't stop when this happens.</p>
+</div>
 </section>
-
 <!-- PHASE 3 -->
 <section class="beat wrap" data-hr="96" data-rr="17" data-state="In the code" data-patient="VF → CPR">
-  <div class="phase"><span class="n">Phase 3</span> The mechanics of efficacy</div>
-  <div class="story tight">
-    <p>Effective resuscitation is physics and chemistry, not magic. The one number the AHA hammers is <b>compression fraction</b> — the percentage of the code that hands are actually on the chest. Every time you come off, coronary perfusion pressure falls toward zero, and it takes several compressions to build it back.</p>
-  </div>
-  <div class="decode">
-    <h3>◇ Compression fraction — keep the pressure up</h3>
-    <p>Every minute of coronary perfusion is a minute of cerebral blood flow restored. It doesn't matter if you restart everything if the heart and brain aren't recoverable.</p>
-    <div class="cpr"><div class="cpr-bar"><div class="cpr-fill"></div><span class="cpr-label">HANDS ON</span></div></div>
-    <p style="margin-top:12px;"><strong>The pearl:</strong> do not pause compressions for intubation. Do not pause for access. The only pauses are rhythm checks (under 10 seconds) and defibrillation. The first thing on everyone's mind, in every role: <em>compressions stop only to check for a true pulse.</em></p>
-  </div>
-  <div class="loop" id="loop">
-    <h3>Closed-loop communication</h3>
-    <p class="sub">Auditory exclusion is real. Repeat what you heard, out loud, before a mistake is made. Play it through.</p>
-    <div class="loop-lines">
-      <div class="ll" data-step="0"><span class="who">Leader:</span> "Give 1 mg epinephrine IV push."</div>
-      <div class="ll" data-step="1"><span class="who">Med nurse:</span> "1 mg epinephrine IV push."</div>
-      <div class="ll confirm" data-step="2"><span class="who">Med nurse:</span> <em>(administers)</em> "1 mg epinephrine is in."</div>
-      <div class="ll" data-step="3"><span class="who">Scribe:</span> marks the time. Order heard, dose verified, action closed.</div>
-    </div>
-    <button id="loopBtn" type="button">▶ Run the loop</button>
-  </div>
+<div class="phase"><span class="n">Phase 3</span> The mechanics of efficacy</div>
+<div class="story tight">
+<p>Effective resuscitation is physics and chemistry, not magic. The one number the AHA hammers is <b>compression fraction</b> — the percentage of the code that hands are actually on the chest. Every time you come off, coronary perfusion pressure falls toward zero, and it takes several compressions to build it back.</p>
+</div>
+<div class="decode">
+<h3>◇ Compression fraction — keep the pressure up</h3>
+<p>Every minute of coronary perfusion is a minute of cerebral blood flow restored. It doesn't matter if you restart everything if the heart and brain aren't recoverable.</p>
+<div class="cpr"><div class="cpr-bar"><div class="cpr-fill"></div><span class="cpr-label">HANDS ON</span></div></div>
+<p style="margin-top:12px;"><strong>The pearl:</strong> do not pause compressions for intubation. Do not pause for access. The only pauses are rhythm checks (under 10 seconds) and defibrillation. The first thing on everyone's mind, in every role: <em>compressions stop only to check for a true pulse.</em></p>
+</div>
+<div class="loop" id="loop">
+<h3>Closed-loop communication</h3>
+<p class="sub">Auditory exclusion is real. Repeat what you heard, out loud, before a mistake is made. Play it through.</p>
+<div class="loop-lines">
+<div class="ll" data-step="0"><span class="who">Leader:</span> "Give 1 mg epinephrine IV push."</div>
+<div class="ll" data-step="1"><span class="who">Med nurse:</span> "1 mg epinephrine IV push."</div>
+<div class="ll confirm" data-step="2"><span class="who">Med nurse:</span> <em>(administers)</em> "1 mg epinephrine is in."</div>
+<div class="ll" data-step="3"><span class="who">Scribe:</span> marks the time. Order heard, dose verified, action closed.</div>
+</div>
+<button id="loopBtn" type="button">▶ Run the loop</button>
+</div>
 </section>
-
 <!-- PHASE 4 -->
 <section class="beat wrap" data-hr="118" data-rr="22" data-state="The crash" data-patient="ROSC" data-rhythmclass="rosc">
-  <div class="phase crit"><span class="n">Phase 4</span> The fall</div>
-  <div class="story">
-    <p>The code doesn't end when the pulse comes back or time of death is called. For a new grad, the minutes after are the ambush. <b>The high you felt from that rush of adrenaline will drop you off a cliff.</b> Crashing is the only option if you didn't already pack a parachute, and plenty of nurses have crashed and not gotten back up.</p>
-    <p>So do it again. The 4-4-4, this time with your eyes closed, clearing your head. Don't internalize what you saw. That exposure builds over each code until it spills over — and there's a better name for it than trauma dumping.</p>
-  </div>
-  <div class="decode amber">
-    <h3>◇ Debrief — and don't do it alone</h3>
-    <p>A five-minute standing huddle right after, standard practice in any high-performing ER. Not blame, not guilt, systems. <strong>What went well:</strong> "good role assignment," "high compression fraction," "a recommendation I hadn't thought of." <strong>What we improve:</strong> "delay getting the IO drill," "too much noise," "too long between compressions."</p>
-    <p>The "stiff upper lip" culture of the past is what feeds burnout and PTSD. <strong>Acknowledging that a code was hard is not weakness; it is humanity</strong>, and there's no greater loss than losing yours along with someone else's life.</p>
-  </div>
+<div class="phase crit"><span class="n">Phase 4</span> The fall</div>
+<div class="story">
+<p>The code doesn't end when the pulse comes back or time of death is called. For a new grad, the minutes after are the ambush. <b>The high you felt from that rush of adrenaline will drop you off a cliff.</b> Crashing is the only option if you didn't already pack a parachute, and plenty of nurses have crashed and not gotten back up.</p>
+<p>So do it again. The 4-4-4, this time with your eyes closed, clearing your head. Don't internalize what you saw. That exposure builds over each code until it spills over — and there's a better name for it than trauma dumping.</p>
+</div>
+<div class="decode amber">
+<h3>◇ Debrief — and don't do it alone</h3>
+<p>A five-minute standing huddle right after, standard practice in any high-performing ER. Not blame, not guilt, systems. <strong>What went well:</strong> "good role assignment," "high compression fraction," "a recommendation I hadn't thought of." <strong>What we improve:</strong> "delay getting the IO drill," "too much noise," "too long between compressions."</p>
+<p>The "stiff upper lip" culture of the past is what feeds burnout and PTSD. <strong>Acknowledging that a code was hard is not weakness; it is humanity</strong>, and there's no greater loss than losing yours along with someone else's life.</p>
+</div>
 </section>
-
 <!-- PHASE 5 — reverence -->
 <section class="beat wrap" data-hr="80" data-rr="13" data-state="After" data-patient="TIME OF DEATH" data-rhythmclass="tod">
-  <div class="phase warm"><span class="n">Phase 5</span> The aftermath</div>
-  <div class="story tight">
-    <p>Sometimes, after all of it, death wins. This isn't a textbook, and the order was never the point, every code is different. But if the work ends in a loss, there has to be more than a debrief. There has to be a moment.</p>
-  </div>
-  <div class="reverence">
-    <svg class="flat" viewBox="0 0 320 40" preserveAspectRatio="none" aria-hidden="true"><polyline points="0,20 320,20" fill="none" stroke="#8a6a26" stroke-width="2"/></svg>
-    <p>It isn't a question of belief. It's respect. The body in front of you was someone's mother, father, child, friend, or spouse — someone who, a couple of hours ago, might have said <em>"see you later"</em> for the last time.</p>
-    <p class="soft">Remove the equipment you can. Clear the caps out of the sink. Clean the floor, even if it's been there for days. Find a couple of chairs and a box of tissues. Sit them up, wash their face and hands, a fresh gown and fresh linens. Treat their body the way you'd want another nurse to treat someone you love. It gives everyone in the room a turning point — from fighting for a life to honoring a death.</p>
-    <p style="color:var(--amber); font-style:italic;">If you ever lose the feeling of being humbled by this, consider it time to reach out for more help than you're already getting.</p>
-  </div>
+<div class="phase warm"><span class="n">Phase 5</span> The aftermath</div>
+<div class="story tight">
+<p>Sometimes, after all of it, death wins. This isn't a textbook, and the order was never the point, every code is different. But if the work ends in a loss, there has to be more than a debrief. There has to be a moment.</p>
+</div>
+<div class="reverence">
+<svg class="flat" viewbox="0 0 320 40" preserveaspectratio="none" aria-hidden="true"><polyline points="0,20 320,20" fill="none" stroke="#8a6a26" stroke-width="2"></polyline></svg>
+<p>It isn't a question of belief. It's respect. The body in front of you was someone's mother, father, child, friend, or spouse — someone who, a couple of hours ago, might have said <em>"see you later"</em> for the last time.</p>
+<p class="soft">Remove the equipment you can. Clear the caps out of the sink. Clean the floor, even if it's been there for days. Find a couple of chairs and a box of tissues. Sit them up, wash their face and hands, a fresh gown and fresh linens. Treat their body the way you'd want another nurse to treat someone you love. It gives everyone in the room a turning point — from fighting for a life to honoring a death.</p>
+<p style="color:var(--amber); font-style:italic;">If you ever lose the feeling of being humbled by this, consider it time to reach out for more help than you're already getting.</p>
+</div>
 </section>
-
 <!-- MANTRA -->
 <section class="beat wrap" data-hr="74" data-rr="12" data-state="Steady" data-patient="—">
-  <div class="phase warm"><span class="n">Carry this</span> what the next one already knows</div>
-  <div class="story tight" style="margin-bottom:20px;">
-    <p>The next code will be a little easier. You'll fill a different role, with a little more confidence, and you'll teach the one standing where you're standing now. Until then, carry these.</p>
-  </div>
-  <div class="mantra">
-    <div class="m"><b>Don't panic;</b> breathe.</div>
-    <div class="m"><b>Don't assume;</b> communicate.</div>
-    <div class="m"><b>Don't take flight;</b> stay and fight.</div>
-    <div class="m"><b>Don't forget</b> to respect the situation, the person, and their loved ones.</div>
-    <div class="m"><b>Don't disconnect;</b> debrief.</div>
-    <div class="m"><b>And remember</b> that you trained for this.</div>
-  </div>
-</section>
-
-<div class="outro wrap">
-  <div class="rule"></div>
-  <h2>This is the pinnacle of your skill and profession.</h2>
-  <p>There's no greater honor than taking everything you know and using it to restore as much life as possible to the person who entrusted it to you. Sink, or swim. You already know how to swim — you just have to remember to breathe.</p>
-  <a class="back" href="../../">← Back to the portfolio</a>
+<div class="phase warm"><span class="n">Carry this</span> what the next one already knows</div>
+<div class="story tight" style="margin-bottom:20px;">
+<p>The next code will be a little easier. You'll fill a different role, with a little more confidence, and you'll teach the one standing where you're standing now. Until then, carry these.</p>
 </div>
-
+<div class="mantra">
+<div class="m"><b>Don't panic;</b> breathe.</div>
+<div class="m"><b>Don't assume;</b> communicate.</div>
+<div class="m"><b>Don't take flight;</b> stay and fight.</div>
+<div class="m"><b>Don't forget</b> to respect the situation, the person, and their loved ones.</div>
+<div class="m"><b>Don't disconnect;</b> debrief.</div>
+<div class="m"><b>And remember</b> that you trained for this.</div>
+</div>
+</section>
+<div class="outro wrap">
+<div class="rule"></div>
+<h2>This is the pinnacle of your skill and profession.</h2>
+<p>There's no greater honor than taking everything you know and using it to restore as much life as possible to the person who entrusted it to you. Sink, or swim. You already know how to swim — you just have to remember to breathe.</p>
+<a class="back" href="../../">← Back to the portfolio</a>
+</div>
 <footer class="foot">
   Kymora Clinical Education · Story Mode · No. 3
   <p class="disc">A reflective essay for newer emergency nurses, written from the bedside. It is about the human experience of resuscitation, not a substitute for ACLS training, institutional protocol, or clinical judgment. If a code is sitting heavy with you, reach out — a colleague, a debrief, your EAP.</p>
 </footer>
-
 </main>
-
 <script>
 (function () {
   "use strict";
@@ -514,5 +509,333 @@
   });
 })();
 </script>
-</body>
+<script data-pplx-inline-edit>
+(function () {
+  if (window === window.top) return;
+
+  const allowedParentOrigins = ["https://www.perplexity.ai","https://perplexity.ai","https://testing.perplexity.ai","https://staging.perplexity.ai","https://*.preview.i.perplexity.ai","http://perplexity.localhost","http://localhost:1420","http://127.0.0.1:1420","http://localhost:3000","http://127.0.0.1:3000","http://localhost:5173","http://127.0.0.1:5173"];
+  const MAX_FONT_BYTES = 500 * 1024;
+  const MAX_TOTAL_FONT_BYTES = 2 * 1024 * 1024;
+  let scrollForwarding = false;
+  let scrollRaf = 0;
+  let trustedTopOrigin = null;
+
+  // Allow entries like "https://*.preview.i.perplexity.ai" — the wildcard
+  // matches a single DNS label (no dots), so "https://*.foo" cannot stretch
+  // across multiple labels.
+  function matchesAllowedOrigin(origin) {
+    if (!origin) return false;
+    for (const entry of allowedParentOrigins) {
+      if (!entry.includes("*")) {
+        if (entry === origin) return true;
+        continue;
+      }
+      const pattern = new RegExp(
+        "^" +
+          entry.replace(/[.+?^${}()|[\]\\]/g, "\\$&").replace(/\*/g, "[^.]+") +
+          "$",
+      );
+      if (pattern.test(origin)) return true;
+    }
+    return false;
+  }
+
+  // Trust decision: when the sender is same-origin-visible (event.origin is a
+  // real origin like https://www.perplexity.ai) we trust event.origin directly.
+  // When event.origin is "null" (opaque broker srcdoc), we fall back to the
+  // broker's stamped `parentOrigin` to identify the top window. The fallback
+  // is claim-only — we rely on the browser's native `targetOrigin` enforcement
+  // on the response path (see postToTrustedTop) to ensure replies can't be
+  // delivered to anyone but the actual top window of that claimed origin.
+  function getTrustedParentOrigin(event) {
+    const forwardedParentOrigin =
+      typeof event.data.parentOrigin === "string" ? event.data.parentOrigin : null;
+    const parentOrigin = event.origin === "null" ? forwardedParentOrigin : event.origin;
+    return matchesAllowedOrigin(parentOrigin) ? parentOrigin : null;
+  }
+
+  // All responses go to window.top with targetOrigin = the allowlisted origin.
+  // An attacker that iframes us inside their own null-origin broker can claim
+  // any parentOrigin they like, but the browser will drop the reply whenever
+  // the real top's origin doesn't match — so the screenshot never leaves.
+  function postToTrustedTop(message) {
+    if (!trustedTopOrigin) return;
+    try {
+      window.top.postMessage(message, trustedTopOrigin);
+    } catch (_error) {}
+  }
+
+  function inlineAll(original, clone) {
+    if (original.nodeType !== 1 || clone.nodeType !== 1) return;
+
+    try {
+      const computedStyle = getComputedStyle(original);
+      // cssText on a computed style is the serialized declaration in modern
+      // Chromium/Safari — a single read beats enumerating ~400 longhand
+      // properties. Firefox returns "" here, so we fall back on empty.
+      const serialized = computedStyle.cssText;
+      if (serialized) {
+        clone.style.cssText = serialized;
+      } else {
+        const parts = new Array(computedStyle.length);
+        for (let index = 0; index < computedStyle.length; index += 1) {
+          const property = computedStyle[index];
+          parts[index] = `${property}:${computedStyle.getPropertyValue(property)};`;
+        }
+        clone.style.cssText = parts.join("");
+      }
+    } catch (_error) {}
+
+    const originalChildren = original.children;
+    const clonedChildren = clone.children;
+    for (
+      let index = 0;
+      index < originalChildren.length && index < clonedChildren.length;
+      index += 1
+    ) {
+      inlineAll(originalChildren[index], clonedChildren[index]);
+    }
+  }
+
+  function extractFontUrl(srcValue) {
+    const matches = [
+      ...srcValue.matchAll(
+        /url\(["']?([^"')]+)["']?\)(?:\s*format\(["']?([^"')]+)["']?\))?/gi,
+      ),
+    ];
+    if (matches.length === 0) return null;
+    const woff2 = matches.find((m) => m[2] && m[2].toLowerCase().includes("woff2"));
+    if (woff2) return woff2[1];
+    const woff = matches.find((m) => m[2] && m[2].toLowerCase().includes("woff"));
+    if (woff) return woff[1];
+    return matches[0][1];
+  }
+
+  // Cache resolved font URL -> data URI across captures. Fonts on a page
+  // essentially never change, and a batch run emits multiple captures back to
+  // back — without this we'd refetch + re-base64 every time.
+  const fontDataUriCache = new Map();
+  const SRC_DECLARATION_RE = /src\s*:\s*[^;}]+/i;
+
+  async function fetchAsDataUri(url) {
+    if (fontDataUriCache.has(url)) return fontDataUriCache.get(url);
+    let dataUri = null;
+    try {
+      const response = await fetch(url, { mode: "cors", credentials: "omit" });
+      if (response.ok) {
+        const blob = await response.blob();
+        if (blob.size <= MAX_FONT_BYTES) {
+          dataUri = await new Promise((resolve) => {
+            const reader = new FileReader();
+            reader.onloadend = () =>
+              resolve(typeof reader.result === "string" ? reader.result : null);
+            reader.onerror = () => resolve(null);
+            reader.readAsDataURL(blob);
+          });
+        }
+      }
+    } catch (_error) {
+      dataUri = null;
+    }
+    fontDataUriCache.set(url, dataUri);
+    return dataUri;
+  }
+
+  function collectFontFaceRuleTexts() {
+    const rules = [];
+    for (const sheet of document.styleSheets) {
+      let cssRules;
+      try {
+        cssRules = sheet.cssRules;
+      } catch (_error) {
+        continue;
+      }
+      if (!cssRules) continue;
+      for (const rule of cssRules) {
+        const cssText = rule.cssText || "";
+        if (cssText.startsWith("@font-face")) rules.push(cssText);
+      }
+    }
+    return rules;
+  }
+
+  async function buildInlinedFontCss() {
+    const ruleTexts = collectFontFaceRuleTexts();
+    if (ruleTexts.length === 0) return null;
+
+    const resolved = ruleTexts.map((cssText) => {
+      if (!SRC_DECLARATION_RE.test(cssText)) return null;
+      const srcMatch = cssText.match(/src\s*:\s*([^;}]+)[;}]/i);
+      if (!srcMatch) return null;
+      const url = extractFontUrl(srcMatch[1]);
+      if (!url) return null;
+      try {
+        return { cssText, url: new URL(url, document.baseURI).href };
+      } catch (_error) {
+        return null;
+      }
+    });
+
+    const dataUris = await Promise.all(
+      resolved.map((entry) => (entry ? fetchAsDataUri(entry.url) : Promise.resolve(null))),
+    );
+
+    const inlined = [];
+    let totalBytes = 0;
+    for (let index = 0; index < resolved.length; index += 1) {
+      const entry = resolved[index];
+      const dataUri = dataUris[index];
+      if (!entry || !dataUri) continue;
+      const approxBytes = dataUri.length * 0.75;
+      if (totalBytes + approxBytes > MAX_TOTAL_FONT_BYTES) break;
+      totalBytes += approxBytes;
+      inlined.push(entry.cssText.replace(SRC_DECLARATION_RE, `src: url("${dataUri}")`));
+    }
+    return inlined.length > 0 ? inlined.join("\n") : null;
+  }
+
+  function stripExternal(clone) {
+    const images = clone.querySelectorAll("img");
+    for (let index = 0; index < images.length; index += 1) {
+      const src = images[index].getAttribute("src");
+      if (src && !src.startsWith("data:")) images[index].removeAttribute("src");
+    }
+
+    const elements = clone.querySelectorAll("*");
+    for (let index = 0; index < elements.length; index += 1) {
+      const style = elements[index].style.cssText;
+      if (style && style.includes("url(")) {
+        elements[index].style.cssText = style.replace(
+          /url\(["']?(?!data:)[^)"']*["']?\)/gi,
+          "none",
+        );
+      }
+    }
+  }
+
+  function emitScroll() {
+    scrollRaf = 0;
+    if (!scrollForwarding) return;
+    postToTrustedTop({
+      type: "INLINE_EDIT_SCROLL",
+      scrollX: window.scrollX,
+      scrollY: window.scrollY,
+    });
+  }
+
+  window.addEventListener(
+    "scroll",
+    function () {
+      if (!scrollForwarding || scrollRaf) return;
+      scrollRaf = requestAnimationFrame(emitScroll);
+    },
+    { passive: true, capture: true },
+  );
+
+  async function handleCaptureRequest(event) {
+    const requestId = event.data.requestId;
+    const scrollX = window.scrollX;
+    const scrollY = window.scrollY;
+    const width = window.innerWidth;
+    const height = window.innerHeight;
+
+    function postResult(dataUrl) {
+      postToTrustedTop({
+        type: "INLINE_EDIT_SCREENSHOT_RESULT",
+        requestId,
+        dataUrl,
+        scrollX,
+        scrollY,
+      });
+    }
+
+    try {
+      // Wait for any pending web fonts to resolve so both inline metrics and
+      // the @font-face inlining below see the same loaded faces.
+      if (document.fonts && document.fonts.ready) {
+        try {
+          await document.fonts.ready;
+        } catch (_error) {}
+      }
+
+      const clone = document.documentElement.cloneNode(true);
+      inlineAll(document.documentElement, clone);
+
+      const removedNodes = clone.querySelectorAll("script,link[rel=\"stylesheet\"],style");
+      for (let index = 0; index < removedNodes.length; index += 1) {
+        removedNodes[index].remove();
+      }
+
+      stripExternal(clone);
+
+      // Re-embed web fonts as data-URI @font-face rules so the SVG rasterizer
+      // can resolve them — external font URLs aren't fetched during
+      // foreignObject rendering, which would otherwise force a fallback face
+      // and change text metrics.
+      const inlinedFontCss = await buildInlinedFontCss();
+      if (inlinedFontCss) {
+        const styleEl = document.createElement("style");
+        styleEl.textContent = inlinedFontCss;
+        const head = clone.querySelector("head");
+        if (head) head.appendChild(styleEl);
+        else clone.insertBefore(styleEl, clone.firstChild);
+      }
+
+      const html = new XMLSerializer().serializeToString(clone);
+      const svg =
+        `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}">` +
+        '<foreignObject width="100%" height="100%">' +
+        `<div xmlns="http://www.w3.org/1999/xhtml" style="width:${width}px;height:${height}px;overflow:hidden">` +
+        `<div style="position:relative;left:-${scrollX}px;top:-${scrollY}px">` +
+        html +
+        "</div></div></foreignObject></svg>";
+      const svgUrl = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
+      const image = new Image();
+      image.onload = function () {
+        const canvas = document.createElement("canvas");
+        canvas.width = width;
+        canvas.height = height;
+        canvas.getContext("2d").drawImage(image, 0, 0);
+        postResult(canvas.toDataURL("image/png"));
+      };
+      image.onerror = function () {
+        postResult(null);
+      };
+      image.src = svgUrl;
+    } catch (_error) {
+      postResult(null);
+    }
+  }
+
+  window.addEventListener("message", function (event) {
+    if (!event.data) return;
+    // Only accept messages from the direct parent frame. Blocks sibling /
+    // unrelated-window postMessage senders that could otherwise reach us.
+    if (event.source !== window.parent) return;
+
+    const trustedParentOrigin = getTrustedParentOrigin(event);
+    if (!trustedParentOrigin) return;
+    trustedTopOrigin = trustedParentOrigin;
+
+    if (event.data.type === "INLINE_EDIT_SCROLL_START") {
+      scrollForwarding = true;
+      emitScroll();
+      return;
+    }
+
+    if (event.data.type === "INLINE_EDIT_SCROLL_STOP") {
+      scrollForwarding = false;
+      if (scrollRaf) cancelAnimationFrame(scrollRaf);
+      scrollRaf = 0;
+      return;
+    }
+
+    if (event.data.type !== "INLINE_EDIT_CAPTURE_REQUEST") return;
+
+    handleCaptureRequest(event);
+  });
+})();
+
+
+</script></body>
 </html>

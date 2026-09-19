@@ -1,274 +1,563 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Narrated → Enforced: Making Conventions Outlive the Author — Case Study</title>
-<meta name="description" content="Key-man risk reduction as an engineering problem: classifying every process discipline as enforced, narrated, or hybrid; a four-part bar for what counts as enforced; three ledgers tracking the conversion; and the checks that turned out not to fire at all.">
-<meta property="og:type" content="article">
-<meta property="og:url" content="https://mike-giardina.netlify.app/enforcement/">
-<meta property="og:title" content="Narrated → Enforced: conventions that outlive whoever remembers them">
-<meta property="og:description" content="Every discipline sorted into checked or remembered, with a scoreboard for moving items between the two.">
-<meta property="og:image" content="https://mike-giardina.netlify.app/assets/og/enforcement.png">
-<meta property="og:image:width" content="1200">
-<meta property="og:image:height" content="627">
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://mike-giardina.netlify.app/assets/og/enforcement.png">
-<link rel="stylesheet" href="../assets/site.css">
-<script src="../assets/site.js" defer></script>
-<script>try{var t=localStorage.getItem("mg-theme");if(t==="dark"||t==="light")document.documentElement.setAttribute("data-theme",t);}catch(e){}</script>
-</head>
-<body>
-<div class="grid-bg"></div>
 
-<div class="topbar">
-  <div class="topin">
-    <span class="mark"><b>enforce/</b> · narrated → enforced</span>
-    <nav class="topnav">
-      <a href="#premise">Premise</a>
-      <a href="#states">Three states</a>
-      <a href="#bar">The bar</a>
-      <a href="#ledgers">Ledgers</a>
-      <a href="#casualties">Casualties</a>
-      <a href="../automation/">Hooks →</a>
-      <a href="../publishing/">Publishing →</a>
-      <a href="../orchestration/">Orchestration →</a>
-      <a href="../clinical-review/">Clinical review →</a>
-      <a href="../case-studies/" class="back">← all five</a>
-      <a href="../" class="back">← portfolio</a>
-    </nav>
-  </div>
-</div>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Narrated → Enforced: Making Conventions Outlive the Author — Case Study</title>
+<meta name="description" content="Key-man risk reduction as an engineering problem: classifying every process discipline as enforced, narrated, or hybrid; a four-part bar for what counts as enforced; three ledgers tracking the conversion; and the checks that turned out not to fire at all."/>
+<meta property="og:type" content="article"/>
+<meta property="og:url" content="https://mike-giardina.netlify.app/enforcement/"/>
+<meta property="og:title" content="Narrated → Enforced: conventions that outlive whoever remembers them"/>
+<meta property="og:description" content="Every discipline sorted into checked or remembered, with a scoreboard for moving items between the two."/>
+<meta property="og:image" content="https://mike-giardina.netlify.app/assets/og/enforcement.png"/>
+<meta property="og:image:width" content="1200"/>
+<meta property="og:image:height" content="627"/>
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="https://mike-giardina.netlify.app/assets/og/enforcement.png"/>
+
+
+
+<link rel="stylesheet" href="../assets/site.css"/><link rel="stylesheet" href="../base.css"/><link rel="stylesheet" href="../style.css"/><link rel="stylesheet" href="../assets/portfolio.css"/><link rel="stylesheet" href="../assets/fonts/editorial.css"/><script src="../app.js" defer=""></script><script src="../assets/navigation.js" defer=""></script></head>
+<body class="editorial-article"><a class="skip" href="#reading">Skip to content</a><header class="masthead"><div class="mast-inner">
+<a class="brand" href="../"><svg width="32" height="32" viewbox="0 0 32 32" fill="none" role="img" aria-label="Michael Giardina monogram"><path d="M4 26V6l12 12L28 6v20M4 6l12 12 12-12" stroke="currentColor" stroke-width="2.5"></path><path d="M16 18v8" stroke="currentColor" stroke-width="2.5"></path></svg><span>MICHAEL GIARDINA<span class="brand-sub">Clinical judgment. Systems thinking.</span></span></a>
+<button class="mobile-menu" aria-expanded="false" aria-controls="primary-navigation" type="button">Menu</button>
+<nav class="primary-nav" id="primary-navigation" aria-label="Portfolio navigation">
+<a href="../#work">Work</a>
+<details class="nav-dropdown"><summary>Case studies</summary><div class="nav-panel"><a href="../case-studies/">All five case studies</a><a href="../automation/">Lifecycle hooks</a><a href="../enforcement/">Enforcement</a><a href="../publishing/">Disclosure & publishing</a><a href="../clinical-review/">Clinical AI evaluation</a><a href="../orchestration/">Multi-session orchestration</a><a href="../orchestration/evidence/">Evidence appendix</a><a href="../trauma-tracker/">Trauma Tracker</a></div></details>
+<details class="nav-dropdown"><summary>Clinical stories</summary><div class="nav-panel"><a href="../story/gi-bleed/">GI hemorrhage</a><a href="../story/hyperkalemia/">Hyperkalemia</a><a href="../story/first-code-blue/">Your first code blue</a><a href="https://erinfo.netlify.app" target="_blank" rel="noopener noreferrer">ER articles ↗</a></div></details>
+<a href="../#background">About</a><a href="../#connect">Contact</a></nav>
+<button class="theme-toggle" type="button" aria-label="Switch to dark mode"><span class="theme-symbol" aria-hidden="true">◐</span><span class="theme-label">Dark</span></button></div><div class="reading-progress" aria-hidden="true"></div></header>
+
 
 <div class="wrap">
-
-  <header class="hero" id="top">
-    <div class="status-bar">
-      <div class="status-item"><span class="status-dot"></span><span>ENGINEERING CASE STUDY</span></div>
-      <div class="status-item"><span class="status-dot"></span><span>PROCESS &middot; KEY-MAN RISK</span></div>
-    </div>
-    <p class="kicker">Process design · governance</p>
-    <h1>Turning conventions into checks that outlive the author.</h1>
-    <p class="lede">A process document that only works because the person who wrote it keeps re-reading it isn't risk mitigation, <b>it's a journal.</b> A process enforced by a failing check survives that person leaving. So I sorted every discipline this workspace runs on into those two piles on purpose, and built a scoreboard for <span class="cy">moving items from one pile to the other</span>. When the scoreboard shrinks, key-man risk shrinks &mdash; measurably, not rhetorically.</p>
-    <p class="context">solo founder-engineer · a decision-record corpus · a set of living process documents</p>
-
-    <p class="statnote">Two artifacts do the work. A <b>register</b> maps every discipline and classifies it. A <b>ledger</b> tracks the conversion work and verifies that the ones already claimed as enforced actually fire. The register is the map; the ledger is the scoreboard. They're separate because a backlog buried inside a reference document stops being a backlog.</p>
-    <p class="statnote">Totals are deliberately absent from this page. The only figure worth quoting is a <em>direction</em> &mdash; how much of the operating layer has moved from remembered to checked &mdash; and a level quoted on a permanent page goes stale on its own, which is the precise failure the whole exercise is about.</p>
-  </header>
-
-  <section class="sec" id="premise">
-    <div class="sechead"><span class="secnum">01</span><h2>The two columns most registers leave out</h2><div class="divider"></div></div>
-    <p class="secsub">Plenty of projects keep an index of their process docs. It answers &ldquo;what governs us, and where does it live.&rdquo; That's useful and it isn't enough, so the register adds four columns.</p>
-    <div class="cards">
-      <div class="card">
-        <div class="tag">column</div>
-        <h3>Forged by</h3>
-        <p>The specific incident that produced this rule. Every entry names one. A procedure with no incident behind it is <em>process theater</em>, and it's the first thing a successor ignores.</p>
-      </div>
-      <div class="card">
-        <div class="tag">column</div>
-        <h3>Enforcement</h3>
-        <p>Enforced, narrated, or hybrid. The gap between the enforced pile and the narrated pile is the key-man risk, written down where it can be watched shrinking.</p>
-      </div>
-      <div class="card">
-        <div class="tag">column</div>
-        <h3>Owner on handoff</h3>
-        <p>Who owns this when I'm not the one running it. Today most rows say &ldquo;founder.&rdquo; Naming the <em>role</em> that inherits each one makes the handoff a delegation exercise instead of an excavation.</p>
-      </div>
-      <div class="card">
-        <div class="tag">discipline</div>
-        <h3>Point, never copy</h3>
-        <p>The register classifies and links; it never holds a procedure's body. If a procedure's content starts getting pasted in, that's the signal to stop and link instead &mdash; a rule with two homes has already begun to drift.</p>
-      </div>
-    </div>
-    <p class="note" style="margin-top:1.5rem;"><b>The stranger-trap tier.</b> The register also catalogues rules that live as prose <em>inside</em> configuration and context files, never extracted into a standalone document &mdash; the ones a newcomer misses completely. They're indexed here so they're findable, and left where they are, because that's where they're enforced. It tracks procedures that don't exist yet as well, each with the event that would earn one.</p>
-  </section>
-
-  <section class="sec" id="states">
-    <div class="sechead"><span class="secnum">02</span><h2>Three states</h2><div class="divider"></div></div>
-    <p class="secsub">Every discipline gets exactly one value. A generous classification is worse than none, so the definitions are strict.</p>
-    <div class="tablewrap">
-      <table>
-        <thead><tr><th>State</th><th>Means</th><th>Survives the author leaving?</th></tr></thead>
-        <tbody>
-          <tr>
-            <td><span class="st st-e">ENFORCED</span></td>
-            <td>A test, audit, hook, or CI gate goes red when the procedure is violated.</td>
-            <td><b>Yes.</b></td>
-          </tr>
-          <tr>
-            <td><span class="st st-h">HYBRID</span></td>
-            <td>Part is checked; part rides on a human reading the prose.</td>
-            <td><b>Partly</b>, the narrated half doesn't.</td>
-          </tr>
-          <tr>
-            <td><span class="st st-n">NARRATED</span></td>
-            <td>Prose. Often correct, often battle-forged, but it holds only while someone reads it.</td>
-            <td><b>No.</b></td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-    <p class="note" style="margin-top:1.4rem; border-left-color: var(--accent-red);"><b>The caveat printed at the top of the column.</b> These values reflect what the source documents <em>claim</em> is enforced. Until a row has been walked &mdash; a live check shown to go red rather than silently pass &mdash; it reads <em>&ldquo;claimed enforced, verify it bites.&rdquo;</em></p>
-  </section>
-
-  <section class="sec" id="bar">
-    <div class="sechead"><span class="secnum">03</span><h2>What earns the word &ldquo;enforced&rdquo;</h2><div class="divider"></div></div>
-    <p class="secsub">All four have to be true, because <b>a check that silently passes is worse than no check at all</b>.</p>
-    <div class="bar">
-      <div class="barit">
-        <h4>It fails red on a real violation</h4>
-        <p>Proven with a known-bad fixture, not assumed from reading the code. <em>If you can't show it failing, it isn't a check yet</em> &mdash; it's an intention with a filename.</p>
-      </div>
-      <div class="barit">
-        <h4>It does not pass green on a degraded environment</h4>
-        <p>A cold virtual environment, a missing dependency, an absent file: all must produce an explicit error, never a silent pass. The reference pattern resolves through a chain of fallbacks and, when it runs out, <b>degrades to &ldquo;no result&rdquo; rather than to a wrong one</b>.</p>
-      </div>
-      <div class="barit">
-        <h4>It runs automatically</h4>
-        <p>A CI gate, a session lifecycle hook, or a pre-publish step, not &ldquo;remember to run it.&rdquo; A check that depends on being remembered has the same failure mode as the convention it replaced.</p>
-      </div>
-      <div class="barit">
-        <h4>Its failure message points at the fix</h4>
-        <p>A red check that doesn't say what to do hasn't removed the tacit knowledge from the founder's head. It has <em>relocated it into a stack trace</em>, where it's harder to find.</p>
-      </div>
-    </div>
-    <p class="secsub" style="margin-top:1.5rem;">Criterion two came from a real incident: an audit's last-resort fallback fired on a cold environment and manufactured a regression of over a thousand findings that did not exist. Nothing was broken except the ability to tell. <b>Degrade-to-nothing beats degrade-to-plausible.</b></p>
-  </section>
-
-  <section class="sec" id="ledgers">
-    <div class="sechead"><span class="secnum">04</span><h2>Three ledgers</h2><div class="divider"></div></div>
-    <p class="secsub">The scoreboard splits three ways, because &ldquo;not yet enforced,&rdquo; &ldquo;claims to be enforced,&rdquo; and &ldquo;can never be enforced&rdquo; need three different kinds of attention.</p>
-
-    <div class="stage">
-      <div class="stagehead"><span class="stagenum">A</span><span class="stagename">Conversion backlog</span><span class="stagekind">narrated → target check</span></div>
-      <p>The work, ordered by leverage. Each row names the concrete check to build, where it will live, what it must assert, and what it costs to keep not having it. Highest-leverage items are the ones with direct external exposure &mdash; anything that could put a wrong number in front of a grant reviewer or an investor.</p>
-      <p>Rows are honest about partiality. Several are marked <em>&ldquo;backlog (partial)&rdquo;</em> because only the mechanical portion of the discipline can be checked and a judgment residue will always remain. Pretending otherwise would produce a check that passes while the actual rule is broken.</p>
-    </div>
-
-    <div class="stage">
-      <div class="stagehead"><span class="stagenum">B</span><span class="stagename">Verification queue</span><span class="stagekind">claimed-enforced → prove it bites</span></div>
-      <p>Every check that <em>says</em> it's enforced, with two separate columns: <code>exists</code> (the file is on disk) and <code>bite-tested</code> (a known-bad input has been shown to make it go red). Until the second column is filled in, the check is provisional no matter how good the code looks.</p>
-      <p>This queue is why the register carries that caveat. The first pass through it found two. No pass since has come back empty.</p>
-    </div>
-
-    <div class="stage">
-      <div class="stagehead"><span class="stagenum">C</span><span class="stagename">Won't enforce</span><span class="stagekind">judgment · stop trying</span></div>
-      <p>Disciplines that are irreducibly judgment: how to collaborate with an agent, when a change deserves a decision record, whether a given commit is a release, the order to work through a triage. These stay narrated; their mitigation is onboarding and documentation, not a gate.</p>
-      <p>Writing them down as permanently unenforceable stops effort being spent trying, and keeps the ledger from carrying items that will never close.</p>
-    </div>
-
-    <p class="note" style="margin-top:1.5rem;"><b>Open gap: the map drifted.</b> The ledger gets touched every time a check moves, so it stays current by construction. The register doesn't (nothing forces a visit) and it fell roughly two months behind the layer it classifies while that layer was being worked on heavily. It now <em>understates</em> coverage, which is the benign direction and is not the point: the artifact whose job is tracking drift drifted, and nothing noticed. The fix isn't diligence, it's the same move as everywhere else on this page &mdash; a check asserting the map is not more than N days behind the scoreboard. Until that exists, this is a narrated rule about a document full of narrated rules.</p>
-  </section>
-
-  <section class="sec" id="casualties">
-    <div class="sechead"><span class="secnum">05</span><h2>What the walks found</h2><div class="divider"></div></div>
-    <p class="secsub">The verification queue was built on a suspicion: that some checks the register listed as enforced weren't firing. The first walk confirmed it twice. Both had been reporting success.</p>
-
-    <div class="cas">
-      <div class="ct">casualty one · failed to warn</div>
-      <h4>The scanner that examined nothing</h4>
-      <p>A protective scanner read the path of the edited file from environment variables the runtime no longer provided. The path came back empty, so it exited on its first line &mdash; every run, silently. Its warning was also written to a stream the wiring discarded, so even when it did have something to say, nobody heard it. <b>Two independent bugs, stacked, both quiet.</b></p>
-      <p>The register had it as enforced. It was found <em>by accident</em>, while a neighboring script was being edited &mdash; not by any check.</p>
-      <p><b>The fix was also wrong, and that took seven more weeks to notice.</b> The diagnosis was right (the variable didn't exist) and the correction reached for a second variable that didn't exist either. Identical symptom, now with a commit message claiming it was resolved. Everything built on top of that scanner in the interim was built on nothing. <em>A fix verified by reading is not verified.</em></p>
-    </div>
-
-    <div class="cas">
-      <div class="ct">casualty two · allowed what it blocked</div>
-      <h4>The gate that depended on a tool that wasn't installed</h4>
-      <p>A commit gate &mdash; the one whose whole job is to refuse a commit that stages a credential &mdash; used a JSON command-line utility for both reading its input and emitting its decision. That utility isn't installed on the machine in question, deliberately. Its wiring swallowed errors so a broken hook could never block real work. Net effect: <b>the gate errored before it evaluated a single commit &mdash; one staging a real credential would have passed indistinguishably from a clean one.</b></p>
-      <p>Two further latent bugs surfaced during the fix: the denial used a message format the runtime had superseded, and the scan ran from a working directory that wasn't the repository being committed to &mdash; so even with the tool present, it would have inspected nothing.</p>
-      <p>How this surfaced changes what it is: no credential ever leaked. The gap was found by walking the queue on purpose and feeding the gate a crafted bad input &mdash; the proactive path, before anything exercised it in anger &mdash; and it was closed the same day. That is the queue doing its job, not an incident report.</p>
-      <p>That one failed to <em>warn</em>; this one silently <em>allowed</em>. It was wired but never registered in either artifact, so it read as neither enforced nor tracked. The rewrite inverted its posture: any commit-shaped command it cannot evaluate &mdash; interpreter missing, interpreter crashing, target unresolved &mdash; now denies. Then it was re-tested twice: once against crafted inputs, once live through the real wiring, including a simulated broken toolchain that the old version waved through.</p>
-    </div>
-
-    <p class="secsub" style="margin-top:1.6rem;">Two softer findings landed in the same pass, both &ldquo;the map said enforced, the territory disagreed&rdquo;: one check was a <em>reminder</em> mislabeled as a gate (the rule it supposedly enforced was narrated all along), and another was present on disk but never wired to any event, so it had never once run. Neither was a fail-open, but both were corrected in the register, because an overclaimed check is a lie about coverage even when the code is fine.</p>
-
-    <div class="cas">
-      <div class="ct">casualty three · the verifier had the bug</div>
-      <h4>A suite where every passing test proved nothing</h4>
-      <p>Both casualties above were found by luck, so the queue stopped being walked by hand and started being walked by a regression suite &mdash; a test file per hook, each one asserting the hook fires on a known-bad input <em>and</em> stays quiet on a control.</p>
-      <p>The first run of one of those files came back twelve passing, twelve failing. The twelve passes were every <em>&ldquo;no write occurred&rdquo;</em> case, and they passed because the stubbed-out command was never reached at all: the test harness had been talking to the live production board the entire time. It was recording real successes as proof that nothing had happened. <b>Only the paired control caught it</b>, because the assertion that something is absent is satisfied perfectly by a test that never ran.</p>
-      <p>The cause was a platform detail with no relationship to the check being tested: the native process launcher appends one specific extension to an extensionless command name and ignores the rest, so both forms of the stub were skipped and the real tool resolved instead. <b>The verification layer had exactly the property it was built to detect in the layer beneath it</b> &mdash; and it caught its own author twice in one sitting, on malformed fixtures that produced clean exits and zero output, indistinguishable from a hook that was genuinely dead.</p>
-      <p>Which is now the standing rule for the suite: <em>every fire case is paired with a control.</em> Most of these hooks are advisory, so silence is their success case &mdash; and an all-quiet suite is also precisely what a dead hook produces. Without the control, a green run is not evidence of anything.</p>
-    </div>
-
-    <div class="cas" style="border-color: rgba(255,180,84,0.3); border-left-color: var(--accent-amber);">
-      <div class="ct" style="color: var(--accent-amber);">casualty four &middot; the opposite failure, and it is worse in one way</div>
-      <h4>A guard that fired on a clean tree</h4>
-      <p>Every casualty above is a check that stayed quiet when it should have spoken. This one is the mirror image. A line-ending guard reported that <b>every script in the tree contained a carriage return</b> &mdash; in a tree that contained none.</p>
-      <p>The cause is a platform-specific quirk of the tool doing the matching: in recursive list-only mode it named every file as matching, while asking the same tool to print the matching <em>lines</em> in any one of those files returned nothing. Two invocations of one utility, disagreeing about the same file, on one platform only.</p>
-      <p><b>A guard that fires on a clean tree is uninformative in exactly the way a guard that never fires is uninformative</b>, and it is worse in one respect, because it actively teaches its reader to ignore the channel. That is the same alert-fatigue argument that governs which of these hooks are allowed to block, arriving from the other direction.</p>
-    </div>
-
-    <div class="cas" style="border-color: rgba(0,255,159,0.28); border-left-color: var(--accent-green);">
-      <div class="ct" style="color: var(--accent-green);">the counter-example &middot; an assertion added for no reason, which paid immediately</div>
-      <h4>Six failures all pointing away from the fault</h4>
-      <p>An assertion was added to a fixture defensively &mdash; not to catch a known defect, just because the value it checked had never been checked. It earned its place on the next run.</p>
-      <p>Six assertions across three unrelated blocks were failing, all of them reporting that a hook had stopped warning. Every one pointed at the hook. <b>The new assertion collapsed all six into a single fatal error naming the file that was never written and the interpreter that failed to write it.</b></p>
-      <p>The six were not wrong. They were downstream, and downstream failures describe the symptom in the vocabulary of wherever they happen to sit. The useful assertion is the one closest to the thing that actually broke, and you generally cannot know in advance which one that is, which is the argument for adding it when you have no reason to.</p>
-    </div>
-
-    <p class="secsub" style="margin-top:1.6rem;">That sweep found five further defects. None was fixed in the same pass, because changing a hook's behavior sits behind a confirmation gate that adding a test deliberately does not, so each was filed instead, and carried as a <b>self-converting known-gap test</b>: an assertion of the <em>current, wrong</em> behavior that goes red the moment someone fixes it, with the instruction to convert it and close the item written into the failure message. A defect you've decided not to fix yet is still worth pinning down, and this keeps the backlog honest without letting the suite lie about what's working.</p>
-
-    <p class="note" style="margin-top:1.5rem; border-left-color: var(--accent-green);"><b>The rule that came out of it.</b> A wired hook is not a tracked check, a tracked check is not a biting one, and a passing test is not a check that ran &mdash; <b>each gap closes only from the outside, by something that assumes the layer beneath it is lying.</b> The corollary is scheduling: the first two casualties were caught reactively, by luck. The proactive complement is deliberately <em>not</em> a one-session sprint &mdash; a few rows driven to bite-tested per session, reviewed at every release, plus a recurring sweep that files what it finds where the work actually is. The queue's job is to keep the residual visible in the meantime, and it says out loud which proofs are still owed.</p>
-
-    <p class="secsub" style="margin-top:2rem;"><b>Later sweeps found the same shape in five new places, the last of them on this site.</b> None is a variant of the casualties above. Each is a distinct mechanism arriving at one outcome, which is the argument for treating the class as structural rather than as a run of bad luck.</p>
-
-    <div class="cas">
-      <div class="ct">casualty five &middot; the detector was indistinguishable from what it detects</div>
-      <h4>A leak scanner that flagged itself</h4>
-      <p>A scanner reads build output for identifiers that must never ship. The scanner is compiled into the bundle it inspects, so the artifact contains one copy of every string being searched for, placed there by the search. A gate that matches on presence flags the detector as the leak and blocks every legitimate deploy.</p>
-      <p><b>The block looks like a correct security decision</b>, which is what makes it expensive. A refusal to publish reads as the control working, so the natural response is to trust it and go hunting for a leak that is not there. The fix is to count rather than match: one occurrence is the detector describing itself, more than one is a leak.</p>
-    </div>
-
-    <div class="cas">
-      <div class="ct">casualty six &middot; it discarded the match because it found one</div>
-      <h4>A matcher whose fixtures could not reach its bug</h4>
-      <p>The same scanner piped file contents into a matcher that exits the moment it finds a hit. On any input larger than the operating system's pipe buffer, the write end takes a broken-pipe signal, the pipeline reports that signal as its status, and the caller reads it as <em>no match</em>. <b>A term that was present returned absent</b>, and only for inputs large enough to matter.</p>
-      <p>Every fixture in its test suite was a few dozen bytes. The suite could not reach the failure at any point in its life, and passed continuously while failing to. <em>A guard whose tests are all smaller than its failure threshold is untested rather than tested.</em></p>
-    </div>
-
-    <div class="cas">
-      <div class="ct">casualty seven &middot; the tests proved the logic, never the wiring</div>
-      <h4>Testing what a guard does, not whether it runs</h4>
-      <p>Every test in the layer invoked its hook directly. Direct invocation is the one method that cannot detect a hook which never fires, because it supplies by hand the very thing whose absence is the defect. The suite could stay green in perpetuity while nothing was wired to anything.</p>
-      <p>One check had already filed this against itself, in writing, and the report sat unread at low priority until the failure it predicted arrived. <b>The remedy is to measure delivery from an artifact the harness writes, never from a script the test calls.</b> Evidence produced by the same hand that would be missing is not evidence.</p>
-    </div>
-
-    <div class="cas">
-      <div class="ct">casualty eight &middot; correct, reviewed, and unreachable</div>
-      <h4>Tests that nothing ever ran</h4>
-      <p>A body of tests existed, was correct, and had been reviewed. No continuous-integration job, no script and no scheduled task invoked them for <b>135 days</b>. The repository's entire history contains <b>zero</b> commits touching the CI configuration that so much as name the test runner, across the only three workflow files ever added, and the first test file postdates the CI configuration by seven days. The gap was there from the moment the tests arrived. The single nominal entry point was configured in watch mode, so it never exits and therefore never yields a pass or a fail.</p>
-      <p><b>Existing, correct and unreachable is indistinguishable from absent</b>, and it costs more, because the code is there to be pointed at. The same shape appears one layer up in any permanently red suite: a set of known failures nobody has pinned means the next new failure arrives invisible, inside noise the team has already trained itself to skip.</p>
-    </div>
-
-    <div class="cas" style="border-color: rgba(255,180,84,0.3); border-left-color: var(--accent-amber);">
-      <div class="ct" style="color: var(--accent-amber);">casualty nine &middot; found on this site, while extending it</div>
-      <h4>A check that passed, over two live instances of the defect it is named for</h4>
-      <p>This portfolio carries an integrity check of its own. It exists because two defects shipped here on one day: a case study went live linked from nowhere on the front page, and the front page then stated the wrong number of case studies in seven places. The check asserts both &mdash; every case study reachable from the homepage, every stated count agreeing with the hub that registers them. It has passed ever since, including on its paired controls.</p>
-      <p><b>It was passing over two live instances of the shape it is named for.</b> Four of the five case studies carried an &ldquo;all four&rdquo; back-link above a hub that says five. The fifth study was linked from no sibling at all: it had been added to the hub and to the homepage and to nothing else, while the other four cross-link to each other.</p>
-      <p>The mechanism is the one this whole page is about. The check reads <em>two files</em>, the homepage and the hub, and both were correct. Neither is the surface a reader arriving from a search result actually lands on, and the navigation those readers do see had never been in range of any assertion. <b>A check named for integrity that inspects two of seven pages is not a weaker version of the check you wanted. It is a different check wearing its name.</b></p>
-      <p>Closed as a rule rather than as an edit: every case study must link to every other, and any &ldquo;all N&rdquo; back-link must agree with the hub's count. Both ship with paired controls, verified going red on the exact two instances found by hand. <em>The control harness had to be extended before they could be written</em>, because it could only mutate the homepage &mdash; the same blind spot, one layer down, in the thing built to prove the layer above it works.</p>
-    </div>
-
-    <p class="note" style="margin-top:1.5rem; border-left-color: var(--accent-amber);"><b>What the later sweeps change.</b> The first set could be read as one bad quarter. These five are different mechanisms: a self-referential detector, a signal-handling artifact, a test method, an unreachable entry point, and a check whose file list was narrower than its name. They produce one outcome. <b>The consistent property is not the bug, it is that each was green while broken</b>, which is the only reason any of them survived long enough to be found.</p>
-  </section>
-
-  <div class="takeaway">
-    <h3>Why a solo founder builds this</h3>
-    <p>Because the risk that matters isn't a bug. It's that the working knowledge of how a multi-repository system stays correct lives in one person's head, and every convention that survives only by being remembered is a piece of that exposure. <b>Converting a remembered rule into a red check is the only move that reduces it permanently</b>, and unlike documentation, it can be counted.</p>
-    <p>Which is why the ledger is a separate artifact rather than a section. <b>Ledger A shrinking, and Ledger B graduating to bite-tested, is the literal measure of how much of this operating layer now survives the author leaving.</b> It's the only process metric here that can go the wrong way and show it.</p>
-    <p style="margin-top:1.1rem; padding-top:1.1rem; border-top:1px solid var(--line-soft);">Companion write-ups: <a href="../automation/" style="color:var(--accent-cyan); text-decoration:none; border-bottom:1px solid var(--line)">the lifecycle-hook layer these checks run in</a> &middot; <a href="../publishing/" style="color:var(--accent-cyan); text-decoration:none; border-bottom:1px solid var(--line)">the disclosure-control pipeline for anything published</a>.</p>
-    <p style="margin-top:1.1rem; padding-top:1.1rem; border-top:1px solid var(--line-soft);"><b>The code is open.</b> The hooks and the suite described here live at <a href="https://github.com/mikejgiardina/hook-discipline" target="_blank" rel="noopener noreferrer" style="color:var(--accent-cyan); text-decoration:none; border-bottom:1px solid var(--line)">github.com/mikejgiardina/hook-discipline</a>, Apache-2.0, and it went through the same disclosure review as this page.</p>
-  </div>
-
-  <footer>
-    <p>Case study &middot; converting narrated conventions into enforced checks, and tracking the conversion.</p>
-    <p>Process shape only. Specific checks, thresholds, and proprietary specifics are generalized or omitted.</p>
-    <p>Michael Giardina &middot; <a href="../">portfolio</a> &middot; <a href="https://www.linkedin.com/in/michael-giardina">linkedin.com/in/michael-giardina</a></p>
-  </footer>
-
+<header class="hero" id="top">
+<div class="status-bar">
+<div class="status-item"><span class="status-dot"></span><span>ENGINEERING CASE STUDY</span></div>
+<div class="status-item"><span class="status-dot"></span><span>PROCESS · KEY-MAN RISK</span></div>
 </div>
-</body>
+<p class="kicker">Process design · governance</p>
+<h1 class="article-title">Turning conventions into checks that outlive the author.</h1><div class="article-introduction"><p class="lede">A process document that only works because the person who wrote it keeps re-reading it isn't risk mitigation, <b>it's a journal.</b> A process enforced by a failing check survives that person leaving. So I sorted every discipline this workspace runs on into those two piles on purpose, and built a scoreboard for <span class="cy">moving items from one pile to the other</span>. When the scoreboard shrinks, key-man risk shrinks, measurably, not rhetorically.</p></div>
+
+<p class="context">solo founder-engineer · a decision-record corpus · a set of living process documents</p>
+<p class="statnote">Two artifacts do the work. A <b>register</b> maps every discipline and classifies it. A <b>ledger</b> tracks the conversion work and verifies that the ones already claimed as enforced actually fire. The register is the map; the ledger is the scoreboard. They're separate because a backlog buried inside a reference document stops being a backlog.</p>
+<p class="statnote">Totals are deliberately absent from this page. The only figure worth quoting is a <em>direction</em>, how much of the operating layer has moved from remembered to checked, and a level quoted on a permanent page goes stale on its own, which is the precise failure the whole exercise is about.</p>
+</header><div class="reading-layout" id="reading"><aside class="contents-rail"><div class="rail-sticky"><div class="rail-label">IN THIS STUDY</div><nav aria-label="On this page"><a href="#premise"><span>01</span>The two columns most registers leave out</a><a href="#states"><span>02</span>Three states</a><a href="#bar"><span>03</span>What earns the word “enforced”</a><a href="#ledgers"><span>04</span>Three ledgers</a><a href="#casualties"><span>05</span>What the walks found</a></nav><div class="rail-foot"><a href="../case-studies/">All engineering case studies ↗</a></div><button class="back-top" type="button">Back to top ↑</button></div></aside><main id="article"><section class="sec" id="premise">
+<div class="sechead"><span class="secnum">01</span><h2>The two columns most registers leave out</h2><div class="divider"></div></div>
+<p class="secsub">Plenty of projects keep an index of their process docs. It answers “what governs us, and where does it live.” That's useful and it isn't enough, so the register adds four columns.</p>
+<div class="cards">
+<div class="card">
+<div class="tag">column</div>
+<h3>Forged by</h3>
+<p>The specific incident that produced this rule. Every entry names one. A procedure with no incident behind it is <em>process theater</em>, and it's the first thing a successor ignores.</p>
+</div>
+<div class="card">
+<div class="tag">column</div>
+<h3>Enforcement</h3>
+<p>Enforced, narrated, or hybrid. The gap between the enforced pile and the narrated pile is the key-man risk, written down where it can be watched shrinking.</p>
+</div>
+<div class="card">
+<div class="tag">column</div>
+<h3>Owner on handoff</h3>
+<p>Who owns this when I'm not the one running it. Today most rows say “founder.” Naming the <em>role</em> that inherits each one makes the handoff a delegation exercise instead of an excavation.</p>
+</div>
+<div class="card">
+<div class="tag">discipline</div>
+<h3>Point, never copy</h3>
+<p>The register classifies and links; it never holds a procedure's body. If a procedure's content starts getting pasted in, that's the signal to stop and link instead, a rule with two homes has already begun to drift.</p>
+</div>
+</div>
+<p class="note" style="margin-top:1.5rem;"><b>The stranger-trap tier.</b> The register also catalogues rules that live as prose <em>inside</em> configuration and context files, never extracted into a standalone document, the ones a newcomer misses completely. They're indexed here so they're findable, and left where they are, because that's where they're enforced. It tracks procedures that don't exist yet as well, each with the event that would earn one.</p>
+</section><section class="sec" id="states">
+<div class="sechead"><span class="secnum">02</span><h2>Three states</h2><div class="divider"></div></div>
+<p class="secsub">Every discipline gets exactly one value. A generous classification is worse than none, so the definitions are strict.</p>
+<div class="tablewrap">
+<table>
+<thead><tr><th>State</th><th>Means</th><th>Survives the author leaving?</th></tr></thead>
+<tbody>
+<tr>
+<td><span class="st st-e">ENFORCED</span></td>
+<td>A test, audit, hook, or CI gate goes red when the procedure is violated.</td>
+<td><b>Yes.</b></td>
+</tr>
+<tr>
+<td><span class="st st-h">HYBRID</span></td>
+<td>Part is checked; part rides on a human reading the prose.</td>
+<td><b>Partly</b>, the narrated half doesn't.</td>
+</tr>
+<tr>
+<td><span class="st st-n">NARRATED</span></td>
+<td>Prose. Often correct, often battle-forged, but it holds only while someone reads it.</td>
+<td><b>No.</b></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p class="note" style="margin-top:1.4rem; border-left-color: var(--accent-red);"><b>The caveat printed at the top of the column.</b> These values reflect what the source documents <em>claim</em> is enforced. Until a row has been walked, a live check shown to go red instead of silently passing, it reads <em>“claimed enforced, verify it bites.”</em></p>
+</section><section class="sec" id="bar">
+<div class="sechead"><span class="secnum">03</span><h2>What earns the word “enforced”</h2><div class="divider"></div></div>
+<p class="secsub">All four have to be true, because <b>a check that silently passes is worse than no check at all</b>.</p>
+<div class="bar">
+<div class="barit">
+<h4>It fails red on a real violation</h4>
+<p>Proven with a known-bad fixture, not assumed from reading the code. <em>If you can't show it failing, it isn't a check yet</em>. It's an intention with a filename.</p>
+</div>
+<div class="barit">
+<h4>It does not pass green on a degraded environment</h4>
+<p>A cold virtual environment, a missing dependency, an absent file: all must produce an explicit error, never a silent pass. The reference pattern resolves through a chain of fallbacks and, when it runs out, <b>degrades to “no result” and never to a wrong one</b>.</p>
+</div>
+<div class="barit">
+<h4>It runs automatically</h4>
+<p>A CI gate, a session lifecycle hook, or a pre-publish step, not “remember to run it.” A check that depends on being remembered has the same failure mode as the convention it replaced.</p>
+</div>
+<div class="barit">
+<h4>Its failure message points at the fix</h4>
+<p>A red check that doesn't say what to do hasn't removed the tacit knowledge from the founder's head. It has <em>relocated it into a stack trace</em>, where it's harder to find.</p>
+</div>
+</div>
+<p class="secsub" style="margin-top:1.5rem;">Criterion two came from a real incident: an audit's last-resort fallback fired on a cold environment and manufactured a regression of over a thousand findings that did not exist. Nothing was broken except the ability to tell. <b>Degrade-to-nothing beats degrade-to-plausible.</b></p>
+</section><section class="sec" id="ledgers">
+<div class="sechead"><span class="secnum">04</span><h2>Three ledgers</h2><div class="divider"></div></div>
+<p class="secsub">The scoreboard splits three ways, because “not yet enforced,” “claims to be enforced,” and “can never be enforced” need three different kinds of attention.</p>
+<div class="stage">
+<div class="stagehead"><span class="stagenum">A</span><span class="stagename">Conversion backlog</span><span class="stagekind">narrated → target check</span></div>
+<p>The work, ordered by leverage. Each row names the concrete check to build, where it will live, what it must assert, and what it costs to keep not having it. Highest-leverage items are the ones with direct external exposure, anything that could put a wrong number in front of a grant reviewer or an investor.</p>
+<p>Rows are honest about partiality. Several are marked <em>“backlog (partial)”</em> because only the mechanical portion of the discipline can be checked and a judgment residue will always remain. Pretending otherwise would produce a check that passes while the actual rule is broken.</p>
+</div>
+<div class="stage">
+<div class="stagehead"><span class="stagenum">B</span><span class="stagename">Verification queue</span><span class="stagekind">claimed-enforced → prove it bites</span></div>
+<p>Every check that <em>says</em> it's enforced, with two separate columns: <code>exists</code> (the file is on disk) and <code>bite-tested</code> (a known-bad input has been shown to make it go red). Until the second column is filled in, the check is provisional no matter how good the code looks.</p>
+<p>This queue is why the register carries that caveat. The first pass through it found two. No pass since has come back empty.</p>
+</div>
+<div class="stage">
+<div class="stagehead"><span class="stagenum">C</span><span class="stagename">Won't enforce</span><span class="stagekind">judgment · stop trying</span></div>
+<p>Disciplines that are irreducibly judgment: how to collaborate with an agent, when a change deserves a decision record, whether a given commit is a release, the order to work through a triage. These stay narrated; their mitigation is onboarding and documentation, not a gate.</p>
+<p>Writing them down as permanently unenforceable stops effort being spent trying, and keeps the ledger from carrying items that will never close.</p>
+</div>
+<p class="note" style="margin-top:1.5rem;"><b>Open gap: the map drifted.</b> The ledger gets touched every time a check moves, so it stays current by construction. The register doesn't (nothing forces a visit) and it fell roughly two months behind the layer it classifies while that layer was being worked on heavily. It now <em>understates</em> coverage, which is the benign direction and is not the point: the artifact whose job is tracking drift drifted, and nothing noticed. The fix isn't diligence, it's the same move as everywhere else on this page, a check asserting the map is not more than N days behind the scoreboard. Until that exists, this is a narrated rule about a document full of narrated rules.</p>
+</section><section class="sec" id="casualties">
+<div class="sechead"><span class="secnum">05</span><h2>What the walks found</h2><div class="divider"></div></div>
+<p class="secsub">The verification queue was built on a suspicion: that some checks the register listed as enforced weren't firing. The first walk confirmed it twice. Both had been reporting success.</p>
+<div class="cas">
+<div class="ct">casualty one · failed to warn</div>
+<h4>The scanner that examined nothing</h4>
+<p>A protective scanner read the path of the edited file from environment variables the runtime no longer provided. The path came back empty, so it exited on its first line, every run, silently. Its warning was also written to a stream the wiring discarded, so even when it did have something to say, nobody heard it. <b>Two independent bugs, stacked, both quiet.</b></p>
+<p>The register had it as enforced. It was found <em>by accident</em>, while a neighboring script was being edited, not by any check.</p>
+<p><b>The fix was also wrong, and that took seven more weeks to notice.</b> The diagnosis was right (the variable didn't exist) and the correction reached for a second variable that didn't exist either. Identical symptom, now with a commit message claiming it was resolved. Everything built on top of that scanner in the interim was built on nothing. <em>A fix verified by reading is not verified.</em></p>
+</div>
+<div class="cas">
+<div class="ct">casualty two · allowed what it blocked</div>
+<h4>The gate that depended on a tool that wasn't installed</h4>
+<p>A commit gate, the one whose whole job is to refuse a commit that stages a credential, used a JSON command-line utility for both reading its input and emitting its decision. That utility isn't installed on the machine in question, deliberately. Its wiring swallowed errors so a broken hook could never block real work. Net effect: <b>the gate errored before it evaluated a single commit, one staging a real credential would have passed indistinguishably from a clean one.</b></p>
+<p>Two further latent bugs surfaced during the fix: the denial used a message format the runtime had superseded, and the scan ran from a working directory that wasn't the repository being committed to. So even with the tool present, it would have inspected nothing.</p>
+<p>How this surfaced changes what it is: no credential ever leaked. The gap was found by walking the queue on purpose and feeding the gate a crafted bad input (the proactive path, before anything exercised it in anger) and it was closed the same day. That is the queue doing its job, not an incident report.</p>
+<p>That one failed to <em>warn</em>; this one silently <em>allowed</em>. It was wired but never registered in either artifact, so it read as neither enforced nor tracked. The rewrite inverted its posture: any commit-shaped command it cannot evaluate (interpreter missing, interpreter crashing, target unresolved) now denies. Then it was re-tested twice: once against crafted inputs, once live through the real wiring, including a simulated broken toolchain that the old version waved through.</p>
+</div>
+<p class="secsub" style="margin-top:1.6rem;">Two softer findings landed in the same pass, both “the map said enforced, the territory disagreed”: one check was a <em>reminder</em> mislabeled as a gate (the rule it supposedly enforced was narrated all along), and another was present on disk but never wired to any event, so it had never once run. Neither was a fail-open, but both were corrected in the register, because an overclaimed check is a lie about coverage even when the code is fine.</p>
+<div class="cas">
+<div class="ct">casualty three · the verifier had the bug</div>
+<h4>A suite where every passing test proved nothing</h4>
+<p>Both casualties above were found by luck, so the queue stopped being walked by hand and started being walked by a regression suite: a test file per hook, each one asserting the hook fires on a known-bad input <em>and</em> stays quiet on a control.</p>
+<p>The first run of one of those files came back twelve passing, twelve failing. The twelve passes were every <em>“no write occurred”</em> case, and they passed because the stubbed-out command was never reached at all: the test harness had been talking to the live production board the entire time. It was recording real successes as proof that nothing had happened. <b>Only the paired control caught it</b>, because the assertion that something is absent is satisfied perfectly by a test that never ran.</p>
+<p>The cause was a platform detail with no relationship to the check being tested: the native process launcher appends one specific extension to an extensionless command name and ignores the rest, so both forms of the stub were skipped and the real tool resolved instead. <b>The verification layer had exactly the property it was built to detect in the layer beneath it</b>. And it caught its own author twice in one sitting, on malformed fixtures that produced clean exits and zero output, indistinguishable from a hook that was genuinely dead.</p>
+<p>Which is now the standing rule for the suite: <em>every fire case is paired with a control.</em> Most of these hooks are advisory, so silence is their success case. And an all-quiet suite is also precisely what a dead hook produces. Without the control, a green run is not evidence of anything.</p>
+</div>
+<div class="cas" style="border-color: rgba(255,180,84,0.3); border-left-color: var(--accent-amber);">
+<div class="ct" style="color: var(--accent-amber);">casualty four · the opposite failure, and it is worse in one way</div>
+<h4>A guard that fired on a clean tree</h4>
+<p>Every casualty above is a check that stayed quiet when it should have spoken. This one is the mirror image. A line-ending guard reported that <b>every script in the tree contained a carriage return</b>, in a tree that contained none.</p>
+<p>The cause is a platform-specific quirk of the tool doing the matching: in recursive list-only mode it named every file as matching, while asking the same tool to print the matching <em>lines</em> in any one of those files returned nothing. Two invocations of one utility, disagreeing about the same file, on one platform only.</p>
+<p><b>A guard that fires on a clean tree is uninformative in exactly the way a guard that never fires is uninformative</b>, and it is worse in one respect, because it actively teaches its reader to ignore the channel. That is the same alert-fatigue argument that governs which of these hooks are allowed to block, arriving from the other direction.</p>
+</div>
+<div class="cas" style="border-color: rgba(0,255,159,0.28); border-left-color: var(--accent-green);">
+<div class="ct" style="color: var(--accent-green);">the counter-example · an assertion added for no reason, which paid immediately</div>
+<h4>Six failures all pointing away from the fault</h4>
+<p>An assertion was added to a fixture defensively, not to catch a known defect, just because the value it checked had never been checked. It earned its place on the next run.</p>
+<p>Six assertions across three unrelated blocks were failing, all of them reporting that a hook had stopped warning. Every one pointed at the hook. <b>The new assertion collapsed all six into a single fatal error naming the file that was never written and the interpreter that failed to write it.</b></p>
+<p>The six were not wrong. They were downstream, and downstream failures describe the symptom in the vocabulary of wherever they happen to sit. The useful assertion is the one closest to the thing that actually broke, and you generally cannot know in advance which one that is, which is the argument for adding it when you have no reason to.</p>
+</div>
+<p class="secsub" style="margin-top:1.6rem;">That sweep found five further defects. None was fixed in the same pass, because changing a hook's behavior sits behind a confirmation gate that adding a test deliberately does not, so each was filed instead, and carried as a <b>self-converting known-gap test</b>: an assertion of the <em>current, wrong</em> behavior that goes red the moment someone fixes it, with the instruction to convert it and close the item written into the failure message. A defect you've decided not to fix yet is still worth pinning down, and this keeps the backlog honest without letting the suite lie about what's working.</p>
+<p class="note" style="margin-top:1.5rem; border-left-color: var(--accent-green);"><b>The rule that came out of it.</b> A wired hook is not a tracked check, a tracked check is not a biting one, and a passing test is not a check that ran, <b>each gap closes only from the outside, by something that assumes the layer beneath it is lying.</b> The corollary is scheduling: the first two casualties were caught reactively, by luck. The proactive complement is deliberately <em>not</em> a one-session sprint: a few rows driven to bite-tested per session, reviewed at every release, plus a recurring sweep that files what it finds where the work actually is. The queue's job is to keep the residual visible in the meantime, and it says out loud which proofs are still owed.</p>
+<p class="secsub" style="margin-top:2rem;"><b>Later sweeps found the same shape in five new places, the last of them on this site.</b> None is a variant of the casualties above. Each is a distinct mechanism arriving at one outcome, which is the argument for treating the class as structural, and not as a run of bad luck.</p>
+<div class="cas">
+<div class="ct">casualty five · the detector was indistinguishable from what it detects</div>
+<h4>A leak scanner that flagged itself</h4>
+<p>A scanner reads build output for identifiers that must never ship. The scanner is compiled into the bundle it inspects, so the artifact contains one copy of every string being searched for, placed there by the search. A gate that matches on presence flags the detector as the leak and blocks every legitimate deploy.</p>
+<p><b>The block looks like a correct security decision</b>, which is what makes it expensive. A refusal to publish reads as the control working, so the natural response is to trust it and go hunting for a leak that is not there. The fix is to count, not match: one occurrence is the detector describing itself, more than one is a leak.</p>
+</div>
+<div class="cas">
+<div class="ct">casualty six · it discarded the match because it found one</div>
+<h4>A matcher whose fixtures could not reach its bug</h4>
+<p>The same scanner piped file contents into a matcher that exits the moment it finds a hit. On any input larger than the operating system's pipe buffer, the write end takes a broken-pipe signal, the pipeline reports that signal as its status, and the caller reads it as <em>no match</em>. <b>A term that was present returned absent</b>, and only for inputs large enough to matter.</p>
+<p>Every fixture in its test suite was a few dozen bytes. The suite could not reach the failure at any point in its life, and passed continuously while failing to. <em>A guard whose tests are all smaller than its failure threshold is untested.</em></p>
+</div>
+<div class="cas">
+<div class="ct">casualty seven · the tests proved the logic, never the wiring</div>
+<h4>Testing what a guard does, not whether it runs</h4>
+<p>Every test in the layer invoked its hook directly. Direct invocation is the one method that cannot detect a hook which never fires, because it supplies by hand the very thing whose absence is the defect. The suite could stay green in perpetuity while nothing was wired to anything.</p>
+<p>One check had already filed this against itself, in writing, and the report sat unread at low priority until the failure it predicted arrived. <b>The remedy is to measure delivery from an artifact the harness writes, never from a script the test calls.</b> Evidence produced by the same hand that would be missing is not evidence.</p>
+</div>
+<div class="cas">
+<div class="ct">casualty eight · correct, reviewed, and unreachable</div>
+<h4>Tests that nothing ever ran</h4>
+<p>A body of tests existed, was correct, and had been reviewed. No continuous-integration job, no script and no scheduled task invoked them for <b>135 days</b>. The repository's entire history contains <b>zero</b> commits touching the CI configuration that so much as name the test runner, across the only three workflow files ever added, and the first test file postdates the CI configuration by seven days. The gap was there from the moment the tests arrived. The single nominal entry point was configured in watch mode, so it never exits and therefore never yields a pass or a fail.</p>
+<p><b>Existing, correct and unreachable is indistinguishable from absent</b>, and it costs more, because the code is there to be pointed at. The same shape appears one layer up in any permanently red suite: a set of known failures nobody has pinned means the next new failure arrives invisible, inside noise the team has already trained itself to skip.</p>
+</div>
+<div class="cas" style="border-color: rgba(255,180,84,0.3); border-left-color: var(--accent-amber);">
+<div class="ct" style="color: var(--accent-amber);">casualty nine · found on this site, while extending it</div>
+<h4>A check that passed, over two live instances of the defect it is named for</h4>
+<p>This portfolio carries an integrity check of its own. It exists because two defects shipped here on one day: a case study went live linked from nowhere on the front page, and the front page then stated the wrong number of case studies in seven places. The check asserts both. Every case study reachable from the homepage, every stated count agreeing with the hub that registers them. It has passed ever since, including on its paired controls.</p>
+<p><b>It was passing over two live instances of the shape it is named for.</b> Four of the five case studies carried an “all four” back-link above a hub that says five. The fifth study was linked from no sibling at all: it had been added to the hub and to the homepage and to nothing else, while the other four cross-link to each other.</p>
+<p>The mechanism is the one this whole page is about. The check reads <em>two files</em>, the homepage and the hub, and both were correct. Neither is the surface a reader arriving from a search result actually lands on, and the navigation those readers do see had never been in range of any assertion. <b>A check named for integrity that inspects two of seven pages is not a weaker version of the check you wanted. It is a different check wearing its name.</b></p>
+<p>Closed as a rule, not as an edit: every case study must link to every other, and any “all N” back-link must agree with the hub's count. Both ship with paired controls, verified going red on the exact two instances found by hand. <em>The control harness had to be extended before they could be written</em>, because it could only mutate the homepage: the same blind spot, one layer down, in the thing built to prove the layer above it works.</p>
+</div>
+<p class="note" style="margin-top:1.5rem; border-left-color: var(--accent-amber);"><b>What the later sweeps change.</b> The first set could be read as one bad quarter. These five are different mechanisms: a self-referential detector, a signal-handling artifact, a test method, an unreachable entry point, and a check whose file list was narrower than its name. They produce one outcome. <b>The consistent property across all of them: each was green while broken</b>, which is the only reason any of them survived long enough to be found.</p>
+</section><div class="takeaway">
+<h3>Why a solo founder builds this</h3>
+<p>Because the risk that matters isn't a bug. It's that the working knowledge of how a multi-repository system stays correct lives in one person's head, and every convention that survives only by being remembered is a piece of that exposure. <b>Converting a remembered rule into a red check is the only move that reduces it permanently</b>, and unlike documentation, it can be counted.</p>
+<p>Which is why the ledger is its own file and not a section. <b>Ledger A shrinking, and Ledger B graduating to bite-tested, is the literal measure of how much of this operating layer now survives the author leaving.</b> It's the only process metric here that can go the wrong way and show it.</p>
+<p style="margin-top:1.1rem; padding-top:1.1rem; border-top:1px solid var(--line-soft);">Companion write-ups: <a href="../automation/" style="color:var(--accent-cyan); text-decoration:none; border-bottom:1px solid var(--line)">the lifecycle-hook layer these checks run in</a> · <a href="../publishing/" style="color:var(--accent-cyan); text-decoration:none; border-bottom:1px solid var(--line)">the disclosure-control pipeline for anything published</a>.</p>
+<p style="margin-top:1.1rem; padding-top:1.1rem; border-top:1px solid var(--line-soft);"><b>The code is open.</b> The hooks and the suite described here live at <a href="https://github.com/mikejgiardina/hook-discipline" target="_blank" rel="noopener noreferrer" style="color:var(--accent-cyan); text-decoration:none; border-bottom:1px solid var(--line)">github.com/mikejgiardina/hook-discipline</a>, Apache-2.0, and it went through the same disclosure review as this page.</p>
+</div></main></div>
+
+
+
+
+
+
+<footer>
+<p>Case study · converting narrated conventions into enforced checks, and tracking the conversion.</p>
+<p>Process shape only. Specific checks, thresholds, and proprietary specifics are generalized or omitted.</p>
+<p>Michael Giardina · <a href="../">portfolio</a> · <a href="https://www.linkedin.com/in/michael-giardina" target="_blank" rel="noopener noreferrer">linkedin.com/in/michael-giardina</a></p>
+<p class="footer-navigation"><a href="../">Portfolio</a> · <a href="../case-studies/">Case studies</a> · <a href="../#connect">Get in touch</a></p></footer>
+</div>
+<script data-pplx-inline-edit>
+(function () {
+  if (window === window.top) return;
+
+  const allowedParentOrigins = ["https://www.perplexity.ai","https://perplexity.ai","https://testing.perplexity.ai","https://staging.perplexity.ai","https://*.preview.i.perplexity.ai","http://perplexity.localhost","http://localhost:1420","http://127.0.0.1:1420","http://localhost:3000","http://127.0.0.1:3000","http://localhost:5173","http://127.0.0.1:5173"];
+  const MAX_FONT_BYTES = 500 * 1024;
+  const MAX_TOTAL_FONT_BYTES = 2 * 1024 * 1024;
+  let scrollForwarding = false;
+  let scrollRaf = 0;
+  let trustedTopOrigin = null;
+
+  // Allow entries like "https://*.preview.i.perplexity.ai" — the wildcard
+  // matches a single DNS label (no dots), so "https://*.foo" cannot stretch
+  // across multiple labels.
+  function matchesAllowedOrigin(origin) {
+    if (!origin) return false;
+    for (const entry of allowedParentOrigins) {
+      if (!entry.includes("*")) {
+        if (entry === origin) return true;
+        continue;
+      }
+      const pattern = new RegExp(
+        "^" +
+          entry.replace(/[.+?^${}()|[\]\\]/g, "\\$&").replace(/\*/g, "[^.]+") +
+          "$",
+      );
+      if (pattern.test(origin)) return true;
+    }
+    return false;
+  }
+
+  // Trust decision: when the sender is same-origin-visible (event.origin is a
+  // real origin like https://www.perplexity.ai) we trust event.origin directly.
+  // When event.origin is "null" (opaque broker srcdoc), we fall back to the
+  // broker's stamped `parentOrigin` to identify the top window. The fallback
+  // is claim-only — we rely on the browser's native `targetOrigin` enforcement
+  // on the response path (see postToTrustedTop) to ensure replies can't be
+  // delivered to anyone but the actual top window of that claimed origin.
+  function getTrustedParentOrigin(event) {
+    const forwardedParentOrigin =
+      typeof event.data.parentOrigin === "string" ? event.data.parentOrigin: null;
+    const parentOrigin = event.origin === "null" ? forwardedParentOrigin: event.origin;
+    return matchesAllowedOrigin(parentOrigin) ? parentOrigin: null;
+  }
+
+  // All responses go to window.top with targetOrigin = the allowlisted origin.
+  // An attacker that iframes us inside their own null-origin broker can claim
+  // any parentOrigin they like, but the browser will drop the reply whenever
+  // the real top's origin doesn't match — so the screenshot never leaves.
+  function postToTrustedTop(message) {
+    if (!trustedTopOrigin) return;
+    try {
+      window.top.postMessage(message, trustedTopOrigin);
+    } catch (_error) {}
+  }
+
+  function inlineAll(original, clone) {
+    if (original.nodeType !== 1 || clone.nodeType !== 1) return;
+
+    try {
+      const computedStyle = getComputedStyle(original);
+      // cssText on a computed style is the serialized declaration in modern
+      // Chromium/Safari — a single read beats enumerating ~400 longhand
+      // properties. Firefox returns "" here, so we fall back on empty.
+      const serialized = computedStyle.cssText;
+      if (serialized) {
+        clone.style.cssText = serialized;
+      } else {
+        const parts = new Array(computedStyle.length);
+        for (let index = 0; index < computedStyle.length; index += 1) {
+          const property = computedStyle[index];
+          parts[index] = `${property}:${computedStyle.getPropertyValue(property)};`;
+        }
+        clone.style.cssText = parts.join("");
+      }
+    } catch (_error) {}
+
+    const originalChildren = original.children;
+    const clonedChildren = clone.children;
+    for (
+      let index = 0;
+      index < originalChildren.length && index < clonedChildren.length;
+      index += 1
+    ) {
+      inlineAll(originalChildren[index], clonedChildren[index]);
+    }
+  }
+
+  function extractFontUrl(srcValue) {
+    const matches = [
+      ...srcValue.matchAll(
+        /url\(["']?([^"')]+)["']?\)(?:\s*format\(["']?([^"')]+)["']?\))?/gi,
+      ),
+    ];
+    if (matches.length === 0) return null;
+    const woff2 = matches.find((m) => m[2] && m[2].toLowerCase().includes("woff2"));
+    if (woff2) return woff2[1];
+    const woff = matches.find((m) => m[2] && m[2].toLowerCase().includes("woff"));
+    if (woff) return woff[1];
+    return matches[0][1];
+  }
+
+  // Cache resolved font URL -> data URI across captures. Fonts on a page
+  // essentially never change, and a batch run emits multiple captures back to
+  // back — without this we'd refetch + re-base64 every time.
+  const fontDataUriCache = new Map();
+  const SRC_DECLARATION_RE = /src\s*:\s*[^;}]+/i;
+
+  async function fetchAsDataUri(url) {
+    if (fontDataUriCache.has(url)) return fontDataUriCache.get(url);
+    let dataUri = null;
+    try {
+      const response = await fetch(url, { mode: "cors", credentials: "omit" });
+      if (response.ok) {
+        const blob = await response.blob();
+        if (blob.size <= MAX_FONT_BYTES) {
+          dataUri = await new Promise((resolve) => {
+            const reader = new FileReader();
+            reader.onloadend = () =>
+              resolve(typeof reader.result === "string" ? reader.result: null);
+            reader.onerror = () => resolve(null);
+            reader.readAsDataURL(blob);
+          });
+        }
+      }
+    } catch (_error) {
+      dataUri = null;
+    }
+    fontDataUriCache.set(url, dataUri);
+    return dataUri;
+  }
+
+  function collectFontFaceRuleTexts() {
+    const rules = [];
+    for (const sheet of document.styleSheets) {
+      let cssRules;
+      try {
+        cssRules = sheet.cssRules;
+      } catch (_error) {
+        continue;
+      }
+      if (!cssRules) continue;
+      for (const rule of cssRules) {
+        const cssText = rule.cssText || "";
+        if (cssText.startsWith("@font-face")) rules.push(cssText);
+      }
+    }
+    return rules;
+  }
+
+  async function buildInlinedFontCss() {
+    const ruleTexts = collectFontFaceRuleTexts();
+    if (ruleTexts.length === 0) return null;
+
+    const resolved = ruleTexts.map((cssText) => {
+      if (!SRC_DECLARATION_RE.test(cssText)) return null;
+      const srcMatch = cssText.match(/src\s*:\s*([^;}]+)[;}]/i);
+      if (!srcMatch) return null;
+      const url = extractFontUrl(srcMatch[1]);
+      if (!url) return null;
+      try {
+        return { cssText, url: new URL(url, document.baseURI).href };
+      } catch (_error) {
+        return null;
+      }
+    });
+
+    const dataUris = await Promise.all(
+      resolved.map((entry) => (entry ? fetchAsDataUri(entry.url): Promise.resolve(null))),
+    );
+
+    const inlined = [];
+    let totalBytes = 0;
+    for (let index = 0; index < resolved.length; index += 1) {
+      const entry = resolved[index];
+      const dataUri = dataUris[index];
+      if (!entry || !dataUri) continue;
+      const approxBytes = dataUri.length * 0.75;
+      if (totalBytes + approxBytes > MAX_TOTAL_FONT_BYTES) break;
+      totalBytes += approxBytes;
+      inlined.push(entry.cssText.replace(SRC_DECLARATION_RE, `src: url("${dataUri}")`));
+    }
+    return inlined.length > 0 ? inlined.join("\n"): null;
+  }
+
+  function stripExternal(clone) {
+    const images = clone.querySelectorAll("img");
+    for (let index = 0; index < images.length; index += 1) {
+      const src = images[index].getAttribute("src");
+      if (src && !src.startsWith("data:")) images[index].removeAttribute("src");
+    }
+
+    const elements = clone.querySelectorAll("*");
+    for (let index = 0; index < elements.length; index += 1) {
+      const style = elements[index].style.cssText;
+      if (style && style.includes("url(")) {
+        elements[index].style.cssText = style.replace(
+          /url\(["']?(?!data:)[^)"']*["']?\)/gi,
+          "none",
+        );
+      }
+    }
+  }
+
+  function emitScroll() {
+    scrollRaf = 0;
+    if (!scrollForwarding) return;
+    postToTrustedTop({
+      type: "INLINE_EDIT_SCROLL",
+      scrollX: window.scrollX,
+      scrollY: window.scrollY,
+    });
+  }
+
+  window.addEventListener(
+    "scroll",
+    function () {
+      if (!scrollForwarding || scrollRaf) return;
+      scrollRaf = requestAnimationFrame(emitScroll);
+    },
+    { passive: true, capture: true },
+  );
+
+  async function handleCaptureRequest(event) {
+    const requestId = event.data.requestId;
+    const scrollX = window.scrollX;
+    const scrollY = window.scrollY;
+    const width = window.innerWidth;
+    const height = window.innerHeight;
+
+    function postResult(dataUrl) {
+      postToTrustedTop({
+        type: "INLINE_EDIT_SCREENSHOT_RESULT",
+        requestId,
+        dataUrl,
+        scrollX,
+        scrollY,
+      });
+    }
+
+    try {
+      // Wait for any pending web fonts to resolve so both inline metrics and
+      // the @font-face inlining below see the same loaded faces.
+      if (document.fonts && document.fonts.ready) {
+        try {
+          await document.fonts.ready;
+        } catch (_error) {}
+      }
+
+      const clone = document.documentElement.cloneNode(true);
+      inlineAll(document.documentElement, clone);
+
+      const removedNodes = clone.querySelectorAll("script,link[rel=\"stylesheet\"],style");
+      for (let index = 0; index < removedNodes.length; index += 1) {
+        removedNodes[index].remove();
+      }
+
+      stripExternal(clone);
+
+      // Re-embed web fonts as data-URI @font-face rules so the SVG rasterizer
+      // can resolve them — external font URLs aren't fetched during
+      // foreignObject rendering, which would otherwise force a fallback face
+      // and change text metrics.
+      const inlinedFontCss = await buildInlinedFontCss();
+      if (inlinedFontCss) {
+        const styleEl = document.createElement("style");
+        styleEl.textContent = inlinedFontCss;
+        const head = clone.querySelector("head");
+        if (head) head.appendChild(styleEl);
+        else clone.insertBefore(styleEl, clone.firstChild);
+      }
+
+      const html = new XMLSerializer().serializeToString(clone);
+      const svg =
+        `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}">` +
+        '<foreignObject width="100%" height="100%">' +
+        `<div xmlns="http://www.w3.org/1999/xhtml" style="width:${width}px;height:${height}px;overflow:hidden">` +
+        `<div style="position:relative;left:-${scrollX}px;top:-${scrollY}px">` +
+        html +
+        "</div></div></foreignObject></svg>";
+      const svgUrl = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
+      const image = new Image();
+      image.onload = function () {
+        const canvas = document.createElement("canvas");
+        canvas.width = width;
+        canvas.height = height;
+        canvas.getContext("2d").drawImage(image, 0, 0);
+        postResult(canvas.toDataURL("image/png"));
+      };
+      image.onerror = function () {
+        postResult(null);
+      };
+      image.src = svgUrl;
+    } catch (_error) {
+      postResult(null);
+    }
+  }
+
+  window.addEventListener("message", function (event) {
+    if (!event.data) return;
+    // Only accept messages from the direct parent frame. Blocks sibling /
+    // unrelated-window postMessage senders that could otherwise reach us.
+    if (event.source !== window.parent) return;
+
+    const trustedParentOrigin = getTrustedParentOrigin(event);
+    if (!trustedParentOrigin) return;
+    trustedTopOrigin = trustedParentOrigin;
+
+    if (event.data.type === "INLINE_EDIT_SCROLL_START") {
+      scrollForwarding = true;
+      emitScroll();
+      return;
+    }
+
+    if (event.data.type === "INLINE_EDIT_SCROLL_STOP") {
+      scrollForwarding = false;
+      if (scrollRaf) cancelAnimationFrame(scrollRaf);
+      scrollRaf = 0;
+      return;
+    }
+
+    if (event.data.type !== "INLINE_EDIT_CAPTURE_REQUEST") return;
+
+    handleCaptureRequest(event);
+  });
+})();
+
+
+</script></body>
 </html>

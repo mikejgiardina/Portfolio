@@ -186,7 +186,7 @@ CONTROLS = [
     ("story-case badge left stale",
      [("THREE CASES, OPEN NOW", "FOUR CASES, OPEN NOW")], 1),
     ("a page shipped without a social card",
-     [('<meta property="og:image" content="https://mike-giardina.netlify.app/assets/og/home.png">', "")], 1),
+     [('<meta property="og:image" content="https://mike-giardina.netlify.app/assets/og/home.png"/>', "")], 1),
     ("a social card named but missing from disk",
      [("/assets/og/home.png", "/assets/og/does-not-exist.png")], 1),
 ]
@@ -197,10 +197,10 @@ CONTROLS = [
 PEER_CONTROLS = [
     ("a case study orphaned from its siblings",
      "orchestration/index.html",
-     [('<a href="../clinical-review/">Clinical review \u2192</a>\n', "")], 1),
+     [('<a href="../clinical-review/">Clinical AI evaluation</a>', "")], 1),
     ("a back-link count left stale",
      "orchestration/index.html",
-     [("\u2190 all five", "\u2190 all four")], 1),
+     [("All five case studies", "All four case studies")], 1),
 ]
 
 

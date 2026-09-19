@@ -1,101 +1,417 @@
 <!DOCTYPE html>
-<html lang="en">
+
+<html lang="en" data-theme="light">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Engineering Case Studies — Michael Giardina</title>
-<meta name="description" content="Five write-ups on the layer around the code: lifecycle-hook automation, turning conventions into enforced checks, disclosure control for a patent-pending codebase, measuring whether an AI review pipeline over a clinical corpus was reporting what it appeared to report, and coordinating parallel AI coding sessions against one shared repository set.">
-<meta property="og:type" content="website">
-<meta property="og:url" content="https://mike-giardina.netlify.app/case-studies/">
-<meta property="og:title" content="Engineering case studies — five write-ups on the layer around the code">
-<meta property="og:description" content="Automation, enforcement, disclosure control, parallel-session orchestration, and clinical AI evaluation. Each one documents where it failed.">
-<meta property="og:image" content="https://mike-giardina.netlify.app/assets/og/case-studies.png">
-<meta property="og:image:width" content="1200">
-<meta property="og:image:height" content="627">
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://mike-giardina.netlify.app/assets/og/case-studies.png">
-<link rel="stylesheet" href="../assets/site.css">
-<script src="../assets/site.js" defer></script>
-<script>try{var t=localStorage.getItem("mg-theme");if(t==="dark"||t==="light")document.documentElement.setAttribute("data-theme",t);}catch(e){}</script>
-</head>
-<body>
-<div class="grid-bg"></div>
+<meta name="description" content="Five write-ups on the layer around the code: lifecycle-hook automation, turning conventions into enforced checks, disclosure control for a patent-pending codebase, measuring whether an AI review pipeline over a clinical corpus was reporting what it appeared to report, and coordinating parallel AI coding sessions against one shared repository set."/>
+<meta property="og:type" content="website"/>
+<meta property="og:url" content="https://mike-giardina.netlify.app/case-studies/"/>
+<meta property="og:title" content="Engineering case studies — five write-ups on the layer around the code"/>
+<meta property="og:description" content="Automation, enforcement, disclosure control, parallel-session orchestration, and clinical AI evaluation. Each one documents where it failed."/>
+<meta property="og:image" content="https://mike-giardina.netlify.app/assets/og/case-studies.png"/>
+<meta property="og:image:width" content="1200"/>
+<meta property="og:image:height" content="627"/>
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="https://mike-giardina.netlify.app/assets/og/case-studies.png"/>
 
-<div class="topbar">
-  <div class="topin">
-    <span class="mark"><b>case studies</b> · engineering practice</span>
-    <nav class="topnav">
-      <a href="../">&larr; portfolio</a>
-    </nav>
-  </div>
+
+
+<link rel="stylesheet" href="../assets/site.css"/><link rel="stylesheet" href="../base.css"/><link rel="stylesheet" href="../style.css"/><link rel="stylesheet" href="../assets/portfolio.css"/><link rel="stylesheet" href="../assets/fonts/editorial.css"/><script src="../app.js" defer=""></script><script src="../assets/navigation.js" defer=""></script></head>
+<body class="study-index"><a class="skip" href="#reading">Skip to content</a><header class="masthead"><div class="mast-inner">
+<a class="brand" href="../"><svg width="32" height="32" viewbox="0 0 32 32" fill="none" role="img" aria-label="Michael Giardina monogram"><path d="M4 26V6l12 12L28 6v20M4 6l12 12 12-12" stroke="currentColor" stroke-width="2.5"></path><path d="M16 18v8" stroke="currentColor" stroke-width="2.5"></path></svg><span>MICHAEL GIARDINA<span class="brand-sub">Clinical judgment. Systems thinking.</span></span></a>
+<button class="mobile-menu" aria-expanded="false" aria-controls="primary-navigation" type="button">Menu</button>
+<nav class="primary-nav" id="primary-navigation" aria-label="Portfolio navigation">
+<a href="../#work">Work</a>
+<details class="nav-dropdown"><summary>Case studies</summary><div class="nav-panel"><a href="../case-studies/">All five case studies</a><a href="../automation/">Lifecycle hooks</a><a href="../enforcement/">Enforcement</a><a href="../publishing/">Disclosure & publishing</a><a href="../clinical-review/">Clinical AI evaluation</a><a href="../orchestration/">Multi-session orchestration</a><a href="../orchestration/evidence/">Evidence appendix</a><a href="../trauma-tracker/">Trauma Tracker</a></div></details>
+<details class="nav-dropdown"><summary>Clinical stories</summary><div class="nav-panel"><a href="../story/gi-bleed/">GI hemorrhage</a><a href="../story/hyperkalemia/">Hyperkalemia</a><a href="../story/first-code-blue/">Your first code blue</a><a href="https://erinfo.netlify.app" target="_blank" rel="noopener noreferrer">ER articles ↗</a></div></details>
+<a href="../#background">About</a><a href="../#connect">Contact</a></nav>
+<button class="theme-toggle" type="button" aria-label="Switch to dark mode"><span class="theme-symbol" aria-hidden="true">◐</span><span class="theme-label">Dark</span></button></div><div class="reading-progress" aria-hidden="true"></div></header>
+
+
+<div class="wrap" id="reading">
+<header class="hero" id="top">
+<div class="status-bar">
+<div class="status-item"><span class="status-dot"></span><span>FIVE WRITE-UPS · REVISED AS THE SYSTEM CHANGES</span></div>
 </div>
+<p class="kicker">Engineering practice</p>
+<h1 class="article-title">The layer around the code.</h1><div class="article-introduction"><p class="lede">Most of what keeps a codebase correct isn't in the codebase. It's in what runs automatically, what gets checked rather than remembered, and what is allowed to leave the repository at all.</p><p class="lede">These are five write-ups on that layer, built for a multi-repository system where <b>AI coding sessions run daily</b> across several machines and more than one contributor, and where most of the working knowledge still sits with one person. Each one names the incident that produced the rule, and each one documents where it has failed.</p></div>
 
-<div class="wrap">
 
-  <header class="hero">
-    <div class="status-bar">
-      <div class="status-item"><span class="status-dot"></span><span>FIVE WRITE-UPS &middot; REVISED AS THE SYSTEM CHANGES</span></div>
-    </div>
-    <p class="kicker">Engineering practice</p>
-    <h1>The layer around the code.</h1>
-    <p class="lede">Most of what keeps a codebase correct isn't in the codebase. It's in what runs automatically, what gets checked rather than remembered, and what is allowed to leave the repository at all.</p>
-    <p class="lede">These are five write-ups on that layer, built for a multi-repository system where <b>AI coding sessions run daily</b> across several machines and more than one contributor, and where most of the working knowledge still sits with one person. Each one names the incident that produced the rule, and each one documents where it has failed.</p>
-    <p class="context">python simulation engine &middot; typescript / react apps &middot; swift ios app &middot; markdown docs corpus &middot; agent-config repo</p>
-  </header>
-
-  <div class="studies">
-
-    <a class="study" href="../automation/">
-      <div class="snum">01 &middot; Automation</div>
-      <div class="stitle">Giving a workspace a nervous system</div>
-      <div class="ssub">lifecycle hooks</div>
-      <p class="sdesc">Small, portable scripts that fire at fixed moments in every session to enforce safety, quality, and workflow &mdash; backed by command, skill, scheduled, and review-agent layers. Most only advise. The ones that can stop a command are the interesting decision, and they don't all stop it for the same reason.</p>
-      <div class="sgo">Read the case study <span class="arr">&rarr;</span></div>
-    </a>
-
-    <a class="study" href="../enforcement/">
-      <div class="snum">02 &middot; Enforcement</div>
-      <div class="stitle">Checks that outlive the author</div>
-      <div class="ssub">narrated &rarr; enforced</div>
-      <p class="sdesc">A process document that works because its author keeps re-reading it is a journal. Every discipline gets sorted into checked or remembered, with a scoreboard for moving items between the two &mdash; a hard bar before anything earns the word, and a running list of the checks that turned out not to fire.</p>
-      <div class="sgo">Read the case study <span class="arr">&rarr;</span></div>
-    </a>
-
-    <a class="study" href="../publishing/">
-      <div class="snum">03 &middot; Disclosure</div>
-      <div class="stitle">Publishing out of a patent-pending codebase</div>
-      <div class="ssub">disclosure control</div>
-      <p class="sdesc">Public writing drafted inside private repositories that hold patentable mechanism. A staged pipeline between a draft and a published file, weighted by where it's going &mdash; plus every place it has failed, and the gap still open.</p>
-      <div class="sgo">Read the case study <span class="arr">&rarr;</span></div>
-    </a>
-
-    <a class="study" href="../clinical-review/">
-      <div class="snum">04 &middot; Clinical evaluation</div>
-      <div class="stitle">Two reviewers agreed. That was the problem.</div>
-      <div class="ssub">evaluating the evaluator</div>
-      <p class="sdesc">Two AI reviewer personas over a clinical-education corpus, keeping only what both of them flag. Then measuring whether that agreement meant anything: it had promoted a shared blind spot to top confidence, most blockers turned out to be missing source material, and the gate was checking that review had happened rather than that anything got resolved. Sixteen real clinical defects were behind it, several of them dosing.</p>
-      <div class="sgo">Read the case study <span class="arr">&rarr;</span></div>
-    </a>
-
-    <a class="study" href="../orchestration/">
-      <div class="snum">05 &middot; Orchestration</div>
-      <div class="stitle">One coordinator, several workers &mdash; and an error rate for all of it</div>
-      <div class="ssub">parallel sessions</div>
-      <p class="sdesc">Twenty-eight rounds of running AI coding sessions concurrently against one shared repository set. The architecture &mdash; partition by write-surface, route everything serial through a single writer &mdash; is the ordinary part. The distinctive part is running an error-rate instrument on the whole thing: an admission rule that moved the measured rate ten-fold without the work changing, a headline figure wrong by one because the graded party was the grader, and 100% inter-rater agreement published together with the reason to discount it.</p>
-      <div class="sgo">Read the case study <span class="arr">&rarr;</span></div>
-    </a>
-
-  </div>
-
-  <p class="closing" style="margin-bottom:1rem;"><b>The code behind the first two is open.</b> <a href="https://github.com/mikejgiardina/hook-discipline" target="_blank" rel="noopener noreferrer">github.com/mikejgiardina/hook-discipline</a> &mdash; the hooks, the three-state exit contract, and the paired fire-and-control suite, Apache-2.0. And if you would rather read a <b>clinical product</b> than a process write-up, <a href="../trauma-tracker/">Trauma Tracker</a> is a real-time ED trauma registrar, public and running.</p>
-
-  <p class="closing">They're written to be read in any order, though they run in roughly that one: the first is the layer that <b>runs</b>, the second and third are the layer that <b>decides</b>, the fourth asks whether any of it was actually working, and the fifth is what happens when several sessions use all of it at once. Process shape only &mdash; proprietary specifics are generalized or omitted throughout.</p>
-
-  <footer>
-    <p>Engineering case studies &middot; developer tooling, process design, and disclosure control.</p>
-    <p>Michael Giardina &middot; <a href="../">portfolio</a> &middot; <a href="https://www.linkedin.com/in/michael-giardina">linkedin.com/in/michael-giardina</a></p>
-  </footer>
-
+<p class="context">python simulation engine · typescript / react apps · swift ios app · markdown docs corpus · agent-config repo</p>
+</header>
+<div class="studies">
+<a class="study" href="../automation/">
+<div class="snum">01 · Automation</div>
+<div class="stitle">Giving a workspace a nervous system</div>
+<div class="ssub">lifecycle hooks</div>
+<p class="sdesc">Small, portable scripts that fire at fixed moments in every session to enforce safety, quality, and workflow — backed by command, skill, scheduled, and review-agent layers. Most only advise. The ones that can stop a command are the interesting decision, and they don't all stop it for the same reason.</p>
+<div class="sgo">Read the case study <span class="arr">→</span></div>
+</a>
+<a class="study" href="../enforcement/">
+<div class="snum">02 · Enforcement</div>
+<div class="stitle">Checks that outlive the author</div>
+<div class="ssub">narrated → enforced</div>
+<p class="sdesc">A process document that works because its author keeps re-reading it is a journal. Every discipline gets sorted into checked or remembered, with a scoreboard for moving items between the two — a hard bar before anything earns the word, and a running list of the checks that turned out not to fire.</p>
+<div class="sgo">Read the case study <span class="arr">→</span></div>
+</a>
+<a class="study" href="../publishing/">
+<div class="snum">03 · Disclosure</div>
+<div class="stitle">Publishing out of a patent-pending codebase</div>
+<div class="ssub">disclosure control</div>
+<p class="sdesc">Public writing drafted inside private repositories that hold patentable mechanism. A staged pipeline between a draft and a published file, weighted by where it's going — plus every place it has failed, and the gap still open.</p>
+<div class="sgo">Read the case study <span class="arr">→</span></div>
+</a>
+<a class="study" href="../clinical-review/">
+<div class="snum">04 · Clinical evaluation</div>
+<div class="stitle">Two reviewers agreed. That was the problem.</div>
+<div class="ssub">evaluating the evaluator</div>
+<p class="sdesc">Two AI reviewer personas over a clinical-education corpus, keeping only what both of them flag. Then measuring whether that agreement meant anything: it had promoted a shared blind spot to top confidence, most blockers turned out to be missing source material, and the gate was checking that review had happened rather than that anything got resolved. Sixteen real clinical defects were behind it, several of them dosing.</p>
+<div class="sgo">Read the case study <span class="arr">→</span></div>
+</a>
+<a class="study" href="../orchestration/">
+<div class="snum">05 · Orchestration</div>
+<div class="stitle">One coordinator, several workers — and an error rate for all of it</div>
+<div class="ssub">parallel sessions</div>
+<p class="sdesc">Twenty-eight rounds of running AI coding sessions concurrently against one shared repository set. The architecture — partition by write-surface, route everything serial through a single writer — is the ordinary part. The distinctive part is running an error-rate instrument on the whole thing: an admission rule that moved the measured rate ten-fold without the work changing, a headline figure wrong by one because the graded party was the grader, and 100% inter-rater agreement published together with the reason to discount it.</p>
+<div class="sgo">Read the case study <span class="arr">→</span></div>
+</a>
 </div>
-</body>
+<p class="closing" style="margin-bottom:1rem;"><b>The code behind the first two is open.</b> <a href="https://github.com/mikejgiardina/hook-discipline" target="_blank" rel="noopener noreferrer">github.com/mikejgiardina/hook-discipline</a> — the hooks, the three-state exit contract, and the paired fire-and-control suite, Apache-2.0. And if you would rather read a <b>clinical product</b> than a process write-up, <a href="../trauma-tracker/">Trauma Tracker</a> is a real-time ED trauma registrar, public and running.</p>
+<p class="closing">They're written to be read in any order, though they run in roughly that one: the first is the layer that <b>runs</b>, the second and third are the layer that <b>decides</b>, the fourth asks whether any of it was actually working, and the fifth is what happens when several sessions use all of it at once. Process shape only — proprietary specifics are generalized or omitted throughout.</p>
+<footer>
+<p>Engineering case studies · developer tooling, process design, and disclosure control.</p>
+<p>Michael Giardina · <a href="../">portfolio</a> · <a href="https://www.linkedin.com/in/michael-giardina" target="_blank" rel="noopener noreferrer">linkedin.com/in/michael-giardina</a></p>
+<p class="footer-navigation"><a href="../">Portfolio</a> · <a href="../case-studies/">Case studies</a> · <a href="../#connect">Get in touch</a></p></footer>
+</div>
+<script data-pplx-inline-edit>
+(function () {
+  if (window === window.top) return;
+
+  const allowedParentOrigins = ["https://www.perplexity.ai","https://perplexity.ai","https://testing.perplexity.ai","https://staging.perplexity.ai","https://*.preview.i.perplexity.ai","http://perplexity.localhost","http://localhost:1420","http://127.0.0.1:1420","http://localhost:3000","http://127.0.0.1:3000","http://localhost:5173","http://127.0.0.1:5173"];
+  const MAX_FONT_BYTES = 500 * 1024;
+  const MAX_TOTAL_FONT_BYTES = 2 * 1024 * 1024;
+  let scrollForwarding = false;
+  let scrollRaf = 0;
+  let trustedTopOrigin = null;
+
+  // Allow entries like "https://*.preview.i.perplexity.ai" — the wildcard
+  // matches a single DNS label (no dots), so "https://*.foo" cannot stretch
+  // across multiple labels.
+  function matchesAllowedOrigin(origin) {
+    if (!origin) return false;
+    for (const entry of allowedParentOrigins) {
+      if (!entry.includes("*")) {
+        if (entry === origin) return true;
+        continue;
+      }
+      const pattern = new RegExp(
+        "^" +
+          entry.replace(/[.+?^${}()|[\]\\]/g, "\\$&").replace(/\*/g, "[^.]+") +
+          "$",
+      );
+      if (pattern.test(origin)) return true;
+    }
+    return false;
+  }
+
+  // Trust decision: when the sender is same-origin-visible (event.origin is a
+  // real origin like https://www.perplexity.ai) we trust event.origin directly.
+  // When event.origin is "null" (opaque broker srcdoc), we fall back to the
+  // broker's stamped `parentOrigin` to identify the top window. The fallback
+  // is claim-only — we rely on the browser's native `targetOrigin` enforcement
+  // on the response path (see postToTrustedTop) to ensure replies can't be
+  // delivered to anyone but the actual top window of that claimed origin.
+  function getTrustedParentOrigin(event) {
+    const forwardedParentOrigin =
+      typeof event.data.parentOrigin === "string" ? event.data.parentOrigin : null;
+    const parentOrigin = event.origin === "null" ? forwardedParentOrigin : event.origin;
+    return matchesAllowedOrigin(parentOrigin) ? parentOrigin : null;
+  }
+
+  // All responses go to window.top with targetOrigin = the allowlisted origin.
+  // An attacker that iframes us inside their own null-origin broker can claim
+  // any parentOrigin they like, but the browser will drop the reply whenever
+  // the real top's origin doesn't match — so the screenshot never leaves.
+  function postToTrustedTop(message) {
+    if (!trustedTopOrigin) return;
+    try {
+      window.top.postMessage(message, trustedTopOrigin);
+    } catch (_error) {}
+  }
+
+  function inlineAll(original, clone) {
+    if (original.nodeType !== 1 || clone.nodeType !== 1) return;
+
+    try {
+      const computedStyle = getComputedStyle(original);
+      // cssText on a computed style is the serialized declaration in modern
+      // Chromium/Safari — a single read beats enumerating ~400 longhand
+      // properties. Firefox returns "" here, so we fall back on empty.
+      const serialized = computedStyle.cssText;
+      if (serialized) {
+        clone.style.cssText = serialized;
+      } else {
+        const parts = new Array(computedStyle.length);
+        for (let index = 0; index < computedStyle.length; index += 1) {
+          const property = computedStyle[index];
+          parts[index] = `${property}:${computedStyle.getPropertyValue(property)};`;
+        }
+        clone.style.cssText = parts.join("");
+      }
+    } catch (_error) {}
+
+    const originalChildren = original.children;
+    const clonedChildren = clone.children;
+    for (
+      let index = 0;
+      index < originalChildren.length && index < clonedChildren.length;
+      index += 1
+    ) {
+      inlineAll(originalChildren[index], clonedChildren[index]);
+    }
+  }
+
+  function extractFontUrl(srcValue) {
+    const matches = [
+      ...srcValue.matchAll(
+        /url\(["']?([^"')]+)["']?\)(?:\s*format\(["']?([^"')]+)["']?\))?/gi,
+      ),
+    ];
+    if (matches.length === 0) return null;
+    const woff2 = matches.find((m) => m[2] && m[2].toLowerCase().includes("woff2"));
+    if (woff2) return woff2[1];
+    const woff = matches.find((m) => m[2] && m[2].toLowerCase().includes("woff"));
+    if (woff) return woff[1];
+    return matches[0][1];
+  }
+
+  // Cache resolved font URL -> data URI across captures. Fonts on a page
+  // essentially never change, and a batch run emits multiple captures back to
+  // back — without this we'd refetch + re-base64 every time.
+  const fontDataUriCache = new Map();
+  const SRC_DECLARATION_RE = /src\s*:\s*[^;}]+/i;
+
+  async function fetchAsDataUri(url) {
+    if (fontDataUriCache.has(url)) return fontDataUriCache.get(url);
+    let dataUri = null;
+    try {
+      const response = await fetch(url, { mode: "cors", credentials: "omit" });
+      if (response.ok) {
+        const blob = await response.blob();
+        if (blob.size <= MAX_FONT_BYTES) {
+          dataUri = await new Promise((resolve) => {
+            const reader = new FileReader();
+            reader.onloadend = () =>
+              resolve(typeof reader.result === "string" ? reader.result : null);
+            reader.onerror = () => resolve(null);
+            reader.readAsDataURL(blob);
+          });
+        }
+      }
+    } catch (_error) {
+      dataUri = null;
+    }
+    fontDataUriCache.set(url, dataUri);
+    return dataUri;
+  }
+
+  function collectFontFaceRuleTexts() {
+    const rules = [];
+    for (const sheet of document.styleSheets) {
+      let cssRules;
+      try {
+        cssRules = sheet.cssRules;
+      } catch (_error) {
+        continue;
+      }
+      if (!cssRules) continue;
+      for (const rule of cssRules) {
+        const cssText = rule.cssText || "";
+        if (cssText.startsWith("@font-face")) rules.push(cssText);
+      }
+    }
+    return rules;
+  }
+
+  async function buildInlinedFontCss() {
+    const ruleTexts = collectFontFaceRuleTexts();
+    if (ruleTexts.length === 0) return null;
+
+    const resolved = ruleTexts.map((cssText) => {
+      if (!SRC_DECLARATION_RE.test(cssText)) return null;
+      const srcMatch = cssText.match(/src\s*:\s*([^;}]+)[;}]/i);
+      if (!srcMatch) return null;
+      const url = extractFontUrl(srcMatch[1]);
+      if (!url) return null;
+      try {
+        return { cssText, url: new URL(url, document.baseURI).href };
+      } catch (_error) {
+        return null;
+      }
+    });
+
+    const dataUris = await Promise.all(
+      resolved.map((entry) => (entry ? fetchAsDataUri(entry.url) : Promise.resolve(null))),
+    );
+
+    const inlined = [];
+    let totalBytes = 0;
+    for (let index = 0; index < resolved.length; index += 1) {
+      const entry = resolved[index];
+      const dataUri = dataUris[index];
+      if (!entry || !dataUri) continue;
+      const approxBytes = dataUri.length * 0.75;
+      if (totalBytes + approxBytes > MAX_TOTAL_FONT_BYTES) break;
+      totalBytes += approxBytes;
+      inlined.push(entry.cssText.replace(SRC_DECLARATION_RE, `src: url("${dataUri}")`));
+    }
+    return inlined.length > 0 ? inlined.join("\n") : null;
+  }
+
+  function stripExternal(clone) {
+    const images = clone.querySelectorAll("img");
+    for (let index = 0; index < images.length; index += 1) {
+      const src = images[index].getAttribute("src");
+      if (src && !src.startsWith("data:")) images[index].removeAttribute("src");
+    }
+
+    const elements = clone.querySelectorAll("*");
+    for (let index = 0; index < elements.length; index += 1) {
+      const style = elements[index].style.cssText;
+      if (style && style.includes("url(")) {
+        elements[index].style.cssText = style.replace(
+          /url\(["']?(?!data:)[^)"']*["']?\)/gi,
+          "none",
+        );
+      }
+    }
+  }
+
+  function emitScroll() {
+    scrollRaf = 0;
+    if (!scrollForwarding) return;
+    postToTrustedTop({
+      type: "INLINE_EDIT_SCROLL",
+      scrollX: window.scrollX,
+      scrollY: window.scrollY,
+    });
+  }
+
+  window.addEventListener(
+    "scroll",
+    function () {
+      if (!scrollForwarding || scrollRaf) return;
+      scrollRaf = requestAnimationFrame(emitScroll);
+    },
+    { passive: true, capture: true },
+  );
+
+  async function handleCaptureRequest(event) {
+    const requestId = event.data.requestId;
+    const scrollX = window.scrollX;
+    const scrollY = window.scrollY;
+    const width = window.innerWidth;
+    const height = window.innerHeight;
+
+    function postResult(dataUrl) {
+      postToTrustedTop({
+        type: "INLINE_EDIT_SCREENSHOT_RESULT",
+        requestId,
+        dataUrl,
+        scrollX,
+        scrollY,
+      });
+    }
+
+    try {
+      // Wait for any pending web fonts to resolve so both inline metrics and
+      // the @font-face inlining below see the same loaded faces.
+      if (document.fonts && document.fonts.ready) {
+        try {
+          await document.fonts.ready;
+        } catch (_error) {}
+      }
+
+      const clone = document.documentElement.cloneNode(true);
+      inlineAll(document.documentElement, clone);
+
+      const removedNodes = clone.querySelectorAll("script,link[rel=\"stylesheet\"],style");
+      for (let index = 0; index < removedNodes.length; index += 1) {
+        removedNodes[index].remove();
+      }
+
+      stripExternal(clone);
+
+      // Re-embed web fonts as data-URI @font-face rules so the SVG rasterizer
+      // can resolve them — external font URLs aren't fetched during
+      // foreignObject rendering, which would otherwise force a fallback face
+      // and change text metrics.
+      const inlinedFontCss = await buildInlinedFontCss();
+      if (inlinedFontCss) {
+        const styleEl = document.createElement("style");
+        styleEl.textContent = inlinedFontCss;
+        const head = clone.querySelector("head");
+        if (head) head.appendChild(styleEl);
+        else clone.insertBefore(styleEl, clone.firstChild);
+      }
+
+      const html = new XMLSerializer().serializeToString(clone);
+      const svg =
+        `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}">` +
+        '<foreignObject width="100%" height="100%">' +
+        `<div xmlns="http://www.w3.org/1999/xhtml" style="width:${width}px;height:${height}px;overflow:hidden">` +
+        `<div style="position:relative;left:-${scrollX}px;top:-${scrollY}px">` +
+        html +
+        "</div></div></foreignObject></svg>";
+      const svgUrl = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
+      const image = new Image();
+      image.onload = function () {
+        const canvas = document.createElement("canvas");
+        canvas.width = width;
+        canvas.height = height;
+        canvas.getContext("2d").drawImage(image, 0, 0);
+        postResult(canvas.toDataURL("image/png"));
+      };
+      image.onerror = function () {
+        postResult(null);
+      };
+      image.src = svgUrl;
+    } catch (_error) {
+      postResult(null);
+    }
+  }
+
+  window.addEventListener("message", function (event) {
+    if (!event.data) return;
+    // Only accept messages from the direct parent frame. Blocks sibling /
+    // unrelated-window postMessage senders that could otherwise reach us.
+    if (event.source !== window.parent) return;
+
+    const trustedParentOrigin = getTrustedParentOrigin(event);
+    if (!trustedParentOrigin) return;
+    trustedTopOrigin = trustedParentOrigin;
+
+    if (event.data.type === "INLINE_EDIT_SCROLL_START") {
+      scrollForwarding = true;
+      emitScroll();
+      return;
+    }
+
+    if (event.data.type === "INLINE_EDIT_SCROLL_STOP") {
+      scrollForwarding = false;
+      if (scrollRaf) cancelAnimationFrame(scrollRaf);
+      scrollRaf = 0;
+      return;
+    }
+
+    if (event.data.type !== "INLINE_EDIT_CAPTURE_REQUEST") return;
+
+    handleCaptureRequest(event);
+  });
+})();
+
+
+</script></body>
 </html>

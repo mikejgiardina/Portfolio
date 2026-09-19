@@ -1,603 +1,890 @@
 <!DOCTYPE html>
-<html lang="en">
+
+<html lang="en" data-theme="light">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mike Giardina — Clinical AI Evaluation &amp; Solutions Architecture</title>
-    <meta name="description" content="Emergency nurse (BSN, RN, CEN) building clinical simulation and AI tooling. Five engineering case studies on lifecycle-hook automation, turning conventions into enforced checks, disclosure control, coordinating parallel AI coding sessions, and measuring whether an AI review pipeline over a clinical corpus was reporting what it appeared to report.">
-<meta property="og:type" content="website">
-<meta property="og:url" content="https://mike-giardina.netlify.app/">
-<meta property="og:title" content="Michael Giardina — clinical AI evaluation and solutions architecture">
-<meta property="og:description" content="Emergency nurse building clinical simulation and AI tooling. Five engineering case studies, a real-time ED trauma registrar, and clinical AI evaluation work.">
-<meta property="og:image" content="https://mike-giardina.netlify.app/assets/og/home.png">
-<meta property="og:image:width" content="1200">
-<meta property="og:image:height" content="627">
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://mike-giardina.netlify.app/assets/og/home.png">
-    <link rel="stylesheet" href="assets/site.css">
-<script src="assets/site.js" defer></script>
-<script>try{var t=localStorage.getItem("mg-theme");if(t==="dark"||t==="light")document.documentElement.setAttribute("data-theme",t);}catch(e){}</script>
-</head>
-<body>
-    <div class="grid-bg"></div>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Mike Giardina — Clinical AI Evaluation & Solutions Architecture</title>
+<meta name="description" content="Emergency nurse (BSN, RN, CEN) building clinical simulation and AI tooling. Five engineering case studies on lifecycle-hook automation, turning conventions into enforced checks, disclosure control, coordinating parallel AI coding sessions, and measuring whether an AI review pipeline over a clinical corpus was reporting what it appeared to report."/>
+<meta property="og:type" content="website"/>
+<meta property="og:url" content="https://mike-giardina.netlify.app/"/>
+<meta property="og:title" content="Michael Giardina — clinical AI evaluation and solutions architecture"/>
+<meta property="og:description" content="Emergency nurse building clinical simulation and AI tooling. Five engineering case studies, a real-time ED trauma registrar, and clinical AI evaluation work."/>
+<meta property="og:image" content="https://mike-giardina.netlify.app/assets/og/home.png"/>
+<meta property="og:image:width" content="1200"/>
+<meta property="og:image:height" content="627"/>
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="https://mike-giardina.netlify.app/assets/og/home.png"/>
 
-    <nav class="quicknav" aria-label="Jump to the live, interactive pages">
-        <span class="qn-sep">Case Studies</span>
-        <a class="qn-study qn-hub" href="case-studies/">Overview</a>
-        <a class="qn-study" href="automation/">Hooks</a>
-        <a class="qn-study" href="enforcement/">Enforcement</a>
-        <a class="qn-study" href="publishing/">Publishing</a>
-        <a class="qn-study" href="orchestration/">Orchestration</a>
-        <a class="qn-study" href="clinical-review/">Clinical Review</a>
-        <span class="qn-sep">Clinical</span>
-        <a class="qn-study" href="trauma-tracker/">Trauma Tracker</a>
-        <a href="https://erinfo.netlify.app" target="_blank" rel="noopener noreferrer">ER Articles</a>
-        <span class="qn-sep">Story Mode</span>
-        <a href="story/gi-bleed/">GI Hemorrhage</a>
-        <a href="story/hyperkalemia/">Hyperkalemia</a>
-        <a href="story/first-code-blue/">First Code</a>
-    </nav>
 
-    <div class="container">
-        <header>
-            <div class="status-bar">
-                <div class="status-item">
-                    <span class="status-dot"></span>
-                    <span>ACTIVE — LEVEL 1 TRAUMA CENTER</span>
-                </div>
-                <div class="status-item">
-                    <span class="status-dot"></span>
-                    <span>PA, US | OPEN TO REMOTE</span>
-                </div>
-            </div>
 
-            <h1>Mike Giardina</h1>
-            <p class="subtitle">Clinical AI Evaluation &nbsp;·&nbsp; Clinical Solutions Architect &nbsp;·&nbsp; ED Supervisor &nbsp;·&nbsp; RN, BSN, CEN</p>
+<link rel="stylesheet" href="./assets/site.css"/><link rel="stylesheet" href="./base.css"/><link rel="stylesheet" href="./style.css"/><link rel="stylesheet" href="./assets/portfolio.css"/><link rel="stylesheet" href="./assets/fonts/editorial.css"/><script src="./app.js" defer=""></script><script src="./assets/navigation.js" defer=""></script></head>
+<body class="portfolio-home"><a class="skip" href="#reading">Skip to content</a><header class="masthead"><div class="mast-inner">
+<a class="brand" href="./"><svg width="32" height="32" viewbox="0 0 32 32" fill="none" role="img" aria-label="Michael Giardina monogram"><path d="M4 26V6l12 12L28 6v20M4 6l12 12 12-12" stroke="currentColor" stroke-width="2.5"></path><path d="M16 18v8" stroke="currentColor" stroke-width="2.5"></path></svg><span>MICHAEL GIARDINA<span class="brand-sub">Clinical judgment. Systems thinking.</span></span></a>
+<button class="mobile-menu" aria-expanded="false" aria-controls="primary-navigation" type="button">Menu</button>
+<nav class="primary-nav" id="primary-navigation" aria-label="Portfolio navigation">
+<a href="./#work">Work</a>
+<details class="nav-dropdown"><summary>Case studies</summary><div class="nav-panel"><a href="./case-studies/">All five case studies</a><a href="./automation/">Lifecycle hooks</a><a href="./enforcement/">Enforcement</a><a href="./publishing/">Disclosure & publishing</a><a href="./clinical-review/">Clinical AI evaluation</a><a href="./orchestration/">Multi-session orchestration</a><a href="./orchestration/evidence/">Evidence appendix</a><a href="./trauma-tracker/">Trauma Tracker</a></div></details>
+<details class="nav-dropdown"><summary>Clinical stories</summary><div class="nav-panel"><a href="./story/gi-bleed/">GI hemorrhage</a><a href="./story/hyperkalemia/">Hyperkalemia</a><a href="./story/first-code-blue/">Your first code blue</a><a href="https://erinfo.netlify.app" target="_blank" rel="noopener noreferrer">ER articles ↗</a></div></details>
+<a href="./#background">About</a><a href="./#connect">Contact</a></nav>
+<button class="theme-toggle" type="button" aria-label="Switch to dark mode"><span class="theme-symbol" aria-hidden="true">◐</span><span class="theme-label">Dark</span></button></div><div class="reading-progress" aria-hidden="true"></div></header>
 
-            <p class="hero-statement">
+
+<div class="container portfolio-container">
+<header class="portfolio-hero" id="top">
+<div class="status-bar">
+<div class="status-item">
+<span class="status-dot"></span>
+<span>ACTIVE — LEVEL 1 TRAUMA CENTER</span>
+</div>
+<div class="status-item">
+<span class="status-dot"></span>
+<span>PA, US | OPEN TO REMOTE</span>
+</div>
+</div>
+<p class="kicker">THE PORTFOLIO / CLINICAL AI & SYSTEMS ARCHITECTURE</p><div class="portfolio-hero-grid"><div class="hero-name"><h1>Mike Giardina</h1><p class="subtitle">Clinical AI Evaluation  ·  Clinical Solutions Architect  ·  ED Supervisor  ·  RN, BSN, CEN</p><p class="hero-thesis">From the bedside.<br/><span>To better systems.</span></p></div><aside class="experience"><div class="stamp-label">GROUNDED IN PRACTICE</div><div class="experience-years">19<span>years</span></div><p>Level 1 trauma center<br/>Emergency nursing & clinical education</p><div class="experience-rule"></div><p class="authorship">I architect the systems, specify the behavior, direct the AI sessions that implement it, and own whether the output is correct, clinically and structurally.</p></aside></div>
+
+<p class="hero-statement" id="reading">
                 19 years in a Level 1 trauma ED, Epic ASAP super user and the ER nursing liaison to Epic since before go-live, ATCN course director —
                 now building <span class="highlight">clinical AI tooling</span> and the systems that keep it honest.
                 I specify these systems, direct the agents that implement them, and own whether the result is
                 clinically right, and I have also stood in the room where a health system decides how the
                 workflow actually gets configured. The failure I care most about isn't a bug: it's shipping
                 something technically correct that nobody can use at 3am.
-            </p>
+            </p><div class="hero-actions"><a class="button-primary" href="#work">Explore the work <span aria-hidden="true">↓</span></a><a class="text-link" href="case-studies/">Read the engineering case studies ↗</a></div>
+<div class="hero-stats">
+<div class="stat">
+<div class="stat-value">19</div>
+<div class="stat-label">Years Clinical Practice</div>
+</div>
+<div class="stat">
+<div class="stat-value">L1</div>
+<div class="stat-label">Trauma Center</div>
+</div>
+<div class="stat">
+<div class="stat-value">CEN</div>
+<div class="stat-label">Board-Certified ED Nurse</div>
+</div>
+<div class="stat">
+<div class="stat-value">ATCN</div>
+<div class="stat-label">Course Director</div>
+</div>
+</div>
 
-            <div class="hero-stats">
-                <div class="stat">
-                    <div class="stat-value">19</div>
-                    <div class="stat-label">Years Clinical Practice</div>
-                </div>
-                <div class="stat">
-                    <div class="stat-value">L1</div>
-                    <div class="stat-label">Trauma Center</div>
-                </div>
-                <div class="stat">
-                    <div class="stat-value">CEN</div>
-                    <div class="stat-label">Board-Certified ED Nurse</div>
-                </div>
-                <div class="stat">
-                    <div class="stat-value">ATCN</div>
-                    <div class="stat-label">Course Director</div>
-                </div>
-            </div>
-
-            <div class="scroll-indicator">
-                <span>SCROLL</span>
-                <div class="scroll-arrow"></div>
-            </div>
-        </header>
-
-        <!-- KYMORA: ENGINE + SIMS + CONSUMER -->
-        <section class="section">
-            <div class="section-header">
-                <span class="section-number">01</span>
-                <h2 class="section-title">Kymora</h2>
-                <div class="section-divider"></div>
-            </div>
-            <p class="section-intro">
+</header><section class="featured-writing" id="selected"><div class="featured-heading"><div><p class="kicker">SELECTED ENGINEERING WRITING</p><h2>Measure it. Then question it.</h2></div><a href="case-studies/">All five case studies ↗</a></div><div class="featured-grid"><a class="feature-story" href="orchestration/"><img src="assets/og/red-leader-editorial.png" alt="" width="1200" height="627" loading="lazy" decoding="async"/><div class="snum">05 · Orchestration</div><div class="stitle">One coordinator, several workers — and an error rate for all of it</div><p class="sdesc">Twenty-eight rounds of running AI coding sessions concurrently against one shared repository set. The architecture (partition by write-surface, route everything serial through a single writer) is the ordinary part. The distinctive part is running an error-rate instrument on the whole thing: an admission rule that moved the measured rate ten-fold without the work changing, a headline figure wrong by one because the graded party was the grader, and 100% inter-rater agreement published together with the reason to discount it.</p><div class="sgo">Read the case study <span class="arr">→</span></div></a><a class="feature-story" href="clinical-review/"><img src="assets/og/clinical-review.png" alt="" width="1200" height="627" loading="lazy" decoding="async"/><div class="snum">04 · Clinical evaluation</div><div class="stitle">Two reviewers agreed. That was the problem.</div><p class="sdesc">Two AI reviewer personas over a clinical-education corpus, keeping only what both of them flag. Then measuring whether that agreement meant anything: it had promoted a shared blind spot to top confidence, most blockers turned out to be missing source material, and the gate was checking that review had happened rather than that anything got resolved. Sixteen real clinical defects were behind it, several of them dosing.</p><div class="sgo">Read the case study <span class="arr">→</span></div></a></div></section>
+<!-- KYMORA: ENGINE + SIMS + CONSUMER -->
+<section class="section" id="work">
+<div class="section-header">
+<span class="section-number">01</span>
+<h2 class="section-title">Kymora</h2>
+<div class="section-divider"></div>
+</div>
+<p class="section-intro">
                 The physiological engine, the simulators built on it, and an iOS application that runs a Core ML surrogate of it on-device. One engine and three things that read from it, at three different stages of done.
             </p>
-            <p class="section-intro" style="margin-top:-1.6rem; font-size:0.92rem; border-left:2px solid rgba(255,180,84,0.4); padding-left:0.9rem;">
-                <strong style="color:var(--text-primary); font-weight:500;">Read this before the cards.</strong> Everything below is pre-1.0 and none of it is deployed against real patient data. Two maturity tiers are mixed here on purpose: the <strong style="color:var(--text-primary); font-weight:500;">Kymora line</strong> — the engine and what runs on it — sits between 0.5 and 1.0, while everything under the <strong style="color:var(--text-primary); font-weight:500;">clinical apps</strong> heading is a working prototype. Where a card says <em>concept</em>, that means the boundary described is a design constraint rather than a shipped behavior, and the card says so.
+<p class="section-intro" style="margin-top:-1.6rem; font-size:0.92rem; border-left:2px solid rgba(255,180,84,0.4); padding-left:0.9rem;">
+<strong style="color:var(--text-primary); font-weight:500;">Read this before the cards.</strong> Everything below is pre-1.0 and none of it is deployed against real patient data. Two maturity tiers are mixed here on purpose: the <strong style="color:var(--text-primary); font-weight:500;">Kymora line</strong>, the engine and what runs on it, sits between 0.5 and 1.0, while everything under the <strong style="color:var(--text-primary); font-weight:500;">clinical apps</strong> heading is a working prototype. Where a card says <em>concept</em>, that means the boundary described is a design constraint rather than a shipped behavior, and the card says so.
             </p>
-            <p class="section-intro" style="margin-top:-1.2rem; font-size:0.92rem; border-left:2px solid rgba(139,148,158,0.3); padding-left:0.9rem;">
-                Where something is open to click, it is linked — the interactive clinical cases and the engineering write-ups are live right now. Where there is only a recorded walkthrough, that is the deliberate middle setting: you can watch the tool run without a pre-1.0 clinical instrument being put in front of the public. And where there is no link at all, that too is deliberate rather than incomplete — these touch clinical decision-making and several carry unfiled IP. You can't independently verify those from here and you should weight them accordingly.
+<p class="section-intro" style="margin-top:-1.2rem; font-size:0.92rem; border-left:2px solid rgba(139,148,158,0.3); padding-left:0.9rem;">
+                Where something is open to click, it is linked, the interactive clinical cases and the engineering write-ups are live right now. Where there is only a recorded walkthrough, that is the deliberate middle setting: you can watch the tool run without a pre-1.0 clinical instrument being put in front of the public. And where there is no link at all, that too is deliberate rather than incomplete. These touch clinical decision-making and several carry unfiled IP. You can't independently verify those from here and you should weight them accordingly.
             </p>
-
-            <div class="apps-grid">
-
-                <!-- Computational Physiology Engine — Flagship -->
-                <div class="app-card flagship">
-                    <div class="app-number">ENGINE</div>
-                    <h3 class="app-title">Computational Physiology Engine</h3>
-                    <p class="app-subtitle">Evidence-Based Physiology, Computed in Real Time</p>
-                    <div class="flagship-inner">
-                        <div>
-                            <div class="app-problem">
-                                <span class="app-problem-label">Clinical Problem</span>
+<div class="apps-grid">
+<!-- Computational Physiology Engine — Flagship -->
+<div class="app-card flagship">
+<div class="app-number">ENGINE</div>
+<h3 class="app-title">Computational Physiology Engine</h3>
+<p class="app-subtitle">Evidence-Based Physiology, Computed in Real Time</p>
+<div class="flagship-inner">
+<div>
+<div class="app-problem">
+<span class="app-problem-label">Clinical Problem</span>
                                 Every clinical tool downstream — simulators, training, decision support — needs a source of truth for how a body behaves over time. Off-the-shelf approaches don't give you a physiology you can compute, audit, and build on.
                             </div>
-                            <p class="app-description">
+<p class="app-description">
                                 A physiologically grounded engine that computes a patient's trajectory from underlying mechanisms, cellular to system level. Vitals, labs, and drug response evolve over time, grounded in published physiology and pharmacology. Every case presentation is distinct, and the underlying state is fully auditable.
                             </p>
-                        </div>
-                        <div>
-                            <ul class="app-features">
-                                <li>Multi-agent, physiologically grounded architecture</li>
-                                <li>Physiology-driven behavior — not hard-coded scripts</li>
-                                <li>GPU-accelerated batch computation</li>
-                                <li>Evidence-based pharmacokinetic library</li>
-                                <li>Clinical scoring: SOFA, qSOFA, NEWS2, GCS</li>
-                                <li>Core ML surrogate export for on-device inference</li>
-                            </ul>
-                            <div class="app-card-footer">
-                                <div>
-                                    <span class="tech-badge">Python</span>
-                                    <span class="tech-badge">PyTorch</span>
-                                    <span class="tech-badge">CUDA</span>
-                                    <span class="tech-badge">asyncio</span>
-                                    <span class="tech-badge">Core ML</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Body Simulator -->
-                <div class="app-card">
-                    <div class="app-number">SIMULATOR</div>
-                    <h3 class="app-title">Body Simulator</h3>
-                    <p class="app-subtitle">Clinical Simulator Front-End</p>
-                    <div class="app-problem">
-                        <span class="app-problem-label">Clinical Problem</span>
+</div>
+<div>
+<details class="project-details"><summary>Architecture & capabilities <span aria-hidden="true">+</span></summary><ul class="app-features">
+<li>Multi-agent, physiologically grounded architecture</li>
+<li>Physiology-driven behavior, not hard-coded scripts</li>
+<li>GPU-accelerated batch computation</li>
+<li>Evidence-based pharmacokinetic library</li>
+<li>Clinical scoring: SOFA, qSOFA, NEWS2, GCS</li>
+<li>Core ML surrogate export for on-device inference</li>
+</ul></details>
+<div class="app-card-footer">
+<div>
+<span class="tech-badge">Python</span>
+<span class="tech-badge">PyTorch</span>
+<span class="tech-badge">CUDA</span>
+<span class="tech-badge">asyncio</span>
+<span class="tech-badge">Core ML</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Body Simulator -->
+<div class="app-card">
+<div class="app-number">SIMULATOR</div>
+<h3 class="app-title">Body Simulator</h3>
+<p class="app-subtitle">Clinical Simulator Front-End</p>
+<div class="app-problem">
+<span class="app-problem-label">Clinical Problem</span>
                         Bedside-quality patient simulators are locked into expensive vendor mannequins tied to a single training room. Every discipline that trains on patients needs a software-only simulator driven by real physiology, not scripted playback.
                     </div>
-                    <p class="app-description">
+<p class="app-description">
                         A clinical front-end wired live to the physiology engine over a WebSocket bridge. Vitals, four-channel waveforms, and drug response render from computed engine state in real time, with a graceful fallback when the bridge is offline.
                     </p>
-                    <ul class="app-features">
-                        <li>Live WebSocket bridge to the engine</li>
-                        <li>4-channel waveforms: ECG, arterial, pleth, capno</li>
-                        <li>Real-time vitals and pharmacological response</li>
-                        <li>Code-split bundle for fast load</li>
-                        <li>Graceful fallback when bridge unavailable</li>
-                    </ul>
-                    <div class="app-card-footer">
-                        <div>
-                            <span class="tech-badge">React</span>
-                            <span class="tech-badge">TypeScript</span>
-                            <span class="tech-badge">WebSocket</span>
-                            <span class="tech-badge">Canvas</span>
-                        </div>
-                        <p style="font-size:0.78rem; color:var(--text-muted); margin-top:0.6rem; line-height:1.5;">Simulated physiology for training and research. It does not display or interpret data from a real patient.</p>
-                    </div>
-                </div>
-
-                <!-- PatientSim -->
-                <div class="app-card">
-                    <div class="app-number">TRAINING SIM</div>
-                    <h3 class="app-title">PatientSim</h3>
-                    <p class="app-subtitle">AI-Driven Clinical Training Simulator</p>
-                    <div class="app-problem">
-                        <span class="app-problem-label">Clinical Problem</span>
+<details class="project-details"><summary>Architecture & capabilities <span aria-hidden="true">+</span></summary><ul class="app-features">
+<li>Live WebSocket bridge to the engine</li>
+<li>4-channel waveforms: ECG, arterial, pleth, capno</li>
+<li>Real-time vitals and pharmacological response</li>
+<li>Code-split bundle for fast load</li>
+<li>Graceful fallback when bridge unavailable</li>
+</ul></details>
+<div class="app-card-footer">
+<div>
+<span class="tech-badge">React</span>
+<span class="tech-badge">TypeScript</span>
+<span class="tech-badge">WebSocket</span>
+<span class="tech-badge">Canvas</span>
+</div>
+<p style="font-size:0.78rem; color:var(--text-muted); margin-top:0.6rem; line-height:1.5;">Simulated physiology for training and research. It does not display or interpret data from a real patient.</p>
+</div>
+</div>
+<!-- PatientSim -->
+<div class="app-card">
+<div class="app-number">TRAINING SIM</div>
+<h3 class="app-title">PatientSim</h3>
+<p class="app-subtitle">AI-Driven Clinical Training Simulator</p>
+<div class="app-problem">
+<span class="app-problem-label">Clinical Problem</span>
                         Sim-based education is expensive, schedule-dependent, and doesn't scale. Clinicians across every discipline need on-demand, realistic case exposure, especially for low-frequency, high-acuity events.
                     </div>
-                    <p class="app-description">
+<p class="app-description">
                         Standalone simulation with AI-driven evolving clinical narratives, real-time vitals, and a set of interactive procedures.
                         Built for ED education days with Sentry error tracking and keyboard shortcuts for rapid clinical input.
                     </p>
-                    <ul class="app-features">
-                        <li>Dynamic vitals with physiological drift engine</li>
-                        <li>SVG ECG driven by a 20-rhythm waveform library &mdash; AFib, VT/VF, torsades, AV block and paced rhythms each render their own morphology, not a rate-shifted sinus trace</li>
-                        <li>AI-driven case evolution based on clinical decisions</li>
-                        <li>Interactive procedures with SBAR generation</li>
-                        <li>Sound alerts and keyboard shortcuts for rapid input</li>
-                    </ul>
-                    <div class="app-card-footer">
-                        <div>
-                            <span class="tech-badge">React</span>
-                            <span class="tech-badge">SVG</span>
-                            <span class="tech-badge">Gemini AI</span>
-                        </div>
-                        <p style="font-size:0.78rem; color:var(--text-muted); margin-top:0.6rem; line-height:1.5;">Training only. Every patient is simulated — no real patient data enters it.</p>
-                    </div>
-                </div>
-
-                <!-- Meridian / Kymora -->
-                <div class="app-card">
-                    <div class="app-number">CONSUMER iOS</div>
-                    <h3 class="app-title">Meridian</h3>
-                    <p class="app-subtitle">Kymora — Consumer iOS Application</p>
-                    <div class="app-problem">
-                        <span class="app-problem-label">Consumer Problem</span>
+<details class="project-details"><summary>Architecture & capabilities <span aria-hidden="true">+</span></summary><ul class="app-features">
+<li>Dynamic vitals with physiological drift engine</li>
+<li>SVG ECG driven by a 20-rhythm waveform library, AFib, VT/VF, torsades, AV block and paced rhythms each render their own morphology, not a rate-shifted sinus trace</li>
+<li>AI-driven case evolution based on clinical decisions</li>
+<li>Interactive procedures with SBAR generation</li>
+<li>Sound alerts and keyboard shortcuts for rapid input</li>
+</ul></details>
+<div class="app-card-footer">
+<div>
+<span class="tech-badge">React</span>
+<span class="tech-badge">SVG</span>
+<span class="tech-badge">Gemini AI</span>
+</div>
+<p style="font-size:0.78rem; color:var(--text-muted); margin-top:0.6rem; line-height:1.5;">Training only. Every patient is simulated. No real patient data enters it.</p>
+</div>
+</div>
+<!-- Meridian / Kymora -->
+<div class="app-card">
+<div class="app-number">CONSUMER iOS</div>
+<h3 class="app-title">Meridian</h3>
+<p class="app-subtitle">Kymora, Consumer iOS Application</p>
+<div class="app-problem">
+<span class="app-problem-label">Consumer Problem</span>
                         Patients on complex medication regimens have no consumer-grade tool that pairs personal med tracking with a physiologically grounded model of how those drugs interact with their own biometrics.
                     </div>
-                    <p class="app-description">
+<p class="app-description">
                         Native iOS application pairing on-device medication tracking with a Core ML surrogate of our physiological simulation engine, so drug-context awareness runs locally, without sending biometric data to a server.
                     </p>
-                    <ul class="app-features">
-                        <li>Native SwiftUI app targeting iOS 17+</li>
-                        <li>HealthKit integration for biometric context</li>
-                        <li>Core ML surrogate exported from the physiological engine</li>
-                        <li>Local-first: on-device computation, privacy-preserving</li>
-                        <li>Medication list organization and reminders, entered by label or barcode — no visual pill identification, which is ruled out by design</li>
-                    </ul>
-                    <div class="app-card-footer">
-                        <div>
-                            <span class="tech-badge">Swift</span>
-                            <span class="tech-badge">SwiftUI</span>
-                            <span class="tech-badge">HealthKit</span>
-                            <span class="tech-badge">Core ML</span>
-                        </div>
-                        <span style="display:inline-block; margin-top:1rem; font-family:'JetBrains Mono',monospace; font-size:0.75rem; color:var(--text-muted); letter-spacing:0.08em;">Scaffolded · development deferred</span>
-                        <p style="font-size:0.78rem; color:var(--text-muted); margin-top:0.6rem; line-height:1.5;">Organization and context only — no dosing, no recommendations, no interpretation of biometrics.</p>
-                    </div>
-                </div>
-
-            </div>
-        </section>
-
-        <!-- TRIMERGENT: PROJECTS -->
-        <section class="section">
-            <div class="section-header">
-                <span class="section-number">02</span>
-                <h2 class="section-title">Trimergent Projects</h2>
-                <div class="section-divider"></div>
-            </div>
-            <p class="section-intro">
+<details class="project-details"><summary>Architecture & capabilities <span aria-hidden="true">+</span></summary><ul class="app-features">
+<li>Native SwiftUI app targeting iOS 17+</li>
+<li>HealthKit integration for biometric context</li>
+<li>Core ML surrogate exported from the physiological engine</li>
+<li>Local-first: on-device computation, privacy-preserving</li>
+<li>Medication list organization and reminders, entered by label or barcode, no visual pill identification, which is ruled out by design</li>
+</ul></details>
+<div class="app-card-footer">
+<div>
+<span class="tech-badge">Swift</span>
+<span class="tech-badge">SwiftUI</span>
+<span class="tech-badge">HealthKit</span>
+<span class="tech-badge">Core ML</span>
+</div>
+<span style="display:inline-block; margin-top:1rem; font-family:'JetBrains Mono',monospace; font-size:0.75rem; color:var(--text-muted); letter-spacing:0.08em;">Scaffolded · development deferred</span>
+<p style="font-size:0.78rem; color:var(--text-muted); margin-top:0.6rem; line-height:1.5;">Organization and context only. No dosing, no recommendations, no interpretation of biometrics.</p>
+</div>
+</div>
+</div>
+</section>
+<!-- TRIMERGENT: PROJECTS -->
+<section class="section" id="projects">
+<div class="section-header">
+<span class="section-number">02</span>
+<h2 class="section-title">Trimergent Projects</h2>
+<div class="section-divider"></div>
+</div>
+<p class="section-intro">
                 The wider Trimergent Tech project portfolio: tooling built around bedside problems observed across emergency and critical care. Each is a discrete architectural demonstration rather than a fully productized release.
             </p>
-
-            <div class="apps-grid">
-
-                <!-- Clinical Story Mode — Flagship (LIVE, clickable) -->
-                <div class="app-card flagship">
-                    <div class="app-number">EDUCATION · INTERACTIVE · LIVE</div>
-                    <h3 class="app-title">Clinical Story Mode</h3>
-                    <p class="app-subtitle">Scholarly Articles, Rebuilt as Living Cases</p>
-                    <div class="flagship-inner">
-                        <div>
-                            <div class="app-problem">
-                                <span class="app-problem-label">Education Problem</span>
+<div class="apps-grid">
+<!-- Clinical Story Mode — Flagship (LIVE, clickable) -->
+<div class="app-card flagship">
+<div class="app-number">EDUCATION · INTERACTIVE · LIVE</div>
+<h3 class="app-title">Clinical Story Mode</h3>
+<p class="app-subtitle">Scholarly Articles, Rebuilt as Living Cases</p>
+<div class="flagship-inner">
+<div>
+<div class="app-problem">
+<span class="app-problem-label">Education Problem</span>
                                 A scholarly article teaches what to know. It can't show what it feels like to catch it at the bedside — the vitals moving, the waveform changing, the decisions landing in the right order under time pressure.
                             </div>
-                            <p class="app-description">
+<p class="app-description">
                                 Each clinical teaching article (grounded in peer-reviewed literature) re-staged as a real-time patient case. A live monitor tracks the patient as you scroll: heart rate, blood pressure, and an ECG that morphs with the physiology, while the clinical reasoning surfaces exactly when the case reaches it. The same evidence base as the article library, delivered as something you move through instead of read.
                             </p>
-                            <div class="validation-badge"><span class="validation-dot"></span>LIVE · THREE CASES, OPEN NOW</div>
-                        </div>
-                        <div>
-                            <ul class="app-features">
-                                <li>Scroll-driven case narrative with a live patient monitor</li>
-                                <li>Canvas ECG / waveforms that respond to the pathology</li>
-                                <li>Embedded decision points and interactive teaching tools</li>
-                                <li>Same evidence base as the article library — nothing softened</li>
-                                <li>Self-contained, zero-dependency, runs on any device</li>
-                            </ul>
-                            <div class="app-card-footer">
-                                <div>
-                                    <span class="tech-badge">Canvas</span>
-                                    <span class="tech-badge">JavaScript</span>
-                                    <span class="tech-badge">Zero-Dependency</span>
-                                </div>
-                                <div style="display:flex; gap:1rem; flex-wrap:wrap; margin-top:0.5rem;">
-                                    <a href="story/gi-bleed/" class="launch-btn" style="text-decoration:none; cursor:pointer;">GI HEMORRHAGE →</a>
-                                    <a href="story/hyperkalemia/" class="launch-btn" style="text-decoration:none; cursor:pointer;">HYPERKALEMIA →</a>
-                                    <a href="story/first-code-blue/" class="launch-btn" style="text-decoration:none; cursor:pointer;">YOUR FIRST CODE →</a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Engineering Practice — Flagship series (LIVE, five case studies) -->
-                <div class="app-card flagship">
-                    <div class="app-number">ENGINEERING PRACTICE · LIVE · FIVE CASE STUDIES</div>
-                    <h3 class="app-title">How the Work Gets Built Safely</h3>
-                    <p class="app-subtitle">Automation, Enforcement, Disclosure Control, Parallel Sessions, and Clinical Evaluation Across a Multi-Repo Codebase</p>
-                    <div class="flagship-inner">
-                        <div>
-                            <div class="app-problem">
-                                <span class="app-problem-label">Engineering Problem</span>
+<div class="validation-badge"><span class="validation-dot"></span>LIVE · THREE CASES, OPEN NOW</div>
+</div>
+<div>
+<details class="project-details"><summary>Architecture & capabilities <span aria-hidden="true">+</span></summary><ul class="app-features">
+<li>Scroll-driven case narrative with a live patient monitor</li>
+<li>Canvas ECG / waveforms that respond to the pathology</li>
+<li>Embedded decision points and interactive teaching tools</li>
+<li>Same evidence base as the article library, nothing softened</li>
+<li>Self-contained, zero-dependency, runs on any device</li>
+</ul></details>
+<div class="app-card-footer">
+<div>
+<span class="tech-badge">Canvas</span>
+<span class="tech-badge">JavaScript</span>
+<span class="tech-badge">Zero-Dependency</span>
+</div>
+<div style="display:flex; gap:1rem; flex-wrap:wrap; margin-top:0.5rem;">
+<a href="story/gi-bleed/" class="launch-btn" style="text-decoration:none; cursor:pointer;">GI HEMORRHAGE →</a>
+<a href="story/hyperkalemia/" class="launch-btn" style="text-decoration:none; cursor:pointer;">HYPERKALEMIA →</a>
+<a href="story/first-code-blue/" class="launch-btn" style="text-decoration:none; cursor:pointer;">YOUR FIRST CODE →</a>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Engineering Practice — Flagship series (LIVE, five case studies) -->
+<div class="app-card flagship">
+<div class="app-number">ENGINEERING PRACTICE · LIVE · FIVE CASE STUDIES</div>
+<h3 class="app-title">How the Work Gets Built Safely</h3>
+<p class="app-subtitle">Automation, Enforcement, Disclosure Control, Parallel Sessions, and Clinical Evaluation Across a Multi-Repo Codebase</p>
+<div class="flagship-inner">
+<div>
+<div class="app-problem">
+<span class="app-problem-label">Engineering Problem</span>
                                 A small team running daily AI coding sessions across several repositories has two exposures nobody else will catch: conventions that hold only while someone remembers them, and patentable mechanism sitting one paragraph away from every public draft. The layer that catches them has to work on everyone's machine, not just the one it was written on.
                             </div>
-                            <p class="app-description">
+<p class="app-description">
                                 Five write-ups on the layer around the code. A <strong>lifecycle-hook layer</strong> that makes safety automatic; a <strong>register and ledger</strong> that convert remembered conventions into checks that go red; a <strong>staged pipeline</strong> that controls what leaves a patent-pending repo; an <strong>orchestration pattern</strong> for running several coding sessions at once without them colliding; and a <strong>measured evaluation</strong> of whether an AI review pipeline over a clinical corpus was reporting what it appeared to report. Each one documents where it has failed.
                             </p>
-                            <div class="validation-badge"><span class="validation-dot"></span>LIVE · ALL FIVE OPEN NOW</div>
-                        </div>
-                        <div>
-                            <ul class="app-features">
-                                <li>Lifecycle hooks across every stage of a session, on three operating systems</li>
-                                <li>Fail-open by default, fail-closed where a false pass is unrecoverable — and never fail-silent</li>
-                                <li>Every discipline classified enforced, narrated, or hybrid — and tracked</li>
-                                <li>A hard bar before a check may be called "enforced"</li>
-                                <li>Checks that turned out never to fire — found, fixed, published</li>
-                                <li>A staged disclosure pipeline, weighted by audience, gaps named</li>
-                                <li>Parallel coding sessions leased by write-surface, with every serial resource routed through one writer</li>
-                            </ul>
-                            <div class="app-card-footer">
-                                <div>
-                                    <span class="tech-badge">Bash</span>
-                                    <span class="tech-badge">Python</span>
-                                    <span class="tech-badge">Git</span>
-                                    <span class="tech-badge">Claude Code</span>
-                                    <span class="tech-badge">Process Design</span>
-                                </div>
-                                <div style="display:flex; gap:0.75rem; flex-wrap:wrap; margin-top:0.5rem;">
-                                    <a href="automation/" class="launch-btn" style="text-decoration:none; cursor:pointer;">THE HOOK LAYER →</a>
-                                    <a href="enforcement/" class="launch-btn" style="text-decoration:none; cursor:pointer;">NARRATED → ENFORCED →</a>
-                                    <a href="publishing/" class="launch-btn" style="text-decoration:none; cursor:pointer;">PUBLISHING SAFELY →</a>
-                                    <a href="orchestration/" class="launch-btn" style="text-decoration:none; cursor:pointer;">PARALLEL SESSIONS →</a>
-                                    <a href="clinical-review/" class="launch-btn" style="text-decoration:none; cursor:pointer;">EVALUATING THE EVALUATOR →</a>
-                                </div>
+<div class="validation-badge"><span class="validation-dot"></span>LIVE · ALL FIVE OPEN NOW</div>
+</div>
+<div>
+<details class="project-details"><summary>Architecture & capabilities <span aria-hidden="true">+</span></summary><ul class="app-features">
+<li>Lifecycle hooks across every stage of a session, on three operating systems</li>
+<li>Fail-open by default, fail-closed where a false pass is unrecoverable, and never fail-silent</li>
+<li>Every discipline classified enforced, narrated, or hybrid, and tracked</li>
+<li>A hard bar before a check may be called "enforced"</li>
+<li>Checks that turned out never to fire, found, fixed, published</li>
+<li>A staged disclosure pipeline, weighted by audience, gaps named</li>
+<li>Parallel coding sessions leased by write-surface, with every serial resource routed through one writer</li>
+</ul></details>
+<div class="app-card-footer">
+<div>
+<span class="tech-badge">Bash</span>
+<span class="tech-badge">Python</span>
+<span class="tech-badge">Git</span>
+<span class="tech-badge">Claude Code</span>
+<span class="tech-badge">Process Design</span>
+</div>
+<div style="display:flex; gap:0.75rem; flex-wrap:wrap; margin-top:0.5rem;">
+<a href="automation/" class="launch-btn" style="text-decoration:none; cursor:pointer;">THE HOOK LAYER →</a>
+<a href="enforcement/" class="launch-btn" style="text-decoration:none; cursor:pointer;">NARRATED → ENFORCED →</a>
+<a href="publishing/" class="launch-btn" style="text-decoration:none; cursor:pointer;">PUBLISHING SAFELY →</a>
+<a href="orchestration/" class="launch-btn" style="text-decoration:none; cursor:pointer;">PARALLEL SESSIONS →</a>
+<a href="clinical-review/" class="launch-btn" style="text-decoration:none; cursor:pointer;">EVALUATING THE EVALUATOR →</a>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Trauma Tracker — the live, open, runnable one -->
+<div class="app-card flagship">
+<div class="app-number">CLINICAL PRODUCT · LIVE · OPEN SOURCE</div>
+<h3 class="app-title">Trauma Tracker</h3>
+<p class="app-subtitle">A Real-Time ED Trauma Registrar</p>
+<div class="flagship-inner">
+<div>
+<div class="app-problem">
+<span class="app-problem-label">Clinical Problem</span>
+                                A trauma resuscitation generates an enormous amount of documentable fact in a very short window, and everyone in the room is busy. The record gets reconstructed afterward, from memory, by someone who was also running the resuscitation — which is where timestamps drift, quality measures get missed, and charges go unsupported.
                             </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Trauma Tracker — the live, open, runnable one -->
-                <div class="app-card flagship">
-                    <div class="app-number">CLINICAL PRODUCT &middot; LIVE &middot; OPEN SOURCE</div>
-                    <h3 class="app-title">Trauma Tracker</h3>
-                    <p class="app-subtitle">A Real-Time ED Trauma Registrar</p>
-                    <div class="flagship-inner">
-                        <div>
-                            <div class="app-problem">
-                                <span class="app-problem-label">Clinical Problem</span>
-                                A trauma resuscitation generates an enormous amount of documentable fact in a very short window, and everyone in the room is busy. The record gets reconstructed afterward, from memory, by someone who was also running the resuscitation &mdash; which is where timestamps drift, quality measures get missed, and charges go unsupported.
-                            </div>
-                            <p class="app-description">
+<p class="app-description">
                                 Multi-agent documentation that runs <em>during</em> the resuscitation rather than after it, producing the nursing narrative, the accreditation clocks and the charge capture from one set of timestamped events. Anything it asked about and did not get an answer to rides through to the report as a documented gap rather than being resolved away.
                             </p>
-                            <div class="validation-badge"><span class="validation-dot"></span>LIVE &middot; RUNS IN THE BROWSER</div>
-                        </div>
-                        <div>
-                            <ul class="app-features">
-                                <li>Values and interventions extracted and stamped as they are spoken</li>
-                                <li>Shock Index, RTS and GCS computed deterministically from published tables &mdash; not inferred</li>
-                                <li>A charge fires only when the documentation that code requires is actually present</li>
-                                <li>Activation determination carries the evidence it was made on</li>
-                                <li>Unresolved prompts appear in the output as documented gaps</li>
-                                <li>Four capture sources &middot; synthetic data only</li>
-                            </ul>
-                            <div class="app-card-footer">
-                                <div>
-                                    <span class="tech-badge">React</span>
-                                    <span class="tech-badge">Multi-Agent</span>
-                                    <span class="tech-badge">MIT</span>
-                                </div>
-                                <div style="display:flex; gap:0.75rem; flex-wrap:wrap; margin-top:0.5rem;">
-                                    <a href="trauma-tracker/" class="launch-btn" style="text-decoration:none; cursor:pointer;">READ THE WRITE-UP &rarr;</a>
-                                    <a href="https://traumatrackerv2.netlify.app" target="_blank" rel="noopener noreferrer" class="launch-btn" style="text-decoration:none; cursor:pointer;">LIVE DEMO &rarr;</a>
-                                    <a href="https://github.com/mikejgiardina/trauma-tracker-public" target="_blank" rel="noopener noreferrer" class="launch-btn" style="text-decoration:none; cursor:pointer;">REPOSITORY &rarr;</a>
-                                </div>
-                                <p style="font-size:0.78rem; color:var(--text-muted); margin-top:0.6rem; line-height:1.5;">Synthetic data only, no PHI, by design. Not a medical device and not deployed against real patient data.</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Nurse Orchestrator -->
-                <div class="app-card">
-                    <div class="app-number">PROTOTYPE &middot; RECORDED WALKTHROUGH</div>
-                    <h3 class="app-title">Nurse Orchestrator</h3>
-                    <p class="app-subtitle">Contextual Clinical Decision Support</p>
-                    <div class="app-problem">
-                        <span class="app-problem-label">Clinical Problem</span>
+<div class="validation-badge"><span class="validation-dot"></span>LIVE · RUNS IN THE BROWSER</div>
+</div>
+<div>
+<details class="project-details"><summary>Architecture & capabilities <span aria-hidden="true">+</span></summary><ul class="app-features">
+<li>Values and interventions extracted and stamped as they are spoken</li>
+<li>Shock Index, RTS and GCS computed deterministically from published tables, not inferred</li>
+<li>A charge fires only when the documentation that code requires is actually present</li>
+<li>Activation determination carries the evidence it was made on</li>
+<li>Unresolved prompts appear in the output as documented gaps</li>
+<li>Four capture sources · synthetic data only</li>
+</ul></details>
+<div class="app-card-footer">
+<div>
+<span class="tech-badge">React</span>
+<span class="tech-badge">Multi-Agent</span>
+<span class="tech-badge">MIT</span>
+</div>
+<div style="display:flex; gap:0.75rem; flex-wrap:wrap; margin-top:0.5rem;">
+<a href="trauma-tracker/" class="launch-btn" style="text-decoration:none; cursor:pointer;">READ THE WRITE-UP →</a>
+<a href="https://traumatrackerv2.netlify.app" target="_blank" rel="noopener noreferrer" class="launch-btn" style="text-decoration:none; cursor:pointer;">LIVE DEMO →</a>
+<a href="https://github.com/mikejgiardina/trauma-tracker-public" target="_blank" rel="noopener noreferrer" class="launch-btn" style="text-decoration:none; cursor:pointer;">REPOSITORY →</a>
+</div>
+<p style="font-size:0.78rem; color:var(--text-muted); margin-top:0.6rem; line-height:1.5;">Synthetic data only, no PHI, by design. Not a medical device and not deployed against real patient data.</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Nurse Orchestrator -->
+<div class="app-card">
+<div class="app-number">PROTOTYPE · RECORDED WALKTHROUGH</div>
+<h3 class="app-title">Nurse Orchestrator</h3>
+<p class="app-subtitle">Contextual Clinical Decision Support</p>
+<div class="app-problem">
+<span class="app-problem-label">Clinical Problem</span>
                         Generic AI assistants aren't calibrated for bedside use — wrong scope, wrong acuity thresholds, no concept of state-specific practice boundaries or unit-level policy.
                     </div>
-                    <p class="app-description">
+<p class="app-description">
                         A clinical copilot that adapts to acuity context and routes by semantic intent, with scope-of-practice guardrails built from published state frameworks. The guardrails are implemented and demonstrable; whether they hold against a determined user is untested.
                     </p>
-                    <ul class="app-features">
-                        <li>Adaptive personas tuned to clinical discipline rather than to an acuity tier</li>
-                        <li>Semantic intent classification and routing</li>
-                        <li>Declines rather than guesses near critical interventions, and routes to the policy source instead</li>
-                        <li>State-specific scope of practice integration</li>
-                        <li>RAG-enabled policy guardrails, with the source shown so a clinician can check the basis</li>
-                    </ul>
-                    <div class="app-card-footer">
-                        <div style="margin-bottom:0.7rem;">
-                            <a href="https://www.youtube.com/watch?v=Skud3a7kawA&amp;t=2s" target="_blank" rel="noopener noreferrer" class="launch-btn" style="text-decoration:none; cursor:pointer;">WATCH THE DEMO →</a>
-                        </div>
-                        <div>
-                            <span class="tech-badge">React</span>
-                            <span class="tech-badge">TypeScript</span>
-                            <span class="tech-badge">Multi-Model AI</span>
-                        </div>
-                        <p style="font-size:0.78rem; color:var(--text-muted); margin-top:0.6rem; line-height:1.5;">Surfaces existing policy with the source shown. It does not recommend interventions or drive time-critical decisions.</p>
-                    </div>
-                </div>
-
-                <!-- The four prototypes that carry no link, collapsed deliberately -->
-                <div class="app-card">
-                    <div class="app-number">ALSO BUILT &middot; PROTOTYPES, NOT LINKED</div>
-                    <h3 class="app-title">Four more, not linked</h3>
-                    <p class="app-subtitle">Each came out of something watched breaking at the bedside. None is finished enough to hand you.</p>
-                    <div class="app-problem">
-                        <span class="app-problem-label">Why there is nothing to click</span>
+<details class="project-details"><summary>Architecture & capabilities <span aria-hidden="true">+</span></summary><ul class="app-features">
+<li>Adaptive personas tuned to clinical discipline rather than to an acuity tier</li>
+<li>Semantic intent classification and routing</li>
+<li>Declines rather than guesses near critical interventions, and routes to the policy source instead</li>
+<li>State-specific scope of practice integration</li>
+<li>RAG-enabled policy guardrails, with the source shown so a clinician can check the basis</li>
+</ul></details>
+<div class="app-card-footer">
+<div style="margin-bottom:0.7rem;">
+<a href="https://www.youtube.com/watch?v=Skud3a7kawA&t=2s" target="_blank" rel="noopener noreferrer" class="launch-btn" style="text-decoration:none; cursor:pointer;">WATCH THE DEMO →</a>
+</div>
+<div>
+<span class="tech-badge">React</span>
+<span class="tech-badge">TypeScript</span>
+<span class="tech-badge">Multi-Model AI</span>
+</div>
+<p style="font-size:0.78rem; color:var(--text-muted); margin-top:0.6rem; line-height:1.5;">Surfaces existing policy with the source shown. It does not recommend interventions or drive time-critical decisions.</p>
+</div>
+</div>
+<!-- The four prototypes that carry no link, collapsed deliberately -->
+<div class="app-card">
+<div class="app-number">ALSO BUILT · PROTOTYPES, NOT LINKED</div>
+<h3 class="app-title">Four more, not linked</h3>
+<p class="app-subtitle">Each came out of something watched breaking at the bedside. None is finished enough to hand you.</p>
+<div class="app-problem">
+<span class="app-problem-label">Why there is nothing to click</span>
                         They touch clinical decision-making and none is past prototype. You cannot verify any of it from here; weight it accordingly.
                     </div>
-                    <ul class="app-features">
-                        <li><strong>UnitScheduler Pro</strong> &mdash; reads historical schedules and surfaces the coverage pattern a static grid hides. <strong>Advisory only: a coverage suggestion is a draft for the charge nurse and never an assignment.</strong> Whether it changes an outcome is unmeasured.</li>
-                        <li><strong>Emergent Media Manager</strong> &mdash; an outside EKG on paper, a CD of imaging, a scanned discharge summary: all carry clinical meaning, none of it queryable. Turns those into structured records, local-first, with an egress guard that blocks identifier patterns from reaching a cloud model. <strong>Prototype, synthetic data only.</strong> The guard detects and blocks; it does not de-identify, and that is not a compliance claim.</li>
-                        <li><strong>Clinical Information Workflow Engine</strong> &mdash; drafts CE-style articles and simulation scenarios in the structure nurse educators work in. Everything it produces is a draft for a human reviewer. Not an accreditation claim and not peer review.</li>
-                        <li><strong>Alerter</strong> &mdash; <strong>concept stage</strong>, a design for ordering alerts by acuity context rather than firing them all at one weight. Nothing is built. The constraint that it may never withhold an alert from the clinician is the part worth stating.</li>
-                    </ul>
-                    <div class="app-card-footer">
-                        <div>
-                            <span class="tech-badge">React</span>
-                            <span class="tech-badge">TypeScript</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Clinical Article Library -->
-                <div class="app-card">
-                    <div class="app-number">EDUCATION &middot; LIVE &middot; OPEN ACCESS</div>
-                    <h3 class="app-title">Clinical Article Library</h3>
-                    <p class="app-subtitle">Open-Source Nursing Education</p>
-                    <div class="app-problem">
-                        <span class="app-problem-label">Education Problem</span>
+<details class="project-details"><summary>Architecture & capabilities <span aria-hidden="true">+</span></summary><ul class="app-features">
+<li><strong>UnitScheduler Pro</strong>, reads historical schedules and surfaces the coverage pattern a static grid hides. <strong>Advisory only: a coverage suggestion is a draft for the charge nurse and never an assignment.</strong> Whether it changes an outcome is unmeasured.</li>
+<li><strong>Emergent Media Manager</strong>: an outside EKG on paper, a CD of imaging, a scanned discharge summary: all carry clinical meaning, none of it queryable. Turns those into structured records, local-first, with an egress guard that blocks identifier patterns from reaching a cloud model. <strong>Prototype, synthetic data only.</strong> The guard detects and blocks; it does not de-identify, and that is not a compliance claim.</li>
+<li><strong>Clinical Information Workflow Engine</strong>, drafts CE-style articles and simulation scenarios in the structure nurse educators work in. Everything it produces is a draft for a human reviewer. Not an accreditation claim and not peer review.</li>
+<li><strong>Alerter</strong>, <strong>concept stage</strong>, a design for ordering alerts by acuity context rather than firing them all at one weight. Nothing is built. The constraint that it may never withhold an alert from the clinician is the part worth stating.</li>
+</ul></details>
+<div class="app-card-footer">
+<div>
+<span class="tech-badge">React</span>
+<span class="tech-badge">TypeScript</span>
+</div>
+</div>
+</div>
+<!-- Clinical Article Library -->
+<div class="app-card">
+<div class="app-number">EDUCATION · LIVE · OPEN ACCESS</div>
+<h3 class="app-title">Clinical Article Library</h3>
+<p class="app-subtitle">Open-Source Nursing Education</p>
+<div class="app-problem">
+<span class="app-problem-label">Education Problem</span>
                         Bedside-relevant continuing education is often paywalled, generic, or disconnected from the clinical realities nurses face during a shift.
                     </div>
-                    <p class="app-description">
-                        A growing library of clinical articles written from bedside experience — emergency medicine, critical care, pharmacology, clinical reasoning. ANCC-aligned style, evidence-cited, open access.
+<p class="app-description">
+                        A growing library of clinical articles written from bedside experience: emergency medicine, critical care, pharmacology, clinical reasoning. ANCC-aligned style, evidence-cited, open access.
                     </p>
-                    <ul class="app-features">
-                        <li>Self-published clinical articles, added to as they are written</li>
-                        <li>Emergency medicine, critical care, pharmacology</li>
-                        <li>Evidence-cited with literature references</li>
-                        <li>ANCC-aligned content style</li>
-                        <li>Static-site build (Astro), live and open-access</li>
-                    </ul>
-                    <div class="app-card-footer">
-                        <div>
-                            <span class="tech-badge">Astro</span>
-                            <span class="tech-badge">Markdown</span>
-                            <span class="tech-badge">Open Access</span>
-                        </div>
-                        <a href="https://erinfo.netlify.app" class="launch-btn" target="_blank" rel="noopener noreferrer" style="text-decoration: none; cursor: pointer;">READ THE ARTICLES →</a>
-                    </div>
-                </div>
-
-            </div>
-        </section>
-
-        <!-- JOURNEY -->
-        <section class="section">
-            <div class="section-header">
-                <span class="section-number">03</span>
-                <h2 class="section-title">Background</h2>
-                <div class="section-divider"></div>
-            </div>
-
-            <div class="timeline">
-                <div class="timeline-item">
-                    <div class="timeline-dot"></div>
-                    <div class="timeline-label">2007 – PRESENT</div>
-                    <h3 class="timeline-title">19 Years of Clinical Requirements Gathering</h3>
-                    <p class="timeline-description">
+<details class="project-details"><summary>Architecture & capabilities <span aria-hidden="true">+</span></summary><ul class="app-features">
+<li>Self-published clinical articles, added to as they are written</li>
+<li>Emergency medicine, critical care, pharmacology</li>
+<li>Evidence-cited with literature references</li>
+<li>ANCC-aligned content style</li>
+<li>Static-site build (Astro), live and open-access</li>
+</ul></details>
+<div class="app-card-footer">
+<div>
+<span class="tech-badge">Astro</span>
+<span class="tech-badge">Markdown</span>
+<span class="tech-badge">Open Access</span>
+</div>
+<a href="https://erinfo.netlify.app" class="launch-btn" target="_blank" rel="noopener noreferrer" style="text-decoration: none; cursor: pointer;">READ THE ARTICLES →</a>
+</div>
+</div>
+</div>
+</section>
+<!-- JOURNEY -->
+<section class="section" id="background">
+<div class="section-header">
+<span class="section-number">03</span>
+<h2 class="section-title">Background</h2>
+<div class="section-divider"></div>
+</div>
+<div class="timeline">
+<div class="timeline-item">
+<div class="timeline-dot"></div>
+<div class="timeline-label">2007 – PRESENT</div>
+<h3 class="timeline-title">19 Years of Clinical Requirements Gathering</h3>
+<p class="timeline-description">
                         Emergency Department Supervisor and Clinical Educator at Duke Lifepoint – Conemaugh Health System,
                         a <span class="highlight">Level 1 Trauma Center</span>.
                         CEN-certified. Clinical Driver on the 2016 facility-wide Epic implementation, ASAP super user and super trainer, and the ER nursing liaison to Epic since before go-live.
-                        <br><br>
+                        <br/><br/>
                         What looks like a clinical career is also 19 years of systematic observation:
                         where workflows fail, where cognitive load peaks, where technology creates friction instead of reducing it.
                         Every tool I build is a direct response to something I've watched break in real time.
                     </p>
-                </div>
-
-                <div class="timeline-item">
-                    <div class="timeline-dot"></div>
-                    <div class="timeline-label">2025</div>
-                    <h3 class="timeline-title">From Workflow Design to AI Implementation</h3>
-                    <p class="timeline-description">
+</div>
+<div class="timeline-item">
+<div class="timeline-dot"></div>
+<div class="timeline-label">2025</div>
+<h3 class="timeline-title">From Workflow Design to AI Implementation</h3>
+<p class="timeline-description">
                         Founded <span class="highlight">Trimergent Tech LLC</span> and started building the workflow knowledge into software instead of describing it.
-                        What came out of that year was a set of working prototypes rather than shipped products — clinical decision support,
+                        What came out of that year was a set of working prototypes rather than shipped products: clinical decision support,
                         patient simulation, scheduling, alerting and education tooling, sharing one architecture and a local-first data
                         posture. The disclosure note above says which is which.
-                        <br><br>
+                        <br/><br/>
                         The design decisions behind the tools —
                         the acuity-adaptive interfaces, the scope-of-practice guardrails, the physiological accuracy —
                         come from clinical domain knowledge that can't be searched or prompted into existence.
                     </p>
-                </div>
-
-                <div class="timeline-item">
-                    <div class="timeline-dot"></div>
-                    <div class="timeline-label">2026</div>
-                    <h3 class="timeline-title">From a Single Engine to a Product Line</h3>
-                    <p class="timeline-description">
+</div>
+<div class="timeline-item">
+<div class="timeline-dot"></div>
+<div class="timeline-label">2026</div>
+<h3 class="timeline-title">From a Single Engine to a Product Line</h3>
+<p class="timeline-description">
                         The engine grew into a <span class="highlight">product line</span> in 2026.
                         A simulator for educators and researchers runs on top of it.
                         A Core ML surrogate of the engine, compiled for on-device iOS inference, sits at the core of the Kymora consumer app.
-                        <br><br>
+                        <br/><br/>
                         Patent pending.
-                        <br><br>
+                        <br/><br/>
                         Looking for clinical evaluation and solutions-architecture work —
                         companies building tools for clinicians who need someone at the table
                         who has actually used and lived inside the systems they're replacing.
                     </p>
-                </div>
-            </div>
-        </section>
+</div>
+</div>
+</section>
+<!-- TECHNICAL PROFILE -->
+<section class="section" id="technical-profile">
+<div class="section-header">
+<span class="section-number">04</span>
+<h2 class="section-title">Technical Profile</h2>
+<div class="section-divider"></div>
+</div>
+<div class="contact-grid">
+<div class="contact-card">
+<div class="contact-title">Design Philosophy</div>
+<p class="contact-value">Start from the clinical problem, not the technology. Design for the person who is already at capacity, and treat anything that adds a step as a cost that has to be earned.</p>
+</div>
+<div class="contact-card">
+<div class="contact-title">AI & Safety</div>
+<p class="contact-value">Multi-Model AI · Human-in-the-Loop Validation · RAG for Protocol Adherence · Multi-Model Verification</p>
+</div>
+<div class="contact-card">
+<div class="contact-title">Clinical Domain</div>
+<p class="contact-value">Emergency Medicine · Critical Care · Clinical Education · Epic ASAP · Trauma · Scope-of-Practice Frameworks</p>
+</div>
+<div class="contact-card">
+<div class="contact-title">Backend — what these are built with</div>
+<p class="contact-value">Python · PyTorch · asyncio · CUDA · WebSocket · Docker</p>
+</div>
+<div class="contact-card">
+<div class="contact-title">Frontend — what these are built with</div>
+<p class="contact-value">React 19 · TypeScript · Vite · Tailwind · XState · Canvas/WebGL</p>
+</div>
+<div class="contact-card" style="grid-column:1/-1; border-left-color:var(--accent-green);">
+<div class="contact-title">How to read those two cards</div>
+<p class="contact-value" style="font-family:'Work Sans',sans-serif; letter-spacing:0; text-transform:none; line-height:1.6;">Those are the stacks these applications run on, not a claim that I write in them. I architect the systems, specify the behavior, direct the AI sessions that implement it, and own whether the output is correct, clinically and structurally. That last part is the actual job and it's what the engineering write-ups are about. I'd rather say this plainly than let a stack list imply something it shouldn't.</p>
+</div>
+<div class="contact-card">
+<div class="contact-title">Regulatory Literacy</div>
+<p class="contact-value">HIPAA de-identification standards (Safe Harbor / Expert Determination) · local-first data handling · FHIR/DICOM · CE content standards · knows where the device line sits</p>
+</div>
+</div>
+</section>
+<!-- CONNECT -->
+<section class="section" id="connect">
+<div class="section-header">
+<span class="section-number">05</span>
+<h2 class="section-title">Connect</h2>
+<div class="section-divider"></div>
+</div>
+<div class="contact-grid">
+<div class="contact-card">
+<div class="contact-title">Location</div>
+<p class="contact-value">Pennsylvania, US<br/>Open to Remote Opportunities</p>
+</div>
+<div class="contact-card">
+<div class="contact-title">LinkedIn</div>
+<p class="contact-value"><a href="https://www.linkedin.com/in/michael-giardina" target="_blank" rel="noopener noreferrer">linkedin.com/in/michael-giardina</a></p>
+</div>
+<div class="contact-card">
+<div class="contact-title">GitHub</div>
+<p class="contact-value"><a href="https://github.com/mikejgiardina" target="_blank" rel="noopener noreferrer">github.com/mikejgiardina</a></p>
+</div>
+<div class="contact-card">
+<div class="contact-title">Email</div>
+<p class="contact-value"><a href="mailto:mikejgiardina@gmail.com">mikejgiardina@gmail.com</a></p>
+</div>
+</div>
+</section>
+</div>
+<footer>
+<p>© 2026 Michael Giardina, BSN, RN, CEN  ·  Trimergent Tech LLC</p>
+<p style="margin-top: 0.5rem; opacity: 0.6;">By Clinicians. For Clinicians. From the Bedside to the Codebase.</p>
+<p class="footer-navigation"><a href="./">Portfolio</a> · <a href="./case-studies/">Case studies</a> · <a href="./#connect">Get in touch</a></p></footer>
+<script data-pplx-inline-edit>
+(function () {
+  if (window === window.top) return;
 
-        <!-- TECHNICAL PROFILE -->
-        <section class="section">
-            <div class="section-header">
-                <span class="section-number">04</span>
-                <h2 class="section-title">Technical Profile</h2>
-                <div class="section-divider"></div>
-            </div>
+  const allowedParentOrigins = ["https://www.perplexity.ai","https://perplexity.ai","https://testing.perplexity.ai","https://staging.perplexity.ai","https://*.preview.i.perplexity.ai","http://perplexity.localhost","http://localhost:1420","http://127.0.0.1:1420","http://localhost:3000","http://127.0.0.1:3000","http://localhost:5173","http://127.0.0.1:5173"];
+  const MAX_FONT_BYTES = 500 * 1024;
+  const MAX_TOTAL_FONT_BYTES = 2 * 1024 * 1024;
+  let scrollForwarding = false;
+  let scrollRaf = 0;
+  let trustedTopOrigin = null;
 
-            <div class="contact-grid">
-                <div class="contact-card">
-                    <div class="contact-title">Design Philosophy</div>
-                    <p class="contact-value">Start from the clinical problem, not the technology. Design for the person who is already at capacity, and treat anything that adds a step as a cost that has to be earned.</p>
-                </div>
-                <div class="contact-card">
-                    <div class="contact-title">AI & Safety</div>
-                    <p class="contact-value">Multi-Model AI · Human-in-the-Loop Validation · RAG for Protocol Adherence · Multi-Model Verification</p>
-                </div>
-                <div class="contact-card">
-                    <div class="contact-title">Clinical Domain</div>
-                    <p class="contact-value">Emergency Medicine · Critical Care · Clinical Education · Epic ASAP · Trauma · Scope-of-Practice Frameworks</p>
-                </div>
-                <div class="contact-card">
-                    <div class="contact-title">Backend — what these are built with</div>
-                    <p class="contact-value">Python · PyTorch · asyncio · CUDA · WebSocket · Docker</p>
-                </div>
-                <div class="contact-card">
-                    <div class="contact-title">Frontend — what these are built with</div>
-                    <p class="contact-value">React 19 · TypeScript · Vite · Tailwind · XState · Canvas/WebGL</p>
-                </div>
-                <div class="contact-card" style="grid-column:1/-1; border-left-color:var(--accent-green);">
-                    <div class="contact-title">How to read those two cards</div>
-                    <p class="contact-value" style="font-family:'Work Sans',sans-serif; letter-spacing:0; text-transform:none; line-height:1.6;">Those are the stacks these applications run on, not a claim that I write in them. I architect the systems, specify the behavior, direct the AI sessions that implement it, and own whether the output is correct, clinically and structurally. That last part is the actual job and it's what the engineering write-ups are about. I'd rather say this plainly than let a stack list imply something it shouldn't.</p>
-                </div>
-                <div class="contact-card">
-                    <div class="contact-title">Regulatory Literacy</div>
-                    <p class="contact-value">HIPAA de-identification standards (Safe Harbor / Expert Determination) · local-first data handling · FHIR/DICOM · CE content standards · knows where the device line sits</p>
-                </div>
-            </div>
-        </section>
+  // Allow entries like "https://*.preview.i.perplexity.ai" — the wildcard
+  // matches a single DNS label (no dots), so "https://*.foo" cannot stretch
+  // across multiple labels.
+  function matchesAllowedOrigin(origin) {
+    if (!origin) return false;
+    for (const entry of allowedParentOrigins) {
+      if (!entry.includes("*")) {
+        if (entry === origin) return true;
+        continue;
+      }
+      const pattern = new RegExp(
+        "^" +
+          entry.replace(/[.+?^${}()|[\]\\]/g, "\\$&").replace(/\*/g, "[^.]+") +
+          "$",
+      );
+      if (pattern.test(origin)) return true;
+    }
+    return false;
+  }
 
-        <!-- CONNECT -->
-        <section class="section">
-            <div class="section-header">
-                <span class="section-number">05</span>
-                <h2 class="section-title">Connect</h2>
-                <div class="section-divider"></div>
-            </div>
+  // Trust decision: when the sender is same-origin-visible (event.origin is a
+  // real origin like https://www.perplexity.ai) we trust event.origin directly.
+  // When event.origin is "null" (opaque broker srcdoc), we fall back to the
+  // broker's stamped `parentOrigin` to identify the top window. The fallback
+  // is claim-only — we rely on the browser's native `targetOrigin` enforcement
+  // on the response path (see postToTrustedTop) to ensure replies can't be
+  // delivered to anyone but the actual top window of that claimed origin.
+  function getTrustedParentOrigin(event) {
+    const forwardedParentOrigin =
+      typeof event.data.parentOrigin === "string" ? event.data.parentOrigin: null;
+    const parentOrigin = event.origin === "null" ? forwardedParentOrigin: event.origin;
+    return matchesAllowedOrigin(parentOrigin) ? parentOrigin: null;
+  }
 
-            <div class="contact-grid">
-                <div class="contact-card">
-                    <div class="contact-title">Location</div>
-                    <p class="contact-value">Pennsylvania, US<br>Open to Remote Opportunities</p>
-                </div>
-                <div class="contact-card">
-                    <div class="contact-title">LinkedIn</div>
-                    <p class="contact-value"><a href="https://www.linkedin.com/in/michael-giardina">linkedin.com/in/michael-giardina</a></p>
-                </div>
-                <div class="contact-card">
-                    <div class="contact-title">GitHub</div>
-                    <p class="contact-value"><a href="https://github.com/mikejgiardina" target="_blank" rel="noopener noreferrer">github.com/mikejgiardina</a></p>
-                </div>
-                <div class="contact-card">
-                    <div class="contact-title">Email</div>
-                    <p class="contact-value"><a href="mailto:mikejgiardina@gmail.com">mikejgiardina@gmail.com</a></p>
-                </div>
-            </div>
-        </section>
-    </div>
+  // All responses go to window.top with targetOrigin = the allowlisted origin.
+  // An attacker that iframes us inside their own null-origin broker can claim
+  // any parentOrigin they like, but the browser will drop the reply whenever
+  // the real top's origin doesn't match — so the screenshot never leaves.
+  function postToTrustedTop(message) {
+    if (!trustedTopOrigin) return;
+    try {
+      window.top.postMessage(message, trustedTopOrigin);
+    } catch (_error) {}
+  }
 
-    <footer>
-        <p>&copy; 2026 Michael Giardina, BSN, RN, CEN &nbsp;&middot;&nbsp; Trimergent Tech LLC</p>
-        <p style="margin-top: 0.5rem; opacity: 0.6;">By Clinicians. For Clinicians. From the Bedside to the Codebase.</p>
-    </footer>
+  function inlineAll(original, clone) {
+    if (original.nodeType !== 1 || clone.nodeType !== 1) return;
 
-</body>
+    try {
+      const computedStyle = getComputedStyle(original);
+      // cssText on a computed style is the serialized declaration in modern
+      // Chromium/Safari — a single read beats enumerating ~400 longhand
+      // properties. Firefox returns "" here, so we fall back on empty.
+      const serialized = computedStyle.cssText;
+      if (serialized) {
+        clone.style.cssText = serialized;
+      } else {
+        const parts = new Array(computedStyle.length);
+        for (let index = 0; index < computedStyle.length; index += 1) {
+          const property = computedStyle[index];
+          parts[index] = `${property}:${computedStyle.getPropertyValue(property)};`;
+        }
+        clone.style.cssText = parts.join("");
+      }
+    } catch (_error) {}
+
+    const originalChildren = original.children;
+    const clonedChildren = clone.children;
+    for (
+      let index = 0;
+      index < originalChildren.length && index < clonedChildren.length;
+      index += 1
+    ) {
+      inlineAll(originalChildren[index], clonedChildren[index]);
+    }
+  }
+
+  function extractFontUrl(srcValue) {
+    const matches = [
+      ...srcValue.matchAll(
+        /url\(["']?([^"')]+)["']?\)(?:\s*format\(["']?([^"')]+)["']?\))?/gi,
+      ),
+    ];
+    if (matches.length === 0) return null;
+    const woff2 = matches.find((m) => m[2] && m[2].toLowerCase().includes("woff2"));
+    if (woff2) return woff2[1];
+    const woff = matches.find((m) => m[2] && m[2].toLowerCase().includes("woff"));
+    if (woff) return woff[1];
+    return matches[0][1];
+  }
+
+  // Cache resolved font URL -> data URI across captures. Fonts on a page
+  // essentially never change, and a batch run emits multiple captures back to
+  // back — without this we'd refetch + re-base64 every time.
+  const fontDataUriCache = new Map();
+  const SRC_DECLARATION_RE = /src\s*:\s*[^;}]+/i;
+
+  async function fetchAsDataUri(url) {
+    if (fontDataUriCache.has(url)) return fontDataUriCache.get(url);
+    let dataUri = null;
+    try {
+      const response = await fetch(url, { mode: "cors", credentials: "omit" });
+      if (response.ok) {
+        const blob = await response.blob();
+        if (blob.size <= MAX_FONT_BYTES) {
+          dataUri = await new Promise((resolve) => {
+            const reader = new FileReader();
+            reader.onloadend = () =>
+              resolve(typeof reader.result === "string" ? reader.result: null);
+            reader.onerror = () => resolve(null);
+            reader.readAsDataURL(blob);
+          });
+        }
+      }
+    } catch (_error) {
+      dataUri = null;
+    }
+    fontDataUriCache.set(url, dataUri);
+    return dataUri;
+  }
+
+  function collectFontFaceRuleTexts() {
+    const rules = [];
+    for (const sheet of document.styleSheets) {
+      let cssRules;
+      try {
+        cssRules = sheet.cssRules;
+      } catch (_error) {
+        continue;
+      }
+      if (!cssRules) continue;
+      for (const rule of cssRules) {
+        const cssText = rule.cssText || "";
+        if (cssText.startsWith("@font-face")) rules.push(cssText);
+      }
+    }
+    return rules;
+  }
+
+  async function buildInlinedFontCss() {
+    const ruleTexts = collectFontFaceRuleTexts();
+    if (ruleTexts.length === 0) return null;
+
+    const resolved = ruleTexts.map((cssText) => {
+      if (!SRC_DECLARATION_RE.test(cssText)) return null;
+      const srcMatch = cssText.match(/src\s*:\s*([^;}]+)[;}]/i);
+      if (!srcMatch) return null;
+      const url = extractFontUrl(srcMatch[1]);
+      if (!url) return null;
+      try {
+        return { cssText, url: new URL(url, document.baseURI).href };
+      } catch (_error) {
+        return null;
+      }
+    });
+
+    const dataUris = await Promise.all(
+      resolved.map((entry) => (entry ? fetchAsDataUri(entry.url): Promise.resolve(null))),
+    );
+
+    const inlined = [];
+    let totalBytes = 0;
+    for (let index = 0; index < resolved.length; index += 1) {
+      const entry = resolved[index];
+      const dataUri = dataUris[index];
+      if (!entry || !dataUri) continue;
+      const approxBytes = dataUri.length * 0.75;
+      if (totalBytes + approxBytes > MAX_TOTAL_FONT_BYTES) break;
+      totalBytes += approxBytes;
+      inlined.push(entry.cssText.replace(SRC_DECLARATION_RE, `src: url("${dataUri}")`));
+    }
+    return inlined.length > 0 ? inlined.join("\n"): null;
+  }
+
+  function stripExternal(clone) {
+    const images = clone.querySelectorAll("img");
+    for (let index = 0; index < images.length; index += 1) {
+      const src = images[index].getAttribute("src");
+      if (src && !src.startsWith("data:")) images[index].removeAttribute("src");
+    }
+
+    const elements = clone.querySelectorAll("*");
+    for (let index = 0; index < elements.length; index += 1) {
+      const style = elements[index].style.cssText;
+      if (style && style.includes("url(")) {
+        elements[index].style.cssText = style.replace(
+          /url\(["']?(?!data:)[^)"']*["']?\)/gi,
+          "none",
+        );
+      }
+    }
+  }
+
+  function emitScroll() {
+    scrollRaf = 0;
+    if (!scrollForwarding) return;
+    postToTrustedTop({
+      type: "INLINE_EDIT_SCROLL",
+      scrollX: window.scrollX,
+      scrollY: window.scrollY,
+    });
+  }
+
+  window.addEventListener(
+    "scroll",
+    function () {
+      if (!scrollForwarding || scrollRaf) return;
+      scrollRaf = requestAnimationFrame(emitScroll);
+    },
+    { passive: true, capture: true },
+  );
+
+  async function handleCaptureRequest(event) {
+    const requestId = event.data.requestId;
+    const scrollX = window.scrollX;
+    const scrollY = window.scrollY;
+    const width = window.innerWidth;
+    const height = window.innerHeight;
+
+    function postResult(dataUrl) {
+      postToTrustedTop({
+        type: "INLINE_EDIT_SCREENSHOT_RESULT",
+        requestId,
+        dataUrl,
+        scrollX,
+        scrollY,
+      });
+    }
+
+    try {
+      // Wait for any pending web fonts to resolve so both inline metrics and
+      // the @font-face inlining below see the same loaded faces.
+      if (document.fonts && document.fonts.ready) {
+        try {
+          await document.fonts.ready;
+        } catch (_error) {}
+      }
+
+      const clone = document.documentElement.cloneNode(true);
+      inlineAll(document.documentElement, clone);
+
+      const removedNodes = clone.querySelectorAll("script,link[rel=\"stylesheet\"],style");
+      for (let index = 0; index < removedNodes.length; index += 1) {
+        removedNodes[index].remove();
+      }
+
+      stripExternal(clone);
+
+      // Re-embed web fonts as data-URI @font-face rules so the SVG rasterizer
+      // can resolve them — external font URLs aren't fetched during
+      // foreignObject rendering, which would otherwise force a fallback face
+      // and change text metrics.
+      const inlinedFontCss = await buildInlinedFontCss();
+      if (inlinedFontCss) {
+        const styleEl = document.createElement("style");
+        styleEl.textContent = inlinedFontCss;
+        const head = clone.querySelector("head");
+        if (head) head.appendChild(styleEl);
+        else clone.insertBefore(styleEl, clone.firstChild);
+      }
+
+      const html = new XMLSerializer().serializeToString(clone);
+      const svg =
+        `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}">` +
+        '<foreignObject width="100%" height="100%">' +
+        `<div xmlns="http://www.w3.org/1999/xhtml" style="width:${width}px;height:${height}px;overflow:hidden">` +
+        `<div style="position:relative;left:-${scrollX}px;top:-${scrollY}px">` +
+        html +
+        "</div></div></foreignObject></svg>";
+      const svgUrl = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
+      const image = new Image();
+      image.onload = function () {
+        const canvas = document.createElement("canvas");
+        canvas.width = width;
+        canvas.height = height;
+        canvas.getContext("2d").drawImage(image, 0, 0);
+        postResult(canvas.toDataURL("image/png"));
+      };
+      image.onerror = function () {
+        postResult(null);
+      };
+      image.src = svgUrl;
+    } catch (_error) {
+      postResult(null);
+    }
+  }
+
+  window.addEventListener("message", function (event) {
+    if (!event.data) return;
+    // Only accept messages from the direct parent frame. Blocks sibling /
+    // unrelated-window postMessage senders that could otherwise reach us.
+    if (event.source !== window.parent) return;
+
+    const trustedParentOrigin = getTrustedParentOrigin(event);
+    if (!trustedParentOrigin) return;
+    trustedTopOrigin = trustedParentOrigin;
+
+    if (event.data.type === "INLINE_EDIT_SCROLL_START") {
+      scrollForwarding = true;
+      emitScroll();
+      return;
+    }
+
+    if (event.data.type === "INLINE_EDIT_SCROLL_STOP") {
+      scrollForwarding = false;
+      if (scrollRaf) cancelAnimationFrame(scrollRaf);
+      scrollRaf = 0;
+      return;
+    }
+
+    if (event.data.type !== "INLINE_EDIT_CAPTURE_REQUEST") return;
+
+    handleCaptureRequest(event);
+  });
+})();
+
+
+</script></body>
 </html>
