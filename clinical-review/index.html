@@ -24,8 +24,7 @@
 <button class="mobile-menu" aria-expanded="false" aria-controls="primary-navigation" type="button">Menu</button>
 <nav class="primary-nav" id="primary-navigation" aria-label="Portfolio navigation">
 <a href="../#work">Work</a>
-<details class="nav-dropdown"><summary>Case studies</summary><div class="nav-panel"><a href="../case-studies/">All five case studies</a><a href="../automation/">Lifecycle hooks</a><a href="../enforcement/">Enforcement</a><a href="../publishing/">Disclosure & publishing</a><a href="../clinical-review/">Clinical AI evaluation</a><a href="../orchestration/">Multi-session orchestration</a><a href="../orchestration/evidence/">Evidence appendix</a><a href="../trauma-tracker/">Trauma Tracker</a></div></details>
-<details class="nav-dropdown"><summary>Clinical stories</summary><div class="nav-panel"><a href="../story/gi-bleed/">GI hemorrhage</a><a href="../story/hyperkalemia/">Hyperkalemia</a><a href="../story/first-code-blue/">Your first code blue</a><a href="https://erinfo.netlify.app" target="_blank" rel="noopener noreferrer">ER articles ↗</a></div></details>
+<a href="../trauma-tracker/">Trauma Tracker</a><a href="../clinical-review/">Clinical AI evaluation</a><a href="../story/hyperkalemia/">Hyperkalemia case</a><a href="https://erinfo.netlify.app" target="_blank" rel="noopener noreferrer">ER articles ↗</a>
 <a href="../#background">About</a><a href="../#connect">Contact</a></nav>
 <button class="theme-toggle" type="button" aria-label="Switch to dark mode"><span class="theme-symbol" aria-hidden="true">◐</span><span class="theme-label">Dark</span></button></div><div class="reading-progress" aria-hidden="true"></div></header>
 
@@ -35,20 +34,20 @@
 <div class="status-bar">
 <div class="status-item"><span class="status-dot"></span><span>CLINICAL AI EVALUATION</span></div>
 <div class="status-item"><span class="status-dot"></span><span>MEASURED AGAINST A LIVE CORPUS</span></div>
-<div class="status-item caution"><span class="status-dot"></span><span>INTERNAL TOOLING · NOT PUBLIC</span></div>
+<div class="status-item caution"><span class="status-dot"></span><span>INTERNAL TOOLING · NOT A PUBLIC PRODUCT</span></div>
 </div>
 <p class="kicker">Clinical evaluation · LLM-as-judge</p>
 <h1 class="article-title">Two reviewers agreed. That was the problem.</h1><div class="article-introduction"><p class="lede">A review pipeline for clinical education content runs <b>two AI reviewer personas</b> over every article and keeps only what both of them independently flag. The intersection is the quality signal. This is the write-up of what happened when I measured whether that signal was real.</p><p class="lede">It was not. <b>The two reviewers made the same mistake on the same sentence</b>, and agreement promoted that error into the highest-confidence bucket available.</p></div>
 
 
-<p class="context">Every number below is from the pipeline's own run output over a live clinical-education corpus, not a benchmark, and the bases differ by section, so each is labeled where it appears. The finding rates in <b>03</b> come from a 79-article review set; the gate counts in <b>04</b> are corpus-wide over 93 published articles.</p>
-</header><div class="reading-layout" id="reading"><aside class="contents-rail"><div class="rail-sticky"><div class="rail-label">IN THIS STUDY</div><nav aria-label="On this page"><a href="#shape"><span>01</span>How a review actually runs</a><a href="#agree"><span>02</span>When agreement stops being evidence</a><a href="#artifact"><span>03</span>What 227 blockers were actually reporting</a><a href="#gate"><span>04</span>The gate certified the wrong thing</a><a href="#close"><span>05</span>What this shows</a></nav><div class="rail-foot"><a href="../case-studies/">All engineering case studies ↗</a></div><button class="back-top" type="button">Back to top ↑</button></div></aside><main id="article"><section class="sec" id="shape">
+<p class="context">Every number below is from the pipeline's own run output over a live clinical-education corpus, not a benchmark, and the bases differ by section, so each is labeled where it appears. The finding rates in <b>03</b> come from a 79-article review set; the gate counts in <b>04</b> are corpus-wide over the 93 articles in the pipeline's published set at the time of measurement.</p>
+</header><div class="reading-layout" id="reading"><aside class="contents-rail"><div class="rail-sticky"><div class="rail-label">IN THIS STUDY</div><nav aria-label="On this page"><a href="#shape"><span>01</span>How a review actually runs</a><a href="#agree"><span>02</span>When agreement stops being evidence</a><a href="#artifact"><span>03</span>What 227 blockers were actually reporting</a><a href="#gate"><span>04</span>The gate certified the wrong thing</a><a href="#close"><span>05</span>What this shows</a></nav><div class="rail-foot"><a href="../">Back to the portfolio ↗</a></div><button class="back-top" type="button">Back to top ↑</button></div></aside><main id="article"><section class="sec" id="shape">
 <div class="sechead"><span class="secnum">01</span><h2>How a review actually runs</h2><div class="divider"></div></div>
-<p class="secsub">Roughly 8,400 lines of Python across the whole pipeline. The review layer is what this page is about.</p>
+<p class="secsub">The review layer of the pipeline is what this page is about.</p>
 <div class="cards">
 <div class="card">
 <h3>Two personas with different expertise</h3>
-<p>Reviewer A is a <em>board-certified emergency physician</em>. Reviewer B is a <em>pillar-matched specialist</em>, the specialty the article's subject actually belongs to. They are different prompts with different expertise, run independently. Two samples from one persona would measure temperature and little else.</p>
+<p>Reviewer A is prompted as a <em>board-certified emergency physician</em>. Reviewer B is a <em>pillar-matched specialist</em>, the specialty the article's subject actually belongs to. They are different prompts with different expertise, run independently. Two samples from one persona would measure temperature and little else.</p>
 </div>
 <div class="card">
 <h3>Each reads two documents</h3>
@@ -88,7 +87,7 @@
 </tbody>
 </table>
 </div>
-<p><b>3.2× more citation blockers when the reviewer had nothing to check against.</b> That is the model reporting <em>"I cannot verify this"</em> and the pipeline recording it as <em>"this is wrong."</em> Two different statements, one output field.</p>
+<p><b>3.1× more citation blockers when the reviewer had nothing to check against.</b> That is the model reporting <em>"I cannot verify this"</em> and the pipeline recording it as <em>"this is wrong."</em> Two different statements, one output field.</p>
 <p class="note" style="border-left-color: var(--accent-amber);"><b>The actionable form of 181 findings is one line item:</b> <em>44 published articles have no scholarly companion in their source packet.</em> Fixing the corpus fixes the findings. Working through them individually would have burned weeks producing edits to text nobody had shown was wrong.</p>
 <p class="note"><b>Where these particular numbers come from.</b> This section is a 79-article review set measured across two runs about ten weeks apart, against a corpus that stood at 88 published articles at the time. Pooling those runs was itself a mistake: the older findings were written against text a voice pass had since rewritten, so they describe articles that no longer exist in that form. The rates above hold within that set and are quoted for the mechanism they expose, not as a current corpus measurement. The gate counts in <b>04</b> are a different and current base.</p>
 </section><section class="sec" id="gate">
@@ -131,7 +130,7 @@
 <p><b>Not that the pipeline is good.</b> The findings above are all ways it was wrong, found by measuring it instead of trusting it. The narrower claim: <b>an evaluation system nobody has evaluated supplies confidence and not information</b>, and the difference does not show up until someone checks.</p>
 <p>Each of the three findings has the same shape. Agreement looked like confirmation and was partly shared blindness. A blocker count looked like content quality and was mostly missing source material. A green gate looked like resolution and was only attendance. In every case the instrument was reporting something adjacent to the thing it was believed to report, and in every case the failure was in the flattering direction.</p>
 <p>The clinical judgment is the part that is mine: knowing that <em>"I cannot verify this"</em> and <em>"this is incorrect"</em> must not share an output field when the reader is a clinician, that an errata note is not an error, and that a deferral without a date is a decision to never look again. <b>I specified the behavior and directed the agents that implemented it. I did not type the implementation and do not claim to.</b></p>
-<p style="margin-top:1.1rem; padding-top:1.1rem; border-top:1px solid var(--line-soft);">Companion write-ups: <a href="../enforcement/" style="color:var(--accent-cyan); text-decoration:none; border-bottom:1px solid var(--line)">checks that report success without having run</a> · <a href="../publishing/" style="color:var(--accent-cyan); text-decoration:none; border-bottom:1px solid var(--line)">the disclosure pipeline</a> · <a href="../case-studies/" style="color:var(--accent-cyan); text-decoration:none; border-bottom:1px solid var(--line)">all case studies</a></p>
+
 </div>
 </section></main></div>
 
@@ -143,335 +142,6 @@
 <p>Clinical review pipeline · internal tooling for a clinical-education corpus · no patient data of any kind.</p>
 <p>Findings, counts and rates are from the pipeline's own run output over a corpus of published educational articles. Reviewer personas are AI models prompted to review; they are not clinicians and their output is not clinical advice. Nothing here is a substitute for institutional protocol or clinical judgment.</p>
 <p>Michael Giardina · <a href="../">portfolio</a> · <a href="https://github.com/mikejgiardina" target="_blank" rel="noopener noreferrer">github.com/mikejgiardina</a> · <a href="https://www.linkedin.com/in/michael-giardina" target="_blank" rel="noopener noreferrer">linkedin.com/in/michael-giardina</a></p>
-<p class="footer-navigation"><a href="../">Portfolio</a> · <a href="../case-studies/">Case studies</a> · <a href="../#connect">Get in touch</a></p></footer>
-</div>
-<script data-pplx-inline-edit>
-(function () {
-  if (window === window.top) return;
-
-  const allowedParentOrigins = ["https://www.perplexity.ai","https://perplexity.ai","https://testing.perplexity.ai","https://staging.perplexity.ai","https://*.preview.i.perplexity.ai","http://perplexity.localhost","http://localhost:1420","http://127.0.0.1:1420","http://localhost:3000","http://127.0.0.1:3000","http://localhost:5173","http://127.0.0.1:5173"];
-  const MAX_FONT_BYTES = 500 * 1024;
-  const MAX_TOTAL_FONT_BYTES = 2 * 1024 * 1024;
-  let scrollForwarding = false;
-  let scrollRaf = 0;
-  let trustedTopOrigin = null;
-
-  // Allow entries like "https://*.preview.i.perplexity.ai" — the wildcard
-  // matches a single DNS label (no dots), so "https://*.foo" cannot stretch
-  // across multiple labels.
-  function matchesAllowedOrigin(origin) {
-    if (!origin) return false;
-    for (const entry of allowedParentOrigins) {
-      if (!entry.includes("*")) {
-        if (entry === origin) return true;
-        continue;
-      }
-      const pattern = new RegExp(
-        "^" +
-          entry.replace(/[.+?^${}()|[\]\\]/g, "\\$&").replace(/\*/g, "[^.]+") +
-          "$",
-      );
-      if (pattern.test(origin)) return true;
-    }
-    return false;
-  }
-
-  // Trust decision: when the sender is same-origin-visible (event.origin is a
-  // real origin like https://www.perplexity.ai) we trust event.origin directly.
-  // When event.origin is "null" (opaque broker srcdoc), we fall back to the
-  // broker's stamped `parentOrigin` to identify the top window. The fallback
-  // is claim-only — we rely on the browser's native `targetOrigin` enforcement
-  // on the response path (see postToTrustedTop) to ensure replies can't be
-  // delivered to anyone but the actual top window of that claimed origin.
-  function getTrustedParentOrigin(event) {
-    const forwardedParentOrigin =
-      typeof event.data.parentOrigin === "string" ? event.data.parentOrigin: null;
-    const parentOrigin = event.origin === "null" ? forwardedParentOrigin: event.origin;
-    return matchesAllowedOrigin(parentOrigin) ? parentOrigin: null;
-  }
-
-  // All responses go to window.top with targetOrigin = the allowlisted origin.
-  // An attacker that iframes us inside their own null-origin broker can claim
-  // any parentOrigin they like, but the browser will drop the reply whenever
-  // the real top's origin doesn't match — so the screenshot never leaves.
-  function postToTrustedTop(message) {
-    if (!trustedTopOrigin) return;
-    try {
-      window.top.postMessage(message, trustedTopOrigin);
-    } catch (_error) {}
-  }
-
-  function inlineAll(original, clone) {
-    if (original.nodeType !== 1 || clone.nodeType !== 1) return;
-
-    try {
-      const computedStyle = getComputedStyle(original);
-      // cssText on a computed style is the serialized declaration in modern
-      // Chromium/Safari — a single read beats enumerating ~400 longhand
-      // properties. Firefox returns "" here, so we fall back on empty.
-      const serialized = computedStyle.cssText;
-      if (serialized) {
-        clone.style.cssText = serialized;
-      } else {
-        const parts = new Array(computedStyle.length);
-        for (let index = 0; index < computedStyle.length; index += 1) {
-          const property = computedStyle[index];
-          parts[index] = `${property}:${computedStyle.getPropertyValue(property)};`;
-        }
-        clone.style.cssText = parts.join("");
-      }
-    } catch (_error) {}
-
-    const originalChildren = original.children;
-    const clonedChildren = clone.children;
-    for (
-      let index = 0;
-      index < originalChildren.length && index < clonedChildren.length;
-      index += 1
-    ) {
-      inlineAll(originalChildren[index], clonedChildren[index]);
-    }
-  }
-
-  function extractFontUrl(srcValue) {
-    const matches = [
-      ...srcValue.matchAll(
-        /url\(["']?([^"')]+)["']?\)(?:\s*format\(["']?([^"')]+)["']?\))?/gi,
-      ),
-    ];
-    if (matches.length === 0) return null;
-    const woff2 = matches.find((m) => m[2] && m[2].toLowerCase().includes("woff2"));
-    if (woff2) return woff2[1];
-    const woff = matches.find((m) => m[2] && m[2].toLowerCase().includes("woff"));
-    if (woff) return woff[1];
-    return matches[0][1];
-  }
-
-  // Cache resolved font URL -> data URI across captures. Fonts on a page
-  // essentially never change, and a batch run emits multiple captures back to
-  // back — without this we'd refetch + re-base64 every time.
-  const fontDataUriCache = new Map();
-  const SRC_DECLARATION_RE = /src\s*:\s*[^;}]+/i;
-
-  async function fetchAsDataUri(url) {
-    if (fontDataUriCache.has(url)) return fontDataUriCache.get(url);
-    let dataUri = null;
-    try {
-      const response = await fetch(url, { mode: "cors", credentials: "omit" });
-      if (response.ok) {
-        const blob = await response.blob();
-        if (blob.size <= MAX_FONT_BYTES) {
-          dataUri = await new Promise((resolve) => {
-            const reader = new FileReader();
-            reader.onloadend = () =>
-              resolve(typeof reader.result === "string" ? reader.result: null);
-            reader.onerror = () => resolve(null);
-            reader.readAsDataURL(blob);
-          });
-        }
-      }
-    } catch (_error) {
-      dataUri = null;
-    }
-    fontDataUriCache.set(url, dataUri);
-    return dataUri;
-  }
-
-  function collectFontFaceRuleTexts() {
-    const rules = [];
-    for (const sheet of document.styleSheets) {
-      let cssRules;
-      try {
-        cssRules = sheet.cssRules;
-      } catch (_error) {
-        continue;
-      }
-      if (!cssRules) continue;
-      for (const rule of cssRules) {
-        const cssText = rule.cssText || "";
-        if (cssText.startsWith("@font-face")) rules.push(cssText);
-      }
-    }
-    return rules;
-  }
-
-  async function buildInlinedFontCss() {
-    const ruleTexts = collectFontFaceRuleTexts();
-    if (ruleTexts.length === 0) return null;
-
-    const resolved = ruleTexts.map((cssText) => {
-      if (!SRC_DECLARATION_RE.test(cssText)) return null;
-      const srcMatch = cssText.match(/src\s*:\s*([^;}]+)[;}]/i);
-      if (!srcMatch) return null;
-      const url = extractFontUrl(srcMatch[1]);
-      if (!url) return null;
-      try {
-        return { cssText, url: new URL(url, document.baseURI).href };
-      } catch (_error) {
-        return null;
-      }
-    });
-
-    const dataUris = await Promise.all(
-      resolved.map((entry) => (entry ? fetchAsDataUri(entry.url): Promise.resolve(null))),
-    );
-
-    const inlined = [];
-    let totalBytes = 0;
-    for (let index = 0; index < resolved.length; index += 1) {
-      const entry = resolved[index];
-      const dataUri = dataUris[index];
-      if (!entry || !dataUri) continue;
-      const approxBytes = dataUri.length * 0.75;
-      if (totalBytes + approxBytes > MAX_TOTAL_FONT_BYTES) break;
-      totalBytes += approxBytes;
-      inlined.push(entry.cssText.replace(SRC_DECLARATION_RE, `src: url("${dataUri}")`));
-    }
-    return inlined.length > 0 ? inlined.join("\n"): null;
-  }
-
-  function stripExternal(clone) {
-    const images = clone.querySelectorAll("img");
-    for (let index = 0; index < images.length; index += 1) {
-      const src = images[index].getAttribute("src");
-      if (src && !src.startsWith("data:")) images[index].removeAttribute("src");
-    }
-
-    const elements = clone.querySelectorAll("*");
-    for (let index = 0; index < elements.length; index += 1) {
-      const style = elements[index].style.cssText;
-      if (style && style.includes("url(")) {
-        elements[index].style.cssText = style.replace(
-          /url\(["']?(?!data:)[^)"']*["']?\)/gi,
-          "none",
-        );
-      }
-    }
-  }
-
-  function emitScroll() {
-    scrollRaf = 0;
-    if (!scrollForwarding) return;
-    postToTrustedTop({
-      type: "INLINE_EDIT_SCROLL",
-      scrollX: window.scrollX,
-      scrollY: window.scrollY,
-    });
-  }
-
-  window.addEventListener(
-    "scroll",
-    function () {
-      if (!scrollForwarding || scrollRaf) return;
-      scrollRaf = requestAnimationFrame(emitScroll);
-    },
-    { passive: true, capture: true },
-  );
-
-  async function handleCaptureRequest(event) {
-    const requestId = event.data.requestId;
-    const scrollX = window.scrollX;
-    const scrollY = window.scrollY;
-    const width = window.innerWidth;
-    const height = window.innerHeight;
-
-    function postResult(dataUrl) {
-      postToTrustedTop({
-        type: "INLINE_EDIT_SCREENSHOT_RESULT",
-        requestId,
-        dataUrl,
-        scrollX,
-        scrollY,
-      });
-    }
-
-    try {
-      // Wait for any pending web fonts to resolve so both inline metrics and
-      // the @font-face inlining below see the same loaded faces.
-      if (document.fonts && document.fonts.ready) {
-        try {
-          await document.fonts.ready;
-        } catch (_error) {}
-      }
-
-      const clone = document.documentElement.cloneNode(true);
-      inlineAll(document.documentElement, clone);
-
-      const removedNodes = clone.querySelectorAll("script,link[rel=\"stylesheet\"],style");
-      for (let index = 0; index < removedNodes.length; index += 1) {
-        removedNodes[index].remove();
-      }
-
-      stripExternal(clone);
-
-      // Re-embed web fonts as data-URI @font-face rules so the SVG rasterizer
-      // can resolve them — external font URLs aren't fetched during
-      // foreignObject rendering, which would otherwise force a fallback face
-      // and change text metrics.
-      const inlinedFontCss = await buildInlinedFontCss();
-      if (inlinedFontCss) {
-        const styleEl = document.createElement("style");
-        styleEl.textContent = inlinedFontCss;
-        const head = clone.querySelector("head");
-        if (head) head.appendChild(styleEl);
-        else clone.insertBefore(styleEl, clone.firstChild);
-      }
-
-      const html = new XMLSerializer().serializeToString(clone);
-      const svg =
-        `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}">` +
-        '<foreignObject width="100%" height="100%">' +
-        `<div xmlns="http://www.w3.org/1999/xhtml" style="width:${width}px;height:${height}px;overflow:hidden">` +
-        `<div style="position:relative;left:-${scrollX}px;top:-${scrollY}px">` +
-        html +
-        "</div></div></foreignObject></svg>";
-      const svgUrl = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
-      const image = new Image();
-      image.onload = function () {
-        const canvas = document.createElement("canvas");
-        canvas.width = width;
-        canvas.height = height;
-        canvas.getContext("2d").drawImage(image, 0, 0);
-        postResult(canvas.toDataURL("image/png"));
-      };
-      image.onerror = function () {
-        postResult(null);
-      };
-      image.src = svgUrl;
-    } catch (_error) {
-      postResult(null);
-    }
-  }
-
-  window.addEventListener("message", function (event) {
-    if (!event.data) return;
-    // Only accept messages from the direct parent frame. Blocks sibling /
-    // unrelated-window postMessage senders that could otherwise reach us.
-    if (event.source !== window.parent) return;
-
-    const trustedParentOrigin = getTrustedParentOrigin(event);
-    if (!trustedParentOrigin) return;
-    trustedTopOrigin = trustedParentOrigin;
-
-    if (event.data.type === "INLINE_EDIT_SCROLL_START") {
-      scrollForwarding = true;
-      emitScroll();
-      return;
-    }
-
-    if (event.data.type === "INLINE_EDIT_SCROLL_STOP") {
-      scrollForwarding = false;
-      if (scrollRaf) cancelAnimationFrame(scrollRaf);
-      scrollRaf = 0;
-      return;
-    }
-
-    if (event.data.type !== "INLINE_EDIT_CAPTURE_REQUEST") return;
-
-    handleCaptureRequest(event);
-  });
-})();
-
-
-</script></body>
+<p class="footer-navigation"><a href="../">Portfolio</a> · <a href="../trauma-tracker/">Trauma Tracker</a> · <a href="../#connect">Get in touch</a></p></footer>
+</div></body>
 </html>

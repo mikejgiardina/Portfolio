@@ -1,0 +1,25 @@
+# Four-page cut, 2026-10-04. These pages were removed; links already sent out
+# (resumes, LinkedIn, applications) land on the homepage instead of a 404.
+/case-studies             /    301
+/case-studies/*           /    301
+/automation               /    301
+/automation/*             /    301
+/enforcement              /    301
+/enforcement/*            /    301
+/publishing               /    301
+/publishing/*             /    301
+/orchestration            /    301
+/orchestration/*          /    301
+/story/gi-bleed           /    301
+/story/gi-bleed/*         /    301
+/story/first-code-blue    /    301
+/story/first-code-blue/*  /    301
+/page2                    /    301
+/page2/*                  /    301
+
+# Internal files kept in the repo but not served (force rules shadow files that exist).
+/tools/*                  /    301!
+/DEPLOYING.md             /    301!
+/story/README.md          /    301!
+/story/PIPELINE.md        /    301!
+/story/_template.html     /    301!
