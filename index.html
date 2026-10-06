@@ -4,11 +4,11 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Mike Giardina — Clinical AI Evaluation & Solutions Architecture</title>
+<title>Mike Giardina — Clinical AI Prototypes & Evaluation</title>
 <meta name="description" content="Emergency nurse (BSN, RN, CEN): nineteen years in nursing, seventeen at a Level I trauma center. A real-time ED trauma documentation prototype, an evaluation of an AI review pipeline over a clinical corpus, and an interactive clinical case."/>
 <meta property="og:type" content="website"/>
 <meta property="og:url" content="https://mike-giardina.netlify.app/"/>
-<meta property="og:title" content="Michael Giardina — clinical AI evaluation and solutions architecture"/>
+<meta property="og:title" content="Michael Giardina — clinical AI prototypes and evaluation"/>
 <meta property="og:description" content="Emergency nurse building clinical AI prototypes: a real-time ED trauma documentation prototype, clinical AI evaluation, and an interactive clinical case."/>
 <meta property="og:image" content="https://mike-giardina.netlify.app/assets/og/home.png"/>
 <meta property="og:image:width" content="1200"/>
@@ -41,7 +41,7 @@
 <span>PA, US | OPEN TO REMOTE</span>
 </div>
 </div>
-<p class="kicker">THE PORTFOLIO / CLINICAL AI & SYSTEMS ARCHITECTURE</p><div class="portfolio-hero-grid"><div class="hero-name"><h1>Mike Giardina</h1><p class="subtitle">ED Supervisor  ·  Clinical Educator  ·  RN, BSN, CEN</p><p class="hero-thesis">From the bedside.<br/><span>To better systems.</span></p></div><aside class="experience"><div class="stamp-label">GROUNDED IN PRACTICE</div><div class="experience-years">19<span>years</span></div><p>in nursing, 17 at a Level I trauma center<br/>Emergency nursing & clinical education</p><div class="experience-rule"></div><p class="authorship">I specify the clinical behavior, AI coding tools write the code, and I check the output clinically.</p></aside></div>
+<p class="kicker">THE PORTFOLIO / CLINICAL AI PROTOTYPES & EVALUATION</p><div class="portfolio-hero-grid"><div class="hero-name"><h1>Mike Giardina</h1><p class="subtitle">ED Supervisor  ·  Clinical Educator  ·  RN, BSN, CEN</p><p class="hero-thesis">From the bedside.<br/><span>To better systems.</span></p></div><aside class="experience"><div class="stamp-label">GROUNDED IN PRACTICE</div><div class="experience-years">19<span>years</span></div><p>in nursing, 17 at a Level I trauma center<br/>Emergency nursing & clinical education</p><div class="experience-rule"></div><p class="authorship">I specify the clinical behavior, AI coding tools write the code, and I check the output clinically.</p></aside></div>
 
 <p class="hero-statement" id="reading">
                 Nineteen years in nursing, seventeen at a Level I trauma center: ED Supervisor and Clinical Educator,
@@ -77,13 +77,13 @@
 <div class="section-divider"></div>
 </div>
 <p class="section-intro">
-                The physiological engine, the Body Simulator that runs on it, a standalone training simulator (PatientSim) with its own physiology model, and a consumer iOS app that is scaffolded and deferred.
+                The physiological engine, the Body Simulator that runs on it, a standalone training simulator (PatientSim) with its own simpler physiology model, and a consumer iPhone app that is started and on hold.
             </p>
 <p class="section-intro" style="margin-top:-1.6rem; font-size:0.92rem; border-left:2px solid rgba(255,180,84,0.4); padding-left:0.9rem;">
-<strong style="color:var(--text-primary); font-weight:500;">Read this before the cards.</strong> The engine is pre-1.0 (v0.9), and nothing below is deployed against real patient data. The simulators carry their own version numbers but are prototypes. Where a card says <em>concept</em>, nothing is built yet, and the card says so.
+<strong style="color:var(--text-primary); font-weight:500;">Read this before the cards.</strong> The engine is still being validated, nothing below is used with real patient data, and the simulators are prototypes. Where a card says <em>concept</em>, nothing is built yet, and the card says so.
             </p>
 <p class="section-intro" style="margin-top:-1.2rem; font-size:0.92rem; border-left:2px solid rgba(139,148,158,0.3); padding-left:0.9rem;">
-                Where something is open to click, it is linked. Where there is only a recorded walkthrough, you can watch the tool run without a pre-1.0 clinical tool being put in front of the public. Where there is no link, the tool touches clinical decision-making or is not yet ready to share, and you should weight it accordingly.
+                Where something is open to click, it is linked. Where there is only a recorded walkthrough, you can watch the tool run without an unvalidated clinical tool being put in front of the public. Where there is no link, the tool touches clinical decision-making or is not yet ready to share, and you should weight it accordingly.
             </p>
 <div class="apps-grid">
 <!-- Computational Physiology Engine — Flagship -->
@@ -95,27 +95,23 @@
 <div>
 <div class="app-problem">
 <span class="app-problem-label">Clinical Problem</span>
-                                Every clinical tool downstream — simulators, training, decision support — needs a source of truth for how a body behaves over time. Off-the-shelf approaches don't give you a physiology you can compute, audit, and build on.
+                                Simulators, training cases and decision-support tools all need a model of how a patient changes over time. Most training tools play back a script, so the vitals cannot respond to what the learner does.
                             </div>
 <p class="app-description">
-                                A physiologically grounded engine that computes a patient's trajectory over time. Vitals, labs, and drug response evolve over time, grounded in published physiology and pharmacology. Every case presentation is distinct, and the underlying state is fully auditable.
+                                A model of a patient that runs forward in time. Each organ system is its own module, and the modules affect each other only through defined signals, so a problem in one system shows up downstream without anyone scripting it. Drugs are absorbed and cleared on published values, and the equations cite the literature they come from.
                             </p>
 </div>
 <div>
 <details class="project-details"><summary>Architecture & capabilities <span aria-hidden="true">+</span></summary><ul class="app-features">
-<li>Multi-agent physiology engine grounded in published literature</li>
-<li>GPU-accelerated batch computation</li>
-<li>Evidence-based pharmacokinetic library</li>
-<li>Clinical scoring: SOFA, qSOFA, NEWS2, GCS</li>
-<li>Core ML surrogate export for on-device inference</li>
+<li>Organ systems as separate modules that interact through defined signals</li>
+<li>Large batches of simulated patients run at once on a graphics card</li>
+<li>Drug library built on published absorption and clearance values</li>
+<li>Clinical scores computed from the model: SOFA, qSOFA, NEWS2, GCS</li>
+<li>A simplified version can be exported to run on a phone</li>
 </ul></details>
 <div class="app-card-footer">
 <div>
-<span class="tech-badge">Python</span>
-<span class="tech-badge">PyTorch</span>
-<span class="tech-badge">CUDA</span>
-<span class="tech-badge">asyncio</span>
-<span class="tech-badge">Core ML</span>
+<span class="tech-badge">Python engine</span>
 </div>
 </div>
 </div>
@@ -128,24 +124,20 @@
 <p class="app-subtitle">Clinical Simulator Front-End</p>
 <div class="app-problem">
 <span class="app-problem-label">Clinical Problem</span>
-                        Bedside-quality patient simulators are locked into expensive vendor mannequins tied to a single training room. Every discipline that trains on patients needs a software-only simulator driven by real physiology, not scripted playback.
+                        High-fidelity simulation usually means an expensive mannequin in one room, booked in advance. A screen-based simulator running on a physiology model can be used anywhere there is a browser.
                     </div>
 <p class="app-description">
-                        A clinical front-end wired live to the physiology engine over a WebSocket bridge. Vitals, four-channel waveforms, and drug response render from computed engine state in real time, with a graceful fallback when the bridge is offline.
+                        The screen a learner works from, connected live to the physiology engine. The monitor's vitals and four waveforms are calculated from the engine's current state, and a drug given in the simulator changes what the engine calculates next. If the connection drops, the screen keeps running on its own.
                     </p>
 <details class="project-details"><summary>Architecture & capabilities <span aria-hidden="true">+</span></summary><ul class="app-features">
-<li>Live WebSocket bridge to the engine</li>
-<li>4-channel waveforms: ECG, arterial, pleth, capno</li>
-<li>Real-time vitals and pharmacological response</li>
-<li>Code-split bundle for fast load</li>
-<li>Graceful fallback when bridge unavailable</li>
+<li>Live connection to the physiology engine</li>
+<li>Four waveforms: ECG, arterial line, pleth, capnography</li>
+<li>Vitals and drug response update in real time</li>
+<li>Keeps running if the engine connection drops</li>
 </ul></details>
 <div class="app-card-footer">
 <div>
-<span class="tech-badge">React</span>
-<span class="tech-badge">TypeScript</span>
-<span class="tech-badge">WebSocket</span>
-<span class="tech-badge">Canvas</span>
+<span class="tech-badge">Web</span>
 </div>
 <p style="font-size:0.78rem; color:var(--text-muted); margin-top:0.6rem; line-height:1.5;">Simulated physiology for training and research. It does not display or interpret data from a real patient.</p>
 </div>
@@ -157,24 +149,22 @@
 <p class="app-subtitle">AI-Driven Clinical Training Simulator</p>
 <div class="app-problem">
 <span class="app-problem-label">Clinical Problem</span>
-                        Sim-based education is expensive, schedule-dependent, and doesn't scale. Clinicians across every discipline need on-demand, realistic case exposure, especially for low-frequency, high-acuity events.
+                        Simulation days are expensive and hard to schedule, and the rare, high-acuity cases are the ones staff get the least practice on.
                     </div>
 <p class="app-description">
-                        Standalone simulation with AI-driven evolving clinical narratives, real-time vitals, and a set of interactive procedures.
-                        Built for ED education days with Sentry error tracking and keyboard shortcuts for rapid clinical input.
+                        A standalone training simulator with its own simpler physiology model. Vitals drift the way a real patient's do, the case changes with what the learner does, and an AI model voices the patient as the case unfolds.
+                        Built for ED education days.
                     </p>
 <details class="project-details"><summary>Architecture & capabilities <span aria-hidden="true">+</span></summary><ul class="app-features">
-<li>Dynamic vitals with physiological drift engine</li>
-<li>SVG ECG driven by a rhythm library: AFib, VT/VF, torsades, AV block and paced rhythms each render their own morphology, not a rate-shifted sinus trace</li>
-<li>AI-driven case evolution based on clinical decisions</li>
-<li>Interactive procedures with SBAR generation</li>
-<li>Sound alerts and keyboard shortcuts for rapid input</li>
+<li>Vitals that drift on their own, the way a real patient's do</li>
+<li>ECG rhythm library: AFib, VT/VF, torsades, AV blocks and paced rhythms each draw their own shape, not a sped-up sinus trace</li>
+<li>The case changes based on the learner's decisions</li>
+<li>Procedures, with an SBAR handoff generated at the end</li>
+<li>Alarm sounds and keyboard shortcuts for fast input</li>
 </ul></details>
 <div class="app-card-footer">
 <div>
-<span class="tech-badge">React</span>
-<span class="tech-badge">SVG</span>
-<span class="tech-badge">Gemini AI</span>
+<span class="tech-badge">Web</span>
 </div>
 <p style="font-size:0.78rem; color:var(--text-muted); margin-top:0.6rem; line-height:1.5;">Training only. Every patient is simulated. No real patient data enters it.</p>
 </div>
@@ -186,26 +176,23 @@
 <p class="app-subtitle">Kymora, Consumer iOS Application</p>
 <div class="app-problem">
 <span class="app-problem-label">Consumer Problem</span>
-                        Patients on complex medication regimens have no consumer-grade tool that pairs personal med tracking with a physiologically grounded model of how those drugs interact with their own biometrics.
+                        People on several medications can keep a list in an app, but nothing connects that list to how those drugs behave in the body.
                     </div>
 <p class="app-description">
-                        Native iOS application pairing on-device medication tracking with a Core ML surrogate of the physiological simulation engine, so drug-context awareness runs locally, without sending biometric data to a server.
+                        An iPhone app that keeps the medication list on the phone and pairs it with a simplified version of the physiology model that also runs on the phone, so health data does not have to go to a server.
                     </p>
 <details class="project-details"><summary>Architecture & capabilities <span aria-hidden="true">+</span></summary><ul class="app-features">
-<li>Native SwiftUI app targeting iOS 17+</li>
-<li>HealthKit integration for biometric context</li>
-<li>Core ML surrogate exported from the physiological engine</li>
-<li>Local-first: on-device computation, privacy-preserving</li>
-<li>Medication list organization and reminders, entered by label or barcode, no visual pill identification, which is ruled out by design</li>
+<li>iPhone app, iOS 17 and later</li>
+<li>Reads Apple Health data for context</li>
+<li>A simplified version of the physiology model runs on the phone</li>
+<li>Health data stays on the device</li>
+<li>Medication list and reminders, entered by label or barcode. Identifying pills from a photo is ruled out by design.</li>
 </ul></details>
 <div class="app-card-footer">
 <div>
-<span class="tech-badge">Swift</span>
-<span class="tech-badge">SwiftUI</span>
-<span class="tech-badge">HealthKit</span>
-<span class="tech-badge">Core ML</span>
+<span class="tech-badge">iOS / Swift</span>
 </div>
-<span style="display:inline-block; margin-top:1rem; font-family:'JetBrains Mono',monospace; font-size:0.75rem; color:var(--text-muted); letter-spacing:0.08em;">Scaffolded · development deferred</span>
+<span style="display:inline-block; margin-top:1rem; font-family:'JetBrains Mono',monospace; font-size:0.75rem; color:var(--text-muted); letter-spacing:0.08em;">Started · on hold</span>
 <p style="font-size:0.78rem; color:var(--text-muted); margin-top:0.6rem; line-height:1.5;">Organization and context only. No dosing, no recommendations, no interpretation of biometrics.</p>
 </div>
 </div>
@@ -231,26 +218,24 @@
 <div>
 <div class="app-problem">
 <span class="app-problem-label">Education Problem</span>
-                                An article teaches what to know. It can't show what it feels like to catch it at the bedside — the vitals moving, the waveform changing, the decisions landing in the right order under time pressure.
+                                An article teaches what to know. It can't show what it feels like to catch it at the bedside: the vitals moving, the waveform changing, the decisions coming in the right order under time pressure.
                             </div>
 <p class="app-description">
-                                Each clinical teaching article (grounded in peer-reviewed literature) re-staged as a real-time patient case. A live monitor tracks the patient as you scroll: heart rate, blood pressure, and an ECG that morphs with the physiology, while the clinical reasoning surfaces exactly when the case reaches it. The same evidence base as the article library, delivered as something you move through instead of read.
+                                Each clinical teaching article (grounded in peer-reviewed literature) re-staged as a real-time patient case. A live monitor tracks the patient as you scroll: heart rate, blood pressure, and an ECG that morphs with the physiology, while the clinical reasoning surfaces exactly when the case reaches it. The sources are the same ones the article cites.
                             </p>
 <div class="validation-badge"><span class="validation-dot"></span>LIVE · HYPERKALEMIA CASE, OPEN NOW</div>
 </div>
 <div>
 <details class="project-details"><summary>Architecture & capabilities <span aria-hidden="true">+</span></summary><ul class="app-features">
 <li>Scroll-driven case narrative with a live patient monitor</li>
-<li>Canvas ECG / waveforms that respond to the pathology</li>
+<li>ECG and waveforms that change with the pathology</li>
 <li>Embedded decision points and interactive teaching tools</li>
 <li>Same evidence base as the article library, nothing softened</li>
-<li>Self-contained, zero-dependency, runs on any device</li>
+<li>Runs in any browser, phone included</li>
 </ul></details>
 <div class="app-card-footer">
 <div>
-<span class="tech-badge">Canvas</span>
-<span class="tech-badge">JavaScript</span>
-<span class="tech-badge">Zero-Dependency</span>
+<span class="tech-badge">Web</span>
 </div>
 <div style="display:flex; gap:1rem; flex-wrap:wrap; margin-top:0.5rem;">
 <a href="story/hyperkalemia/" class="launch-btn" style="text-decoration:none; cursor:pointer;">HYPERKALEMIA →</a>
@@ -279,15 +264,14 @@
 <details class="project-details"><summary>Architecture & capabilities <span aria-hidden="true">+</span></summary><ul class="app-features">
 <li>Values and interventions extracted and stamped as they are spoken</li>
 <li>Shock Index, RTS and GCS computed from published scoring tables</li>
-<li>Activation determination carries the evidence it was made on</li>
-<li>Unresolved prompts appear in the output as documented gaps</li>
-<li>Four capture sources · synthetic data only</li>
+<li>The activation level is shown with the findings it was based on</li>
+<li>Unanswered questions stay in the report as open items</li>
+<li>Four input sources · synthetic data only</li>
 </ul></details>
 <div class="app-card-footer">
 <div>
-<span class="tech-badge">React</span>
-<span class="tech-badge">Multi-Agent</span>
-<span class="tech-badge">MIT</span>
+<span class="tech-badge">Web</span>
+<span class="tech-badge">Open source (MIT)</span>
 </div>
 <div style="display:flex; gap:0.75rem; flex-wrap:wrap; margin-top:0.5rem;">
 <a href="trauma-tracker/" class="launch-btn" style="text-decoration:none; cursor:pointer;">READ THE WRITE-UP →</a>
@@ -306,25 +290,23 @@
 <p class="app-subtitle">Contextual Clinical Decision Support</p>
 <div class="app-problem">
 <span class="app-problem-label">Clinical Problem</span>
-                        Generic AI assistants aren't calibrated for bedside use — wrong scope, wrong acuity thresholds, no concept of scope-of-practice boundaries by jurisdiction or unit-level policy.
+                        General AI assistants aren't set up for bedside use. They don't know acuity, unit policy, or where a nurse's scope of practice ends in a given state.
                     </div>
 <p class="app-description">
-                        A clinical copilot that adapts to acuity context and routes by semantic intent, with scope-of-practice guardrails built from published frameworks for each jurisdiction. The guardrails are implemented and demonstrable; whether they hold against a determined user is untested.
+                        A clinical assistant that works out what kind of question is being asked and answers within the asker's scope of practice for their state, using published scope-of-practice frameworks, with the policy source shown. The guardrails work in the demo; whether they hold against someone trying to get around them is untested.
                     </p>
 <details class="project-details"><summary>Architecture & capabilities <span aria-hidden="true">+</span></summary><ul class="app-features">
-<li>Adaptive personas tuned to clinical discipline rather than to an acuity tier</li>
-<li>Semantic intent classification and routing</li>
-<li>Scope of practice by jurisdiction</li>
-<li>RAG-enabled policy guardrails, with the source shown so a clinician can check the basis</li>
+<li>Answers adjusted to the clinician's discipline</li>
+<li>Sorts each question by what is being asked and routes it accordingly</li>
+<li>Scope-of-practice limits by state</li>
+<li>Looks up the relevant policy and shows the source, so a clinician can check the basis</li>
 </ul></details>
 <div class="app-card-footer">
 <div style="margin-bottom:0.7rem;">
 <a href="https://www.youtube.com/watch?v=Skud3a7kawA&t=2s" target="_blank" rel="noopener noreferrer" class="launch-btn" style="text-decoration:none; cursor:pointer;">WATCH THE DEMO →</a>
 </div>
 <div>
-<span class="tech-badge">React</span>
-<span class="tech-badge">TypeScript</span>
-<span class="tech-badge">Multi-Model AI</span>
+<span class="tech-badge">Web</span>
 </div>
 <p style="font-size:0.78rem; color:var(--text-muted); margin-top:0.6rem; line-height:1.5;">Surfaces existing policy with the source shown. It does not recommend interventions or drive time-critical decisions.</p>
 </div>
@@ -340,14 +322,13 @@
                     </div>
 <details class="project-details"><summary>Architecture & capabilities <span aria-hidden="true">+</span></summary><ul class="app-features">
 <li><strong>UnitScheduler Pro</strong>, reads historical schedules and surfaces the coverage pattern a static grid hides. <strong>Advisory only: a coverage suggestion is a draft for the charge nurse and never an assignment.</strong> Whether it changes an outcome is unmeasured.</li>
-<li><strong>Emergent Media Manager</strong>: an outside EKG on paper, a CD of imaging, a scanned discharge summary: all carry clinical meaning, none of it queryable. Turns those into structured records, local-first, with an egress guard that blocks identifier patterns from reaching a cloud model. <strong>Prototype, synthetic data only.</strong> The guard detects and blocks; it does not de-identify, and that is not a compliance claim.</li>
+<li><strong>Emergent Media Manager</strong>: an outside EKG on paper, a CD of imaging, a scanned discharge summary: all carry clinical meaning, none of it queryable. Turns those into structured records on the local computer, with a filter that stops anything that looks like a patient identifier from being sent to a cloud AI model. <strong>Prototype, synthetic data only.</strong> The filter blocks; it does not de-identify, and that is not a compliance claim.</li>
 <li><strong>Clinical Information Workflow Engine</strong>, drafts CE-style articles and simulation scenarios in the structure nurse educators work in. Everything it produces is a draft for a human reviewer. Not an accreditation claim and not peer review.</li>
 <li><strong>Alerter</strong>, <strong>concept stage</strong>, a design for ordering alerts by acuity context rather than firing them all at one weight. Nothing is built. The constraint that it may never withhold an alert from the clinician is the part worth stating.</li>
 </ul></details>
 <div class="app-card-footer">
 <div>
-<span class="tech-badge">React</span>
-<span class="tech-badge">TypeScript</span>
+<span class="tech-badge">Web</span>
 </div>
 </div>
 </div>
@@ -367,13 +348,12 @@
 <li>Self-published clinical articles, added to as they are written</li>
 <li>Emergency medicine, critical care, pharmacology</li>
 <li>Evidence-cited with literature references</li>
-<li>Static-site build (Astro), live and open-access</li>
+<li>Free to read, no login</li>
 </ul></details>
 <div class="app-card-footer">
 <div>
-<span class="tech-badge">Astro</span>
-<span class="tech-badge">Markdown</span>
-<span class="tech-badge">Open Access</span>
+<span class="tech-badge">Web</span>
+<span class="tech-badge">Open access</span>
 </div>
 <a href="https://erinfo.netlify.app" class="launch-btn" target="_blank" rel="noopener noreferrer" style="text-decoration: none; cursor: pointer;">READ THE ARTICLES →</a>
 </div>
@@ -414,7 +394,7 @@
 <h3 class="timeline-title">An Engine and a Product Line</h3>
 <p class="timeline-description">
                         In 2026 the engine became the core of the Kymora <span class="highlight">product line</span>: the Body Simulator runs on it,
-                        and Core ML surrogates of it are exported for a consumer iOS app that is scaffolded and deferred.
+                        and a simplified version of it is built to run on a phone, for a consumer iPhone app that is started and on hold.
                         Patent pending.
                         <br/><br/>
                         I am looking for clinical evaluation, implementation and program roles with companies building tools for clinicians.
@@ -436,27 +416,19 @@
 </div>
 <div class="contact-card">
 <div class="contact-title">AI & Safety</div>
-<p class="contact-value">Multi-Model AI · Human-in-the-Loop Validation · RAG for Protocol Adherence · Multi-Model Verification</p>
+<p class="contact-value">A clinician checks the output before it is used · Answers show the policy or source they came from · Separate AI reviewers that never see each other's work</p>
 </div>
 <div class="contact-card">
 <div class="contact-title">Clinical Domain</div>
 <p class="contact-value">Emergency Medicine · Critical Care · Clinical Education · Epic ASAP · Trauma · Scope-of-Practice Frameworks</p>
 </div>
 <div class="contact-card">
-<div class="contact-title">Backend — what these are built with</div>
-<p class="contact-value">Python · PyTorch · asyncio · CUDA · WebSocket · Docker</p>
-</div>
-<div class="contact-card">
-<div class="contact-title">Frontend — what these are built with</div>
-<p class="contact-value">React 19 · TypeScript · Vite · Tailwind · XState · Canvas/WebGL</p>
-</div>
-<div class="contact-card" style="grid-column:1/-1; border-left-color:var(--accent-green);">
-<div class="contact-title">How to read those two cards</div>
-<p class="contact-value" style="font-family:'Work Sans',sans-serif; letter-spacing:0; text-transform:none; line-height:1.6;">These are the stacks the applications run on. AI coding tools write the code; I specify the behavior and check the output clinically.</p>
+<div class="contact-title">Platforms</div>
+<p class="contact-value">Web · Python physiology engine · iOS</p>
 </div>
 <div class="contact-card">
 <div class="contact-title">Regulatory Literacy</div>
-<p class="contact-value">HIPAA de-identification standards (Safe Harbor / Expert Determination) · local-first data handling · FHIR/DICOM · CE content standards · knows where the device line sits</p>
+<p class="contact-value">HIPAA de-identification (Safe Harbor and Expert Determination) · keeping patient data on the device · where decision support becomes a regulated medical device</p>
 </div>
 </div>
 </section>
