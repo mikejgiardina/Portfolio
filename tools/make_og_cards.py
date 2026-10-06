@@ -30,24 +30,12 @@ CY, GR, AM, RD = "#5BD8EA", "#7CE0A0", "#FFB03A", "#FF4D57"
 CARDS = {
     ".":               (CY, "PORTFOLIO", "Michael Giardina",
                         "Emergency nurse building clinical simulation and AI tooling."),
-    "case-studies":    (CY, "ENGINEERING PRACTICE", "Five write-ups on the layer around the code",
-                        "Automation, enforcement, disclosure control, orchestration, clinical evaluation."),
-    "automation":      (GR, "01 · AUTOMATION", "The hook layer",
-                        "Making the safe path the default one, on every machine."),
-    "enforcement":     (GR, "02 · ENFORCEMENT", "Narrated → Enforced",
-                        "Conventions that outlive whoever remembers them."),
-    "publishing":      (AM, "03 · DISCLOSURE", "Publishing out of a patent-pending codebase",
-                        "A staged pipeline between a draft and a public file."),
-    "clinical-review": (RD, "04 · CLINICAL EVALUATION", "Two reviewers agreed. That was the problem.",
-                        "Agreement is only evidence when the failure modes are independent."),
-    "trauma-tracker":  (RD, "CLINICAL PRODUCT", "Trauma Tracker",
+    "clinical-review": (RD, "CLINICAL AI EVALUATION", "Two reviewers agreed. That was the problem.",
+                        "Measuring an AI review tool, and sixteen clinical defects it surfaced."),
+    "trauma-tracker":  (RD, "CLINICAL PROTOTYPE", "Trauma Tracker",
                         "A real-time ED trauma registrar. Synthetic data only, no PHI."),
-    "story/gi-bleed":       (RD, "CLINICAL STORY MODE", "Bay 4 Is Bleeding",
-                             "A GI hemorrhage in real time, with a live monitor."),
     "story/hyperkalemia":   (AM, "CLINICAL STORY MODE", "The Potassium Is 7.9",
                              "Hyperkalemia in real time, with a live monitor."),
-    "story/first-code-blue": (CY, "CLINICAL STORY MODE", "Your First Code Blue",
-                              "A cardiac arrest in real time, with a live monitor."),
 }
 
 

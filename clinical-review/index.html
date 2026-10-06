@@ -5,11 +5,11 @@
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Two AI Reviewers, and What Happened When I Measured Them — Clinical Review Pipeline</title>
-<meta name="description" content="A clinical-education review pipeline: two AI reviewer personas, findings correlated by quoted-span overlap, and what measurement found — a shared blind spot that agreement promoted to top confidence, a blocker count dominated by missing source material, and a gate that checked the wrong thing. 16 real clinical defects were caught and fixed."/>
+<meta name="description" content="A clinical-education review pipeline: two AI reviewers, findings matched by the text they quote, and what measuring it found — a shared blind spot that agreement ranked as top confidence, a blocker count dominated by missing source material, and a gate that checked the wrong thing. 16 real clinical defects were caught and fixed."/>
 <meta property="og:type" content="article"/>
 <meta property="og:url" content="https://mike-giardina.netlify.app/clinical-review/"/>
 <meta property="og:title" content="Two reviewers agreed. That was the problem."/>
-<meta property="og:description" content="Agreement is only evidence when the failure modes are independent. Measuring an AI review pipeline over a clinical corpus — and the sixteen real clinical defects behind it."/>
+<meta property="og:description" content="Measuring an AI review tool over a clinical-education library, and the sixteen real clinical defects it surfaced."/>
 <meta property="og:image" content="https://mike-giardina.netlify.app/assets/og/clinical-review.png"/>
 <meta property="og:image:width" content="1200"/>
 <meta property="og:image:height" content="627"/>
@@ -36,100 +36,99 @@
 <div class="status-item"><span class="status-dot"></span><span>MEASURED AGAINST A LIVE CORPUS</span></div>
 <div class="status-item caution"><span class="status-dot"></span><span>INTERNAL TOOLING · NOT A PUBLIC PRODUCT</span></div>
 </div>
-<p class="kicker">Clinical evaluation · LLM-as-judge</p>
+<p class="kicker">Clinical AI evaluation</p>
 <h1 class="article-title">Two reviewers agreed. That was the problem.</h1><div class="article-introduction"><p class="lede">A review pipeline for clinical education content runs <b>two AI reviewer personas</b> over every article and keeps only what both of them independently flag. The intersection is the quality signal. This is the write-up of what happened when I measured whether that signal was real.</p><p class="lede">It was not. <b>The two reviewers made the same mistake on the same sentence</b>, and agreement promoted that error into the highest-confidence bucket available.</p></div>
 
 
-<p class="context">Every number below is from the pipeline's own run output over a live clinical-education corpus, not a benchmark, and the bases differ by section, so each is labeled where it appears. The finding rates in <b>03</b> come from a 79-article review set; the gate counts in <b>04</b> are corpus-wide over the 93 articles in the pipeline's published set at the time of measurement.</p>
-</header><div class="reading-layout" id="reading"><aside class="contents-rail"><div class="rail-sticky"><div class="rail-label">IN THIS STUDY</div><nav aria-label="On this page"><a href="#shape"><span>01</span>How a review actually runs</a><a href="#agree"><span>02</span>When agreement stops being evidence</a><a href="#artifact"><span>03</span>What 227 blockers were actually reporting</a><a href="#gate"><span>04</span>The gate certified the wrong thing</a><a href="#close"><span>05</span>What this shows</a></nav><div class="rail-foot"><a href="../">Back to the portfolio ↗</a></div><button class="back-top" type="button">Back to top ↑</button></div></aside><main id="article"><section class="sec" id="shape">
-<div class="sechead"><span class="secnum">01</span><h2>How a review actually runs</h2><div class="divider"></div></div>
-<p class="secsub">The review layer of the pipeline is what this page is about.</p>
+<p class="context">The numbers come from the review tool's own output on my clinical-education articles, not a benchmark. Section <b>03</b> uses a 79-article review set; section <b>04</b> covers all 93 articles published at the time.</p>
+</header><div class="reading-layout" id="reading"><aside class="contents-rail"><div class="rail-sticky"><div class="rail-label">IN THIS STUDY</div><nav aria-label="On this page"><a href="#shape"><span>01</span>How the review works</a><a href="#agree"><span>02</span>When agreement stops being evidence</a><a href="#artifact"><span>03</span>What 227 blockers were actually reporting</a><a href="#gate"><span>04</span>The gate certified the wrong thing</a><a href="#close"><span>05</span>What this shows</a></nav><div class="rail-foot"><a href="../">Back to the portfolio ↗</a></div><button class="back-top" type="button">Back to top ↑</button></div></aside><main id="article"><section class="sec" id="shape">
+<div class="sechead"><span class="secnum">01</span><h2>How the review works</h2><div class="divider"></div></div>
+<p class="secsub">What the two reviewers were set up to do.</p>
 <div class="cards">
 <div class="card">
-<h3>Two personas with different expertise</h3>
-<p>Reviewer A is prompted as a <em>board-certified emergency physician</em>. Reviewer B is a <em>pillar-matched specialist</em>, the specialty the article's subject actually belongs to. They are different prompts with different expertise, run independently. Two samples from one persona would measure temperature and little else.</p>
+<h3>Two reviewers with different expertise</h3>
+<p>One AI reviewer is set up as a <em>board-certified emergency physician</em>. The other is set up as a <em>specialist in the article's subject</em>. They run separately and never see each other's notes.</p>
 </div>
 <div class="card">
 <h3>Each reads two documents</h3>
-<p>The informal peer-educator article, and its paired <em>scholarly companion</em>, the formal version carrying the reference list. The companion is never published. It exists so a reviewer can check whether a claim in the article is actually supported by the source it rests on.</p>
+<p>The article itself, and a formal <em>companion</em> version of it that carries the reference list. The companion is never published. It is there so a reviewer can check whether a claim in the article is supported by its source.</p>
 </div>
 <div class="card">
-<h3>Every finding carries a verbatim quote</h3>
-<p>Severity (<code>blocker</code> / <code>major</code> / <code>minor</code>), a category, and <b>a verbatim quote of the span being flagged</b>. The quote is what makes two independent reviews comparable at all.</p>
+<h3>Every finding quotes the text</h3>
+<p>Each finding has a severity (blocker, major or minor), a category, and <b>the exact words being flagged</b>. The quote is what lets two separate reviews be compared.</p>
 </div>
 <div class="card">
-<h3>Correlation is deterministic</h3>
-<p>No third model adjudicates. Two findings agree if their quoted spans overlap, measured by the <em>maximum</em> of three signals (sequence ratio, token-set Jaccard, and containment) against a 0.7 threshold. Containment exists because one reviewer quotes a phrase where the other quotes the whole sentence.</p>
+<h3>Matching by quoted text, not a third AI</h3>
+<p>Two findings count as agreeing when they quote substantially the same passage. A third AI model refereeing would be one more opinion that needs checking, and it would likely have shared the blind spot described below.</p>
 </div>
 </div>
-<p class="note">Why deterministic correlation and not a judge model: an adjudicator is a third opinion with its own failure modes, and it would have to be evaluated too. Span overlap is checkable by hand, produces the same answer twice, and costs nothing to run. The <em>interesting</em> failure below is not one a judge model would have caught either. It would have shared the same blind spot.</p>
+<details class="src"><summary>Method details</summary><p>Overlap is the highest of three text-similarity scores (sequence ratio, token-set Jaccard and containment), with 0.7 as the cutoff. Containment is there because one reviewer may quote a phrase where the other quotes the whole sentence. The check can be done by hand and gives the same answer every time.</p></details>
 </section><section class="sec" id="agree">
 <div class="sechead"><span class="secnum">02</span><h2>When agreement stops being evidence</h2><div class="divider"></div></div>
-<p class="secsub">Of everything measurement turned up, this is the one that changed how the output gets read.</p>
-<p>The scholarly companions contain <b>errata notes</b>, passages that quote an earlier version of a claim and then explain why it was wrong and what replaced it. The structure is <em>"the article originally framed X as … This is incorrect."</em></p>
-<p>Both reviewers read that passage, lifted the quoted-and-already-corrected string, and reported it as a live error in the current article. The string appears in <b>neither the article nor its source packet</b>, only inside the companion's record of a fix that had already been applied.</p>
+<p class="secsub">This finding changed how I read the reviewers' output.</p>
+<p>The companion documents include <b>correction notes</b>: passages that quote an older version of a claim, then explain why it was wrong and what replaced it. They read like <em>"the article originally said X … This is incorrect."</em></p>
+<p>Both reviewers read that note, picked up the old, already-corrected wording, and reported it as an error in the current article. That wording is <b>no longer in the article or its sources</b>. It exists only in the record of a fix already made.</p>
 <div class="verdict">
-<div class="dlab">what correlation did with it</div>
-<p class="dtext">Both reviewers made the <b>identical</b> mistake on the <b>identical</b> text. So the spans matched exactly, and the correlator promoted the finding to the highest-confidence bucket it has, at <code>quote_similarity: 1.0</code>.</p>
-<p class="dwhy"><b>The ensemble did not fail to catch this. The ensemble is what made it look certain.</b> Agreement filters noise only when the two reviewers can be wrong in <em>different</em> ways. Here the error was in the shared input, so independence was zero and the intersection amplified instead of filtering. A third reviewer would have made it worse, not better, more agreement on the same artifact.</p>
+<div class="dlab">what the matching did with it</div>
+<p class="dtext">Both reviewers made the <b>same</b> mistake on the <b>same</b> words, so the quotes matched exactly and the finding was ranked as high-confidence as the tool allows.</p>
+<p class="dwhy">Two reviewers agreeing only means something when they can be wrong in <em>different</em> ways. Here the mistake came from a document both of them read, so their agreement made a wrong finding look certain. A third reviewer reading the same document would most likely have agreed too.</p>
 </div>
-<p>The operational consequence is a split in how agreement is read, and it is not symmetric: <b>an agreed finding is high-signal for clinical content and low-signal for citation and provenance claims</b>, because provenance claims are exactly the ones where both reviewers are reading the same secondary document and can be misled by it identically.</p>
+<p>So agreement now gets read two ways. <b>On clinical content, two reviewers agreeing is a strong signal. On citation and sourcing claims it is a weak one</b>, because both reviewers are reading the same companion document and can be misled by it the same way.</p>
 </section><section class="sec" id="artifact">
 <div class="sechead"><span class="secnum">03</span><h2>What 227 blockers were actually reporting</h2><div class="divider"></div></div>
-<p class="secsub">Why a raw finding count says very little about content quality.</p>
-<p><b>227 of 238 blockers</b> carried the same category: a claim in the article not supported by the companion's references. That reads as a content-quality crisis. It was not. <b>69% of all agreed findings explicitly stated the scholarly companion had not been provided.</b></p>
+<p class="secsub">A raw count of findings said very little about the content.</p>
+<p><b>227 of the 238 blockers</b> were the same kind: a claim in the article that the companion's references did not support. <b>In 69% of all agreed findings, the reviewer said outright that it had not been given the companion document.</b></p>
 <div class="tablewrap">
 <table>
 <thead><tr><th>Source packet</th><th class="num">Articles</th><th class="num">Citation blockers</th><th class="num">Avg / article</th><th class="num">Articles with zero</th></tr></thead>
 <tbody>
-<tr><td><b>Has</b> a scholarly companion</td><td class="num">35</td><td class="num">46</td><td class="num"><b>1.3</b></td><td class="num">17 (49%)</td></tr>
+<tr><td><b>Has</b> a companion</td><td class="num">35</td><td class="num">46</td><td class="num"><b>1.3</b></td><td class="num">17 (49%)</td></tr>
 <tr><td><b>No</b> companion</td><td class="num">44</td><td class="num">181</td><td class="num"><b>4.1</b></td><td class="num">3</td></tr>
 </tbody>
 </table>
 </div>
-<p><b>3.1× more citation blockers when the reviewer had nothing to check against.</b> That is the model reporting <em>"I cannot verify this"</em> and the pipeline recording it as <em>"this is wrong."</em> Two different statements, one output field.</p>
-<p class="note" style="border-left-color: var(--accent-amber);"><b>The actionable form of 181 findings is one line item:</b> <em>44 published articles have no scholarly companion in their source packet.</em> Fixing the corpus fixes the findings. Working through them individually would have burned weeks producing edits to text nobody had shown was wrong.</p>
-<p class="note"><b>Where these particular numbers come from.</b> This section is a 79-article review set measured across two runs about ten weeks apart, against a corpus that stood at 88 published articles at the time. Pooling those runs was itself a mistake: the older findings were written against text a voice pass had since rewritten, so they describe articles that no longer exist in that form. The rates above hold within that set and are quoted for the mechanism they expose, not as a current corpus measurement. The gate counts in <b>04</b> are a different and current base.</p>
+<p><b>With nothing to check against, citation blockers ran 3.1 times higher.</b> The reviewer was saying <em>"I can't verify this,"</em> and the tool was recording it as <em>"this is wrong."</em> Those are two different statements, and the tool had one place to put both.</p>
+<p class="note" style="border-left-color: var(--accent-amber);"><b>181 of those findings came down to one fix:</b> <em>at the time, 44 published articles had no companion document in their source material.</em> Working through the findings one by one would have meant weeks of edits to text nobody had shown was wrong.</p>
+<p class="note"><b>Where these numbers come from.</b> This section uses a 79-article review set from two runs about ten weeks apart, when 88 articles were published. Combining the two runs was a mistake: the older findings were written against text that had since been rewritten. The rates are quoted for what they show about the tool, not as a current measurement. Section <b>04</b> uses a different, current set.</p>
 </section><section class="sec" id="gate">
 <div class="sechead"><span class="secnum">04</span><h2>The gate certified the wrong thing</h2><div class="divider"></div></div>
-<p class="secsub">A review that ran and a review that was resolved are not the same state, and the check could not tell them apart.</p>
-<p>The pre-publish check blocked only when a correlated review file was <b>missing</b>. A batch with every finding present, unread, and unaddressed passed clean. It certified that a review had <em>happened</em>, not that anything had been <em>done</em> about it, a fail-open in the exact place a gate is supposed to fail closed.</p>
-<p>It now requires a <b>recorded disposition for every gating finding</b>. Four statuses: <code>fixed</code>, <code>rejected</code>, <code>not_applicable</code>, <code>deferred</code>. The gate does not require agreeing with the reviewer. It requires that a human decided, and said why.</p>
+<p class="secsub">The check could not tell a review that ran from a review someone acted on.</p>
+<p>The check before publishing blocked an article only when its review was <b>missing</b>. An article with every finding present, unread and unaddressed passed. It confirmed that a review had <em>happened</em>, not that anyone had <em>done</em> anything about it.</p>
+<p>Now <b>every finding that can block publishing needs a recorded decision</b>: fixed, rejected, not applicable, or deferred. Nobody has to agree with the reviewer. Someone has to decide, and say why.</p>
 <div class="cards">
 <div class="card">
-<h3>Reasons have a floor</h3>
-<p>The last three statuses need a reason of at least 20 characters, which is enough to rule out <code>"n/a"</code> and <code>"wontfix"</code>. A disposition field that accepts a shrug will receive one.</p>
+<h3>Reasons have a minimum</h3>
+<p>Every decision other than fixed needs a written reason of at least 20 characters, which rules out "n/a" and "wontfix".</p>
 </div>
 <div class="card">
-<h3>Deferral has an expiry</h3>
-<p><code>deferred</code> requires a review-by date and blocks once it passes. <b>An open-ended deferral is not available.</b> One deferral bucket had sat untouched across multiple sessions and turned out to be real defects that nothing was ever going to force back into view.</p>
+<h3>Deferrals expire</h3>
+<p>A deferral needs a review-by date and blocks publishing once that date passes. One group of deferred findings had sat untouched through several rounds of work and turned out to be real defects.</p>
 </div>
 <div class="card">
-<h3>The conditional came out of measurement</h3>
-<p>Citation findings gate <em>only</em> when the article actually has a companion. Excluding the category outright was the obvious move and it was wrong: the worst defect in a recent batch, a misstated figure that moved a number toward urgency, was categorised exactly that way, on an article that <em>did</em> have a companion.</p>
+<h3>The citation rule came from the numbers</h3>
+<p>Citation findings block publishing <em>only</em> when the article has a companion document. Dropping citation findings entirely looked like the easy answer and would have been wrong: the worst defect in a recent batch, a figure misstated in a way that made a situation sound more urgent, was filed as a citation finding, on an article that <em>did</em> have a companion.</p>
 </div>
 <div class="card">
-<h3>Disagreement fails toward gating</h3>
-<p>Either reviewer's category counts. Uncategorised findings gate too. Where the two reviewers disagree about what kind of problem something is, the pipeline resolves toward blocking and not toward shipping.</p>
+<h3>When reviewers disagree, it blocks</h3>
+<p>If either reviewer's category would block, the finding blocks. Findings with no category block too. When the two disagree about what kind of problem it is, the tool holds the article.</p>
 </div>
 </div>
 <div class="verdict">
-<div class="dlab">blast radius, and what was under it</div>
-<p class="dtext">Turning the fix on moved the gate from <b>4 blocked</b> to <b>71 of 93</b>. Nothing was auto-exempted to soften that. Those 71 articles carried an undisposed gating finding the day before the fix too, tightening the check only made it visible.</p>
-<p class="dwhy">A gate that reports a comfortable number on the day you tighten it has been tuned to report a comfortable number. The backlog a check reveals is the backlog you already had.</p>
+<div class="dlab">what tightening it showed</div>
+<p class="dtext">Turning the fix on took the blocked count from <b>4 articles</b> to <b>71 of 93</b>. Nothing was exempted to make that look better. Those 71 articles had unaddressed findings the day before too; the stricter check only made them visible.</p>
 </div>
-<p>Working it took six passes and produced a disposition for all <b>180</b> gating findings: <b>131 not applicable</b> (a companion-citation gap, or an objection that was preference and not defect), <b>42 fixed</b>, <b>7 rejected</b> because applying the finding would itself have introduced an error.</p>
+<p>Working through them took six passes and produced a decision on all <b>180</b> blocking findings: <b>131 not applicable</b> (a missing companion, or an objection that was preference rather than a defect), <b>42 fixed</b>, and <b>7 rejected</b> because making the change would have introduced an error.</p>
 <div class="verdict">
 <div class="dlab">what was actually in there</div>
-<p class="dtext"><b>16 real clinical defects, found and corrected.</b> The gate closed back to <b>4 of 93</b>, and the four that remain are pre-existing prose-fidelity holds with nothing clinical in them.</p>
-<p class="dwhy">The defects were not stylistic. Several were dosing: a benzodiazepine underdose for status epilepticus, on an article whose own corpus-mate had the right number and therefore contradicted it; a neonatal dextrose dose carried over from the infant range; a pediatric bradycardia instruction that had dropped both of its qualifying conditions; an eclampsia article with no magnesium regimen in it at all. One was a guideline attributed to a trial whose primary endpoints were negative. <b>Not that the reviewers were right often</b>: a system nobody had checked was still hiding sixteen of these, and they surfaced only because someone went and measured it.</p>
+<p class="dtext"><b>16 real clinical defects, found and corrected.</b> The blocked count went back to <b>4 of 93</b>, and those four are existing holds on wording with nothing clinical in them.</p>
+<p class="dwhy">The defects were not stylistic. Several were dosing: a benzodiazepine underdose for status epilepticus, in an article that contradicted another article in the same library that had the right number; a neonatal dextrose dose carried over from the infant range; a pediatric bradycardia instruction that had dropped both of its qualifying conditions; an eclampsia article with no magnesium regimen in it at all. One was a guideline attributed to a trial whose primary endpoints were negative. The point is not that the reviewers were often right. Sixteen defects were still sitting in a system nobody had checked, and they came out only because I measured it.</p>
 </div>
 </section><section class="sec" id="close">
 <div class="sechead"><span class="secnum">05</span><h2>What this shows</h2><div class="divider"></div></div>
 <div class="context">
-<p><b>Not that the pipeline is good.</b> The findings above are all ways it was wrong, found by measuring it instead of trusting it. The narrower claim: <b>an evaluation system nobody has evaluated supplies confidence and not information</b>, and the difference does not show up until someone checks.</p>
-<p>Each of the three findings has the same shape. Agreement looked like confirmation and was partly shared blindness. A blocker count looked like content quality and was mostly missing source material. A green gate looked like resolution and was only attendance. In every case the instrument was reporting something adjacent to the thing it was believed to report, and in every case the failure was in the flattering direction.</p>
-<p>The clinical judgment is the part that is mine: knowing that <em>"I cannot verify this"</em> and <em>"this is incorrect"</em> must not share an output field when the reader is a clinician, that an errata note is not an error, and that a deferral without a date is a decision to never look again. <b>I specified the behavior and directed the agents that implemented it. I did not type the implementation and do not claim to.</b></p>
+<p>None of this shows the review tool is good. Everything above is a way it was wrong, found by measuring it. What it does show: <b>a review tool nobody has checked gives you confidence without information</b>, and the difference does not show until someone checks.</p>
+<p>All three findings had the same shape. The tool was measuring something close to what we believed it measured, and each time the gap led to the wrong conclusion.</p>
+<p>The clinical judgment is the part that is mine: knowing that <em>"I can't verify this"</em> and <em>"this is wrong"</em> cannot share one answer when a clinician is reading it, that a correction note is not an error, and that a deferral with no date means nobody will look again. <b>I specified how the tool should behave, and AI coding tools built it. I did not write the code and do not claim to.</b></p>
 
 </div>
 </section></main></div>
@@ -139,7 +138,7 @@
 
 
 <footer>
-<p>Clinical review pipeline · internal tooling for a clinical-education corpus · no patient data of any kind.</p>
+<p>Clinical review tool · internal tooling for a clinical-education library · no patient data of any kind.</p>
 <p>Findings, counts and rates are from the pipeline's own run output over a corpus of published educational articles. Reviewer personas are AI models prompted to review; they are not clinicians and their output is not clinical advice. Nothing here is a substitute for institutional protocol or clinical judgment.</p>
 <p>Michael Giardina · <a href="../">portfolio</a> · <a href="https://github.com/mikejgiardina" target="_blank" rel="noopener noreferrer">github.com/mikejgiardina</a> · <a href="https://www.linkedin.com/in/michael-giardina" target="_blank" rel="noopener noreferrer">linkedin.com/in/michael-giardina</a></p>
 <p class="footer-navigation"><a href="../">Portfolio</a> · <a href="../trauma-tracker/">Trauma Tracker</a> · <a href="../#connect">Get in touch</a></p></footer>

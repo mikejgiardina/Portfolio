@@ -5,7 +5,7 @@
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Trauma Tracker — A Real-Time ED Trauma Registrar</title>
-<meta name="description" content="A real-time emergency-department trauma registrar: from a live trauma-bay transcript, specialised agents extract and timestamp values as they are spoken, compute scores deterministically, hold each draft charge until its supporting documentation is present, and compose a signable nursing narrative as the resuscitation runs. Synthetic data only, no PHI."/>
+<meta name="description" content="A real-time emergency-department trauma registrar: from a live trauma-bay transcript, AI agents pull out and timestamp values as they are spoken, calculate scores from published tables, hold each draft charge until its supporting documentation is present, and compose a signable nursing narrative as the resuscitation runs. Synthetic data only, no PHI."/>
 <meta property="og:type" content="article"/>
 <meta property="og:url" content="https://mike-giardina.netlify.app/trauma-tracker/"/>
 <meta property="og:title" content="Trauma Tracker — a real-time ED trauma registrar"/>
@@ -36,11 +36,11 @@
 <div class="status-item"><span class="status-dot"></span><span>SYNTHETIC DATA ONLY · NO PHI</span></div>
 <div class="status-item caution"><span class="status-dot"></span><span>NOT A MEDICAL DEVICE</span></div>
 </div>
-<p class="kicker">Clinical prototype · agentic documentation</p>
+<p class="kicker">Clinical prototype · real-time documentation</p>
 <h1 class="article-title">A real-time ED trauma registrar.</h1><div class="article-introduction"><p class="lede">While a trauma resuscitation is happening, it does the <b>documentation and quality-measure work the team cannot touch</b> while they are saving a life — then produces the deliverable at disposition.</p><p class="lede">It is a prototype built inside a hackathon build window, it is open, and you can run it.</p></div>
 
 
-<p class="context">react · multi-agent · four capture sources · MIT · synthetic data only</p>
+<p class="context">web app · four input sources · open source (MIT) · synthetic data only</p>
 <div class="stats" style="margin-top:2rem;">
 <div class="stat"><span class="n" style="font-size:1.15rem; line-height:1.6;"><a href="https://traumatrackerv2.netlify.app" target="_blank" rel="noopener noreferrer" style="color:var(--accent-cyan); text-decoration:none; border-bottom:1px solid var(--line)">Live demo →</a></span><span class="l">runs in the browser</span></div>
 <div class="stat"><span class="n" style="font-size:1.15rem; line-height:1.6;"><a href="https://github.com/mikejgiardina/trauma-tracker-public" target="_blank" rel="noopener noreferrer" style="color:var(--accent-cyan); text-decoration:none; border-bottom:1px solid var(--line)">Repository →</a></span><span class="l">public · MIT</span></div>
@@ -73,15 +73,15 @@
 </div>
 </section><section class="sec" id="agents">
 <div class="sechead"><span class="secnum">02</span><h2>What the agents do</h2><div class="divider"></div></div>
-<p class="secsub">From a live trauma-bay transcript, each one owns a decision rather than a view.</p>
+<p class="secsub">From a live trauma-bay transcript, each agent is responsible for one job.</p>
 <div class="bar">
 <div class="barit">
 <h4>Extraction, timestamped as spoken</h4>
 <p>Values and interventions are pulled out as they are said and stamped at that moment — not at the moment someone gets around to charting them. The ordering <em>is</em> the clinical record in a resuscitation.</p>
 </div>
 <div class="barit">
-<h4>Scores computed deterministically</h4>
-<p>Shock Index, RTS and GCS are calculated from the extracted values as the patient changes, using the published scoring tables. <em>Deterministic, not inferred</em> — a score a model guessed at is not a score anyone can defend.</p>
+<h4>Scores calculated from published tables</h4>
+<p>Shock Index, RTS and GCS are calculated from the extracted values as the patient changes, using the published scoring tables. The AI model does not estimate them, so each one can be checked.</p>
 </div>
 <div class="barit">
 <h4>Draft charges held for their documentation</h4> <p>A draft charge appears only when its supporting documentation is present in the record. The charge list is illustrative: a prototype feature, not a coding claim.</p>
@@ -109,17 +109,17 @@
 </tbody>
 </table>
 </div>
-<p class="note" style="margin-top:1.4rem;"><b>And the gaps.</b> Anything the system asked about and did not get an answer to appears in the report as an unresolved prompt. A documentation tool that quietly fills its own gaps is worse than one that leaves them visible.</p>
+<p class="note" style="margin-top:1.4rem;"><b>And the gaps.</b> Anything the system asked about and did not get an answer to appears in the report as an unresolved prompt. A documentation tool should not quietly fill its own gaps.</p>
 </section><section class="sec" id="provenance">
 <div class="sechead"><span class="secnum">04</span><h2>Where this came from</h2><div class="divider"></div></div>
 <p class="secsub">Built at the <b>Abridge × Anthropic × Lightspeed agentic-AI hackathon</b> on July 18, 2026 (Pacific time), in a single build window. Two repositories are involved and they are not the same thing.</p>
 <div class="stage">
 <div class="stagehead"><span class="stagenum">1</span><span class="stagename">The submission</span><span class="stagekind">public · archived · frozen</span></div>
-<p>The hackathon submission is <a href="https://github.com/mikejgiardina/ttprod" target="_blank" rel="noopener noreferrer">ttprod</a>, archived and frozen exactly as submitted. The event ran under a <em>new-work-only</em> rule with judge-visible commit timestamps, and every commit in that repository falls inside the build window. Before the event I prepared reference data, prompt drafts, synthetic trauma-bay scripts and planning notes. The application itself, the engine, the capture layer, the live board and the report, was built on the day. It is named because a provenance claim you cannot check is not a provenance claim.</p>
+<p>The hackathon submission is <a href="https://github.com/mikejgiardina/ttprod" target="_blank" rel="noopener noreferrer">ttprod</a>, archived and frozen exactly as submitted. The event ran under a <em>new-work-only</em> rule with judge-visible commit timestamps, and every commit in that repository falls inside the build window. Before the event I prepared reference data, prompt drafts, synthetic trauma-bay scripts and planning notes. The application itself, the engine, the capture layer, the live board and the report, was built on the day. It is named so the timeline can be checked.</p>
 </div>
 <div class="stage">
 <div class="stagehead"><span class="stagenum">2</span><span class="stagename">This build</span><span class="stagekind">public · MIT · same build, merged afterward</span></div>
-<p>One build session produced two working versions of the app. The submission video shows one of them. The other, built in the same session, is the version I demoed to the judge, and it is the one published here; its first commit is from the evening of the event. Four days later, the features that existed only in the other version were merged in, the model-call plumbing was reworked, and a set of fixes and refinements followed. <b>That is the only post-event work on the application itself</b>, and the commit history is public if you want the exact instants.</p>
+<p>One build session produced two working versions of the app. The submission video shows one of them. The other, built in the same session, is the version I demoed to the judge, and it is the one published here; its first commit is from the evening of the event. Four days later, the features that existed only in the other version were merged in, the way it calls the AI model was reworked, and a set of fixes and refinements followed. <b>That is the only post-event work on the application itself</b>, and the commit history is public if you want the exact instants.</p>
 </div>
 <p class="note" style="margin-top:1.4rem; border-left-color: var(--accent-amber);"><b>On the sponsor names.</b> Naming the event is factual attribution and nothing more. Beyond judging it at the event under competition rules, no sponsor has reviewed, validated or endorsed this repository or the product.</p>
 <div class="takeaway">
