@@ -77,10 +77,10 @@
 <div class="section-divider"></div>
 </div>
 <p class="section-intro">
-                The physiological engine, the Body Simulator that runs on it, a standalone training simulator (PatientSim) with its own simpler physiology model, and a consumer iPhone app that is started and on hold.
+                The physiological engine, the Body Simulator that runs on it, a standalone training simulator (PatientSim) with its own simpler physiology model, and a consumer iPhone app at an early stage and on hold.
             </p>
 <p class="section-intro" style="margin-top:-1.6rem; font-size:0.92rem; border-left:2px solid rgba(255,180,84,0.4); padding-left:0.9rem;">
-<strong style="color:var(--text-primary); font-weight:500;">Read this before the cards.</strong> The engine is still being validated, nothing below is used with real patient data, and the simulators are prototypes. Where a card says <em>concept</em>, nothing is built yet, and the card says so.
+<strong style="color:var(--text-primary); font-weight:500;">Read this before the cards.</strong> The engine is pre-1.0 and still being validated, nothing below is used with real patient data, and the simulators are prototypes. Where a card says <em>concept</em>, nothing is built yet, and the card says so.
             </p>
 <p class="section-intro" style="margin-top:-1.2rem; font-size:0.92rem; border-left:2px solid rgba(139,148,158,0.3); padding-left:0.9rem;">
                 Where something is open to click, it is linked. Where there is only a recorded walkthrough, you can watch the tool run without an unvalidated clinical tool being put in front of the public. Where there is no link, the tool touches clinical decision-making or is not yet ready to share, and you should weight it accordingly.
@@ -95,17 +95,17 @@
 <div>
 <div class="app-problem">
 <span class="app-problem-label">Clinical Problem</span>
-                                Simulators, training cases and decision-support tools all need a model of how a patient changes over time. Most training tools play back a script, so the vitals cannot respond to what the learner does.
+                                Simulators, training cases and decision-support tools all need a model of how a patient changes over time.
                             </div>
 <p class="app-description">
-                                A model of a patient that runs forward in time. Each organ system is its own module, and the modules affect each other only through defined signals, so a problem in one system shows up downstream without anyone scripting it. Drugs are absorbed and cleared on published values, and the equations cite the literature they come from.
+                                A model of a patient that runs forward in time, grounded in published physiology and pharmacology. Vitals, labs and drug response change with what happens to the patient and with what the learner does, and the source carries citations to the literature.
                             </p>
 </div>
 <div>
 <details class="project-details"><summary>Architecture & capabilities <span aria-hidden="true">+</span></summary><ul class="app-features">
-<li>Organ systems as separate modules that interact through defined signals</li>
-<li>Large batches of simulated patients run at once on a graphics card</li>
-<li>Drug library built on published absorption and clearance values</li>
+<li>Grounded in published physiology, with citations in the source</li>
+<li>GPU-accelerated batch computation for research use</li>
+<li>Drug behavior modeled from published pharmacology</li>
 <li>Clinical scores computed from the model: SOFA, qSOFA, NEWS2, GCS</li>
 <li>A simplified version can be exported to run on a phone</li>
 </ul></details>
@@ -124,7 +124,7 @@
 <p class="app-subtitle">Clinical Simulator Front-End</p>
 <div class="app-problem">
 <span class="app-problem-label">Clinical Problem</span>
-                        High-fidelity simulation usually means an expensive mannequin in one room, booked in advance. A screen-based simulator running on a physiology model can be used anywhere there is a browser.
+                        Mannequin simulation needs a dedicated room and a booked time. A screen-based simulator running on a physiology model can be used wherever there is a browser.
                     </div>
 <p class="app-description">
                         The screen a learner works from, connected live to the physiology engine. The monitor's vitals and four waveforms are calculated from the engine's current state, and a drug given in the simulator changes what the engine calculates next. If the connection drops, the screen keeps running on its own.
@@ -152,11 +152,11 @@
                         Simulation days are expensive and hard to schedule, and the rare, high-acuity cases are the ones staff get the least practice on.
                     </div>
 <p class="app-description">
-                        A standalone training simulator with its own simpler physiology model. Vitals drift the way a real patient's do, the case changes with what the learner does, and an AI model voices the patient as the case unfolds.
+                        A standalone training simulator with its own simpler physiology model. Vitals drift over time without scripting, the case changes with what the learner does, and an AI model voices the patient as the case unfolds.
                         Built for ED education days.
                     </p>
 <details class="project-details"><summary>Architecture & capabilities <span aria-hidden="true">+</span></summary><ul class="app-features">
-<li>Vitals that drift on their own, the way a real patient's do</li>
+<li>Vitals drift over time without scripting</li>
 <li>ECG rhythm library: AFib, VT/VF, torsades, AV blocks and paced rhythms each draw their own shape, not a sped-up sinus trace</li>
 <li>The case changes based on the learner's decisions</li>
 <li>Procedures, with an SBAR handoff generated at the end</li>
@@ -179,20 +179,20 @@
                         People on several medications can keep a list in an app, but nothing connects that list to how those drugs behave in the body.
                     </div>
 <p class="app-description">
-                        An iPhone app that keeps the medication list on the phone and pairs it with a simplified version of the physiology model that also runs on the phone, so health data does not have to go to a server.
+                        An iPhone app designed to keep the medication list on the phone and pair it with a simplified version of the physiology model running on the phone, so health data would not need to go to a server.
                     </p>
 <details class="project-details"><summary>Architecture & capabilities <span aria-hidden="true">+</span></summary><ul class="app-features">
 <li>iPhone app, iOS 17 and later</li>
-<li>Reads Apple Health data for context</li>
-<li>A simplified version of the physiology model runs on the phone</li>
-<li>Health data stays on the device</li>
+<li>Designed to read Apple Health data for context</li>
+<li>Designed to run a simplified version of the physiology model on the phone</li>
+<li>Designed to keep health data on the device</li>
 <li>Medication list and reminders, entered by label or barcode. Identifying pills from a photo is ruled out by design.</li>
 </ul></details>
 <div class="app-card-footer">
 <div>
 <span class="tech-badge">iOS / Swift</span>
 </div>
-<span style="display:inline-block; margin-top:1rem; font-family:'JetBrains Mono',monospace; font-size:0.75rem; color:var(--text-muted); letter-spacing:0.08em;">Started · on hold</span>
+<span style="display:inline-block; margin-top:1rem; font-family:'JetBrains Mono',monospace; font-size:0.75rem; color:var(--text-muted); letter-spacing:0.08em;">Early stage · on hold</span>
 <p style="font-size:0.78rem; color:var(--text-muted); margin-top:0.6rem; line-height:1.5;">Organization and context only. No dosing, no recommendations, no interpretation of biometrics.</p>
 </div>
 </div>
@@ -230,8 +230,8 @@
 <li>Scroll-driven case narrative with a live patient monitor</li>
 <li>ECG and waveforms that change with the pathology</li>
 <li>Embedded decision points and interactive teaching tools</li>
-<li>Same evidence base as the article library, nothing softened</li>
-<li>Runs in any browser, phone included</li>
+<li>Same evidence base as the article library</li>
+<li>Runs in a web browser, including on a phone</li>
 </ul></details>
 <div class="app-card-footer">
 <div>
@@ -290,10 +290,10 @@
 <p class="app-subtitle">Contextual Clinical Decision Support</p>
 <div class="app-problem">
 <span class="app-problem-label">Clinical Problem</span>
-                        General AI assistants aren't set up for bedside use. They don't know acuity, unit policy, or where a nurse's scope of practice ends in a given state.
+                        General AI assistants aren't set up for bedside use. They don't know unit policy or where a nurse's scope of practice ends in a given state.
                     </div>
 <p class="app-description">
-                        A clinical assistant that works out what kind of question is being asked and answers within the asker's scope of practice for their state, using published scope-of-practice frameworks, with the policy source shown. The guardrails work in the demo; whether they hold against someone trying to get around them is untested.
+                        A clinical assistant that works out what kind of question is being asked and applies guardrails based on published scope-of-practice frameworks for the asker's state, with the policy source shown. The guardrails work in the demo; whether they hold against someone trying to get around them is untested.
                     </p>
 <details class="project-details"><summary>Architecture & capabilities <span aria-hidden="true">+</span></summary><ul class="app-features">
 <li>Answers adjusted to the clinician's discipline</li>
@@ -322,7 +322,7 @@
                     </div>
 <details class="project-details"><summary>Architecture & capabilities <span aria-hidden="true">+</span></summary><ul class="app-features">
 <li><strong>UnitScheduler Pro</strong>, reads historical schedules and surfaces the coverage pattern a static grid hides. <strong>Advisory only: a coverage suggestion is a draft for the charge nurse and never an assignment.</strong> Whether it changes an outcome is unmeasured.</li>
-<li><strong>Emergent Media Manager</strong>: an outside EKG on paper, a CD of imaging, a scanned discharge summary: all carry clinical meaning, none of it queryable. Turns those into structured records on the local computer, with a filter that stops anything that looks like a patient identifier from being sent to a cloud AI model. <strong>Prototype, synthetic data only.</strong> The filter blocks; it does not de-identify, and that is not a compliance claim.</li>
+<li><strong>Emergent Media Manager</strong>: an outside EKG on paper, a CD of imaging, a scanned discharge summary: all carry clinical meaning, none of it queryable. Turns those into structured records, processed locally first, with a filter that blocks identifier patterns before anything reaches a cloud AI model. <strong>Prototype, synthetic data only.</strong> The filter blocks; it does not de-identify, and that is not a compliance claim.</li>
 <li><strong>Clinical Information Workflow Engine</strong>, drafts CE-style articles and simulation scenarios in the structure nurse educators work in. Everything it produces is a draft for a human reviewer. Not an accreditation claim and not peer review.</li>
 <li><strong>Alerter</strong>, <strong>concept stage</strong>, a design for ordering alerts by acuity context rather than firing them all at one weight. Nothing is built. The constraint that it may never withhold an alert from the clinician is the part worth stating.</li>
 </ul></details>
@@ -394,7 +394,7 @@
 <h3 class="timeline-title">An Engine and a Product Line</h3>
 <p class="timeline-description">
                         In 2026 the engine became the core of the Kymora <span class="highlight">product line</span>: the Body Simulator runs on it,
-                        and a simplified version of it is built to run on a phone, for a consumer iPhone app that is started and on hold.
+                        and a simplified version of it is being prepared to run on a phone, for a consumer iPhone app at an early stage and on hold.
                         Patent pending.
                         <br/><br/>
                         I am looking for clinical evaluation, implementation and program roles with companies building tools for clinicians.

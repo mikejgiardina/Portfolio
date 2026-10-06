@@ -5,7 +5,7 @@
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Trauma Tracker — A Real-Time ED Trauma Registrar</title>
-<meta name="description" content="A real-time emergency-department trauma registrar: from a live trauma-bay transcript, specialised agents extract and timestamp values as they are spoken, compute scores deterministically, hold each draft charge until its supporting documentation is present, and compose a signable nursing narrative as the resuscitation runs. Synthetic data only, no PHI."/>
+<meta name="description" content="A real-time emergency-department trauma registrar: from a live trauma-bay transcript, AI agents pull out and timestamp values as they are spoken, calculate scores from published tables, hold each draft charge until its supporting documentation is present, and compose a signable nursing narrative as the resuscitation runs. Synthetic data only, no PHI."/>
 <meta property="og:type" content="article"/>
 <meta property="og:url" content="https://mike-giardina.netlify.app/trauma-tracker/"/>
 <meta property="og:title" content="Trauma Tracker — a real-time ED trauma registrar"/>
@@ -80,8 +80,8 @@
 <p>Values and interventions are pulled out as they are said and stamped at that moment — not at the moment someone gets around to charting them. The ordering <em>is</em> the clinical record in a resuscitation.</p>
 </div>
 <div class="barit">
-<h4>Scores computed deterministically</h4>
-<p>Shock Index, RTS and GCS are calculated from the extracted values as the patient changes, using the published scoring tables. The AI model never estimates a score, so each one can be checked against the table.</p>
+<h4>Scores calculated from published tables</h4>
+<p>Shock Index, RTS and GCS are calculated from the extracted values as the patient changes, using the published scoring tables. In the app, scores are calculated from the published tables, not estimated by the AI model, so each one can be checked.</p>
 </div>
 <div class="barit">
 <h4>Draft charges held for their documentation</h4> <p>A draft charge appears only when its supporting documentation is present in the record. The charge list is illustrative: a prototype feature, not a coding claim.</p>
