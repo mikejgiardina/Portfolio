@@ -69,7 +69,6 @@
 </div>
 
 </header><section class="featured-writing" id="selected"><div class="featured-heading"><div><p class="kicker">SELECTED WORK</p><h2>Two pieces worth your time.</h2></div></div><div class="featured-grid"><a class="feature-story" href="trauma-tracker/"><img src="assets/og/trauma-tracker.png" alt="" width="1200" height="627" loading="lazy" decoding="async"/><div class="snum">Clinical prototype</div><div class="stitle">Trauma Tracker: documentation while the resuscitation runs</div><p class="sdesc">Built at the July 2026 Abridge, Anthropic and Lightspeed hackathon, with a physician teammate auditing clinical accuracy. Values are captured and timestamped as they are spoken, scores are computed from published tables, and the nursing narrative is written during the resuscitation. Synthetic data only.</p><div class="sgo">Read the write-up <span class="arr">→</span></div></a><a class="feature-story" href="clinical-review/"><img src="assets/og/clinical-review.png" alt="" width="1200" height="627" loading="lazy" decoding="async"/><div class="snum">Clinical AI evaluation</div><div class="stitle">Two reviewers agreed. That was the problem.</div><p class="sdesc">Two AI reviewer personas over a clinical-education corpus, keeping only the findings both flagged. When I measured that agreement, it had passed sixteen real clinical defects, several involving dosing, because both reviewers shared the same blind spots. The write-up covers how it was found and what replaced it.</p><div class="sgo">Read the case study <span class="arr">→</span></div></a></div></section>
-<!-- KYMORA: ENGINE + SIMS + CONSUMER -->
 <section class="section" id="work">
 <div class="section-header">
 <span class="section-number">01</span>
@@ -98,13 +97,13 @@
                                 Simulators, training cases and decision-support tools all need a model of how a patient changes over time.
                             </div>
 <p class="app-description">
-                                A model of a patient that runs forward in time, grounded in published physiology and pharmacology. Vitals, labs and drug response change with what happens to the patient and with what the learner does, and the source carries citations to the literature.
+                                A model of a patient that runs forward in time, grounded in published physiology and pharmacology. Vitals, labs and drug response change with what happens to the patient and with what the learner does, and each model component cites the published work it is based on.
                             </p>
 </div>
 <div>
 <details class="project-details"><summary>Architecture & capabilities <span aria-hidden="true">+</span></summary><ul class="app-features">
-<li>Grounded in published physiology, with citations in the source</li>
-<li>GPU-accelerated batch computation for research use</li>
+<li>Each model component cites the published work it is based on</li>
+<li>GPU-accelerated batch computation</li>
 <li>Drug behavior modeled from published pharmacology</li>
 <li>Clinical scores computed from the model: SOFA, qSOFA, NEWS2, GCS</li>
 <li>A simplified version can be exported to run on a phone</li>
@@ -124,16 +123,16 @@
 <p class="app-subtitle">Clinical Simulator Front-End</p>
 <div class="app-problem">
 <span class="app-problem-label">Clinical Problem</span>
-                        Mannequin simulation needs a dedicated room and a booked time. A screen-based simulator running on a physiology model can be used wherever there is a browser.
+                        Mannequin simulation needs a dedicated room and a booked time. A screen-based simulator running on a physiology model is an alternative to a dedicated mannequin room.
                     </div>
 <p class="app-description">
-                        The screen a learner works from, connected live to the physiology engine. The monitor's vitals and four waveforms are calculated from the engine's current state, and a drug given in the simulator changes what the engine calculates next. If the connection drops, the screen keeps running on its own.
+                        The screen a learner works from, connected live to the physiology engine. The monitor's vitals and four waveforms are calculated from the engine's current state, and a drug given in the simulator changes what the engine calculates next. If the connection drops, the screen switches to a simplified fallback.
                     </p>
 <details class="project-details"><summary>Architecture & capabilities <span aria-hidden="true">+</span></summary><ul class="app-features">
 <li>Live connection to the physiology engine</li>
 <li>Four waveforms: ECG, arterial line, pleth, capnography</li>
 <li>Vitals and drug response update in real time</li>
-<li>Keeps running if the engine connection drops</li>
+<li>Switches to a simplified fallback if the engine connection drops</li>
 </ul></details>
 <div class="app-card-footer">
 <div>
@@ -152,11 +151,11 @@
                         Simulation days are expensive and hard to schedule, and the rare, high-acuity cases are the ones staff get the least practice on.
                     </div>
 <p class="app-description">
-                        A standalone training simulator with its own simpler physiology model. Vitals drift over time without scripting, the case changes with what the learner does, and an AI model voices the patient as the case unfolds.
+                        A standalone training simulator with its own simpler physiology model. Vitals change over time as the case runs, the case changes with what the learner does, and an AI model plays the patient.
                         Built for ED education days.
                     </p>
 <details class="project-details"><summary>Architecture & capabilities <span aria-hidden="true">+</span></summary><ul class="app-features">
-<li>Vitals drift over time without scripting</li>
+<li>Vitals change over time as the case runs</li>
 <li>ECG rhythm library: AFib, VT/VF, torsades, AV blocks and paced rhythms each draw their own shape, not a sped-up sinus trace</li>
 <li>The case changes based on the learner's decisions</li>
 <li>Procedures, with an SBAR handoff generated at the end</li>
@@ -182,11 +181,11 @@
                         An iPhone app designed to keep the medication list on the phone and pair it with a simplified version of the physiology model running on the phone, so health data would not need to go to a server.
                     </p>
 <details class="project-details"><summary>Architecture & capabilities <span aria-hidden="true">+</span></summary><ul class="app-features">
-<li>iPhone app, iOS 17 and later</li>
+<li>Planned as an iPhone app for iOS 17 and later</li>
 <li>Designed to read Apple Health data for context</li>
 <li>Designed to run a simplified version of the physiology model on the phone</li>
 <li>Designed to keep health data on the device</li>
-<li>Medication list and reminders, entered by label or barcode. Identifying pills from a photo is ruled out by design.</li>
+<li>Designed to take medication entries by label or barcode. Identifying pills from a photo is ruled out by design.</li>
 </ul></details>
 <div class="app-card-footer">
 <div>
@@ -198,7 +197,6 @@
 </div>
 </div>
 </section>
-<!-- TRIMERGENT: PROJECTS -->
 <section class="section" id="projects">
 <div class="section-header">
 <span class="section-number">02</span>
@@ -322,7 +320,7 @@
                     </div>
 <details class="project-details"><summary>Architecture & capabilities <span aria-hidden="true">+</span></summary><ul class="app-features">
 <li><strong>UnitScheduler Pro</strong>, reads historical schedules and surfaces the coverage pattern a static grid hides. <strong>Advisory only: a coverage suggestion is a draft for the charge nurse and never an assignment.</strong> Whether it changes an outcome is unmeasured.</li>
-<li><strong>Emergent Media Manager</strong>: an outside EKG on paper, a CD of imaging, a scanned discharge summary: all carry clinical meaning, none of it queryable. Turns those into structured records, processed locally first, with a filter that blocks identifier patterns before anything reaches a cloud AI model. <strong>Prototype, synthetic data only.</strong> The filter blocks; it does not de-identify, and that is not a compliance claim.</li>
+<li><strong>Emergent Media Manager</strong>: an outside EKG on paper, a CD of imaging, a scanned discharge summary: all carry clinical meaning, none of it queryable. Turns those into structured records, processed locally first, with a filter that blocks recognizable identifier patterns from being sent to a cloud AI model. <strong>Prototype, synthetic data only.</strong> The filter blocks; it does not de-identify, and that is not a compliance claim.</li>
 <li><strong>Clinical Information Workflow Engine</strong>, drafts CE-style articles and simulation scenarios in the structure nurse educators work in. Everything it produces is a draft for a human reviewer. Not an accreditation claim and not peer review.</li>
 <li><strong>Alerter</strong>, <strong>concept stage</strong>, a design for ordering alerts by acuity context rather than firing them all at one weight. Nothing is built. The constraint that it may never withhold an alert from the clinician is the part worth stating.</li>
 </ul></details>
@@ -416,7 +414,7 @@
 </div>
 <div class="contact-card">
 <div class="contact-title">AI & Safety</div>
-<p class="contact-value">A clinician checks the output before it is used · Answers show the policy or source they came from · Separate AI reviewers that never see each other's work</p>
+<p class="contact-value">I check the output clinically before it is used · Answers show the policy or source they came from · Separate AI reviewers that never see each other's work</p>
 </div>
 <div class="contact-card">
 <div class="contact-title">Clinical Domain</div>
