@@ -6,8 +6,8 @@ anywhere else rendered as a bare card. These are deliberately one family --
 same palette, same geometry, same typography -- so a run of them in a feed reads
 as one site rather than a pile of unrelated posters.
 
-`orchestration/` is excluded on purpose: it has a bespoke card (the squadron)
-that this template should not overwrite.
+`orchestration/` once had a bespoke card. Since it was restored as an archived
+case study (October 2026) it uses this template like every other page.
 
 Run:  python tools/make_og_cards.py          # write assets/og/*.png
       python tools/make_og_cards.py --check  # verify every card exists, exit 1 if not
@@ -35,7 +35,12 @@ CARDS = {
     "trauma-tracker":  (RD, "CLINICAL PROTOTYPE", "Trauma Tracker",
                         "A real-time ED trauma registrar. Synthetic data only, no PHI."),
     "story/hyperkalemia":   (AM, "CLINICAL STORY MODE", "The Potassium Is 7.9",
-                             "Hyperkalemia in real time, with a live monitor."),
+                             "Hyperkalemia in real time, with a live monitor."),    "dispatcher":      (GR, "FIELD NOTES", "One coordinator, focused lanes",
+                        "Coordinating parallel AI sessions, and the measurements kept."),
+    "orchestration":   (DIM, "FIELD NOTES · ARCHIVED", "Running several AI sessions at once",
+                        "Previous work, August to October 2026. Thirty-four rounds, and grading the grading."),
+    "orchestration/evidence": (DIM, "FIELD NOTES · ARCHIVED", "The evidence appendix",
+                        "Every round and every figure behind the archived case study."),
 }
 
 
@@ -123,7 +128,7 @@ def main() -> int:
         if missing:
             print("MISSING social cards: " + ", ".join(missing))
             return 1
-        print(f"all {len(CARDS)} generated cards present (plus the bespoke orchestration card)")
+        print(f"all {len(CARDS)} generated cards present")
         return 0
     OUT.mkdir(parents=True, exist_ok=True)
     for key, path, args in paths():

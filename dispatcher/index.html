@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>One Coordinator, Focused Lanes — Coordinating Parallel AI Sessions</title>
+<meta name="description" content="How I coordinate several AI coding sessions at once since October 2026: one coordinating session, one focused lane per item, every merge verified before it is recorded, decisions recorded as pre-approvals, and one queue for the heavy test run. What replaced a heavier protocol, why, and what is still measured."/>
+<meta property="og:type" content="article"/>
+<meta property="og:url" content="https://mike-giardina.netlify.app/dispatcher/"/>
+<meta property="og:title" content="One coordinator, focused lanes"/>
+<meta property="og:description" content="A lighter way to run several AI sessions at once, what it replaced, and the two measurements kept: separately graded errors, and how often a human has to decide something."/>
+<meta property="og:image" content="https://mike-giardina.netlify.app/assets/og/dispatcher.png"/>
+<meta property="og:image:width" content="1200"/>
+<meta property="og:image:height" content="627"/>
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="https://mike-giardina.netlify.app/assets/og/dispatcher.png"/>
+
+
+
+<link rel="stylesheet" href="../assets/site.css"/><link rel="stylesheet" href="../base.css"/><link rel="stylesheet" href="../style.css"/><link rel="stylesheet" href="../assets/portfolio.css"/><link rel="stylesheet" href="../assets/fonts/editorial.css"/><script src="../app.js" defer=""></script><script src="../assets/navigation.js" defer=""></script></head>
+<body class="editorial-article"><a class="skip" href="#reading">Skip to content</a><header class="masthead"><div class="mast-inner">
+<a class="brand" href="../"><svg width="32" height="32" viewbox="0 0 32 32" fill="none" role="img" aria-label="Michael Giardina monogram"><path d="M4 26V6l12 12L28 6v20M4 6l12 12 12-12" stroke="currentColor" stroke-width="2.5"></path><path d="M16 18v8" stroke="currentColor" stroke-width="2.5"></path></svg><span>MICHAEL GIARDINA<span class="brand-sub">Clinical judgment. Systems thinking.</span></span></a>
+<button class="mobile-menu" aria-expanded="false" aria-controls="primary-navigation" type="button">Menu</button>
+<nav class="primary-nav" id="primary-navigation" aria-label="Portfolio navigation">
+<a href="../#work">Work</a>
+<a href="../trauma-tracker/">Trauma Tracker</a><a href="../clinical-review/">Clinical AI evaluation</a><a href="../story/hyperkalemia/">Hyperkalemia case</a><a href="https://erinfo.netlify.app" target="_blank" rel="noopener noreferrer">ER articles ↗</a>
+<a href="../#background">About</a><a href="../#connect">Contact</a></nav>
+<button class="theme-toggle" type="button" aria-label="Switch to dark mode"><span class="theme-symbol" aria-hidden="true">◐</span><span class="theme-label">Dark</span></button></div><div class="reading-progress" aria-hidden="true"></div></header>
+
+
+<div class="wrap">
+<header class="hero" id="top">
+<div class="status-bar">
+<div class="status-item"><span class="status-dot"></span><span>COORDINATING PARALLEL AI SESSIONS</span></div>
+<div class="status-item"><span class="status-dot"></span><span>IN USE SINCE OCTOBER 2026</span></div>
+<div class="status-item caution"><span class="status-dot"></span><span>A WAY OF WORKING · NOT A PRODUCT</span></div>
+</div>
+<p class="kicker">Field notes · the current approach</p>
+<h1 class="article-title">One coordinator, focused lanes.</h1><div class="article-introduction"><p class="lede">From August to mid-October 2026 I coordinated several AI coding sessions at once through a heavy protocol: numbered rounds, a ledger of which session could write which files, a sealed record per round, and a separate session that graded the coordinator's mistakes against a written rubric. <a href="../orchestration/" style="color:var(--accent-cyan); text-decoration:none; border-bottom:1px solid var(--line)">That record is archived here</a>.</p><p class="lede">In October 2026 I retired it for something much lighter. <b>Much of its cost was ceremony that existed only to run the protocol itself</b>, paid on every round however small, and some of the rest the tools now supply. This page is what replaced it, and the two measurements I kept.</p></div>
+
+
+<p class="context">The figures come from the archived protocol's own round ledger, kept by the sessions as they worked. Nothing here is a product, and nothing here describes the content of the work the sessions did.</p>
+</header><div class="reading-layout" id="reading"><aside class="contents-rail"><div class="rail-sticky"><div class="rail-label">ON THIS PAGE</div><nav aria-label="On this page"><a href="#model"><span>01</span>The model</a><a href="#why"><span>02</span>Why the heavier protocol went</a><a href="#errors"><span>03</span>Separately graded errors</a><a href="#touches"><span>04</span>How often I am needed</a><a href="#limits"><span>05</span>What this does not show</a></nav><div class="rail-foot"><a href="../orchestration/">The archived protocol ↗</a><br/><a href="../">Back to the portfolio ↗</a></div><button class="back-top" type="button">Back to top ↑</button></div></aside><main id="article"><section class="sec" id="model">
+<div class="sechead"><span class="secnum">01</span><h2>The model</h2><div class="divider"></div></div>
+<p class="secsub">One session holds the queue. Every other session does one thing.</p>
+<div class="cards">
+<div class="card">
+<h3>One coordinator</h3>
+<p>A single coordinating session holds the queue of tracked work, decides the order, writes a brief for each item, and starts a separate session for it. It is the only session that writes to shared files: the tracking board, shared indexes, change logs.</p>
+</div>
+<div class="card">
+<h3>Focused lanes</h3>
+<p>Each lane is one tracked item, in its own isolated copy of the repository, with a list of the files it may change. Two lanes never hold the same files. Where two items need the same file, they run one after the other.</p>
+</div>
+<div class="card">
+<h3>Verify before anything is recorded</h3>
+<p>A lane reporting "done" is making a claim. Before anything durable happens, the coordinator checks the change against the brief, and after each merge it confirms the merged content contains every file the change listed. A merge here has once reported success while landing nothing.</p>
+</div>
+<div class="card">
+<h3>Decisions as pre-approvals</h3>
+<p>When I decide something, the decision is written on the tracked item as a dated comment naming the option I chose. Work that implements that decision does not come back to me for approval. Anything outside it does. The checks still run; the pre-approval removes the wait, not the review.</p>
+</div>
+<div class="card">
+<h3>One queue for the heavy test run</h3>
+<p>The full local test run takes more than half an hour, and one machine can run one at a time. Lanes now queue for it themselves, first come first served, instead of waiting for the coordinator to schedule them.</p>
+</div>
+<div class="card">
+<h3>A separate reader, on demand</h3>
+<p>For anything that leaves the private repositories, including this page, a separate reviewer session reads the finished piece without the reasoning that produced it. In the old protocol that reader ran every round. Now it runs where a claim is going outward.</p>
+</div>
+</div>
+<p class="note">None of this is new as a pattern. A dispatcher with a queue, workers with disjoint assignments and a check at the merge is how a lot of work has been organized for a long time. The specific thing about AI sessions is that they cannot negotiate with each other: two people who need the same file talk first, and two sessions both write it.</p>
+</section><section class="sec" id="why">
+<div class="sechead"><span class="secnum">02</span><h2>Why the heavier protocol went</h2><div class="divider"></div></div>
+<p class="secsub">Its fixed cost only paid off with many sessions, and the late rounds had few.</p>
+<p>The old protocol ran forty-one rounds between August and mid-October 2026. Every round carried the same overhead whatever its size: changes that opened, recorded and closed the round itself, a ledger of file claims, a seal, and a grading session. That overhead earns its keep when many sessions run at once. In the late rounds, one to three did.</p>
+<div class="tablewrap">
+<table>
+<thead><tr><th>Round</th><th class="num">Work sessions</th><th class="num">Merged changes that were product work</th></tr></thead>
+<tbody>
+<tr><td><b>35</b></td><td class="num">3</td><td class="num">3 of 18</td></tr>
+<tr><td><b>36</b></td><td class="num">3</td><td class="num">21 of 39</td></tr>
+<tr><td><b>37</b></td><td class="num">2</td><td class="num">2 of 8</td></tr>
+<tr><td><b>38</b></td><td class="num">2</td><td class="num">0 of 6</td></tr>
+<tr><td><b>41</b></td><td class="num">1</td><td class="num">0 of 4</td></tr>
+</tbody>
+</table>
+</div>
+<p class="note">Rounds 39 and 40 recorded no product share and are left out, not estimated. Shares are as the round ledger classified them. "Product work" is a change to the software being built, as opposed to changes that ran the round, built tooling for it, or documented it. Round 36 is the exception.</p>
+<p>The other half of the reason is the tools. Part of the protocol was scaffolding for things the tools have since improved: scripted multi-agent runs (the Workflow tool, Claude Code v2.1.269, September 2026), subagents that run in the background by default (v2.1.302, October 2026), and, in the desktop app, one session starting others that report back to it. What the tools still do not provide, and what I kept, are the rules in section 01 and the measurements below.</p>
+<p>The lighter model has been in use for days. <b>I have no measurement of whether it is better</b>, and this page does not claim one.</p>
+</section><section class="sec" id="errors">
+<div class="sechead"><span class="secnum">03</span><h2>Separately graded errors</h2><div class="divider"></div></div>
+<p class="secsub">The party that made a mistake may record it, and may not grade it.</p>
+<p>From round 32 the coordinator stopped scoring its own mistakes. Any session could record an entry, including against itself. A separate grading session started only after the round was sealed, read the sealed record (and, where an entry needed it, the source documents), and classified the entries against a written, versioned rubric. The table counts the entries it classified as the series' target error: <b>a claim, or a check, that asserted more than it had actually examined.</b></p>
+<div class="tablewrap">
+<table>
+<thead><tr><th>Round</th><th class="num">Rubric version</th><th class="num">Work sessions</th><th class="num">Entries scored</th></tr></thead>
+<tbody>
+<tr><td><b>32</b></td><td class="num">3</td><td class="num">3</td><td class="num">40</td></tr>
+<tr><td><b>33</b></td><td class="num">4</td><td class="num">3</td><td class="num">12</td></tr>
+<tr><td><b>34</b></td><td class="num">4</td><td class="num">5</td><td class="num">9</td></tr>
+<tr><td><b>35</b></td><td class="num">5</td><td class="num">3</td><td class="num">5</td></tr>
+<tr><td><b>36</b></td><td class="num">6</td><td class="num">3</td><td class="num">3</td></tr>
+<tr><td><b>37</b></td><td class="num">6</td><td class="num">2</td><td class="num">1</td></tr>
+<tr><td><b>38</b></td><td class="num">7</td><td class="num">2</td><td class="num">2</td></tr>
+<tr><td><b>39</b></td><td class="num">8</td><td class="num">2</td><td class="num">0*</td></tr>
+<tr><td><b>40</b></td><td class="num">7</td><td class="num">0</td><td class="num"><span class="absent">no entries filed</span></td></tr>
+<tr><td><b>41</b></td><td class="num">8</td><td class="num">1</td><td class="num">3</td></tr>
+</tbody>
+</table>
+</div>
+<p class="note">* Round 39's figure is final only for the entries it names. Four entries filed during its grading were never classified, so the figure is a floor, not a final count.</p>
+<div class="verdict">
+<div class="dlab">how to read it</div>
+<p class="dtext">This is a series, not a trend. <b>Six rubric versions are in force across these ten rounds</b>, and the number of work sessions per round ranges from five down to one.</p>
+<p class="dwhy">A fall from 40 to single digits mixes three things: what counted as an error, how much work each round did, and whether the work got better. The table cannot separate them, so I do not claim it improved. Counts are only compared within one rubric version. Several figures were revised when a later grader carried an entry forward, and the earlier value stays beside the revision in the record.</p>
+</div>
+<p>The final round shows how the grading was checked. The grader wrote down its own classification and fixed it with a hash before a second, blind reader saw the five entries, stripped of anyone's proposed answer. They agreed on all five. The grader then read the underlying sources and changed one entry, which lowered the count from four to three. Because the change moved the count, it was sent to me to rule on. Both results are recorded. The gap between them marks the one entry whose meaning the record alone did not carry, which is what a blind reading is for.</p>
+</section><section class="sec" id="touches">
+<div class="sechead"><span class="secnum">04</span><h2>How often I am needed</h2><div class="divider"></div></div>
+<p class="secsub">The quantity I am trying to change, and the one I can least afford to estimate.</p>
+<p>The point of more automation is to need me less often. The old protocol counted the decisions I had to make in each round.</p>
+<div class="tablewrap">
+<table>
+<thead><tr><th>Round</th><th class="num">32</th><th class="num">33</th><th class="num">34</th><th class="num">35</th><th class="num">36</th><th class="num">37</th><th class="num">38</th><th class="num">39</th><th class="num">40</th><th class="num">41</th></tr></thead>
+<tbody>
+<tr><td><b>Decisions I made</b></td><td class="num">9</td><td class="num">6</td><td class="num">9</td><td class="num">15</td><td class="num">10</td><td class="num">11</td><td class="num">14</td><td class="num">11</td><td class="num">7</td><td class="num">6</td></tr>
+</tbody>
+</table>
+</div>
+<p class="note">Round 35 reads 16 when it is re-derived from the decision records rather than taken from the round's own summary. Both values stay in the record.</p>
+<p>These are counts per round, and rounds ran from a few hours to several days, so they are not a rate. The measure I want is the <b>time between decisions</b>. Under the current model every decision is a dated comment on the item it concerns, which makes the interval derivable from the records instead of reconstructed afterwards. The log that reads them is being moved over from the old round records now. <b>There is no interval figure yet, and this page does not estimate one.</b></p>
+</section><section class="sec" id="limits">
+<div class="sechead"><span class="secnum">05</span><h2>What this does not show</h2><div class="divider"></div></div>
+<div class="context">
+<p>It does not show time saved. How long this work would have taken a person, or the old protocol, was never measured, and I am not going to estimate it. It does not show that the software these sessions worked on is any good; that is judged elsewhere, against its own evidence. And the error series above is not evidence that anything improved.</p>
+<p>What it shows is a working arrangement with its measurements attached: who is allowed to grade whom, what was counted, under which rubric, and where the numbers stop.</p>
+<p><b>I specified how this should run, and AI coding sessions built and ran the tooling for it. I did not write the code and do not claim to.</b></p>
+</div>
+</section></main></div>
+<footer>
+<p>Field notes · coordinating parallel AI coding sessions against one shared set of repositories.</p>
+<p>Process shape only. The work these sessions performed is not described; proprietary specifics are omitted throughout. Every figure on this page traces to the archived protocol's round ledger. Where a figure was revised, the latest separately graded value is quoted.</p>
+<p>Michael Giardina · <a href="../">portfolio</a> · <a href="https://github.com/mikejgiardina" target="_blank" rel="noopener noreferrer">github.com/mikejgiardina</a> · <a href="https://www.linkedin.com/in/michael-giardina" target="_blank" rel="noopener noreferrer">linkedin.com/in/michael-giardina</a></p>
+<p class="footer-navigation"><a href="../">Portfolio</a> · <a href="../orchestration/">The archived protocol</a> · <a href="../#connect">Get in touch</a></p></footer>
+</div></body>
+</html>
