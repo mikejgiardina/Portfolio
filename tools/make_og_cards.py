@@ -39,8 +39,6 @@ CARDS = {
                         "Coordinating parallel AI sessions, and the measurements kept."),
     "orchestration":   (DIM, "FIELD NOTES · ARCHIVED", "Running several AI sessions at once",
                         "Previous work, August to October 2026. Thirty-four rounds, and grading the grading."),
-    "orchestration/evidence": (DIM, "FIELD NOTES · ARCHIVED", "The evidence appendix",
-                        "Every round and every figure behind the archived case study."),
 }
 
 
