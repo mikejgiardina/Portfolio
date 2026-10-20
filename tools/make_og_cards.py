@@ -29,7 +29,7 @@ CY, GR, AM, RD = "#5BD8EA", "#7CE0A0", "#FFB03A", "#FF4D57"
 # page dir -> (accent, kicker, title, line)
 CARDS = {
     ".":               (CY, "PORTFOLIO", "Michael Giardina",
-                        "Emergency nurse building clinical simulation and AI tooling."),
+                        "Emergency nurse directing AI tools to build clinical prototypes."),
     "clinical-review": (RD, "CLINICAL AI EVALUATION", "Two reviewers agreed. That was the problem.",
                         "Measuring an AI review tool, and sixteen clinical defects it surfaced."),
     "trauma-tracker":  (RD, "CLINICAL PROTOTYPE", "Trauma Tracker",
