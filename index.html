@@ -9,7 +9,7 @@
 <meta property="og:type" content="website"/>
 <meta property="og:url" content="https://mike-giardina.netlify.app/"/>
 <meta property="og:title" content="Michael Giardina — clinical AI prototypes and evaluation"/>
-<meta property="og:description" content="Emergency nurse building clinical AI prototypes: a real-time ED trauma documentation prototype, clinical AI evaluation, and an interactive clinical case."/>
+<meta property="og:description" content="Emergency nurse directing the build of clinical AI prototypes: a real-time ED trauma documentation prototype, clinical AI evaluation, and an interactive clinical case."/>
 <meta property="og:image" content="https://mike-giardina.netlify.app/assets/og/home.png"/>
 <meta property="og:image:width" content="1200"/>
 <meta property="og:image:height" content="627"/>
@@ -46,7 +46,7 @@
 <p class="hero-statement" id="reading">
                 Nineteen years in nursing, most of them at a Level I trauma center: ED Supervisor and Clinical Educator,
                 Epic ASAP Super User and the ED nursing liaison to Epic since before go-live, ATCN Course Director.
-                Since May 2025 I have been building <span class="highlight">clinical AI prototypes</span> on my own
+                Since May 2025 I have been directing AI coding tools to build <span class="highlight">clinical AI prototypes</span> on my own
                 and testing what they get wrong.
             </p><div class="hero-actions"><a class="button-primary" href="#work">Explore the work <span aria-hidden="true">↓</span></a><a class="text-link" href="clinical-review/">Read the clinical AI evaluation ↗</a></div>
 <div class="hero-stats">
@@ -79,10 +79,10 @@
                 The physiological engine, the Body Simulator that runs on it, a standalone training simulator (PatientSim) with its own simpler physiology model, and a consumer iPhone app at an early stage and on hold.
             </p>
 <p class="section-intro" style="margin-top:-1.6rem; font-size:0.92rem; border-left:2px solid rgba(255,180,84,0.4); padding-left:0.9rem;">
-<strong style="color:var(--text-primary); font-weight:500;">Read this before the cards.</strong> The engine is pre-1.0 and still being validated, nothing below is used with real patient data, and the simulators are prototypes. Where a card says <em>concept</em>, nothing is built yet, and the card says so.
+<strong style="color:var(--text-primary); font-weight:500;">Read this before the cards.</strong> The engine is pre-1.0 and still being tested, nothing below is used with real patient data, and the simulators are prototypes. Where a card says <em>concept</em>, nothing is built yet, and the card says so.
             </p>
 <p class="section-intro" style="margin-top:-1.2rem; font-size:0.92rem; border-left:2px solid rgba(139,148,158,0.3); padding-left:0.9rem;">
-                Where something is open to click, it is linked. Where there is only a recorded walkthrough, you can watch the tool run without an unvalidated clinical tool being put in front of the public. Where there is no link, the tool touches clinical decision-making or is not yet ready to share, and you should weight it accordingly.
+                Where something is open to click, it is linked. Where there is only a recorded walkthrough, you can watch the tool run without an untested clinical tool being put in front of the public. Where there is no link, the tool touches clinical decision-making or is not yet ready to share, and you should weight it accordingly.
             </p>
 <div class="apps-grid">
 <!-- Computational Physiology Engine — Flagship -->
@@ -309,25 +309,23 @@
 <p style="font-size:0.78rem; color:var(--text-muted); margin-top:0.6rem; line-height:1.5;">Surfaces existing policy with the source shown. It does not recommend interventions or drive time-critical decisions.</p>
 </div>
 </div>
-<!-- The four prototypes that carry no link, collapsed deliberately -->
+<!-- Coordinating parallel AI sessions: a way of working, not a clinical tool -->
 <div class="app-card">
-<div class="app-number">ALSO BUILT · PROTOTYPES, NOT LINKED</div>
-<h3 class="app-title">Four more, not linked</h3>
-<p class="app-subtitle">Each came out of something watched breaking at the bedside. None is finished enough to hand you.</p>
+<div class="app-number">HOW THE WORK IS RUN · WRITE-UP</div>
+<h3 class="app-title">Coordinating parallel AI sessions</h3>
+<p class="app-subtitle">One coordinator, focused lanes, and the measurements kept</p>
 <div class="app-problem">
-<span class="app-problem-label">Why there is nothing to click</span>
-                        They touch clinical decision-making and none is past prototype. You cannot verify any of it from here; weight it accordingly.
+<span class="app-problem-label">The problem</span>
+                        Several AI coding sessions working on the same repositories at once can overwrite each other, and can report success they have not checked.
                     </div>
-<details class="project-details"><summary>Architecture & capabilities <span aria-hidden="true">+</span></summary><ul class="app-features">
-<li><strong>UnitScheduler Pro</strong>, reads historical schedules and surfaces the coverage pattern a static grid hides. <strong>Advisory only: a coverage suggestion is a draft for the charge nurse and never an assignment.</strong> Whether it changes an outcome is unmeasured.</li>
-<li><strong>Emergent Media Manager</strong>: an outside EKG on paper, a CD of imaging, a scanned discharge summary: all carry clinical meaning, none of it queryable. Turns those into structured records, processed locally first, with a filter that blocks recognizable identifier patterns from being sent to a cloud AI model. <strong>Prototype, synthetic data only.</strong> The filter blocks; it does not de-identify, and that is not a compliance claim.</li>
-<li><strong>Clinical Information Workflow Engine</strong>, drafts CE-style articles and simulation scenarios in the structure nurse educators work in. Everything it produces is a draft for a human reviewer. Not an accreditation claim and not peer review.</li>
-<li><strong>Alerter</strong>, <strong>concept stage</strong>, a design for ordering alerts by acuity context rather than firing them all at one weight. Nothing is built. The constraint that it may never withhold an alert from the clinician is the part worth stating.</li>
-</ul></details>
+<p class="app-description">
+                        How I coordinate them now: one session holds the queue, each lane does one item, every merge is verified before it is recorded, and my decisions are written down as pre-approvals. The heavier protocol it replaced, used from August to October 2026, is kept as an archived case study.
+                    </p>
 <div class="app-card-footer">
-<div>
-<span class="tech-badge">Web</span>
+<div style="margin-bottom:0.7rem;">
+<a href="dispatcher/" class="launch-btn" style="text-decoration:none; cursor:pointer;">READ THE WRITE-UP →</a>
 </div>
+<p style="font-size:0.78rem; color:var(--text-muted); margin-top:0.6rem; line-height:1.5;">A way of working, not a clinical tool. <a href="orchestration/" style="color:inherit;">The archived protocol</a> is previous work.</p>
 </div>
 </div>
 <!-- Clinical Article Library -->
@@ -356,6 +354,30 @@
 <a href="https://erinfo.netlify.app" class="launch-btn" target="_blank" rel="noopener noreferrer" style="text-decoration: none; cursor: pointer;">READ THE ARTICLES →</a>
 </div>
 </div>
+<!-- The four prototypes that carry no link, collapsed deliberately -->
+<div class="app-card">
+<div class="app-number">ALSO IN PROGRESS · PROTOTYPES AND ONE CONCEPT, NOT LINKED</div>
+<h3 class="app-title">Four more, not linked</h3>
+<p class="app-subtitle">Each came out of something watched breaking at the bedside. None is finished enough to hand you.</p>
+<div class="app-problem">
+<span class="app-problem-label">Why there is nothing to click</span>
+                        They touch clinical decision-making and none is past prototype. You cannot verify any of it from here; weight it accordingly.
+                    </div>
+<p class="app-description">
+                        A staffing-pattern reader for charge nurses, a prototype that tries to turn outside paper and disc records into structured ones, a drafting aid for nurse educators, and an alert-ordering design that is still only a concept.
+                    </p>
+<details class="project-details"><summary>Architecture & capabilities <span aria-hidden="true">+</span></summary><ul class="app-features">
+<li><strong>UnitScheduler Pro</strong>, reads historical schedules and surfaces the coverage pattern a static grid hides. <strong>Advisory only: a coverage suggestion is a draft for the charge nurse and never an assignment.</strong> Whether it changes an outcome is unmeasured.</li>
+<li><strong>Emergent Media Manager</strong>: an outside EKG on paper, a CD of imaging, a scanned discharge summary: all carry clinical meaning, none of it queryable. Turns those into structured records, processed locally first, with a filter that blocks recognizable identifier patterns from being sent to a cloud AI model. <strong>Prototype, synthetic data only.</strong> The filter blocks; it does not de-identify, and that is not a compliance claim.</li>
+<li><strong>Clinical Information Workflow Engine</strong>, drafts CE-style articles and simulation scenarios in the structure nurse educators work in. Everything it produces is a draft for a human reviewer. Not an accreditation claim and not peer review.</li>
+<li><strong>Alerter</strong>, <strong>concept stage</strong>, a design for ordering alerts by acuity context rather than firing them all at one weight. Nothing is built. The constraint that it may never withhold an alert from the clinician is the part worth stating.</li>
+</ul></details>
+<div class="app-card-footer">
+<div>
+<span class="tech-badge">Web</span>
+</div>
+</div>
+</div>
 </div>
 </section>
 <!-- JOURNEY -->
@@ -381,7 +403,7 @@
 <div class="timeline-label">2025</div>
 <h3 class="timeline-title">From Workflow Design to AI Implementation</h3>
 <p class="timeline-description">
-                        In May 2025 I began building clinical AI prototypes on my own; in 2026 they took the name <span class="highlight">Kymora</span>.
+                        In May 2025 I began directing AI coding tools to build clinical AI prototypes on my own; in 2026 they took the name <span class="highlight">Kymora</span>.
                         What came out of that year is a set of working prototypes, not released products: clinical decision support,
                         patient simulation, scheduling, alerting and education tooling.
                         <br/><br/>
@@ -394,10 +416,11 @@
 <div class="timeline-item">
 <div class="timeline-dot"></div>
 <div class="timeline-label">2026</div>
-<h3 class="timeline-title">An Engine and a Product Line</h3>
+<h3 class="timeline-title">The Engine Underneath</h3>
 <p class="timeline-description">
-                        In 2026 the engine became the core of the Kymora <span class="highlight">product line</span>: the Body Simulator runs on it,
-                        and a simplified version of it is being prepared to run on a phone, for a consumer iPhone app at an early stage and on hold.
+                        In 2026 the engine became what the rest of the Kymora work is built on: the Body Simulator runs on it.
+                        A consumer iPhone app built on a simplified version of it was started and is <span class="highlight">on hold</span>.
+                        The engine is pre-1.0 and still being tested, and none of it is a released product.
                         <br/><br/>
                         I am looking for clinical evaluation, implementation and program roles with companies building tools for clinicians.
                     </p>
@@ -418,7 +441,7 @@
 </div>
 <div class="contact-card">
 <div class="contact-title">AI & Safety</div>
-<p class="contact-value">I check the output clinically before it is used · Answers show the policy or source they came from · Separate AI reviewers that never see each other's work</p>
+<p class="contact-value">I check the output clinically before it is used · Answers show the policy or source they came from · AI reviewers used as a cross-check, with their shared blind spots measured; not a substitute for clinical review</p>
 </div>
 <div class="contact-card">
 <div class="contact-title">Clinical Domain</div>
